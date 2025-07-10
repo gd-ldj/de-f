@@ -1,5 +1,3 @@
-
-
 /** @type {import('astro-i18next').AstroI18nextConfig} */
 export default {
   defaultLocale: 'us',
@@ -12,4 +10,3 @@ export default {
     '{initReactI18next}': 'react-i18next',
   },
 };
-
