@@ -1,0 +1,54 @@
+{
+  "navigation": {
+    "allCategories": "所有分类",
+    "socialMedia": "社交媒体",
+    "explore": "探索",
+    "technology": "技术",
+    "collections": "收藏",
+    "trending": "热门",
+    "learn": "学习",
+    "search": "搜索",
+    "switchLanguage": "切换语言",
+    "settings": "设置",
+    "openMenu": "打开菜单",
+    "switchToAsia": "切换到美国"
+  },
+  "locale": {
+    "northAmerica": "北美地区",
+    "asia": "亚洲地区"
+  },
+  "article": {
+    "minRead": "分钟阅读"
+  },
+  "footer": {
+    "newsletter": "新闻通讯",
+    "stayUpToCrypto": "与 DeTake 一起了解加密货币",
+    "newsletterDescription": "获取帮助数千投资者了解市场的每日新闻通讯。",
+    "emailPlaceholder": "邮箱地址",
+    "subscribe": "订阅",
+    "disclosurePolicies": "披露与政策",
+    "disclosureText": "CoinDesk 是一家屡获殊荣的媒体机构，专注于加密货币行业报道。其记者遵守严格的编辑政策。CoinDesk 采用了一套旨在确保其出版物完整性、编辑独立性和无偏见的原则。CoinDesk 是 Bullish 集团的一部分，该集团拥有并投资数字资产业务和数字资产。CoinDesk 员工，包括记者，可能会获得 Bullish 集团基于股权的薪酬。Bullish 由技术投资者 Peter Thiel 的 Founders Fund 孵化。",
+    "news": "新闻",
+    "podcasts": "播客",
+    "newsletters": "新闻通讯",
+    "events": "活动",
+    "roundtables": "圆桌会议",
+    "analytics": "分析",
+    "sitemap": "网站地图",
+    "about": "关于我们",
+    "manageCookies": "管理 Cookies",
+    "careers": "职业机会",
+    "termsOfService": "服务条款",
+    "privacyPolicy": "隐私政策",
+    "contactUs": "联系我们",
+    "copyright": "© DETAKE LLC"
+  },
+  "wallet": {
+    "continueWithWallet": "使用钱包继续",
+    "continued": "已连接",
+    "copy": "复制",
+    "copied": "已复制",
+    "disconnect": "断开连接"
+  },
+  "test": "测试"
+}

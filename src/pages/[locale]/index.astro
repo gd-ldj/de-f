@@ -1,0 +1,63 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Header from '@/components/common/react/Header';
+import { fetchArticles } from '@/api/articles'
+import type { Locale } from '@/types'
+import Sidebar from '@/components/home/astro/Sidebar.astro';
+import MainContent from '@/components/home/astro/MainContent.astro';
+import RightSidebar from '@/components/home/astro/RightSidebar.astro';
+import NewsGrid from '@/components/home/astro/NewsGrid.astro';
+import Footer from '@/components/common/react/Footer';
+import ToFollowList from '@/components/home/react/ToFollowList';
+import Login from '@/components/home/react/Login';
+
+import { changeLanguage } from "i18next";
+
+changeLanguage(Astro.params.locale);
+export const prerender = false // Enable SSR for this page
+
+const { locale } = Astro.params as { locale: Locale }
+const currentPath = Astro.url.pathname
+
+// Fetch articles data
+const articlesData = await fetchArticles(locale, 1, 12)
+const { articles } = articlesData
+
+// SEO content based on locale
+const seoContent = {
+  us: {
+    title: 'DeTake - Crypto News, Analysis & Insights',
+    description: 'Stay updated with the latest cryptocurrency news, market analysis, and blockchain insights. Your trusted source for crypto information.'
+  },
+  asia: {
+    title: 'DeTake - 加密货币新闻、分析与洞察',
+    description: '获取最新的加密货币新闻、市场分析和区块链洞察。您值得信赖的加密信息来源。'
+  }
+}
+
+const { title, description } = seoContent[locale] || seoContent.us
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+     <div class="min-h-screen bg-white">
+        <Header locale={locale} currentPath={currentPath} client:load />
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-3 space-y-6">
+          <Sidebar />
+          <ToFollowList client:load/>
+        </div>
+        <div class="col-span-6">
+          <MainContent client:load />
+        </div>
+        <div class="col-span-3 space-y-6">
+          <Login client:load/>
+          <RightSidebar />
+        </div>
+      </div>
+      <NewsGrid client:load />
+    </div>
+    <Footer client:load />
+  </div>
+
+</BaseLayout>

@@ -1,0 +1,81 @@
+---
+// Topics and articles data - 主题和文章数据
+const topics = [
+  { name: "DeFi Science", url: "/topics/defi-science" },
+  { name: "Self Improvement", url: "/topics/self-improvement" },
+  { name: "Writing", url: "/topics/writing" },
+  { name: "Technology", url: "/topics/technology" },
+  { name: "Politics", url: "/topics/politics" },
+  { name: "Relationships", url: "/topics/relationships" },
+  { name: "Cryptocurrency", url: "/topics/cryptocurrency" },
+]
+
+const mustReadArticles = [
+  {
+    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
+    date: "Apr 11, 2024",
+    image: "/placeholder.svg?height=60&width=60",
+    url: "/news/meta-trial-instagram-whatsapp"
+  },
+  {
+    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
+    date: "Apr 11, 2024",
+    image: "/placeholder.svg?height=60&width=60",
+    url: "/news/meta-antitrust-case"
+  },
+  {
+    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
+    date: "Apr 11, 2024",
+    image: "/placeholder.svg?height=60&width=60",
+    url: "/news/social-media-regulation"
+  },
+  {
+    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
+    date: "Apr 11, 2024",
+    image: "/placeholder.svg?height=60&width=60",
+    url: "/news/tech-monopoly-debate"
+  },
+  {
+    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
+    date: "Apr 11, 2024",
+    image: "/placeholder.svg?height=60&width=60",
+    url: "/news/platform-competition"
+  },
+]
+---
+
+<div class="space-y-6">
+  <div>
+    <h4 class="font-semibold text-gray-900 mb-4">Recommended Topics</h4>
+    <div class="flex flex-wrap gap-2">
+      {topics.map((topic, index) => (
+        <a
+          href={topic.url}
+          class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer transition-colors"
+        >
+          {topic.name}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div>
+    <h4 class="font-semibold text-gray-900 mb-4">Must Read</h4>
+    <div class="space-y-4">
+      {mustReadArticles.map((article, index) => (
+        <a href={article.url} class="flex space-x-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
+          <img
+            src={article.image || "/placeholder.svg"}
+            alt={article.title}
+            class="w-12 h-12 rounded object-cover flex-shrink-0"
+          />
+          <div class="flex-1">
+            <h5 class="text-sm font-medium text-gray-900 leading-tight mb-1 hover:text-teal-600 transition-colors">{article.title}</h5>
+            <p class="text-xs text-gray-500">{article.date}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+    <a href="/news" class="text-teal-500 text-sm font-medium mt-4 hover:text-teal-600 inline-block transition-colors">More from News</a>
+  </div>
+</div>

@@ -1,0 +1,120 @@
+---
+// News categories and articles data - 新闻分类和文章数据
+const newsCategories = [
+  { name: "All", url: "/news", active: true },
+  { name: "Opinion", url: "/news/opinion", active: false },
+  { name: "Markets", url: "/news/markets", active: false },
+  { name: "Decibels", url: "/news/decibels", active: false },
+  { name: "Exchange", url: "/news/exchange", active: false },
+  { name: "Feature", url: "/news/feature", active: false },
+  { name: "Announcement", url: "/news/announcement", active: false },
+  { name: "People", url: "/news/people", active: false },
+  { name: "Event", url: "/news/event", active: false },
+  { name: "Analysis", url: "/news/analysis", active: false },
+  { name: "Policy", url: "/news/policy", active: false },
+  { name: "Lightspeed Newsletter", url: "/news/newsletter", active: false },
+]
+
+const newsArticles = [
+  {
+    title: "US stocks, cryptocurrencies surge on tariff reversal",
+    category: "MARKETS",
+    image: "/placeholder.svg",
+    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
+    url: "/news/us-stocks-crypto-surge-tariff",
+    date: "Apr 11, 2024",
+    author: "JACK KUBRIC"
+  },
+  {
+    title: "US stocks, cryptocurrencies surge on tariff reversal",
+    category: "MARKETS",
+    image: "/placeholder.svg",
+    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
+    url: "/news/market-analysis-tariff-impact",
+    date: "Apr 11, 2024",
+    author: "JACK KUBRIC"
+  },
+  {
+    title: "US stocks, cryptocurrencies surge on tariff reversal",
+    category: "MARKETS",
+    image: "/placeholder.svg",
+    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
+    url: "/news/crypto-market-response",
+    date: "Apr 11, 2024",
+    author: "JACK KUBRIC"
+  },
+  {
+    title: "US stocks, cryptocurrencies surge on tariff reversal",
+    category: "MARKETS",
+    image: "/placeholder.svg",
+    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
+    url: "/news/trade-policy-markets",
+    date: "Apr 11, 2024",
+    author: "JACK KUBRIC"
+  },
+  {
+    title: "US stocks, cryptocurrencies surge on tariff reversal",
+    category: "MARKETS",
+    image: "/placeholder.svg",
+    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
+    url: "/news/economic-indicators-update",
+    date: "Apr 11, 2024",
+    author: "JACK KUBRIC"
+  },
+  {
+    title: "US stocks, cryptocurrencies surge on tariff reversal",
+    category: "MARKETS",
+    image: "/placeholder.svg",
+    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
+    url: "/news/financial-markets-outlook",
+    date: "Apr 11, 2024",
+    author: "JACK KUBRIC"
+  },
+]
+---
+
+<div class="mt-12">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold text-gray-900">News</h2>
+    <p class="text-sm text-gray-600">Breaking headlines across our core coverage categories</p>
+  </div>
+
+  <!-- Category Navigation - 分类导航 -->
+  <div class="flex space-x-6 mb-8 overflow-x-auto">
+    {newsCategories.map((category, index) => (
+      <a
+        href={category.url}
+        class={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors ${
+          category.active ? "bg-teal-500 text-white" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+        }`}
+      >
+        {category.name}
+      </a>
+    ))}
+  </div>
+
+  <!-- News Articles Grid - 新闻文章网格 -->
+  <div class="grid grid-cols-6 gap-4">
+    {newsArticles.map((article, index) => (
+      <a
+        href={article.url}
+        class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group"
+      >
+        <img 
+          src={article.image} 
+          alt={article.title} 
+          class="w-full h-32 object-cover group-hover:opacity-90 transition-opacity" 
+        />
+        <div class="p-4">
+          <span class="text-xs text-teal-600 font-medium">{article.category}</span>
+          <h3 class="font-semibold text-gray-900 text-sm mt-1 mb-2 leading-tight group-hover:text-teal-600 transition-colors">{article.title}</h3>
+          <p class="text-xs text-gray-600 mb-3">{article.excerpt}</p>
+          <div class="flex items-center space-x-2 text-xs text-gray-500">
+            <span>{article.date}</span>
+            <span>by {article.author}</span>
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+</div>

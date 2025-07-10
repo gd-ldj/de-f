@@ -1,0 +1,54 @@
+{
+  "navigation": {
+    "allCategories": "All Categories",
+    "socialMedia": "Social Media",
+    "explore": "Explore",
+    "technology": "Technology",
+    "collections": "Collections",
+    "trending": "Trending",
+    "learn": "Learn",
+    "search": "Search",
+    "switchLanguage": "Switch Language",
+    "settings": "Settings",
+    "openMenu": "Open menu",
+    "switchToAsia": "Switch to Asia"
+  },
+  "locale": {
+    "northAmerica": "North America",
+    "asia": "Asia"
+  },
+  "article": {
+    "minRead": "min read"
+  },
+  "footer": {
+    "newsletter": "NEWSLETTER",
+    "stayUpToCrypto": "Stay up to crypto with DeTake",
+    "newsletterDescription": "Get the daily newsletter that helps thousands of investors understand the markets.",
+    "emailPlaceholder": "Email address",
+    "subscribe": "SUBSCRIBE",
+    "disclosurePolicies": "DISCLOSURE & POLICIES",
+    "disclosureText": "CoinDesk is an award-winning media outlet that covers the cryptocurrency industry. Its journalists abide by a strict set of editorial policies. CoinDesk has adopted a set of principles aimed at ensuring the integrity, editorial independence and freedom from bias of its publications. CoinDesk is part of the Bullish group, which owns and invests in digital asset businesses and digital assets. CoinDesk employees, including journalists, may receive Bullish group equity-based compensation. Bullish was incubated by technology investor Peter Thiel's Founders Fund.",
+    "news": "News",
+    "podcasts": "Podcasts",
+    "newsletters": "Newsletters",
+    "events": "Events",
+    "roundtables": "Roundtables",
+    "analytics": "Analytics",
+    "sitemap": "Sitemap",
+    "about": "About",
+    "manageCookies": "Manage Cookies",
+    "careers": "Careers",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "contactUs": "Contact Us",
+    "copyright": "© DETAKE LLC"
+  },
+  "wallet": {
+    "continueWithWallet": "Continue with Wallet",
+    "continued": "Continued",
+    "copy": "Copy",
+    "copied": "Copied",
+    "disconnect": "Disconnect"
+  },
+  "test": "test"
+}
