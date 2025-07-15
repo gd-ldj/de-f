@@ -17,7 +17,7 @@ export default function PrivyProvider({ children }: PrivyProviderProps) {
         appearance: {
           theme: 'light',
           accentColor: '#676FFF',
-          logo: '/favicon.svg',
+          logo: '/logo.svg',
         },
         // Create embedded wallets for users who don't have a wallet
         embeddedWallets: {

@@ -5,22 +5,25 @@ import type { Article, ArticlesResponse, Locale } from '../types'
  */
 const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://api.detake.com'
 
+
 /**
- * Fetch articles list with pagination and locale support
+ * Fetch articles list with pagination, locale and category support
  * @param locale - Current locale
  * @param page - Page number
  * @param limit - Items per page
+ * @param category - Article category (insights, news, research)
  * @returns Promise with articles response
  */
 export async function fetchArticles(
   locale: Locale,
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  category?: string
 ): Promise<ArticlesResponse> {
-  return getMockArticles(locale, page, limit)
   try {
+    const categoryParam = category ? `&category=${category}` : ''
     const response = await fetch(
-      `${API_BASE_URL}/articles?locale=${locale}&page=${page}&limit=${limit}`,
+      `${API_BASE_URL}/articles?locale=${locale}&page=${page}&limit=${limit}${categoryParam}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -36,23 +39,26 @@ export async function fetchArticles(
   } catch (error) {
     console.error('Error fetching articles:', error)
     // Return mock data for development
-    return getMockArticles(locale, page, limit)
+    return getMockArticles(locale, page, limit, category)
   }
 }
 
 /**
- * Fetch single article by slug
+ * Fetch single article by slug and category
  * @param locale - Current locale
  * @param slug - Article slug
+ * @param category - Article category
  * @returns Promise with article data
  */
 export async function fetchArticle(
   locale: Locale,
-  slug: string
+  slug: string,
+  category?: string
 ): Promise<Article | null> {
   try {
+    const categoryParam = category ? `&category=${category}` : ''
     const response = await fetch(
-      `${API_BASE_URL}/articles/${slug}?locale=${locale}`,
+      `${API_BASE_URL}/articles/${slug}?locale=${locale}${categoryParam}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -71,14 +77,53 @@ export async function fetchArticle(
   } catch (error) {
     console.error('Error fetching article:', error)
     // Return mock data for development
-    return getMockArticle(locale, slug)
+    return getMockArticle(locale, slug, category)
   }
 }
 
 /**
- * Mock data for development
+ * Fetch categories from API
+ * @returns Promise with categories data
  */
-function getMockArticles(locale: Locale, page: number, limit: number): ArticlesResponse {
+export async function fetchCategories(): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/categories`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch categories: ${response.statusText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    // Return mock data for development
+    return {
+      code: 2001,
+      msg: { en: "Success", zh: "成功" },
+      data: [
+        {
+          name: "Insights",
+          description: "In-depth analysis and interpretations of Web3 trends, technologies, and market dynamics, offering strategic perspectives and actionable intelligence for informed decision-making"
+        },
+        {
+          name: "News",
+          description: "Current events, announcements, and breaking developments in the Web3 ecosystem, including project launches, partnerships, regulatory updates, and market movements"
+        },
+        {
+          name: "Research",
+          description: "Comprehensive studies, technical papers, and data-driven investigations exploring Web3 technologies, protocols, and applications with academic rigor and empirical evidence"
+        }
+      ]
+    }
+  }
+}
+
+// Update mock functions to support category filtering
+function getMockArticles(locale: Locale, page: number, limit: number, category?: string): ArticlesResponse {
   const mockArticles: Article[] = [
     {
       id: '1',
@@ -181,7 +226,8 @@ function getMockArticles(locale: Locale, page: number, limit: number): ArticlesR
   }
 }
 
-function getMockArticle(locale: Locale, slug: string): Article | null {
-  const mockArticles = getMockArticles(locale, 1, 10)
+
+function getMockArticle(locale: Locale, slug: string, category?: string): Article | null {
+  const mockArticles = getMockArticles(locale, 1, 10, category)
   return mockArticles.articles.find(article => article.slug === slug) || null
 }
