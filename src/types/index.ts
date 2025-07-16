@@ -58,6 +58,74 @@ export interface User {
 }
 
 /**
+ * User wallet interface
+ */
+export interface UserWallet {
+  wallet_id: string
+  wallet_address: string
+}
+
+/**
+ * User personal information interface
+ */
+export interface UserPersonalInfo {
+  user_id: string
+  nick: string | null
+  email: string | null
+  avatar_url: string | null
+  promote_code: string
+  full_name: string | null
+  profile_bio: string | null
+  twitter: string | null
+  twitter_api_key: string | null
+  evm_wallets: UserWallet[]
+  sol_wallets: UserWallet[]
+}
+
+/**
+ * API response interface for user personal info
+ */
+export interface UserPersonalInfoResponse {
+  code: number
+  msg: {
+    en: string
+    zh: string
+  }
+  data: UserPersonalInfo
+}
+
+/**
+ * Wallet login request interface
+ */
+export interface WalletLoginRequest {
+  wallet_address: string
+  signature: string
+}
+
+/**
+ * Wallet login response data interface
+ */
+export interface WalletLoginData {
+  userId: string
+  accessToken: string
+  refreshToken: string
+  accessTokenExpiresAt: string
+  refreshTokenExpiresAt: string
+}
+
+/**
+ * API response interface for wallet login
+ */
+export interface WalletLoginResponse {
+  code: number
+  msg: {
+    en: string
+    zh: string
+  }
+  data: WalletLoginData
+}
+
+/**
  * API endpoints configuration
  */
 export interface ApiConfig {

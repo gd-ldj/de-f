@@ -2,6 +2,9 @@
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Header from '@/components/common/react/Header'
 import PrivyProvider from '@/components/common/react/PrivyProvider'
+import ArticleContent from '@/components/article/astro/ArticleContent.astro'
+import ArticleSidebar from '@/components/article/react/ArticleSidebar'
+import ShareSection from '@/components/article/react/ShareSection'
 import { fetchArticle } from '@/api/articles'
 import type { Locale } from '@/types'
 
@@ -33,16 +36,6 @@ const categoryNames = {
 
 const currentCategory = categoryNames[category.toLowerCase() as keyof typeof categoryNames]
 const categoryDisplayName = locale === 'us' ? currentCategory.en : currentCategory.zh
-
-// Format date function
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
 
 // SEO optimization
 const title = `${article.title} | ${categoryDisplayName} | DeTake`
@@ -80,130 +73,38 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
   <PrivyProvider>
     <Header locale={locale} currentPath={currentPath} client:load />
     
-    <main class="flex-1">
-      <article class="py-8 md:py-12">
-        <div class="container max-w-4xl">
-          <!-- Article Header -->
-          <header class="mb-8">
-            <!-- Breadcrumb -->
-            <nav class="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
-              <a href={`/${locale}`} class="hover:text-primary">Home</a>
-              <span>/</span>
-              <a href={`/${locale}/${category}`} class="hover:text-primary">{categoryDisplayName}</a>
-              <span>/</span>
-              <span class="text-foreground">{article.title}</span>
-            </nav>
-
-            <!-- Category and Read Time -->
-            <div class="flex items-center space-x-4 mb-4">
-              <span class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                {categoryDisplayName}
-              </span>
-              <span class="text-sm text-muted-foreground">
-                {article.readTime} {locale === 'us' ? 'min read' : '分钟阅读'}
-              </span>
-            </div>
-
-            <!-- Title -->
-            <h1 class="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
-              {article.title}
-            </h1>
-
-            <!-- Excerpt -->
-            <p class="text-xl text-muted-foreground mb-8">
-              {article.excerpt}
-            </p>
-
-            <!-- Author and Date -->
-            <div class="flex items-center space-x-4 pb-8 border-b">
-              <div class="flex items-center space-x-3">
-                {article.author.avatar ? (
-                  <img
-                    src={article.author.avatar}
-                    alt={article.author.name}
-                    class="h-12 w-12 rounded-full"
-                  />
-                ) : (
-                  <div class="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
-                    <span class="text-primary-foreground font-medium">
-                      {article.author.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div>
-                  <p class="font-medium">{article.author.name}</p>
-                  <time class="text-sm text-muted-foreground" datetime={article.publishedAt}>
-                    {formatDate(article.publishedAt)}
-                  </time>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <!-- Featured Image -->
-          {article.featuredImage && (
+    <main class="min-h-screen bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Left Column - Article Content (SSR/ISR for SEO) -->
+          <div class="lg:col-span-2">
+            <ArticleContent 
+              article={article} 
+              locale={locale} 
+              category={category} 
+              categoryDisplayName={categoryDisplayName} 
+            />
+            
+           
+          </div>
+          
+          <!-- Right Column - Data Display (React Components) -->
+          <div class="lg:col-span-1">
+            <div class="sticky top-8">
+               <!-- Share Section -->
             <div class="mb-8">
-              <img
-                src={article.featuredImage}
-                alt={article.title}
-                class="w-full h-auto rounded-lg shadow-lg"
-                loading="lazy"
+              <ShareSection 
+                locale={locale} 
+                title={article.title} 
+                url={canonicalUrl} 
+                client:load 
               />
             </div>
-          )}
-
-          <!-- Article Content -->
-          <div class="prose prose-lg max-w-none">
-            <div set:html={article.content} />
-          </div>
-
-          <!-- Tags -->
-          {article.tags.length > 0 && (
-            <div class="mt-12 pt-8 border-t">
-              <h3 class="text-lg font-semibold mb-4">
-                {locale === 'us' ? 'Tags' : '标签'}
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                {article.tags.map((tag) => (
-                  <a
-                    href={`/${locale}/tag/${tag}`}
-                    class="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80"
-                  >
-                    #{tag}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <!-- Share Section -->
-          <div class="mt-12 pt-8 border-t">
-            <h3 class="text-lg font-semibold mb-4">
-              {locale === 'us' ? 'Share this article' : '分享这篇文章'}
-            </h3>
-            <div class="flex space-x-4">
-              <button
-                onclick={`window.open('https://twitter.com/intent/tweet?url=${encodeURIComponent(canonicalUrl)}&text=${encodeURIComponent(article.title)}', '_blank')`}
-                class="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-              >
-                <span>Twitter</span>
-              </button>
-              <button
-                onclick={`window.open('https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonicalUrl)}', '_blank')`}
-                class="flex items-center space-x-2 px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
-              >
-                <span>LinkedIn</span>
-              </button>
-              <button
-                onclick={`navigator.clipboard.writeText('${canonicalUrl}')`}
-                class="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-              >
-                <span>{locale === 'us' ? 'Copy Link' : '复制链接'}</span>
-              </button>
+              <ArticleSidebar locale={locale} client:load />
             </div>
           </div>
         </div>
-      </article>
+      </div>
     </main>
   </PrivyProvider>
 </BaseLayout>

@@ -14,6 +14,7 @@ const ButtonAuthentication = () => {
   } = useAuth();
   
   const disableInteractions = !ready;
+  console.log("🚀 ~ ButtonAuthentication ~ ready:", ready)
   
   // Show login button if not effectively logged in (either not authenticated or no stored wallet address)
   const shouldShowLogin = !storedWalletAddress;

@@ -1,7 +1,8 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { persistedWalletAddressAtom } from '../stores';
+import { persistedWalletAddressAtom, isAuthenticatedAtom } from '../stores';
+import { useWalletAuth } from './useWalletAuth';
 
 const WALLET_ADDRESS_KEY = 'wallet_address';
 
@@ -14,8 +15,12 @@ export const useAuth = () => {
   const { ready, authenticated, login, logout, user } = usePrivy();
   const [privyTimeout, setPrivyTimeout] = useState(false);
   const [storedWalletAddress, setStoredWalletAddress] = useAtom(persistedWalletAddressAtom);
+  const [isWalletAuthenticated] = useAtom(isAuthenticatedAtom);
+  const walletAuth = useWalletAuth();
+  // console.log("🚀 ~ useAuth ~ walletAuth:", walletAuth)
 
   console.log("🚀 ~ useAuth ~ storedWalletAddress:", storedWalletAddress);
+  console.log("🚀 ~ useAuth ~ isWalletAuthenticated:", isWalletAuthenticated);
 
   // Initialize stored wallet address from localStorage on first load
   useEffect(() => {
@@ -81,11 +86,28 @@ export const useAuth = () => {
   // Enhanced logout function with error handling and global state cleanup
   const handleLogout = async () => {
     try {
+      // Clear wallet auth state first
+      // await walletAuth.logout();
       // Clear global state before logout
       setStoredWalletAddress(null);
       await logout();
     } catch (error) {
       console.error('Logout failed:', error);
+    }
+  };
+
+  // Handle wallet login with signature
+  const handleWalletLogin = async (walletAddress: string, signature: string) => {
+    console.log("🚀 ~ handleWalletLogin ~ walletAddress:", walletAddress)
+    try {
+      // const success = await walletAuth.login(walletAddress, signature);
+      // if (success) {
+      //   setStoredWalletAddress(walletAddress);
+      // }
+      // return success;
+    } catch (error) {
+      console.error('Wallet login failed:', error);
+      return false;
     }
   };
 
@@ -108,17 +130,34 @@ export const useAuth = () => {
     logout: handleLogout,
     forceLogout: handleForceLogout,
     
+    // Wallet authentication
+    // walletLogin: handleWalletLogin,
+    // isWalletAuthenticated,
+    // walletAuthData: walletAuth.walletAuthData,
+    // accessToken: walletAuth.accessToken,
+    // refreshToken: walletAuth.refreshToken,
+    // userId: walletAuth.userId,
+    
     // Additional states
     privyTimeout,
     showAuthSection,
     storedWalletAddress,
-    isEffectivelyLoggedIn,
+    // isEffectivelyLoggedIn: authenticated && !!user?.wallet?.address && !!storedWalletAddress,
+    
+    // Combined authentication status
+    // isFullyAuthenticated: isWalletAuthenticated && authenticated,
     
     // Utility functions
-    isLoading: !ready && !privyTimeout,
-    hasError: privyTimeout && !ready,
+    // isLoading: (!ready && !privyTimeout) || walletAuth.isLoading,
+    // hasError: (privyTimeout && !ready) || !!walletAuth.error,
+    // error: walletAuth.error,
     
     // Wallet address getter with fallback
     walletAddress: user?.wallet?.address || storedWalletAddress,
+    
+    // Wallet auth utility methods
+    // getValidAccessToken: walletAuth.getValidAccessToken,
+    // refreshWalletTokens: walletAuth.refreshTokens,
+    // clearWalletAuthError: walletAuth.clearError,
   };
 };

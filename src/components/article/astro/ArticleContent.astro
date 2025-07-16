@@ -1,0 +1,194 @@
+---
+import type { Article, Locale } from '@/types'
+
+interface Props {
+  article: Article
+  locale: Locale
+  category: string
+  categoryDisplayName: string
+}
+
+const { article, locale, category, categoryDisplayName } = Astro.props
+
+/**
+ * Format date to readable string for article display
+ * @param dateString - ISO date string
+ * @returns Formatted date string based on locale
+ */
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+---
+
+<article class="bg-white">
+  <!-- Article Header -->
+  <header class="mb-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-6">
+      <a href={`/${locale}`} class="hover:text-teal-600">Home</a>
+      <span>/</span>
+      <a href={`/${locale}/${category}`} class="hover:text-teal-600">{categoryDisplayName}</a>
+      <span>/</span>
+      <span class="text-gray-900">{article.title}</span>
+    </nav>
+
+    <!-- Category and Read Time -->
+    <div class="flex items-center space-x-4 mb-4">
+      <span class="inline-flex items-center rounded-full bg-teal-100 px-3 py-1 text-sm font-medium text-teal-800">
+        {categoryDisplayName}
+      </span>
+      <span class="text-sm text-gray-500">
+        {article.readTime} {locale === 'us' ? 'min read' : '分钟阅读'}
+      </span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-4xl font-bold tracking-tight text-gray-900 mb-6 leading-tight">
+      {article.title}
+    </h1>
+
+    <!-- Excerpt -->
+    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+      {article.excerpt}
+    </p>
+
+    <!-- Author and Date -->
+    <div class="flex items-center space-x-4 pb-8 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        {article.author.avatar ? (
+          <img
+            src={article.author.avatar}
+            alt={article.author.name}
+            class="h-12 w-12 rounded-full object-cover"
+          />
+        ) : (
+          <div class="h-12 w-12 rounded-full bg-teal-600 flex items-center justify-center">
+            <span class="text-white font-medium text-lg">
+              {article.author.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
+        <div>
+          <p class="font-medium text-gray-900">{article.author.name}</p>
+          <time class="text-sm text-gray-500" datetime={article.publishedAt}>
+            {formatDate(article.publishedAt)}
+          </time>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Featured Image -->
+  {article.featuredImage && (
+    <div class="mb-8">
+      <img
+        src={article.featuredImage}
+        alt={article.title}
+        class="w-full h-auto rounded-lg shadow-lg"
+        loading="lazy"
+      />
+    </div>
+  )}
+
+  <!-- Article Content -->
+  <div class="prose prose-lg max-w-none mb-12">
+    <div set:html={article.content} />
+  </div>
+
+  <!-- Tags -->
+  {article.tags.length > 0 && (
+    <div class="mb-8 pt-8 border-t border-gray-200">
+      <h3 class="text-lg font-semibold mb-4 text-gray-900">
+        {locale === 'us' ? 'Tags' : '标签'}
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        {article.tags.map((tag) => (
+          <a
+            href={`/${locale}/tag/${tag}`}
+            class="inline-flex items-center rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors"
+          >
+            #{tag}
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+</article>
+
+<style>
+  .prose {
+    color: #374151;
+  }
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: #111827;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .prose h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+  .prose h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  .prose h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  .prose p {
+    margin-bottom: 1.5rem;
+    line-height: 1.75;
+  }
+  .prose a {
+    color: #0d9488;
+    text-decoration: none;
+  }
+  .prose a:hover {
+    text-decoration: underline;
+  }
+  .prose blockquote {
+    border-left: 4px solid #0d9488;
+    padding-left: 1.5rem;
+    font-style: italic;
+    color: #6b7280;
+    margin: 2rem 0;
+  }
+  .prose code {
+    background-color: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: #dc2626;
+  }
+  .prose pre {
+    background-color: #1f2937;
+    color: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 2rem 0;
+  }
+  .prose pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+  }
+  .prose ul, .prose ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+  .prose li {
+    margin: 0.5rem 0;
+  }
+  .prose img {
+    margin: 2rem 0;
+    border-radius: 0.5rem;
+  }
+</style>
