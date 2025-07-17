@@ -19,8 +19,24 @@ if (!validCategories.includes(category.toLowerCase())) {
   return Astro.redirect('/404')
 }
 
-// Fetch article data
-const article = await fetchArticle(locale, slug, category)
+// Extract promote code from slug if present
+// URL format: /locale/category/article-slug-promoteCode
+let actualSlug = slug
+let promoteCode = null
+
+// Check if slug contains promote code (ends with -promoteCode pattern)
+const slugParts = slug.split('-')
+if (slugParts.length > 1) {
+  // Last part might be promote code, check if it matches expected pattern
+  const lastPart = slugParts[slugParts.length - 1]
+  if (lastPart && lastPart.length >= 5) { // Promote codes are typically 5+ characters
+    promoteCode = lastPart
+    actualSlug = slugParts.slice(0, -1).join('-')
+  }
+}
+
+// Fetch article data using the actual slug
+const article = await fetchArticle(locale, actualSlug, category)
 
 // Handle 404 if article not found
 if (!article) {

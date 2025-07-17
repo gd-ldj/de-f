@@ -2,6 +2,7 @@
 // Astro component script (runs at build time)
 import { fetchArticles } from '@/api/articles'
 import type { Locale } from '@/types'
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import i18next, { t, changeLanguage } from "i18next";
 
 // Get locale from props or default to 'us'
@@ -32,11 +33,18 @@ const formatDate = (dateString: string) => {
 }
 
 /**
- * Generate article URL with locale
+ * Generate article URL with locale and promote code
  * @param slug - Article slug
- * @returns Article URL
+ * @returns Article URL with promote code parameter
  */
-const getArticleUrl = (slug: string) => `/${locale}/news/${slug}`
+const getArticleUrl = (slug: string) => {
+  // Get promote code from localStorage or use default
+  let promoteCode = DEFAULT_PROMOTE_CODE
+  if (typeof window !== 'undefined') {
+    promoteCode = localStorage.getItem(STORAGE_KEYS.PROMOTE_CODE) || DEFAULT_PROMOTE_CODE
+  }
+  return `/${locale}/news/${slug}-${promoteCode}`
+}
 ---
 
 <div class="space-y-6">

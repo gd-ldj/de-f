@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 
 /**
  * Utility function to merge Tailwind CSS classes with clsx
@@ -26,13 +27,18 @@ export function formatDate(date: Date | string, locale: string = 'en-US'): strin
 }
 
 /**
- * Generate article URL with locale
+ * Generate article URL with locale and promote code
  * @param locale - Current locale
  * @param slug - Article slug
- * @returns Formatted URL
+ * @returns Formatted URL with promote code
  */
 export function getArticleUrl(locale: string, slug: string): string {
-  return `/${locale}/news/${slug}`
+  // Get promote code from localStorage or use default
+  let promoteCode = DEFAULT_PROMOTE_CODE
+  if (typeof window !== 'undefined') {
+    promoteCode = localStorage.getItem(STORAGE_KEYS.PROMOTE_CODE) || DEFAULT_PROMOTE_CODE
+  }
+  return `/${locale}/news/${slug}-${promoteCode}`
 }
 
 /**

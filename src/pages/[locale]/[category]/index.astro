@@ -2,6 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Header from '@/components/common/react/Header';
 import { fetchArticles } from '@/api/articles'
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/Footer';
 
@@ -60,9 +61,18 @@ const formatDate = (dateString: string) => {
 }
 
 /**
- * Generate article URL with locale and category
+ * Generate article URL with locale, category and promote code
+ * @param slug - Article slug
+ * @returns Article URL with promote code parameter
  */
-const getArticleUrl = (slug: string) => `/${locale}/${category}/${slug}`
+const getArticleUrl = (slug: string) => {
+  // Get promote code from localStorage or use default
+  let promoteCode = DEFAULT_PROMOTE_CODE
+  if (typeof window !== 'undefined') {
+    promoteCode = localStorage.getItem(STORAGE_KEYS.PROMOTE_CODE) || DEFAULT_PROMOTE_CODE
+  }
+  return `/${locale}/${category}/${slug}-${promoteCode}`
+}
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
