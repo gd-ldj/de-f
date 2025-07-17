@@ -3,7 +3,9 @@ import type { WalletLoginRequest, WalletLoginResponse, WalletLoginData } from '.
 /**
  * API configuration
  */
-const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://api.detake.com'
+// TODO: 引用process.env.PUBLIC_API_BASE_URL后钱包插件加载异常
+// const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://api.detake.com'
+const API_BASE_URL = 'https://api.detake.com'
 
 /**
  * Wallet login function
@@ -64,6 +66,7 @@ export async function loginWithWallet(
 function getMockWalletLoginData(walletAddress: string): WalletLoginData {
   return {
     userId: "5",
+    promoteCode: 'xG0zT',
     accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
     refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.cThIIoDvwdueQB468K5xDc5633seEFoqwxjF_xSJyQQ",
     accessTokenExpiresAt: "2025-07-08T10:41:37.035Z",

@@ -107,6 +107,7 @@ export interface WalletLoginRequest {
  */
 export interface WalletLoginData {
   userId: string
+  promoteCode: string
   accessToken: string
   refreshToken: string
   accessTokenExpiresAt: string

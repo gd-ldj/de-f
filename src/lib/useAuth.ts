@@ -1,5 +1,5 @@
 import { usePrivy } from '@privy-io/react-auth';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAtom } from 'jotai';
 import { persistedWalletAddressAtom, isAuthenticatedAtom } from '../stores';
 import { useWalletAuth } from './useWalletAuth';
@@ -19,8 +19,6 @@ export const useAuth = () => {
   const walletAuth = useWalletAuth();
   // console.log("🚀 ~ useAuth ~ walletAuth:", walletAuth)
 
-  console.log("🚀 ~ useAuth ~ storedWalletAddress:", storedWalletAddress);
-  console.log("🚀 ~ useAuth ~ isWalletAuthenticated:", isWalletAuthenticated);
 
   // Initialize stored wallet address from localStorage on first load
   useEffect(() => {
@@ -87,7 +85,7 @@ export const useAuth = () => {
   const handleLogout = async () => {
     try {
       // Clear wallet auth state first
-      // await walletAuth.logout();
+      await walletAuth.logout();
       // Clear global state before logout
       setStoredWalletAddress(null);
       await logout();
@@ -97,19 +95,45 @@ export const useAuth = () => {
   };
 
   // Handle wallet login with signature
-  const handleWalletLogin = async (walletAddress: string, signature: string) => {
+  const handleWalletLogin = useCallback(async (walletAddress: string, signature: string) => {
     console.log("🚀 ~ handleWalletLogin ~ walletAddress:", walletAddress)
     try {
-      // const success = await walletAuth.login(walletAddress, signature);
-      // if (success) {
-      //   setStoredWalletAddress(walletAddress);
-      // }
-      // return success;
+      const success = await walletAuth.login(walletAddress, signature);
+      if (success) {
+        setStoredWalletAddress(walletAddress);
+      }
+      return success;
     } catch (error) {
       console.error('Wallet login failed:', error);
       return false;
     }
-  };
+  }, [walletAuth.login, setStoredWalletAddress]);
+
+  // Auto-login when wallet address changes and user is authenticated via Privy
+  useEffect(() => {
+    const currentWalletAddress = user?.wallet?.address;
+    console.log("🚀 ~ useEffect ~ currentWalletAddress:", currentWalletAddress)
+    
+    if (currentWalletAddress) {
+      // Generate a mock signature for auto-login (in real app, you'd get this from wallet)
+      // This is a simplified approach - in production, you'd need proper signature generation
+      const mockSignature = `auto_login_${currentWalletAddress}_${Date.now()}`;
+      
+      handleWalletLogin(currentWalletAddress, mockSignature)
+      .then(success => {
+          if (success) {
+            console.log('Auto-login successful for address:', currentWalletAddress);
+          } else {
+            console.warn('Auto-login failed for address:', currentWalletAddress);
+          }
+        })
+        .catch(error => {
+          console.error('Auto-login error:', error);
+        });
+    } else {
+      handleLogout();
+    }
+  }, [user?.wallet?.address, handleWalletLogin]);
 
   // Force logout if wallet address is missing from global state
   const handleForceLogout = () => {
@@ -131,33 +155,33 @@ export const useAuth = () => {
     forceLogout: handleForceLogout,
     
     // Wallet authentication
-    // walletLogin: handleWalletLogin,
-    // isWalletAuthenticated,
-    // walletAuthData: walletAuth.walletAuthData,
-    // accessToken: walletAuth.accessToken,
-    // refreshToken: walletAuth.refreshToken,
-    // userId: walletAuth.userId,
+    walletLogin: handleWalletLogin,
+    isWalletAuthenticated,
+    walletAuthData: walletAuth.walletAuthData,
+    accessToken: walletAuth.accessToken,
+    refreshToken: walletAuth.refreshToken,
+    userId: walletAuth.userId,
     
     // Additional states
     privyTimeout,
     showAuthSection,
     storedWalletAddress,
-    // isEffectivelyLoggedIn: authenticated && !!user?.wallet?.address && !!storedWalletAddress,
+    isEffectivelyLoggedIn: authenticated && !!user?.wallet?.address && !!storedWalletAddress,
     
     // Combined authentication status
     // isFullyAuthenticated: isWalletAuthenticated && authenticated,
     
     // Utility functions
-    // isLoading: (!ready && !privyTimeout) || walletAuth.isLoading,
-    // hasError: (privyTimeout && !ready) || !!walletAuth.error,
-    // error: walletAuth.error,
+    isLoading: (!ready && !privyTimeout) || walletAuth.isLoading,
+    hasError: (privyTimeout && !ready) || !!walletAuth.error,
+    error: walletAuth.error,
     
     // Wallet address getter with fallback
     walletAddress: user?.wallet?.address || storedWalletAddress,
     
     // Wallet auth utility methods
-    // getValidAccessToken: walletAuth.getValidAccessToken,
-    // refreshWalletTokens: walletAuth.refreshTokens,
-    // clearWalletAuthError: walletAuth.clearError,
+    getValidAccessToken: walletAuth.getValidAccessToken,
+    refreshWalletTokens: walletAuth.refreshTokens,
+    clearWalletAuthError: walletAuth.clearError,
   };
 };
