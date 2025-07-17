@@ -1,5 +1,6 @@
 import { atom } from 'jotai'
 import type { User, Locale, WalletLoginData } from '../types'
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '../config/constants'
 
 /**
  * Current locale atom
@@ -45,15 +46,18 @@ export const walletAddressAtom = atom<string | null>(null)
 /**
  * Derived atom for wallet address with localStorage persistence
  * Automatically syncs with localStorage when the value changes
+ * SSR-compatible with localStorage availability check
  */
 export const persistedWalletAddressAtom = atom(
   (get) => get(walletAddressAtom),
   (get, set, newValue: string | null) => {
     set(walletAddressAtom, newValue)
-    if (newValue) {
-      localStorage.setItem('wallet_address', newValue)
-    } else {
-      localStorage.removeItem('wallet_address')
+    if (typeof window !== 'undefined') {
+      if (newValue) {
+        localStorage.setItem(STORAGE_KEYS.WALLET_ADDRESS, newValue)
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.WALLET_ADDRESS)
+      }
     }
   }
 )
@@ -78,30 +82,36 @@ export const refreshTokenAtom = atom<string | null>(null)
 
 /**
  * Derived atom for access token with localStorage persistence
+ * SSR-compatible with localStorage availability check
  */
 export const persistedAccessTokenAtom = atom(
   (get) => get(accessTokenAtom),
   (get, set, newValue: string | null) => {
     set(accessTokenAtom, newValue)
-    if (newValue) {
-      localStorage.setItem('access_token', newValue)
-    } else {
-      localStorage.removeItem('access_token')
+    if (typeof window !== 'undefined') {
+      if (newValue) {
+        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, newValue)
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
+      }
     }
   }
 )
 
 /**
  * Derived atom for refresh token with localStorage persistence
+ * SSR-compatible with localStorage availability check
  */
 export const persistedRefreshTokenAtom = atom(
   (get) => get(refreshTokenAtom),
   (get, set, newValue: string | null) => {
     set(refreshTokenAtom, newValue)
-    if (newValue) {
-      localStorage.setItem('refresh_token', newValue)
-    } else {
-      localStorage.removeItem('refresh_token')
+    if (typeof window !== 'undefined') {
+      if (newValue) {
+        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newValue)
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
+      }
     }
   }
 )
@@ -109,31 +119,43 @@ export const persistedRefreshTokenAtom = atom(
 /**
  * Derived atom for complete wallet auth data with localStorage persistence
  * Automatically syncs all authentication data with localStorage
+ * SSR-compatible with localStorage availability check
  */
 export const persistedWalletAuthDataAtom = atom(
   (get) => get(walletAuthDataAtom),
   (get, set, newValue: WalletLoginData | null) => {
     set(walletAuthDataAtom, newValue)
-    if (newValue) {
-      // Store all auth data in localStorage
-      localStorage.setItem('wallet_auth_data', JSON.stringify(newValue))
-      localStorage.setItem('access_token', newValue.accessToken)
-      localStorage.setItem('refresh_token', newValue.refreshToken)
-      localStorage.setItem('user_id', newValue.userId)
-      
-      // Update individual atoms
-      set(accessTokenAtom, newValue.accessToken)
-      set(refreshTokenAtom, newValue.refreshToken)
+    if (typeof window !== 'undefined') {
+      if (newValue) {
+        // Store all auth data in localStorage
+        localStorage.setItem(STORAGE_KEYS.WALLET_AUTH_DATA, JSON.stringify(newValue))
+        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, newValue.accessToken)
+        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newValue.refreshToken)
+        localStorage.setItem(STORAGE_KEYS.USER_ID, newValue.userId)
+        
+        // Update individual atoms
+        set(accessTokenAtom, newValue.accessToken)
+        set(refreshTokenAtom, newValue.refreshToken)
+      } else {
+        // Clear all auth data from localStorage
+        localStorage.removeItem(STORAGE_KEYS.WALLET_AUTH_DATA)
+        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
+        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
+        localStorage.removeItem(STORAGE_KEYS.USER_ID)
+        
+        // Clear individual atoms
+        set(accessTokenAtom, null)
+        set(refreshTokenAtom, null)
+      }
     } else {
-      // Clear all auth data from localStorage
-      localStorage.removeItem('wallet_auth_data')
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      localStorage.removeItem('user_id')
-      
-      // Clear individual atoms
-      set(accessTokenAtom, null)
-      set(refreshTokenAtom, null)
+      // In SSR environment, only update atoms without localStorage
+      if (newValue) {
+        set(accessTokenAtom, newValue.accessToken)
+        set(refreshTokenAtom, newValue.refreshToken)
+      } else {
+        set(accessTokenAtom, null)
+        set(refreshTokenAtom, null)
+      }
     }
   }
 )
@@ -142,6 +164,42 @@ export const persistedWalletAuthDataAtom = atom(
  * User ID atom
  */
 export const userIdAtom = atom<string | null>(null)
+
+/**
+ * Promote code atom with default value
+ * Stores the promote code, defaults to system default value
+ */
+export const promoteCodeAtom = atom<string>(DEFAULT_PROMOTE_CODE)
+
+/**
+ * Derived atom for promote code with localStorage persistence
+ * Automatically syncs promote code with localStorage
+ * Falls back to default value if no stored value exists
+ * SSR-compatible with localStorage availability check
+ */
+export const persistedPromoteCodeAtom = atom(
+  (get) => {
+    const currentValue = get(promoteCodeAtom)
+    // Try to get from localStorage only in browser environment
+    if (typeof window !== 'undefined') {
+      const storedValue = localStorage.getItem(STORAGE_KEYS.PROMOTE_CODE)
+      if (storedValue) {
+        return storedValue
+      } else {
+        // If no stored value exists, initialize localStorage with default value
+        localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, currentValue)
+        return currentValue
+      }
+    }
+    return currentValue
+  },
+  (get, set, newValue: string) => {
+    set(promoteCodeAtom, newValue)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, newValue)
+    }
+  }
+)
 
 /**
  * Authentication status derived atom

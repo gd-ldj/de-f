@@ -6,9 +6,11 @@ import {
   persistedAccessTokenAtom,
   persistedRefreshTokenAtom,
   userIdAtom,
-  isAuthenticatedAtom,
-  persistedWalletAddressAtom
+  persistedWalletAddressAtom,
+  persistedPromoteCodeAtom,
+  isAuthenticatedAtom
 } from '../stores'
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS, AUTH_CONFIG } from '../config/constants'
 import type { WalletLoginData } from '../types'
 
 /**
@@ -23,6 +25,7 @@ export const useWalletAuth = () => {
   const [userId, setUserId] = useAtom(userIdAtom)
   const [isAuthenticated] = useAtom(isAuthenticatedAtom)
   const [walletAddress, setWalletAddress] = useAtom(persistedWalletAddressAtom)
+  const [promoteCode, setPromoteCode] = useAtom(persistedPromoteCodeAtom)
   
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -33,22 +36,25 @@ export const useWalletAuth = () => {
   useEffect(() => {
     const initializeAuth = () => {
       try {
-        // Load stored auth data
-        const storedAuthData = localStorage.getItem('wallet_auth_data')
-        const storedAccessToken = localStorage.getItem('access_token')
-        const storedRefreshToken = localStorage.getItem('refresh_token')
-        const storedUserId = localStorage.getItem('user_id')
-        const storedWalletAddress = localStorage.getItem('wallet_address')
+        // Only initialize from localStorage in browser environment
+        if (typeof window !== 'undefined') {
+          // Load stored auth data
+          const storedAuthData = localStorage.getItem(STORAGE_KEYS.WALLET_AUTH_DATA)
+          const storedAccessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
+          const storedRefreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN)
+          const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID)
+          const storedWalletAddress = localStorage.getItem(STORAGE_KEYS.WALLET_ADDRESS)
 
-        if (storedAuthData) {
-          const authData: WalletLoginData = JSON.parse(storedAuthData)
-          setWalletAuthData(authData)
+          if (storedAuthData) {
+            const authData: WalletLoginData = JSON.parse(storedAuthData)
+            setWalletAuthData(authData)
+          }
+
+          if (storedAccessToken) setAccessToken(storedAccessToken)
+          if (storedRefreshToken) setRefreshToken(storedRefreshToken)
+          if (storedUserId) setUserId(storedUserId)
+          if (storedWalletAddress) setWalletAddress(storedWalletAddress)
         }
-
-        if (storedAccessToken) setAccessToken(storedAccessToken)
-        if (storedRefreshToken) setRefreshToken(storedRefreshToken)
-        if (storedUserId) setUserId(storedUserId)
-        if (storedWalletAddress) setWalletAddress(storedWalletAddress)
       } catch (error) {
         console.error('Failed to initialize auth state:', error)
         clearAuthState()
@@ -68,7 +74,9 @@ export const useWalletAuth = () => {
     setUserId(null)
     setWalletAddress(null)
     setError(null)
-  }, [setWalletAuthData, setAccessToken, setRefreshToken, setUserId, setWalletAddress])
+    // Reset promote code to default value when clearing auth state
+    setPromoteCode(DEFAULT_PROMOTE_CODE)
+  }, [setWalletAuthData, setAccessToken, setRefreshToken, setUserId, setWalletAddress, setPromoteCode])
 
   /**
    * Handle wallet login with signature
@@ -94,9 +102,15 @@ export const useWalletAuth = () => {
         setUserId(loginData.userId)
         setWalletAddress(walletAddress)
         
+        // Update promote code with user's value after successful login
+        if (loginData.promoteCode) {
+          setPromoteCode(loginData.promoteCode)
+        }
+        
         console.log('Wallet login successful:', {
           userId: loginData.userId,
           walletAddress,
+          promoteCode: loginData.promoteCode,
           expiresAt: loginData.accessTokenExpiresAt
         })
         
@@ -113,7 +127,7 @@ export const useWalletAuth = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [setWalletAuthData, setAccessToken, setRefreshToken, setUserId, setWalletAddress])
+  }, [setWalletAuthData, setAccessToken, setRefreshToken, setUserId, setWalletAddress, setPromoteCode])
 
   /**
    * Handle token refresh
@@ -138,6 +152,11 @@ export const useWalletAuth = () => {
         setRefreshToken(newAuthData.refreshToken)
         setUserId(newAuthData.userId)
         
+        // Update promote code if available in refresh response
+        if (newAuthData.promoteCode) {
+          setPromoteCode(newAuthData.promoteCode)
+        }
+        
         console.log('Token refresh successful')
         return true
       } else {
@@ -154,7 +173,7 @@ export const useWalletAuth = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [refreshToken, setWalletAuthData, setAccessToken, setRefreshToken, setUserId, clearAuthState])
+  }, [refreshToken, setWalletAuthData, setAccessToken, setRefreshToken, setUserId, setPromoteCode, clearAuthState])
 
   /**
    * Handle logout
@@ -199,7 +218,7 @@ export const useWalletAuth = () => {
     
     const expirationTime = new Date(walletAuthData.accessTokenExpiresAt).getTime()
     const currentTime = Date.now()
-    const bufferTime = 5 * 60 * 1000 // 5 minutes buffer
+    const bufferTime = AUTH_CONFIG.TOKEN_REFRESH_BUFFER_MS // Configurable buffer time
     
     return currentTime >= (expirationTime - bufferTime)
   }, [walletAuthData?.accessTokenExpiresAt])
@@ -229,6 +248,7 @@ export const useWalletAuth = () => {
     refreshToken,
     userId,
     walletAddress,
+    promoteCode,
     
     // Authentication methods
     login: handleWalletLogin,

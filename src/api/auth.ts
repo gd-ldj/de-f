@@ -1,4 +1,6 @@
 import type { WalletLoginRequest, WalletLoginResponse, WalletLoginData } from '../types'
+import { getDefaultStore } from 'jotai'
+import { persistedPromoteCodeAtom } from '../stores'
 
 /**
  * API configuration
@@ -66,7 +68,7 @@ export async function loginWithWallet(
 function getMockWalletLoginData(walletAddress: string): WalletLoginData {
   return {
     userId: "5",
-    promoteCode: 'xG0zT',
+    promoteCode: 'xG3gD',
     accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
     refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.cThIIoDvwdueQB468K5xDc5633seEFoqwxjF_xSJyQQ",
     accessTokenExpiresAt: "2025-07-08T10:41:37.035Z",

@@ -1,10 +1,9 @@
 import { usePrivy } from '@privy-io/react-auth';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { persistedWalletAddressAtom, isAuthenticatedAtom } from '../stores';
 import { useWalletAuth } from './useWalletAuth';
-
-const WALLET_ADDRESS_KEY = 'wallet_address';
+import { STORAGE_KEYS, AUTH_CONFIG } from '../config/constants';
 
 /**
  * Custom hook for managing authentication state using Privy
@@ -21,10 +20,13 @@ export const useAuth = () => {
 
 
   // Initialize stored wallet address from localStorage on first load
+  // SSR-compatible with localStorage availability check
   useEffect(() => {
-    const stored = localStorage.getItem(WALLET_ADDRESS_KEY);
-    if (stored && !storedWalletAddress) {
-      setStoredWalletAddress(stored);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEYS.WALLET_ADDRESS);
+      if (stored && !storedWalletAddress) {
+        setStoredWalletAddress(stored);
+      }
     }
   }, [storedWalletAddress, setStoredWalletAddress]);
 
@@ -33,7 +35,7 @@ export const useAuth = () => {
     if (!ready) {
       const timer = setTimeout(() => {
         setPrivyTimeout(true);
-      }, 5000); // 5 second timeout
+      }, AUTH_CONFIG.PRIVY_TIMEOUT_MS); // Configurable timeout
 
       return () => clearTimeout(timer);
     } else {
@@ -55,15 +57,18 @@ export const useAuth = () => {
   }, [authenticated, user?.wallet?.address, setStoredWalletAddress]);
 
   // Monitor localStorage changes (for cross-tab synchronization)
+  // SSR-compatible with window availability check
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === WALLET_ADDRESS_KEY) {
-        setStoredWalletAddress(e.newValue);
-      }
-    };
+    if (typeof window !== 'undefined') {
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === STORAGE_KEYS.WALLET_ADDRESS) {
+          setStoredWalletAddress(e.newValue);
+        }
+      };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+      window.addEventListener('storage', handleStorageChange);
+      return () => window.removeEventListener('storage', handleStorageChange);
+    }
   }, [setStoredWalletAddress]);
 
   // Determine if auth section should be shown
@@ -95,7 +100,7 @@ export const useAuth = () => {
   };
 
   // Handle wallet login with signature
-  const handleWalletLogin = useCallback(async (walletAddress: string, signature: string) => {
+  const handleWalletLogin = async (walletAddress: string, signature: string) => {
     console.log("🚀 ~ handleWalletLogin ~ walletAddress:", walletAddress)
     try {
       const success = await walletAuth.login(walletAddress, signature);
@@ -107,33 +112,7 @@ export const useAuth = () => {
       console.error('Wallet login failed:', error);
       return false;
     }
-  }, [walletAuth.login, setStoredWalletAddress]);
-
-  // Auto-login when wallet address changes and user is authenticated via Privy
-  useEffect(() => {
-    const currentWalletAddress = user?.wallet?.address;
-    console.log("🚀 ~ useEffect ~ currentWalletAddress:", currentWalletAddress)
-    
-    if (currentWalletAddress) {
-      // Generate a mock signature for auto-login (in real app, you'd get this from wallet)
-      // This is a simplified approach - in production, you'd need proper signature generation
-      const mockSignature = `auto_login_${currentWalletAddress}_${Date.now()}`;
-      
-      handleWalletLogin(currentWalletAddress, mockSignature)
-      .then(success => {
-          if (success) {
-            console.log('Auto-login successful for address:', currentWalletAddress);
-          } else {
-            console.warn('Auto-login failed for address:', currentWalletAddress);
-          }
-        })
-        .catch(error => {
-          console.error('Auto-login error:', error);
-        });
-    } else {
-      handleLogout();
-    }
-  }, [user?.wallet?.address, handleWalletLogin]);
+  };
 
   // Force logout if wallet address is missing from global state
   const handleForceLogout = () => {
