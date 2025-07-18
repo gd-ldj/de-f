@@ -1,0 +1,38 @@
+---
+import type { Locale } from '@/types'
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
+
+interface Props {
+  slug: string
+  locale: Locale
+  category: string
+  children?: any
+  class?: string
+  onClick?: string
+}
+
+const { slug, locale, category, class: className = '', onClick } = Astro.props
+
+/**
+ * Generate article URL with promote code from cookies (SSR-friendly)
+ * This ensures the URL is generated correctly on the server side
+ */
+const getArticleUrl = (slug: string) => {
+  // Get promote code from cookies (SSR-compatible) or use default
+  const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
+  return `/${locale}/${category}/${slug}-${promoteCode}`
+}
+
+const articleUrl = getArticleUrl(slug)
+---
+
+<a
+  href={articleUrl}
+  class={`hover:text-teal-600 transition-colors ${className}`}
+  onclick={onClick}
+  data-article-link="true"
+  data-slug={slug}
+  data-locale={locale}
+>
+  <slot />
+</a>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Header from '@/components/common/react/Header';
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { fetchArticles } from '@/api/articles'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import type { Locale } from '@/types'
@@ -60,19 +61,6 @@ const formatDate = (dateString: string) => {
   })
 }
 
-/**
- * Generate article URL with locale, category and promote code
- * @param slug - Article slug
- * @returns Article URL with promote code parameter
- */
-const getArticleUrl = (slug: string) => {
-  // Get promote code from localStorage or use default
-  let promoteCode = DEFAULT_PROMOTE_CODE
-  if (typeof window !== 'undefined') {
-    promoteCode = localStorage.getItem(STORAGE_KEYS.PROMOTE_CODE) || DEFAULT_PROMOTE_CODE
-  }
-  return `/${locale}/${category}/${slug}-${promoteCode}`
-}
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -177,13 +165,18 @@ const getArticleUrl = (slug: string) => {
             <article class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <!-- Article Image -->
               <div class="relative">
-                <a href={getArticleUrl(article.slug)}>
+                <ArticleLink 
+                  slug={article.slug}
+                  locale={locale}
+                  category={article.category}
+                  class="block group"
+                >
                   <img 
                     src={article.featuredImage || '/placeholder.svg'} 
                     alt={article.title}
                     class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                   />
-                </a>
+                </ArticleLink>
                 <!-- Category Badge -->
                 <div class="absolute top-4 left-4">
                   <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-800">
@@ -195,9 +188,14 @@ const getArticleUrl = (slug: string) => {
               <!-- Article Content -->
               <div class="p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
-                  <a href={getArticleUrl(article.slug)} class="hover:text-teal-600 transition-colors">
+                  <ArticleLink 
+                    slug={article.slug}
+                    category={article.category}
+                    locale={locale}
+                    class="hover:text-teal-600 transition-colors"
+                  >
                     {article.title}
-                  </a>
+                  </ArticleLink>
                 </h3>
                 
                 <p class="text-gray-600 text-sm mb-4 line-clamp-3">

@@ -1,0 +1,48 @@
+---
+import type { Locale } from '@/types'
+import { generateArticleStructuredData, generateArticleMetaTags } from '@/utils/seo'
+
+interface Props {
+  article: {
+    title: string
+    excerpt: string
+    slug: string
+    publishedAt: string
+    featuredImage?: string
+    author?: string
+  }
+  locale: Locale
+  baseUrl?: string
+}
+
+const { article, locale, baseUrl = 'https://detake.com' } = Astro.props
+
+// Generate structured data and meta tags
+const structuredData = generateArticleStructuredData(article, locale, baseUrl)
+const metaTags = generateArticleMetaTags(article, locale, baseUrl)
+---
+
+<!-- SEO Meta Tags -->
+<meta name="description" content={metaTags.description} />
+<link rel="canonical" href={metaTags.canonical} />
+
+<!-- Open Graph -->
+<meta property="og:title" content={metaTags.openGraph.title} />
+<meta property="og:description" content={metaTags.openGraph.description} />
+<meta property="og:url" content={metaTags.openGraph.url} />
+<meta property="og:type" content={metaTags.openGraph.type} />
+<meta property="og:image" content={metaTags.openGraph.image} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content={metaTags.twitter.card} />
+<meta name="twitter:title" content={metaTags.twitter.title} />
+<meta name="twitter:description" content={metaTags.twitter.description} />
+<meta name="twitter:image" content={metaTags.twitter.image} />
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+<!-- Preload critical resources -->
+{article.featuredImage && (
+  <link rel="preload" as="image" href={article.featuredImage} />
+)}

@@ -28,17 +28,15 @@ export function formatDate(date: Date | string, locale: string = 'en-US'): strin
 
 /**
  * Generate article URL with locale and promote code
- * @param locale - Current locale
  * @param slug - Article slug
- * @returns Formatted URL with promote code
+ * @param locale - Current locale
+ * @param promoteCode - Optional promote code, will use default if not provided
+ * @returns Article URL with promote code parameter
  */
-export function getArticleUrl(locale: string, slug: string): string {
-  // Get promote code from localStorage or use default
-  let promoteCode = DEFAULT_PROMOTE_CODE
-  if (typeof window !== 'undefined') {
-    promoteCode = localStorage.getItem(STORAGE_KEYS.PROMOTE_CODE) || DEFAULT_PROMOTE_CODE
-  }
-  return `/${locale}/news/${slug}-${promoteCode}`
+export const getArticleUrl = (slug: string, locale: string, promoteCode?: string) => {
+  // Use provided promote code or default
+  const finalPromoteCode = promoteCode || DEFAULT_PROMOTE_CODE
+  return `/${locale}/news/${slug}-${finalPromoteCode}`
 }
 
 /**

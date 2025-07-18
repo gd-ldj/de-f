@@ -50,5 +50,93 @@ const currentUrl = canonicalUrl || Astro.url.href
     <div class="relative flex min-h-screen flex-col">
       <slot />
     </div>
+    
+    <!-- Global ArticleLink management script -->
+    <script is:inline>
+      // Global script for managing ArticleLink components
+      // This ensures the logic runs only once regardless of how many ArticleLink components are used
+      
+      // Import constants (note: this needs to be handled differently in inline scripts)
+      const STORAGE_KEY_PROMOTE_CODE = 'promote_code'
+      const DEFAULT_PROMOTE_CODE = 'detake'
+      
+      // Cache for performance optimization
+      let cachedPromoteCode = null
+      let lastUpdateTime = 0
+      const UPDATE_THROTTLE = 100 // ms
+      
+      /**
+       * Get current promote code with error handling
+       * @returns {string} Current promote code from localStorage or default
+       */
+      function getCurrentPromoteCode() {
+        try {
+          return localStorage.getItem(STORAGE_KEY_PROMOTE_CODE) || DEFAULT_PROMOTE_CODE
+        } catch (error) {
+          console.warn('[ArticleLink] Failed to access localStorage:', error)
+          return DEFAULT_PROMOTE_CODE
+        }
+      }
+      
+      /**
+       * Update all article links when promoteCode changes
+       * This provides real-time updates while maintaining SSR compatibility
+       * Includes throttling and error handling for better performance
+       */
+      function updateAllArticleLinks() {
+        const now = Date.now()
+        if (now - lastUpdateTime < UPDATE_THROTTLE) {
+          return // Throttle updates
+        }
+        lastUpdateTime = now
+        
+        try {
+          const currentPromoteCode = getCurrentPromoteCode()
+          
+          // Skip update if promoteCode hasn't changed
+          if (cachedPromoteCode === currentPromoteCode) {
+            return
+          }
+          cachedPromoteCode = currentPromoteCode
+          
+          console.log('[ArticleLink] Updating all links with promoteCode:', currentPromoteCode)
+          
+          const links = document.querySelectorAll('[data-article-link="true"]')
+          
+          links.forEach(link => {
+            const slug = link.dataset.slug
+            const locale = link.dataset.locale
+            
+            if (slug && locale) {
+              const oldHref = link.href
+              const newUrl = `/${locale}/news/${slug}-${currentPromoteCode}`
+              link.href = newUrl
+              
+              console.log('[ArticleLink] Updated link:', {
+                slug,
+                locale,
+                oldHref,
+                newHref: newUrl,
+                promoteCode: currentPromoteCode
+              })
+            }
+          })
+        } catch (error) {
+          console.error('[ArticleLink] Error updating links:', error)
+        }
+      }
+      
+      // Also listen for manual updates (when promoteCode is changed programmatically)
+      window.addEventListener('promoteCodeChanged', () => {
+        console.log('[ArticleLink] Manual promoteCode change detected')
+        cachedPromoteCode = null // Invalidate cache
+        updateAllArticleLinks()
+      })
+      
+      // Cleanup function for better memory management
+      window.addEventListener('beforeunload', () => {
+        cachedPromoteCode = null
+      })
+    </script>
   </body>
 </html>

@@ -180,23 +180,50 @@ export const promoteCodeAtom = atom<string>(DEFAULT_PROMOTE_CODE)
 export const persistedPromoteCodeAtom = atom(
   (get) => {
     const currentValue = get(promoteCodeAtom)
-    // Try to get from localStorage only in browser environment
+    // Try to get from localStorage first, then cookies in browser environment
     if (typeof window !== 'undefined') {
       const storedValue = localStorage.getItem(STORAGE_KEYS.PROMOTE_CODE)
       if (storedValue) {
         return storedValue
-      } else {
-        // If no stored value exists, initialize localStorage with default value
-        localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, currentValue)
-        return currentValue
       }
+      
+      // Fallback to reading from cookies
+      const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith(`${STORAGE_KEYS.PROMOTE_CODE}=`))
+        ?.split('=')[1]
+      
+      if (cookieValue) {
+        // Sync cookie value to localStorage
+        localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, cookieValue)
+        return cookieValue
+      }
+      
+      // If no stored value exists, initialize both localStorage and cookie with default value
+      localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, currentValue)
+      document.cookie = `${STORAGE_KEYS.PROMOTE_CODE}=${currentValue}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+      return currentValue
     }
     return currentValue
   },
   (get, set, newValue: string) => {
     set(promoteCodeAtom, newValue)
     if (typeof window !== 'undefined') {
+      // Store in localStorage for client-side persistence
       localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, newValue)
+      
+      // Also set cookie for SSR compatibility
+      document.cookie = `${STORAGE_KEYS.PROMOTE_CODE}=${newValue}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+      
+      // Trigger custom event for manual promoteCode changes
+      // This works with the global ArticleLink management script in BaseLayout
+      try {
+        window.dispatchEvent(new CustomEvent('promoteCodeChanged', {
+          detail: { newValue, timestamp: Date.now() }
+        }))
+      } catch (error) {
+        console.warn('[Store] Failed to dispatch promoteCodeChanged event:', error)
+      }
     }
   }
 )

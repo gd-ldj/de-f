@@ -45,16 +45,21 @@ export const useAuth = () => {
 
   // Monitor wallet address changes and sync with global state
   useEffect(() => {
+    if(!ready) return;
     const currentWalletAddress = user?.wallet?.address;
     
     if (authenticated && currentWalletAddress) {
       // User is authenticated and has wallet address - store it globally
       setStoredWalletAddress(currentWalletAddress);
+
+      const mockSignature = `auto_login_${currentWalletAddress}_${Date.now()}`;
+     handleWalletLogin(currentWalletAddress, mockSignature)
     } else if (!authenticated || !currentWalletAddress) {
       // User is not authenticated or lost wallet address - clear global state
       setStoredWalletAddress(null);
+       handleLogout();
     }
-  }, [authenticated, user?.wallet?.address, setStoredWalletAddress]);
+  }, [user?.wallet?.address]);
 
   // Monitor localStorage changes (for cross-tab synchronization)
   // SSR-compatible with window availability check
@@ -89,11 +94,11 @@ export const useAuth = () => {
   // Enhanced logout function with error handling and global state cleanup
   const handleLogout = async () => {
     try {
+      await logout();
       // Clear wallet auth state first
       await walletAuth.logout();
       // Clear global state before logout
       setStoredWalletAddress(null);
-      await logout();
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -101,7 +106,6 @@ export const useAuth = () => {
 
   // Handle wallet login with signature
   const handleWalletLogin = async (walletAddress: string, signature: string) => {
-    console.log("🚀 ~ handleWalletLogin ~ walletAddress:", walletAddress)
     try {
       const success = await walletAuth.login(walletAddress, signature);
       if (success) {
