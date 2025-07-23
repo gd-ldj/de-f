@@ -30,4 +30,44 @@ export const STORAGE_KEYS = {
   WALLET_AUTH_DATA: 'wallet_auth_data',
   USER_ID: 'user_id',
   PROMOTE_CODE: 'promote_code',
+  VISITOR_ID: 'visitor_id',
+  GA_CLIENT_ID: 'ga_client_id',
+  USER_BEHAVIOR_DATA: 'user_behavior_data',
+} as const
+
+/**
+ * Analytics and tracking configuration
+ */
+export const ANALYTICS_CONFIG = {
+  // Google Analytics configuration
+  GA_MEASUREMENT_ID: import.meta.env.PUBLIC_GA_MEASUREMENT_ID,
+  
+  // Cloudflare Turnstile configuration
+  TURNSTILE_SITE_KEY: import.meta.env.PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY,
+  
+  // Cloudflare Analytics token
+  CLOUDFLARE_ANALYTICS_TOKEN: import.meta.env.PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
+  
+  // Behavior tracking intervals
+  HEARTBEAT_INTERVAL: 30000, // 30 seconds
+  SCROLL_THROTTLE: 500, // 500ms
+  CLICK_DEBOUNCE: 300, // 300ms
+  
+  // Data collection limits
+  MAX_EVENTS_QUEUE: 100,
+  BATCH_SEND_INTERVAL: 60000, // 1 minute
+} as const
+
+/**
+ * Event types for user behavior tracking
+ */
+export const TRACKING_EVENTS = {
+  PAGE_VIEW: 'page_view',
+  ARTICLE_VIEW: 'article_view',
+  ARTICLE_SHARE: 'article_share',
+  SCROLL_DEPTH: 'scroll_depth',
+  TIME_ON_PAGE: 'time_on_page',
+  CLICK_EVENT: 'click_event',
+  SEARCH_EVENT: 'search_event',
+  USER_ENGAGEMENT: 'user_engagement',
 } as const

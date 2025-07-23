@@ -45,11 +45,32 @@ const currentUrl = canonicalUrl || Astro.url.href
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://challenges.cloudflare.com" />
   </head>
   <body class="min-h-screen bg-background font-sans antialiased">
     <div class="relative flex min-h-screen flex-col">
       <slot />
     </div>
+    
+    <!-- Analytics and Tracking Initialization -->
+    <script is:inline>
+      // Initialize analytics system on page load
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          // Dynamically import analytics module
+          const { initializeAnalytics } = await import('/src/lib/analytics.js')
+          const analytics = await initializeAnalytics()
+          
+          // Make analytics available globally for debugging
+          window.detakeAnalytics = analytics
+          
+          console.log('[DeTake] Analytics system initialized')
+        } catch (error) {
+          console.error('[DeTake] Failed to initialize analytics:', error)
+        }
+      })
+    </script>
     
     <!-- Global ArticleLink management script -->
     <script is:inline>
