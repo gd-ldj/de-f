@@ -1,0 +1,231 @@
+---
+// Trending articles data - 热门文章数据
+const trendingArticles = [
+  {
+    title: "Telegram Trading Bots: Robinhood Without Borders",
+    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
+    date: "Apr 11, 2025",
+    author: "JACK KUBINEC",
+    url: "/articles/telegram-trading-bots-robinhood",
+    featured: true
+  },
+  {
+    title: "Telegram Trading Bots: Robinhood Without Borders", 
+    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
+    date: "Apr 11, 2025",
+    author: "JACK KUBINEC",
+    url: "/articles/telegram-trading-bots-analysis",
+    featured: false
+  },
+  {
+    title: "Telegram Trading Bots: Robinhood Without Borders",
+    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
+    date: "Apr 11, 2025", 
+    author: "JACK KUBINEC",
+    url: "/articles/telegram-trading-bots-guide",
+    featured: false
+  },
+  {
+    title: "Telegram Trading Bots: Robinhood Without Borders",
+    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
+    date: "Apr 11, 2025",
+    author: "JACK KUBINEC", 
+    url: "/articles/telegram-trading-bots-review",
+    featured: false
+  },
+  {
+    title: "Telegram Trading Bots: Robinhood Without Borders",
+    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
+    date: "Apr 11, 2025",
+    author: "JACK KUBINEC", 
+    url: "/articles/telegram-trading-bots-latest",
+    featured: false
+  }
+];
+---
+
+<div class="space-y-6">
+  <div>
+    <h3 class="font-semibold text-gray-900 mb-6">Trending</h3>
+    
+    <!-- Grid layout for trending articles -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Left column: Two stacked cards -->
+      <div class="md:col-span-2 space-y-4">
+        {trendingArticles.slice(0, 2).map((article, index) => (
+          <a 
+            href={article.url}
+            class="block group hover:scale-[1.02] transition-transform duration-300"
+          >
+            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 text-white h-full flex">
+              <!-- Left side: Image -->
+              <div class="w-1/3 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 p-4 flex flex-col justify-center items-center">
+                  <!-- Blockworks logo -->
+                  <div class="text-white text-xs font-medium mb-2 opacity-80">Blockworks Research</div>
+                  
+                  <!-- Main title -->
+                  <div class="text-white font-bold text-sm leading-tight text-center mb-4">
+                    Telegram Trading Bots: Robinhood Without Borders
+                  </div>
+                  
+                  <!-- Decorative icons -->
+                  <div class="flex items-center justify-center space-x-1 mb-3">
+                    <!-- Telegram icon -->
+                    <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.13-.31-1.09-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                      </svg>
+                    </div>
+                    <!-- Other decorative icons -->
+                    <div class="w-5 h-5 bg-yellow-400 rounded-full"></div>
+                    <div class="w-4 h-4 bg-green-400 rounded-full"></div>
+                    <div class="w-4 h-4 bg-blue-400 rounded-full"></div>
+                    <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                  </div>
+                  
+                  <!-- Author info -->
+                  <div class="flex items-center space-x-2">
+                    <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                      <span class="text-xs font-bold">D</span>
+                    </div>
+                    <span class="text-xs font-medium">Danny K</span>
+                  </div>
+                  
+                  <!-- Tags -->
+                  <div class="flex items-center space-x-1 mt-2">
+                    <span class="text-xs bg-white/20 px-2 py-1 rounded">TG</span>
+                    <span class="text-xs bg-white/20 px-2 py-1 rounded">DEX</span>
+                    <span class="text-xs bg-white/20 px-2 py-1 rounded">MEME</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Right side: Content -->
+              <div class="w-2/3 p-6 bg-white text-gray-900 flex flex-col justify-between">
+                <div>
+                  <h4 class="font-bold text-lg leading-tight mb-3 group-hover:text-purple-600 transition-colors">
+                    Telegram Trading Bots: Robinhood Without Borders
+                  </h4>
+                  
+                  <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                    {article.description}
+                  </p>
+                </div>
+                
+                <!-- Author and date -->
+                <div class="flex items-center justify-between text-xs text-gray-500">
+                  <span class="font-medium">{article.date} / By {article.author}</span>
+                </div>
+              </div>
+              
+              <!-- Hover overlay -->
+              <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+            </div>
+          </a>
+        ))}
+      </div>
+      
+      <!-- Right column: Top large card and bottom two text-only cards -->
+      <div class="md:col-span-2 space-y-4">
+        <!-- Top large card with image -->
+        <a 
+          href={trendingArticles[2].url}
+          class="block group hover:scale-[1.02] transition-transform duration-300 p-4 border"
+        >
+          <div class="relative overflow-hidden rounded-xl text-white h-[200px] flex">
+            <!-- Left side: Image -->
+            <div class="w-1/3 relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 p-6 flex flex-col justify-center items-center">
+                <!-- Blockworks logo -->
+                <div class="text-white text-sm font-medium mb-3 opacity-80">Blockworks Research</div>
+                
+                <!-- Main title -->
+                <div class="text-white font-bold text-lg leading-tight text-center mb-6">
+                  Telegram Trading Bots: Robinhood Without Borders
+                </div>
+                
+                <!-- Decorative icons -->
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                  <!-- Telegram icon -->
+                  <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.13-.31-1.09-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                    </svg>
+                  </div>
+                  <!-- Other decorative icons -->
+                  <div class="w-6 h-6 bg-yellow-400 rounded-full"></div>
+                  <div class="w-5 h-5 bg-green-400 rounded-full"></div>
+                  <div class="w-5 h-5 bg-blue-400 rounded-full"></div>
+                  <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
+                </div>
+                
+                <!-- Author info -->
+                <div class="flex items-center space-x-2">
+                  <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <span class="text-sm font-bold">D</span>
+                  </div>
+                  <span class="text-sm font-medium">Danny K</span>
+                </div>
+                
+                <!-- Tags -->
+                <div class="flex items-center space-x-1 mt-3">
+                  <span class="text-xs bg-white/20 px-2 py-1 rounded">TG</span>
+                  <span class="text-xs bg-white/20 px-2 py-1 rounded">DEX</span>
+                  <span class="text-xs bg-white/20 px-2 py-1 rounded">MEME</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right side: Content -->
+            <div class="w-2/3 p-6 bg-white text-gray-900 flex flex-col justify-between">
+              <div>
+                <h4 class="font-bold text-xl leading-tight mb-4 group-hover:text-purple-600 transition-colors">
+                  Telegram Trading Bots: Robinhood Without Borders
+                </h4>
+                
+                <p class="text-gray-600 leading-relaxed mb-4 text-sm">
+                  {trendingArticles[2].description}
+                </p>
+              </div>
+              
+              <!-- Author and date -->
+              <div class="flex items-center justify-between text-sm text-gray-500">
+                <span class="font-medium">{trendingArticles[2].date} / By {trendingArticles[2].author}</span>
+              </div>
+            </div>
+            
+            <!-- Hover overlay -->
+            <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+          </div>
+        </a>
+        
+        <!-- Bottom two text-only cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+          {trendingArticles.slice(3, 5).map((article, index) => (
+            <a 
+              href={article.url}
+              class="block group transition-colors duration-300 p-0"
+            >
+              <div class="space-y-2">
+                <h4 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors text-sm leading-tight">
+                  Telegram Trading Bots: Robinhood Without Borders
+                </h4>
+                
+                <p class="text-gray-600 text-xs leading-relaxed line-clamp-2">
+                  {article.description}
+                </p>
+                
+                <!-- Author and date -->
+                <div class="flex items-center justify-between text-xs text-gray-500">
+                  <span class="font-medium">{article.date}</span>
+                  <span>By {article.author}</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

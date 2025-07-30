@@ -7,6 +7,7 @@ import Sidebar from '@/components/home/astro/Sidebar.astro';
 import MainContent from '@/components/home/astro/MainContent.astro';
 import RightSidebar from '@/components/home/astro/RightSidebar.astro';
 import NewsGrid from '@/components/home/astro/NewsGrid.astro';
+import TrendingGrid from '@/components/home/astro/TrendingGrid.astro';
 import Footer from '@/components/common/react/Footer';
 import ToFollowList from '@/components/home/react/ToFollowList';
 import Login from '@/components/home/react/Login';
@@ -41,7 +42,7 @@ const { title, description } = seoContent[locale] || seoContent.us
 <BaseLayout title={title} description={description} locale={locale}>
      <div class="min-h-screen bg-white">
         <Header locale={locale} currentPath={currentPath} client:load />
-    <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="max-w-[1440px] mx-auto px-4 py-6">
       <div class="grid grid-cols-12 gap-6">
         <div class="col-span-3 space-y-6">
           <Sidebar />
@@ -56,6 +57,7 @@ const { title, description } = seoContent[locale] || seoContent.us
         </div>
       </div>
       <NewsGrid client:load />
+      <TrendingGrid client:load />
     </div>
     <Footer client:load />
   </div>

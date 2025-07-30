@@ -1,7 +1,7 @@
 ---
 // Topics and articles data - 主题和文章数据
 const topics = [
-  { name: "DeFi Science", url: "/topics/defi-science" },
+  { name: "Data Science", url: "/topics/data-science" },
   { name: "Self Improvement", url: "/topics/self-improvement" },
   { name: "Writing", url: "/topics/writing" },
   { name: "Technology", url: "/topics/technology" },
@@ -44,14 +44,14 @@ const mustReadArticles = [
 ]
 ---
 
-<div class="space-y-6">
+<div class="space-y-6 mt-4">
   <div>
     <h4 class="font-semibold text-gray-900 mb-4">Recommended Topics</h4>
     <div class="flex flex-wrap gap-2">
       {topics.map((topic, index) => (
         <a
           href={topic.url}
-          class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer transition-colors"
+          class="px-4 py-3 bg-gray-50 text-teal-600 text-sm font-medium rounded-lg hover:bg-teal-50 hover:text-teal-700 cursor-pointer transition-all duration-200 text-center border border-gray-100 hover:border-teal-200"
         >
           {topic.name}
         </a>
@@ -60,22 +60,40 @@ const mustReadArticles = [
   </div>
 
   <div>
-    <h4 class="font-semibold text-gray-900 mb-4">Must Read</h4>
+    <h4 class="text-xl font-bold text-gray-900 mb-6">Most Read</h4>
     <div class="space-y-4">
       {mustReadArticles.map((article, index) => (
-        <a href={article.url} class="flex space-x-3 hover:bg-gray-50 p-2 rounded-lg transition-colors">
-          <img
-            src={article.image || "/placeholder.svg"}
-            alt={article.title}
-            class="w-12 h-12 rounded object-cover flex-shrink-0"
-          />
-          <div class="flex-1">
-            <h5 class="text-sm font-medium text-gray-900 leading-tight mb-1 hover:text-teal-600 transition-colors">{article.title}</h5>
-            <p class="text-xs text-gray-500">{article.date}</p>
-          </div>
-        </a>
+        <div class="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
+          <a href={article.url} class="flex items-start justify-between group">
+            <div class="flex-1 pr-4">
+              <div class="flex items-start space-x-3">
+                <span class="text-teal-500 font-bold text-lg leading-none mt-1">{index + 1}</span>
+                <div class="flex-1">
+                  <h5 class="text-gray-900 font-medium text-base leading-tight mb-2 group-hover:text-teal-600 transition-colors">
+                    {article.title}
+                  </h5>
+                  <div class="flex items-center text-xs text-gray-400">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{article.date}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              <img
+                src={article.image || "/placeholder.svg"}
+                alt={article.title}
+                class="w-16 h-16 rounded-lg object-cover"
+              />
+            </div>
+          </a>
+        </div>
       ))}
     </div>
-    <a href="/news" class="text-teal-500 text-sm font-medium mt-4 hover:text-teal-600 inline-block transition-colors">More from News</a>
+    <a href="/news" class="text-teal-500 text-sm font-medium mt-6 hover:text-teal-600 inline-block transition-colors">
+      More from News
+    </a>
   </div>
 </div>
