@@ -3,12 +3,14 @@
 import { fetchArticles } from '@/api/articles'
 import type { Locale } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
-import i18next, { t, changeLanguage } from "i18next";
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 
 // Get locale from props or default to 'us'
-const { locale = 'us' as Locale } = Astro.props
-console.log("🚀 ~ i18next----:",t('navigation.allCategories'))
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'us' as Locale } = Astro.props as Props
 
 // Fetch articles data for MainContent display
 const articlesData = await fetchArticles(locale, 1, 5)
