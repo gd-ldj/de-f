@@ -49,6 +49,13 @@ export const WalletPopover: React.FC<WalletPopoverProps> = ({
   }, [isOpen])
 
   const togglePopover = () => {
+    // Check if user is logged in
+    if (!storedWalletAddress) {
+      // User is not logged in, trigger login
+      login();
+      return;
+    }
+    // User is logged in, toggle popover
     setIsOpen(!isOpen)
   }
 
@@ -72,7 +79,7 @@ export const WalletPopover: React.FC<WalletPopoverProps> = ({
         {children}
       </div>
 
-      {isOpen && (
+      {isOpen && storedWalletAddress && (
         <div ref={popoverRef} className="w-[280px] absolute top-full border border-border mt-1 lg:mt-2 right-0 bg-card p-2 rounded z-50 text-sm shadow-lg">
           <div className="pb-2 border-b border-[#D3D3D5]">
             <div className="h-[2.25rem] flex items-center mb-[0.25rem] px-[0.5rem] hover:bg-[#F5F6F7] rounded-[0.38rem] transition-colors cursor-pointer">
