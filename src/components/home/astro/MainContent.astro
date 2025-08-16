@@ -38,14 +38,14 @@ const formatDate = (dateString: string) => {
 <div class="space-y-6">
   {/* Featured Article */}
   {featuredArticle && (
-    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div class="bg-card rounded border border-border overflow-hidden">
       <div class="p-6">
         <div class="flex items-center justify-between mb-4">
-          <span class="text-sm text-teal-600 font-medium">Highlights</span>
-          <span class="text-sm text-gray-500 uppercase">{featuredArticle.category}</span>
+          <span class="text-sm text-primary font-medium">Highlights</span>
+      <span class="text-sm text-muted-foreground uppercase">{featuredArticle.category}</span>
         </div>
 
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+        <h2 class="text-2xl font-bold text-foreground mb-4">
           <ArticleLink 
             slug={featuredArticle.slug}
             locale={locale}
@@ -55,11 +55,11 @@ const formatDate = (dateString: string) => {
           </ArticleLink>
         </h2>
 
-        <p class="text-gray-600 mb-4">
+        <p class="text-muted-foreground mb-4">
           {featuredArticle.excerpt}
         </p>
 
-        <div class="flex items-center space-x-4 text-sm text-gray-500 mb-6">
+        <div class="flex items-center space-x-4 text-sm text-muted-foreground mb-6">
           <span>{formatDate(featuredArticle.publishedAt)}</span>
           <span>by {featuredArticle.author.name}</span>
         </div>
@@ -73,7 +73,7 @@ const formatDate = (dateString: string) => {
             <img
               src={featuredArticle.featuredImage || '/placeholder.svg'}
               alt={featuredArticle.title}
-              class="w-full h-64 object-cover rounded-lg hover:opacity-90 transition-opacity"
+              class="w-full h-64 object-cover rounded hover:opacity-90 transition-opacity"
             />
           </ArticleLink>
         </div>
@@ -84,11 +84,11 @@ const formatDate = (dateString: string) => {
   {/* Sidebar Articles */}
   <div class="space-y-4">
     {sidebarArticles.map((article) => (
-      <div class="bg-white rounded-lg border border-gray-200 p-6">
+      <div class="bg-card rounded border border-border p-6">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-teal-600 font-medium uppercase">{article.category}</span>
+          <span class="text-sm text-primary font-medium uppercase">{article.category}</span>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+        <h3 class="text-lg font-semibold text-foreground mb-2">
           <ArticleLink 
             slug={article.slug}
             locale={locale}
@@ -97,10 +97,10 @@ const formatDate = (dateString: string) => {
             {article.title}
           </ArticleLink>
         </h3>
-        <p class="text-gray-600 text-sm mb-3">
+        <p class="text-muted-foreground text-sm mb-3">
           {article.excerpt}
         </p>
-        <div class="flex items-center space-x-4 text-xs text-gray-500">
+        <div class="flex items-center space-x-4 text-xs text-muted-foreground">
           <span>{formatDate(article.publishedAt)}</span>
           <span>by {article.author.name}</span>
         </div>

@@ -76,10 +76,10 @@ const newsArticles = [
 <div class="mt-12">
   <div class="flex items-center justify-between mb-6">
   <div class="flex items-center justify-center gap-2">
-    <h2 class="text-xl font-bold text-gray-900">News</h2>
-    <p class="text-sm text-gray-600">Breaking headlines across our core coverage categories</p>
+    <h2 class="text-xl font-bold text-foreground">News</h2>
+    <p class="text-sm text-muted-foreground">Breaking headlines across our core coverage categories</p>
   </div>
-    <a href="/news" class="text-teal-500 text-sm font-medium mt-6 hover:text-teal-600 inline-block transition-colors">
+  <a href="/news" class="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
       More from News
     </a>
   </div>
@@ -90,7 +90,7 @@ const newsArticles = [
       <a
         href={category.url}
         class={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors ${
-          category.active ? "bg-teal-500 text-white" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+          category.active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent"
         }`}
       >
         {category.name}
@@ -103,7 +103,7 @@ const newsArticles = [
     {newsArticles.map((article, index) => (
       <a
         href={article.url}
-        class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group"
+        class="bg-card rounded border border-border overflow-hidden hover:shadow-md transition-shadow group"
       >
         <img 
           src={article.image} 
@@ -111,10 +111,10 @@ const newsArticles = [
           class="w-full h-32 object-cover group-hover:opacity-90 transition-opacity" 
         />
         <div class="p-4">
-          <span class="text-xs text-teal-600 font-medium">{article.category}</span>
-          <h3 class="font-semibold text-gray-900 text-sm mt-1 mb-2 leading-tight group-hover:text-teal-600 transition-colors">{article.title}</h3>
-          <p class="text-xs text-gray-600 mb-3">{article.excerpt}</p>
-          <div class="flex items-center space-x-2 text-xs text-gray-500">
+          <span class="text-xs text-primary font-medium">{article.category}</span>
+        <h3 class="font-semibold text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h3>
+        <p class="text-xs text-muted-foreground mb-3">{article.excerpt}</p>
+        <div class="flex items-center space-x-2 text-xs text-muted-foreground">
             <span>{article.date}</span>
             <span>by {article.author}</span>
           </div>

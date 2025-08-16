@@ -19,7 +19,7 @@ export interface TurnstileProps {
 }
 
 export interface TurnstileInstance {
-  render: (container: string | HTMLElement, options: TurnstileOptions) => string
+  render: (container: string | HTMLElement, options: TurnstileOptions) => string | undefined
   reset: (widgetId?: string) => void
   remove: (widgetId?: string) => void
   getResponse: (widgetId?: string) => string | undefined
@@ -62,7 +62,7 @@ export const TurnstileVerification: React.FC<TurnstileProps> = ({
   cData
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const widgetIdRef = useRef<string | null>(null)
+  const widgetIdRef = useRef<string | undefined>(undefined)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -253,7 +253,7 @@ export const TurnstileVerification: React.FC<TurnstileProps> = ({
   if (!ANALYTICS_CONFIG.TURNSTILE_SITE_KEY) {
     return (
       <div className={`turnstile-container ${className}`}>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-muted-foreground">
           Verification not configured
         </div>
       </div>
@@ -267,7 +267,7 @@ export const TurnstileVerification: React.FC<TurnstileProps> = ({
       {isLoading && (
         <div className="flex items-center justify-center p-4">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span className="ml-2 text-sm text-gray-600">Loading verification...</span>
+          <span className="ml-2 text-sm text-muted-foreground">Loading verification...</span>
         </div>
       )}
       
@@ -332,7 +332,7 @@ export const useTurnstile = () => {
 // Type declarations for Turnstile global object
 declare global {
   interface Window {
-    turnstile: TurnstileInstance
+    turnstile?: TurnstileInstance
   }
 }
 

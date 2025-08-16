@@ -39,7 +39,7 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+    <div className="bg-card rounded border border-border p-4">
       <div className="grid grid-cols-2 gap-6">
         {/* Left side - Token metrics */}
         <div className="grid grid-cols-1 gap-y-4">
@@ -47,14 +47,14 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
           <div className="grid grid-cols-2 gap-x-6">
             {/* Market Cap */}
             <div>
-              <div className="text-xs text-gray-500 mb-1">MKT Cap</div>
-              <div className="text-lg font-bold text-gray-900">{marketCap}</div>
+              <div className="text-xs text-muted-foreground mb-1">MKT Cap</div>
+              <div className="text-lg font-bold text-foreground">{marketCap}</div>
             </div>
 
             {/* Liquidity */}
             <div>
-              <div className="text-xs text-gray-500 mb-1">Liquidity</div>
-              <div className="text-lg font-bold text-gray-900">{liquidity}</div>
+              <div className="text-xs text-muted-foreground mb-1">Liquidity</div>
+              <div className="text-lg font-bold text-foreground">{liquidity}</div>
             </div>
           </div>
 
@@ -62,19 +62,19 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
           <div className="grid grid-cols-2 gap-x-6">
             {/* Volume 24h */}
             <div>
-              <div className="text-xs text-gray-500 mb-1 flex items-center">
+              <div className="text-xs text-muted-foreground mb-1 flex items-center">
                 Vol. (24h)
-                <svg className="w-3 h-3 ml-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-3 h-3 ml-1 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="text-lg font-bold text-gray-900">{volume24h}</div>
+              <div className="text-lg font-bold text-foreground">{volume24h}</div>
             </div>
 
             {/* Holders */}
             <div>
-              <div className="text-xs text-gray-500 mb-1">Holders</div>
-              <div className="text-lg font-bold text-gray-900">{holders}</div>
+              <div className="text-xs text-muted-foreground mb-1">Holders</div>
+              <div className="text-lg font-bold text-foreground">{holders}</div>
             </div>
           </div>
         </div>
@@ -83,26 +83,18 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
         <div className="flex flex-col justify-between">
           {/* Price section */}
           <div className="text-right">
-            <div className={`text-xs font-medium mb-1 ${
-              isPositive ? 'text-green-600' : 'text-red-600'
-            }`}>
-              {isPositive ? '+' : ''}{percentage}
+            <div className={`text-xs font-medium mb-1 ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+              {isPositive ? '+' : ''}
+              {percentage}
             </div>
-            <div className="text-xl font-bold text-gray-900 mb-1">{price}</div>
+            <div className="text-xl font-bold text-foreground mb-1">{price}</div>
           </div>
 
           {/* Chart section */}
           <div className="h-16 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke={isPositive ? '#10b981' : '#ef4444'}
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{ r: 3, fill: isPositive ? '#10b981' : '#ef4444' }}
-                />
+                <Line type="monotone" dataKey="value" stroke={isPositive ? '#10b981' : '#ef4444'} strokeWidth={2} dot={false} activeDot={{ r: 3, fill: isPositive ? '#10b981' : '#ef4444' }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

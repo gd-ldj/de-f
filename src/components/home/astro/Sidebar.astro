@@ -36,23 +36,23 @@ const latestNews = [
 
 <div class="space-y-6">
   <div>
-    <h3 class="font-semibold text-gray-900 mb-4">Latest</h3>
+    <h3 class="font-semibold text-foreground mb-4">Latest</h3>
     <div class="space-y-0">
       {latestNews.map((news, index) => (
         <div>
           <div class="flex items-start space-x-3 py-3">
-            <span class="text-sm font-medium text-teal-500 flex-shrink-0 mt-0.5">
+            <span class="text-sm font-medium text-primary flex-shrink-0 mt-0.5">
               {news.time}
             </span>
             <a 
               href={news.url}
-              class="text-sm text-gray-900 leading-relaxed hover:text-teal-600 transition-colors cursor-pointer flex-1"
+              class="text-sm text-foreground leading-relaxed hover:text-primary transition-colors cursor-pointer flex-1"
             >
               {news.title}
             </a>
           </div>
           {index < latestNews.length - 1 && (
-            <div class="border-b border-gray-200"></div>
+            <div class="border-b border-border"></div>
           )}
         </div>
       ))}

@@ -39,16 +39,16 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 max-w-md mx-auto">
+    <div className="bg-card rounded border border-border p-6 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">{locale === 'us' ? 'Share To Earn Passive Income' : '分享赚取被动收入'}</h3>
+        <h3 className="text-lg font-semibold text-foreground">{locale === 'us' ? 'Share To Earn Passive Income' : '分享赚取被动收入'}</h3>
       </div>
       <div className="flex items-center justify-between">
         {/* URL Input with Copy Button */}
         <div className="relative flex-1">
-          <input type="text" value={url} readOnly className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="https://xxxxxxxxx" />
-          <button onClick={handleCopyLink} className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md transition-all duration-200 ${copied ? 'text-green-600 bg-green-50' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`} title={locale === 'us' ? 'Copy link' : '复制链接'}>
+          <input type="text" value={url} readOnly className="w-full px-4 py-3 pr-12 border border-border rounded text-sm text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="https://xxxxxxxxx" />
+          <button onClick={handleCopyLink} className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md transition-all duration-200 ${copied ? 'text-green-600 bg-green-50' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} title={locale === 'us' ? 'Copy link' : '复制链接'}>
             {copied ? (
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

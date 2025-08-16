@@ -64,17 +64,17 @@ const formatDate = (dateString: string) => {
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen bg-background">
       <!-- Header Navigation -->
       <Header locale={locale} currentPath={currentPath} client:load />
       
       <!-- Category Header -->
-      <div class="bg-white border-b border-gray-200">
+      <div class="bg-card border-b border-border">
         <div class="max-w-7xl mx-auto px-4 py-6">
           <div class="flex items-center justify-between">
             <div>
-              <h1 class="text-3xl font-bold text-gray-900">{categoryDisplayName}</h1>
-              <p class="text-gray-600 mt-2">
+              <h1 class="text-3xl font-bold text-foreground">{categoryDisplayName}</h1>
+        <p class="text-muted-foreground mt-2">
                 {category === 'insights' && (locale === 'us' 
                   ? 'In-depth analysis and interpretations of Web3 trends, technologies, and market dynamics'
                   : '深度分析和解读Web3趋势、技术和市场动态'
@@ -95,10 +95,10 @@ const formatDate = (dateString: string) => {
               {Object.entries(categoryNames).map(([key, names]) => (
                 <a 
                   href={`/${locale}/${key}`}
-                  class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  class={`px-4 py-2 rounded text-sm font-medium transition-colors ${
                     key === category.toLowerCase() 
-                      ? 'bg-teal-600 text-white' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-primary text-primary-foreground'
+            : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                   }`}
                 >
                   {locale === 'us' ? names.en : names.zh}
@@ -114,7 +114,7 @@ const formatDate = (dateString: string) => {
         <!-- Filter Bar -->
         <div class="flex items-center justify-between mb-8">
           <div class="flex items-center space-x-6">
-            <button class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button class="flex items-center space-x-2 px-4 py-2 bg-card border border-border rounded hover:bg-accent transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
               </svg>
@@ -123,22 +123,22 @@ const formatDate = (dateString: string) => {
             
             <!-- Category Filters -->
             <div class="flex items-center space-x-4">
-              <span class="text-sm text-gray-600">{locale === 'us' ? 'Subcategory' : '子分类'}:</span>
-              <select class="text-sm border border-gray-200 rounded-md px-3 py-1 bg-white">
+              <span class="text-sm text-muted-foreground">{locale === 'us' ? 'Subcategory' : '子分类'}:</span>
+          <select class="text-sm border border-border rounded-md px-3 py-1 bg-card">
                 <option>{locale === 'us' ? 'All' : '全部'}</option>
                 <option>{locale === 'us' ? 'Markets' : '市场'}</option>
                 <option>{locale === 'us' ? 'Finance' : '金融'}</option>
                 <option>{locale === 'us' ? 'Policy' : '政策'}</option>
               </select>
               
-              <span class="text-sm text-gray-600">{locale === 'us' ? 'Author' : '作者'}:</span>
-              <select class="text-sm border border-gray-200 rounded-md px-3 py-1 bg-white">
+              <span class="text-sm text-muted-foreground">{locale === 'us' ? 'Author' : '作者'}:</span>
+          <select class="text-sm border border-border rounded-md px-3 py-1 bg-card">
                 <option>{locale === 'us' ? 'All Authors' : '所有作者'}</option>
                 <option>John</option>
               </select>
               
-              <span class="text-sm text-gray-600">{locale === 'us' ? 'Topic' : '主题'}:</span>
-              <select class="text-sm border border-gray-200 rounded-md px-3 py-1 bg-white">
+              <span class="text-sm text-muted-foreground">{locale === 'us' ? 'Topic' : '主题'}:</span>
+          <select class="text-sm border border-border rounded-md px-3 py-1 bg-card">
                 <option value="">{locale === 'us' ? 'Select Topic' : '选择主题'}</option>
               </select>
             </div>
@@ -146,12 +146,12 @@ const formatDate = (dateString: string) => {
           
           <!-- View Toggle -->
           <div class="flex items-center space-x-2">
-            <button class="p-2 bg-white border border-gray-200 rounded-md hover:bg-gray-50">
+            <button class="p-2 bg-card border border-border rounded-md hover:bg-accent">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
               </svg>
             </button>
-            <button class="p-2 bg-gray-100 border border-gray-200 rounded-md">
+            <button class="p-2 bg-secondary border border-border rounded-md">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
               </svg>
@@ -162,7 +162,7 @@ const formatDate = (dateString: string) => {
         <!-- Articles Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {articles.map((article) => (
-            <article class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <article class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <!-- Article Image -->
               <div class="relative">
                 <ArticleLink 
@@ -179,7 +179,7 @@ const formatDate = (dateString: string) => {
                 </ArticleLink>
                 <!-- Category Badge -->
                 <div class="absolute top-4 left-4">
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-800">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-card/90 text-card-foreground">
                     {categoryDisplayName}
                   </span>
                 </div>
@@ -187,23 +187,23 @@ const formatDate = (dateString: string) => {
               
               <!-- Article Content -->
               <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
+                <h3 class="text-lg font-semibold text-foreground mb-3 line-clamp-2">
                   <ArticleLink 
                     slug={article.slug}
                     category={article.category}
                     locale={locale}
-                    class="hover:text-teal-600 transition-colors"
+                    class="hover:text-primary transition-colors"
                   >
                     {article.title}
                   </ArticleLink>
                 </h3>
                 
-                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                <p class="text-muted-foreground text-sm mb-4 line-clamp-3">
                   {article.excerpt}
                 </p>
                 
                 <!-- Article Meta -->
-                <div class="flex items-center justify-between text-xs text-gray-500">
+                <div class="flex items-center justify-between text-xs text-muted-foreground">
                   <div class="flex items-center space-x-2">
                     <span>{formatDate(article.publishedAt)}</span>
                     <span>•</span>
@@ -218,7 +218,7 @@ const formatDate = (dateString: string) => {
         
         <!-- Pagination -->
         <div class="flex items-center justify-center space-x-2">
-          <button class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+          <button class="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
@@ -226,14 +226,14 @@ const formatDate = (dateString: string) => {
           </button>
           
           <div class="flex items-center space-x-1">
-            <button class="px-3 py-2 text-sm bg-teal-600 text-white rounded-md">1</button>
-            <button class="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">2</button>
-            <button class="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">3</button>
-            <span class="px-2 text-gray-500">...</span>
-            <button class="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">10</button>
+            <button class="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md">1</button>
+            <button class="px-3 py-2 text-sm text-foreground hover:bg-accent rounded-md">2</button>
+            <button class="px-3 py-2 text-sm text-foreground hover:bg-accent rounded-md">3</button>
+            <span class="px-2 text-muted-foreground">...</span>
+            <button class="px-3 py-2 text-sm text-foreground hover:bg-accent rounded-md">10</button>
           </div>
           
-          <button class="flex items-center px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+          <button class="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
             {locale === 'us' ? 'Next' : '下一页'}
             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

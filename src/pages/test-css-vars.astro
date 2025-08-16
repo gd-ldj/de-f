@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="CSS Variables Test" locale="us">
+  <div class="min-h-screen p-8">
+    <h1 class="text-3xl font-bold mb-8 text-foreground">CSS Variables Test Page</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Background Colors Test -->
+      <div class="bg-card border border-border rounded p-6">
+        <h2 class="text-xl font-semibold mb-4 text-card-foreground">Card Background</h2>
+        <p class="text-muted-foreground">This should have card background with border</p>
+      </div>
+      
+      <div class="bg-secondary border border-border rounded p-6">
+        <h2 class="text-xl font-semibold mb-4 text-secondary-foreground">Secondary Background</h2>
+        <p class="text-muted-foreground">This should have secondary background</p>
+      </div>
+      
+      <div class="bg-accent border border-border rounded p-6">
+        <h2 class="text-xl font-semibold mb-4 text-accent-foreground">Accent Background</h2>
+        <p class="text-muted-foreground">This should have accent background</p>
+      </div>
+      
+      <!-- Primary Colors Test -->
+      <div class="bg-primary border border-border rounded p-6">
+        <h2 class="text-xl font-semibold mb-4 text-primary-foreground">Primary Background</h2>
+        <p class="text-primary-foreground/80">This should have primary background (#06A17E)</p>
+      </div>
+      
+      <!-- Text Colors Test -->
+      <div class="bg-card border border-border rounded p-6">
+        <h2 class="text-xl font-semibold mb-4 text-foreground">Text Colors</h2>
+        <p class="text-foreground mb-2">Foreground text</p>
+        <p class="text-muted-foreground mb-2">Muted foreground text</p>
+        <p class="text-primary">Primary text color</p>
+      </div>
+      
+      <!-- Button Test -->
+      <div class="bg-card border border-border rounded p-6">
+        <h2 class="text-xl font-semibold mb-4 text-foreground">Buttons</h2>
+        <div class="space-y-3">
+          <button class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors">
+            Primary Button
+          </button>
+          <button class="bg-secondary text-secondary-foreground px-4 py-2 rounded-md hover:bg-secondary/80 transition-colors block">
+            Secondary Button
+          </button>
+          <button class="border border-border bg-background text-foreground px-4 py-2 rounded-md hover:bg-accent transition-colors block">
+            Outline Button
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CSS Variables Debug Info -->
+    <div class="mt-12 bg-card border border-border rounded p-6">
+      <h2 class="text-xl font-semibold mb-4 text-foreground">CSS Variables Debug</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-mono">
+        <div>
+          <p class="text-muted-foreground">--primary: <span class="text-foreground">162 94% 33%</span></p>
+          <p class="text-muted-foreground">--primary-foreground: <span class="text-foreground">0 0% 100%</span></p>
+          <p class="text-muted-foreground">--card: <span class="text-foreground">0 0% 100%</span></p>
+          <p class="text-muted-foreground">--card-foreground: <span class="text-foreground">162 85% 8%</span></p>
+        </div>
+        <div>
+          <p class="text-muted-foreground">--background: <span class="text-foreground">0 0% 100%</span></p>
+          <p class="text-muted-foreground">--foreground: <span class="text-foreground">162 85% 8%</span></p>
+          <p class="text-muted-foreground">--muted-foreground: <span class="text-foreground">220 4% 58%</span></p>
+          <p class="text-muted-foreground">--border: <span class="text-foreground">214.3 31.8% 91.4%</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Additional debug styles */
+  .debug-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .debug-card {
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+  }
+</style>

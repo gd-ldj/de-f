@@ -67,13 +67,13 @@ const PoolInfo: React.FC<PoolInfoProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="divide-y divide-gray-200">
+    <div className="bg-card rounded border border-border p-6">
+      <div className="divide-y divide-border">
         {poolInfoItems.map((item, index) => (
           <div key={index} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
             {/* Left side - Label */}
-            <span className="text-base text-gray-500">{item.label}</span>
-            
+            <span className="text-base text-muted-foreground">{item.label}</span>
+
             {/* Right side - Value and optional address */}
             <div className="flex items-center space-x-2">
               {item.address ? (
@@ -84,29 +84,25 @@ const PoolInfo: React.FC<PoolInfoProps> = ({
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  
+
                   {/* Address */}
-                  <span className="text-base font-semibold text-gray-900">{item.address}</span>
-                  
+                  <span className="text-base font-semibold text-foreground">{item.address}</span>
+
                   {/* Copy Icon */}
                   {item.showCopyIcon && (
-                    <button
-                      onClick={() => handleCopyAddress(item.address!)}
-                      className="text-gray-400 hover:text-gray-600 transition-colors"
-                      title="Copy address"
-                    >
+                    <button onClick={() => handleCopyAddress(item.address!)} className="text-muted-foreground hover:text-foreground transition-colors" title="Copy address">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
                     </button>
                   )}
-                  
+
                   {/* Value */}
-                  <span className="text-xl font-bold text-gray-900">{item.value}</span>
+                  <span className="text-xl font-bold text-foreground">{item.value}</span>
                 </>
               ) : (
                 /* Regular value display */
-                <span className="text-xl font-bold text-gray-900">{item.value}</span>
+                <span className="text-xl font-bold text-foreground">{item.value}</span>
               )}
             </div>
           </div>
