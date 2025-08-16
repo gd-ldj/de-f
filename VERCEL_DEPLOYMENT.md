@@ -32,12 +32,14 @@ PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN=jlpZdddOes4MHKwbLG6iTfzF48YFxZRxo3zkYHv6
 在 Vercel 项目设置中：
 - **Framework Preset**: Astro
 - **Build Command**: `npm run build`
-- **Output Directory**: `dist`
+- **Output Directory**: `.vercel/output`
 - **Install Command**: `pnpm install`
+
+**注意**: `vercel.json` 已配置为自动处理构建设置，无需手动配置。
 
 ### 3. Node.js 版本
 
-确保使用 Node.js 18.x 或更高版本。
+项目使用 Node.js 20.x，Vercel 会自动检测并使用正确的版本。
 
 ## 常见问题解决
 

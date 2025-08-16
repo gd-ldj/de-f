@@ -1,1 +1,15 @@
-{"projectName":"trae_detake-frontend_4adb"}
+{
+  "projectId": "prj_k16BA8CqOKGXbCP5G90ifxpRx3Tz",
+  "orgId": "team_CpNnGPxKzD9HyjYnP24v9IlH",
+  "settings": {
+    "createdAt": 1755312282175,
+    "framework": "astro",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "22.x"
+  }
+}
