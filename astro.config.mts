@@ -5,12 +5,14 @@ import astroI18next from 'astro-i18next';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel/serverless';
 // https://astro.build/config
 export default defineConfig({
   output: 'server', // Enable SSR
-  adapter: node({
-    mode: 'standalone'
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true
+    }
   }),
   integrations: [react(), astroI18next()],
   i18n: {
