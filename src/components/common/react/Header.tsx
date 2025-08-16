@@ -210,7 +210,7 @@ export default function Header({ locale, currentPath }: HeaderProps) {
               >
                 <span>{t('navigation.allCategories')}</span>
                 <img 
-                  src="/src/assets/imgs/down.svg" 
+                  src="/down.svg" 
                   alt="dropdown" 
                   className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} 
                 />
@@ -248,7 +248,7 @@ export default function Header({ locale, currentPath }: HeaderProps) {
           {/* Logo - Center */}
           <div className="flex items-center">
             <a href={`/${locale}`} className="flex items-center">
-              <img src="/src/assets/imgs/detake.svg" alt="logo" className="w-24" />
+              <img src="/detake.svg" alt="logo" className="w-24" />
             </a>
           </div>
 
@@ -258,7 +258,7 @@ export default function Header({ locale, currentPath }: HeaderProps) {
             <div className="relative" ref={collectionsDropdownRef}>
               <button onClick={toggleCollectionsDropdown} className="flex items-center space-x-1 text-sm transition-colors hover:text-gray-900 text-gray-600" aria-label={locale === 'us' ? 'Collections' : '收藏'} aria-expanded={collectionsDropdownOpen}>
                 <span>{locale === 'us' ? 'Collections' : '收藏'}</span>
-                <img src="/src/assets/imgs/down.svg" alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
+                <img src="/down.svg" alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Collections Dropdown Menu */}
@@ -292,7 +292,7 @@ export default function Header({ locale, currentPath }: HeaderProps) {
               <button onClick={toggleLocaleDropdown} className="flex items-center space-x-2 px-2 py-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={locale === 'us' ? 'Switch Language' : '切换语言'} aria-expanded={localeDropdownOpen}>
                 <Globe className="w-4 h-4 text-gray-600" />
                 <span className="text-sm text-gray-600">{currentLocaleConfig.name}</span>
-                <img src="/src/assets/imgs/down.svg" alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${localeDropdownOpen ? 'rotate-180' : ''}`} />
+                <img src="/down.svg" alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${localeDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Dropdown Menu */}
@@ -314,7 +314,7 @@ export default function Header({ locale, currentPath }: HeaderProps) {
             <IdentityProvider>
               <WalletPopover>
                 <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={locale === 'us' ? 'Settings' : '设置'}>
-                  <img src="/src/assets/imgs/me.svg" alt="logo" className="w-6" />
+                  <img src="/me.svg" alt="logo" className="w-6" />
                 </button>
               </WalletPopover>
             </IdentityProvider>

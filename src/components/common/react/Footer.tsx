@@ -78,22 +78,22 @@ export default function Footer() {
             </div>
             <div className="flex space-x-4">
               <a href="https://twitter.com/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Follow us on Twitter">
-                <img src="/src/assets/imgs/twitter.svg" alt="Twitter" className="w-5 h-5" />
+                <img src="/twitter.svg" alt="Twitter" className="w-5 h-5" />
               </a>
               <a href="https://t.me/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Join our Telegram">
-                <img src="/src/assets/imgs/telegram.svg" alt="Telegram" className="w-5 h-5" />
+                <img src="/telegram.svg" alt="Telegram" className="w-5 h-5" />
               </a>
               <a href="https://github.com/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Visit our GitHub">
-                <img src="/src/assets/imgs/github.svg" alt="GitHub" className="w-5 h-5" />
+                <img src="/github.svg" alt="GitHub" className="w-5 h-5" />
               </a>
               <a href="https://discord.gg/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Join our Discord">
-                <img src="/src/assets/imgs/discord.svg" alt="Discord" className="w-5 h-5" />
+                <img src="/discord.svg" alt="Discord" className="w-5 h-5" />
               </a>
               <a href="https://youtube.com/@detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Subscribe to our YouTube">
-                <img src="/src/assets/imgs/youtube.svg" alt="YouTube" className="w-5 h-5" />
+                <img src="/youtube.svg" alt="YouTube" className="w-5 h-5" />
               </a>
               <a href="/rss" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Subscribe to our RSS feed">
-                <img src="/src/assets/imgs/RSS.svg" alt="RSS" className="w-5 h-5" />
+                <img src="/RSS.svg" alt="RSS" className="w-5 h-5" />
               </a>
             </div>
           </div>
