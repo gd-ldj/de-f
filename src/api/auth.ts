@@ -6,8 +6,8 @@ import { persistedPromoteCodeAtom } from '../stores'
  * API configuration
  */
 // TODO: 引用process.env.PUBLIC_API_BASE_URL后钱包插件加载异常
-// const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://api.detake.com'
-const API_BASE_URL = 'https://api.detake.com'
+// const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://test-api.detake.com/'
+const API_BASE_URL = 'https://test-api.detake.com/'
 
 /**
  * Wallet login function
@@ -19,6 +19,8 @@ export async function loginWithWallet(
   walletAddress: string,
   signature: string
 ): Promise<WalletLoginData | null> {
+    return getMockWalletLoginData(walletAddress)
+
   try {
     const requestBody: WalletLoginRequest = {
       wallet_address: walletAddress,

@@ -3,7 +3,7 @@ import type { UserPersonalInfo, UserPersonalInfoResponse } from '../types'
 /**
  * API configuration
  */
-const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://api.detake.com'
+const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://test-api.detake.com/';
 
 /**
  * Fetch user personal information by user ID
@@ -13,6 +13,8 @@ const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://api.detake.com'
 export async function fetchUserPersonalInfo(
   userId: string
 ): Promise<UserPersonalInfo | null> {
+    return getMockUserPersonalInfo(userId)
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/users/${userId}/personal`,

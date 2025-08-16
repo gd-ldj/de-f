@@ -3,7 +3,7 @@ import type { Article, ArticlesResponse, Locale } from '../types'
 /**
  * API configuration
  */
-const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://api.detake.com'
+const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://test-api.detake.com/';
 
 
 /**
@@ -21,6 +21,8 @@ export async function fetchArticles(
   category?: string
 ): Promise<ArticlesResponse> {
   try {
+    return getMockArticles(locale, page, limit, category)
+
     const categoryParam = category ? `&category=${category}` : ''
     const response = await fetch(
       `${API_BASE_URL}/articles?locale=${locale}&page=${page}&limit=${limit}${categoryParam}`,
@@ -55,6 +57,8 @@ export async function fetchArticle(
   slug: string,
   category?: string
 ): Promise<Article | null> {
+    return getMockArticle(locale, slug, category)
+
   try {
     const categoryParam = category ? `&category=${category}` : ''
     const response = await fetch(
