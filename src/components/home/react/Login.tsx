@@ -1,7 +1,7 @@
-import { Mail } from "lucide-react"
+import React from 'react';
 import { Wallet } from '@/components/common/react/ConnectWallet';
 
-export default function RightSidebar() {
+export default function Login() {
   return (
     <div className="space-y-6">
       <div className="bg-card rounded border border-border p-6">
@@ -17,10 +17,13 @@ export default function RightSidebar() {
             <Wallet />
           </button>
 
-          {/* <button className="w-full border border-border text-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 hover:bg-accent">
-            <Mail className="w-4 h-4" />
-            <span>Continue with Email</span>
-          </button> */}
+          {/*
+           * You can re-enable the email option when it's ready
+           * <button className="w-full border border-border text-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 hover:bg-accent">
+           *   <Mail className="w-4 h-4" />
+           *   <span>Continue with Email</span>
+           * </button>
+           */}
         </div>
       </div>
     </div>

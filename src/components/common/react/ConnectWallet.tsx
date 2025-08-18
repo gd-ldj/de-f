@@ -1,4 +1,3 @@
-import { IdentityProvider } from '@/components/common/react/IdentityProvider';
 import { useAuth } from '@/lib/useAuth'
 
 const ButtonAuthentication = () => {
@@ -34,7 +33,5 @@ const ButtonAuthentication = () => {
 }
 
 export const Wallet = () => {
-    return <IdentityProvider>
-        <ButtonAuthentication />
-    </IdentityProvider>
+    return <ButtonAuthentication />
 }

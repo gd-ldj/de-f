@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Header from '@/components/common/react/Header'
+import AuthMount from '@/components/common/react/AuthMount'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import ArticleSidebar from '@/components/article/react/ArticleSidebar'
 import ShareSection from '@/components/article/react/ShareSection'
@@ -86,7 +86,10 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
   </Fragment>
 
   <!-- <PrivyProvider> -->
-    <Header locale={locale} currentPath={currentPath} client:load />
+    <!-- React mount point for Header -->
+    <div id="header-root"></div>
+    <!-- Single React Island that contains IdentityProvider and portals -->
+    <AuthMount locale={locale} currentPath={currentPath} client:load />
     
     <main class="min-h-screen">
       <div class="max-w-[1440px] mx-auto px-4 py-8">

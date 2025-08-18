@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { usePrivy } from '@privy-io/react-auth';
 import { Search, Globe, Settings } from 'lucide-react';
 import type { Locale } from '@/types';
-import { IdentityProvider } from './IdentityProvider';
 import { WalletPopover } from '@/components/common/react/WalletPopover';
 import { useTranslation } from 'react-i18next';
 
@@ -22,31 +20,12 @@ export default function Header({ locale, currentPath }: HeaderProps) {
   const [localeDropdownOpen, setLocaleDropdownOpen] = useState(false);
   const [collectionsDropdownOpen, setCollectionsDropdownOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
-  const [privyTimeout, setPrivyTimeout] = useState(false);
-  const { ready, authenticated, user, login, logout } = usePrivy();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const collectionsDropdownRef = useRef<HTMLDivElement>(null);
   const categoriesDropdownRef = useRef<HTMLDivElement>(null);
 
   // Enhanced debugging for Privy state
   // console.log('🚀 ~ Header ~ Privy state:', { ready, authenticated, user: user?.id });
-
-  // Set timeout for Privy initialization
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!ready) {
-        setPrivyTimeout(true);
-        console.warn('⚠️ Privy initialization timeout - showing fallback UI');
-      }
-    }, 5000); // 5 second timeout
-
-    if (ready) {
-      clearTimeout(timer);
-      setPrivyTimeout(false);
-    }
-
-    return () => clearTimeout(timer);
-  }, [ready]);
 
   // Handle click outside to close dropdowns
   useEffect(() => {
@@ -68,8 +47,6 @@ export default function Header({ locale, currentPath }: HeaderProps) {
     };
   }, []);
 
-  // Show auth section if ready or if timeout occurred
-  const showAuthSection = ready || privyTimeout;
 
   // Internationalized navigation items
   const navigation = {
@@ -311,13 +288,11 @@ export default function Header({ locale, currentPath }: HeaderProps) {
             </div>
 
             {/* Settings */}
-            <IdentityProvider>
-              <WalletPopover>
-                <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={locale === 'us' ? 'Settings' : '设置'}>
-                  <img src="/me.svg" alt="logo" className="w-6" />
-                </button>
-              </WalletPopover>
-            </IdentityProvider>
+            <WalletPopover>
+              <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={locale === 'us' ? 'Settings' : '设置'}>
+                <img src="/me.svg" alt="logo" className="w-6" />
+              </button>
+            </WalletPopover>
             {/* Wallet Component */}
             {/* <Wallet /> */}
           </div>

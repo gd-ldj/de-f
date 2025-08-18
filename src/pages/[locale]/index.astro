@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Header from '@/components/common/react/Header';
 import { fetchArticles } from '@/api/articles'
 import type { Locale } from '@/types'
 import Sidebar from '@/components/home/astro/Sidebar.astro';
@@ -10,7 +9,7 @@ import NewsGrid from '@/components/home/astro/NewsGrid.astro';
 import TrendingGrid from '@/components/home/astro/TrendingGrid.astro';
 import Footer from '@/components/common/react/Footer';
 import ToFollowList from '@/components/home/react/ToFollowList';
-import Login from '@/components/home/react/Login';
+import AuthMount from '@/components/common/react/AuthMount';
 
 import { changeLanguage } from "i18next";
 
@@ -41,25 +40,30 @@ const { title, description } = seoContent[locale] || seoContent.us
 
 <BaseLayout title={title} description={description} locale={locale}>
      <div class="min-h-screen bg-white">
-        <Header locale={locale} currentPath={currentPath} client:load />
-    <div class="max-w-[1440px] mx-auto px-4 py-6">
-      <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-3 space-y-6">
-          <Sidebar />
-          <ToFollowList client:load/>
+        <!-- React mount point for Header -->
+        <div id="header-root"></div>
+        <!-- Single React Island that contains IdentityProvider and portals -->
+        <AuthMount locale={locale} currentPath={currentPath} client:load />
+
+        <div class="max-w-[1440px] mx-auto px-4 py-6">
+          <div class="grid grid-cols-12 gap-6">
+            <div class="col-span-3 space-y-6">
+              <Sidebar />
+              <ToFollowList client:load/>
+            </div>
+            <div class="col-span-6">
+              <MainContent />
+            </div>
+            <div class="col-span-3 space-y-6">
+              <!-- React mount point for Login -->
+              <div id="login-root" ></div>
+              <RightSidebar />
+            </div>
+          </div>
+          <NewsGrid />
+          <TrendingGrid />
         </div>
-        <div class="col-span-6">
-          <MainContent client:load />
-        </div>
-        <div class="col-span-3 space-y-6">
-          <Login client:load/>
-          <RightSidebar />
-        </div>
+        <Footer client:load />
       </div>
-      <NewsGrid client:load />
-      <TrendingGrid client:load />
-    </div>
-    <Footer client:load />
-  </div>
 
 </BaseLayout>

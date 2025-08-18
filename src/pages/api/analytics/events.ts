@@ -79,13 +79,13 @@ export const POST: APIRoute = async ({ request }) => {
     const validEvents = await filterFraudulentEvents(processedEvents, visitorData, clientInfo)
 
     // Log events for debugging (in production, send to analytics service)
-    console.log('[Analytics API] Processed events:', {
-      totalEvents: events.length,
-      validEvents: validEvents.length,
-      visitorId: visitorData.visitorId,
-      sessionId: visitorData.sessionId,
-      clientInfo
-    })
+    // console.log('[Analytics API] Processed events:', {
+    //   totalEvents: events.length,
+    //   validEvents: validEvents.length,
+    //   visitorId: visitorData.visitorId,
+    //   sessionId: visitorData.sessionId,
+    //   clientInfo
+    // })
 
     // In a real implementation, you would:
     // 1. Store events in a database (e.g., ClickHouse, BigQuery)
