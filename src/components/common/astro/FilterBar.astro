@@ -1,0 +1,192 @@
+---
+import FilterMultiSelect from '@/components/common/react/FilterMultiSelect'
+import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect'
+import AuthorSearchInput from '@/components/common/react/AuthorSearchInput'
+
+export interface Props {
+  locale: 'us' | 'asia'
+  activeSubcategory?: 'Markets' | 'Finance' | 'Policy'
+  authorName?: string
+  viewMode?: 'list' | 'grid'
+}
+
+const {
+  locale,
+  activeSubcategory = 'Markets',
+  authorName = 'Jhon',
+  viewMode = 'grid',
+} = Astro.props as Props
+
+const i18n = {
+  filters: locale === 'us' ? 'Filters' : '筛选',
+  clearAll: locale === 'us' ? 'CLEAR ALL' : '清空',
+  category: locale === 'us' ? 'Category' : '分类',
+  author: locale === 'us' ? 'Author' : '作者',
+  topic: locale === 'us' ? 'Topic' : '主题',
+}
+
+const subcategories = [
+  { key: 'Markets', label: locale === 'us' ? 'Markets' : '市场' },
+  { key: 'Finance', label: locale === 'us' ? 'Finance' : '金融' },
+  { key: 'Policy', label: locale === 'us' ? 'Policy' : '政策' },
+]
+
+// Prepare default categories with nested options to match multi-level selection
+const defaultCategories = [
+  {
+    id: 'markets',
+    label: locale === 'us' ? 'Markets' : '市场',
+    checked: true,
+    children: [
+      { id: 'markets-sub-1', label: 'Sub 1', checked: false },
+      { id: 'markets-sub-2', label: 'Sub 2', checked: false },
+    ],
+  },
+  {
+    id: 'finance',
+    label: locale === 'us' ? 'Finance' : '金融',
+    checked: true,
+    children: [
+      { id: 'finance-sub-1', label: 'Sub 1', checked: false },
+
+    ],
+  },
+  {
+    id: 'policy',
+    label: locale === 'us' ? 'Policy' : '政策',
+    checked: true,
+    children: [
+      { id: 'policy-sub-1', label: 'Sub 1', checked: false },
+      { id: 'policy-sub-2', label: 'Sub 2', checked: false },
+    ],
+  },
+]
+---
+
+<div class="flex items-center bg-card border border-border rounded-md px-4 py-3">
+  <div class="flex items-center flex-1 min-w-0">
+    <!-- Static Filters label -->
+    <div class="flex items-center space-x-2 pr-4">
+      <svg class="w-4 h-4 text-foreground/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"></path>
+      </svg>
+      <span class="text-sm font-medium">{i18n.filters}</span>
+      <button
+        id="clear-all-filters"
+        class="text-[11px] uppercase tracking-wide font-medium transition-colors text-primary hover:text-primary/80 disabled:cursor-not-allowed disabled:text-muted-foreground"
+        aria-label={i18n.clearAll}
+        disabled
+      >
+        {i18n.clearAll}
+      </button>
+    </div>
+
+    <div class="h-6 w-px bg-border mx-4"></div>
+
+    <!-- Category multi-level selector -->
+    <div class="pr-4">
+      <CategoryMultiSelect client:idle locale={locale} categories={defaultCategories} onCategoriesChange={() => {}} activeSubcategory={activeSubcategory} />
+    </div>
+
+    <div class="h-6 w-px bg-border mx-4"></div>
+
+    <div class="flex items-center space-x-2 pr-4">
+      <span class="text-sm text-muted-foreground">{i18n.author}</span>
+      <AuthorSearchInput client:idle locale={locale} defaultValue={authorName} />
+    </div>
+
+    <div class="h-6 w-px bg-border mx-4"></div>
+
+    <!-- Topic section with FilterMultiSelect -->
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-muted-foreground">{i18n.topic}</span>
+      <FilterMultiSelect client:idle locale={locale} />
+    </div>
+  </div>
+
+
+  <!-- Right: view toggles -->
+  <div class="flex items-center space-x-4">
+    <div class="flex overflow-hidden rounded-md border border-border">
+      <button class={`p-2 ${viewMode === 'list' ? 'bg-secondary' : 'bg-card hover:bg-accent'}`} aria-label="List view">
+        <svg class="w-4 h-4 text-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <div class="w-px bg-border"></div>
+      <button class={`p-2 ${viewMode === 'grid' ? 'bg-secondary' : 'bg-card hover:bg-accent'}`} aria-label="Grid view">
+        <svg class="w-4 h-4 text-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /**
+   * Determine whether any filters are currently active
+   * Aggregates signals from category:changed, filter:changed, author:changed
+   * This script is plain JavaScript (no TS assertions), safe for inline browser execution.
+   */
+  let anyActive = false
+  let catActive = false
+  let topicActive = false
+  let authorActive = false
+
+  /**
+   * Update the CLEAR ALL button disabled state
+   */
+  const refreshButtonState = () => {
+    const btn = document.getElementById('clear-all-filters')
+    if (!btn) return
+    anyActive = catActive || topicActive || authorActive
+    if (btn instanceof HTMLButtonElement) {
+      btn.disabled = !anyActive
+    } else {
+      // Fallback if element is not a button (should not happen)
+      btn.setAttribute('aria-disabled', String(!anyActive))
+    }
+  }
+
+  /**
+   * Click handler to broadcast global clearing events to all filter widgets
+   */
+  function handleClearAllFilters() {
+    if (!anyActive) return
+    document.dispatchEvent(new CustomEvent('filter:clear-all'))
+    document.dispatchEvent(new CustomEvent('category:clear-all'))
+    document.dispatchEvent(new CustomEvent('author:clear'))
+    // Note: individual widgets will emit their own *:changed events after clearing,
+    // which will re-evaluate the button disabled state via listeners below.
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const clearButton = document.getElementById('clear-all-filters')
+    if (clearButton) {
+      clearButton.addEventListener('click', handleClearAllFilters)
+    }
+
+    // Listen to filter changes from children and recompute the button state
+    document.addEventListener('category:changed', (e) => {
+      const detail = (e && e.detail !== undefined) ? e.detail : {}
+      catActive = Boolean(detail.hasSelection)
+      refreshButtonState()
+    })
+
+    document.addEventListener('filter:changed', (e) => {
+      const detail = (e && e.detail !== undefined) ? e.detail : {}
+      topicActive = Boolean(detail.hasSelection)
+      refreshButtonState()
+    })
+
+    document.addEventListener('author:changed', (e) => {
+      const detail = (e && e.detail !== undefined) ? e.detail : {}
+      authorActive = Boolean(detail.hasText)
+      refreshButtonState()
+    })
+
+    // Initialize button state on load
+    refreshButtonState()
+  })
+</script>

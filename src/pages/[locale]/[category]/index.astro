@@ -6,6 +6,7 @@ import { fetchArticles } from '@/api/articles'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/Footer';
+import FilterBar from '@/components/common/astro/FilterBar.astro'
 
 import { changeLanguage } from "i18next";
 
@@ -71,99 +72,28 @@ const formatDate = (dateString: string) => {
       <!-- Single React Island that contains IdentityProvider and portals -->
       <AuthMount locale={locale} currentPath={currentPath} client:load />
       
-      <!-- Category Header -->
-      <div class="bg-card border-b border-border">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <h1 class="text-3xl font-bold text-foreground">{categoryDisplayName}</h1>
-              <p class="text-muted-foreground mt-2">
-                {category === 'insights' && (locale === 'us' 
-                  ? 'In-depth analysis and interpretations of Web3 trends, technologies, and market dynamics'
-                  : '深度分析和解读Web3趋势、技术和市场动态'
-                )}
-                {category === 'news' && (locale === 'us'
-                  ? 'Current events, announcements, and breaking developments in the Web3 ecosystem'
-                  : '当前事件、公告和Web3生态系统的突破性发展'
-                )}
-                {category === 'research' && (locale === 'us'
-                  ? 'Comprehensive studies, technical papers, and data-driven investigations'
-                  : '综合研究、技术论文和数据驱动的调查'
-                )}
-              </p>
-            </div>
-            
-            <!-- Category Navigation -->
-            <div class="flex items-center space-x-4">
-              {Object.entries(categoryNames).map(([key, names]) => (
-                <a 
-                  href={`/${locale}/${key}`}
-                  class={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                    key === category.toLowerCase() 
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                  }`}
-                >
-                  {locale === 'us' ? names.en : names.zh}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
+      <!-- Category Header: simplified to match visual design (breadcrumb + large title) -->
+      <div class="max-w-[1440px] mx-auto px-4 py-6">
+        <!-- Breadcrumb -->
+        <nav class="text-sm text-muted-foreground mb-2">
+          <a href={`/${locale}`} class="hover:text-foreground">
+            {locale === 'us' ? 'Articles' : '文章'}
+          </a>
+          <span class="mx-1">/</span>
+          <span class="text-primary">{categoryDisplayName}</span>
+        </nav>
+        
+        <!-- Page Title -->
+        <h1 class="text-4xl md:text-5xl font-bold text-foreground">{categoryDisplayName}</h1>
       </div>
 
       <!-- Main Content Container -->
       <main class="max-w-[1440px] mx-auto px-4 py-8">
         <!-- Filter Bar -->
-        <div class="flex items-center justify-between mb-8">
-          <div class="flex items-center space-x-6">
-            <button class="flex items-center space-x-2 px-4 py-2 bg-card border border-border rounded hover:bg-accent transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-              </svg>
-              <span class="text-sm font-medium">{locale === 'us' ? 'Filters' : '筛选'}</span>
-            </button>
-            
-            <!-- Category Filters -->
-            <div class="flex items-center space-x-4">
-              <span class="text-sm text-muted-foreground">{locale === 'us' ? 'Subcategory' : '子分类'}:</span>
-          <select class="text-sm border border-border rounded-md px-3 py-1 bg-card">
-                <option>{locale === 'us' ? 'All' : '全部'}</option>
-                <option>{locale === 'us' ? 'Markets' : '市场'}</option>
-                <option>{locale === 'us' ? 'Finance' : '金融'}</option>
-                <option>{locale === 'us' ? 'Policy' : '政策'}</option>
-              </select>
-              
-              <span class="text-sm text-muted-foreground">{locale === 'us' ? 'Author' : '作者'}:</span>
-          <select class="text-sm border border-border rounded-md px-3 py-1 bg-card">
-                <option>{locale === 'us' ? 'All Authors' : '所有作者'}</option>
-                <option>John</option>
-              </select>
-              
-              <span class="text-sm text-muted-foreground">{locale === 'us' ? 'Topic' : '主题'}:</span>
-          <select class="text-sm border border-border rounded-md px-3 py-1 bg-card">
-                <option value="">{locale === 'us' ? 'Select Topic' : '选择主题'}</option>
-              </select>
-            </div>
-          </div>
-          
-          <!-- View Toggle -->
-          <div class="flex items-center space-x-2">
-            <button class="p-2 bg-card border border-border rounded-md hover:bg-accent">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-              </svg>
-            </button>
-            <button class="p-2 bg-secondary border border-border rounded-md">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        
+        <FilterBar locale={locale} activeSubcategory="Markets" authorName="Jhon" viewMode="grid" />
+
         <!-- Articles Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 mt-6">
           {articles.map((article) => (
             <article class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <!-- Article Image -->
