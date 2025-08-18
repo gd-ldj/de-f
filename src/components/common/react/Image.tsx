@@ -46,12 +46,12 @@ const Image: React.FC<ImageProps> = ({
   
   const defaultFallback = defaultFallbackPath;
   
-  console.log("🖼️ Image component initialized:", {
-    src,
-    fallbackSrc,
-    placeholderImg: typeof placeholderImg === 'object' && 'src' in placeholderImg ? (placeholderImg as { src: string }).src : placeholderImg,
-    defaultFallback
-  });
+  // console.log("🖼️ Image component initialized:", {
+  //   src,
+  //   fallbackSrc,
+  //   placeholderImg: typeof placeholderImg === 'object' && 'src' in placeholderImg ? (placeholderImg as { src: string }).src : placeholderImg,
+  //   defaultFallback
+  // });
     
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState<boolean>(false);

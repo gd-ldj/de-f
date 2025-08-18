@@ -17,7 +17,7 @@ interface HeaderProps {
  */
 export default function Header({ locale, currentPath }: HeaderProps) {
   const { t } = useTranslation('translation');
-  console.log('🚀 ~ Header ~ t:', t('navigation.allCategories'));
+  // console.log('🚀 ~ Header ~ t:', t('navigation.allCategories'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [localeDropdownOpen, setLocaleDropdownOpen] = useState(false);
   const [collectionsDropdownOpen, setCollectionsDropdownOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function Header({ locale, currentPath }: HeaderProps) {
   const categoriesDropdownRef = useRef<HTMLDivElement>(null);
 
   // Enhanced debugging for Privy state
-  console.log('🚀 ~ Header ~ Privy state:', { ready, authenticated, user: user?.id });
+  // console.log('🚀 ~ Header ~ Privy state:', { ready, authenticated, user: user?.id });
 
   // Set timeout for Privy initialization
   useEffect(() => {

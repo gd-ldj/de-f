@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Header from '@/components/common/react/Header'
-import PrivyProvider from '@/components/common/react/PrivyProvider'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import ArticleSidebar from '@/components/article/react/ArticleSidebar'
 import ShareSection from '@/components/article/react/ShareSection'
@@ -86,7 +85,7 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
     )}
   </Fragment>
 
-  <PrivyProvider>
+  <!-- <PrivyProvider> -->
     <Header locale={locale} currentPath={currentPath} client:load />
     
     <main class="min-h-screen">
@@ -122,7 +121,7 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
         </div>
       </div>
     </main>
-  </PrivyProvider>
+  <!-- </PrivyProvider> -->
 </BaseLayout>
 
 <style>
