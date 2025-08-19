@@ -67,13 +67,12 @@ const formatDate = (dateString: string) => {
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
-    <div class="min-h-screen bg-background">
-      <!-- Header Navigation -->
-      <!-- React mount point for Header -->
-      <div id="header-root"></div>
-      <!-- Single React Island that contains IdentityProvider and portals -->
-      <AuthMount locale={locale} currentPath={currentPath} client:load />
-      
+    <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
+    <div id="header-root"></div>
+    <!-- Single React Island that contains IdentityProvider and portals -->
+    <AuthMount locale={locale} currentPath={currentPath} client:load />
+    
+    <div class="min-h-screen bg-background mt-[65px]">
       <!-- Category Header: simplified to match visual design (breadcrumb + large title) -->
       <div class="max-w-[1440px] mx-auto px-4 py-6">
         <!-- Breadcrumb -->

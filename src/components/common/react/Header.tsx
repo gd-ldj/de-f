@@ -131,29 +131,14 @@ export default function Header({ locale, currentPath, userComponent}: HeaderProp
   // Collections dropdown items
   const collectionsItems = [
     {
-      name: locale === 'us' ? 'My Collections' : '我的收藏',
+      name: 'My Collections',
       href: `/${locale}/collections/my`,
       key: 'my-collections',
-    },
-    {
-      name: locale === 'us' ? 'Public Collections' : '公共收藏',
-      href: `/${locale}/collections/public`,
-      key: 'public-collections',
-    },
-    {
-      name: locale === 'us' ? 'Shared Collections' : '共享收藏',
-      href: `/${locale}/collections/shared`,
-      key: 'shared-collections',
-    },
+    }
   ];
 
   // Categories dropdown items
   const categoriesItems = [
-    {
-      name: locale === 'us' ? 'All Categories' : '所有分类',
-      href: `/${locale}`,
-      key: 'all-categories',
-    },
     {
       name: locale === 'us' ? 'News' : '新闻',
       href: `/${locale}/news`,
@@ -172,16 +157,16 @@ export default function Header({ locale, currentPath, userComponent}: HeaderProp
   ];
 
   return (
-    <header className="border-b border-gray-200 bg-white sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95">
+    <header className="border-b border-gray-200 fixed w-screen top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95 bg-white/95">
       <div className="max-w-[1440px] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Left Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {/* Categories Dropdown */}
-            <div className="relative" ref={categoriesDropdownRef}>
+            <div className="" ref={categoriesDropdownRef}>
               <button 
                 onClick={toggleCategoriesDropdown} 
-                className="flex items-center space-x-1 text-sm transition-colors hover:text-gray-900 text-gray-600" 
+                className="flex items-center space-x-1 text-sm px-3 py-1.5 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors" 
                 aria-label={t('navigation.allCategories')} 
                 aria-expanded={categoriesDropdownOpen}
               >
@@ -195,20 +180,30 @@ export default function Header({ locale, currentPath, userComponent}: HeaderProp
 
               {/* Categories Dropdown Menu */}
               {categoriesDropdownOpen && (
-                <div className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                  <div className="py-1">
-                    {categoriesItems.map((item) => (
-                      <a 
-                        key={item.key} 
-                        href={item.href} 
-                        className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                          currentPath === item.href ? 'bg-gray-50 text-gray-900' : 'text-gray-600'
-                        }`} 
-                        onClick={() => setCategoriesDropdownOpen(false)}
-                      >
-                        {item.name}
-                      </a>
-                    ))}
+                <div className="absolute left-0 right-0 top-[64px] w-screen bg-white z-50 border border-border">
+                  <div className="max-w-[1440px] mx-auto px-4">
+                    <div className="pt-4 pb-3">
+                      <h3 className="text-lg font-semibold text-foreground mb-2 mt-1">Article</h3>
+                      <div className="flex items-center gap-8">
+                        {categoriesItems.map((item) => (
+                          <a 
+                            key={item.key} 
+                            href={item.href} 
+                            className={`text-sm py-2 relative transition-colors ${
+                              currentPath === item.href 
+                                ? 'text-primary font-medium' 
+                                : 'text-muted-foreground hover:text-foreground'
+                            }`} 
+                            onClick={() => setCategoriesDropdownOpen(false)}
+                          >
+                            {item.name}
+                            {currentPath === item.href && (
+                              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
+                            )}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
