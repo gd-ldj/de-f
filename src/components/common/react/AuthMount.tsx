@@ -6,6 +6,7 @@ import { IdentityProvider } from '@/components/common/react/IdentityProvider';
 import type { Locale } from '@/types';
 import { WalletPopover } from '@/components/common/react/WalletPopover';
 import ShareSection from '@/components/article/react/ShareSection';
+import AuthorSection from '@/components/article/react/AuthorSection';
 
 interface AuthMountProps {
   locale: Locale;
@@ -19,6 +20,19 @@ interface AuthMountProps {
     locale: Locale;
     title: string;
     url: string;
+  };
+  // The DOM id where AuthorSection should be mounted, optional
+  authorTargetId?: string;
+  // Props used to render AuthorSection under PrivyProvider
+  authorSection?: {
+    author: {
+      name: string;
+      bio?: string;
+      avatar?: string;
+      twitter?: string;
+      email?: string;
+    };
+    locale: Locale;
   };
 }
 
@@ -40,10 +54,13 @@ const AuthMount: React.FC<AuthMountProps> = ({
   loginTargetId = 'login-root',
   shareTargetId = 'share-section-root',
   shareSection,
+  authorTargetId = 'author-section-root',
+  authorSection,
 }) => {
   const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
   const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
+  const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
 
   // Resolve DOM mount points on client and log for debugging in client only
   useEffect(() => {
@@ -51,16 +68,18 @@ const AuthMount: React.FC<AuthMountProps> = ({
     console.log("🚀 ~ AuthMount ~ header:", header)
     const login = document.getElementById(loginTargetId);
     const share = document.getElementById(shareTargetId);
+    const author = document.getElementById(authorTargetId);
     setHeaderEl(header);
     setLoginEl(login);
     setShareEl(share);
+    setAuthorEl(author);
 
     // Debug: verify hydration ran in the browser and mount points were found
     // This runs only on the client after hydration
     if (typeof window !== 'undefined' && import.meta.env.DEV) {
-      console.log('[AuthMount] hydrated. headerEl:', header, 'loginEl:', login, 'shareEl:', share);
+      console.log('[AuthMount] hydrated. headerEl:', header, 'loginEl:', login, 'shareEl:', share, 'authorEl:', author);
     }
-  }, [headerTargetId, loginTargetId, shareTargetId]);
+  }, [headerTargetId, loginTargetId, shareTargetId, authorTargetId]);
 
   return (
     <IdentityProvider>
@@ -85,7 +104,7 @@ const AuthMount: React.FC<AuthMountProps> = ({
         )}
 
         {/* Login Portal */}
--        {loginEl && createPortal(<Login locale={locale} />, loginEl)}
+        {loginEl && createPortal(<Login />, loginEl)}
  
         {/* ShareSection Portal (under PrivyProvider) */}
         {/*
@@ -100,6 +119,19 @@ const AuthMount: React.FC<AuthMountProps> = ({
             url={shareSection.url}
           />,
           shareEl
+        )}
+
+        {/* AuthorSection Portal (under PrivyProvider) */}
+        {/*
+         * Render AuthorSection only when we both have mount point and props.
+         * This guarantees AuthorSection has access to Privy context if needed.
+         */}
+        {authorEl && authorSection && createPortal(
+          <AuthorSection 
+            author={authorSection.author}
+            locale={authorSection.locale}
+          />,
+          authorEl
         )}
       </>
     </IdentityProvider>

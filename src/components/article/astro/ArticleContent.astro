@@ -53,32 +53,34 @@ const formatDate = (dateString: string) => {
     </h1>
 
     <!-- Excerpt -->
-    <p class="text-xl text-muted-foreground mb-8 leading-relaxed">
+    <p class="text-xl text-muted-foreground mb-2 leading-relaxed">
       {article.excerpt}
     </p>
+
+     <!-- Tags -->
+    {article.tags.length > 0 && (
+      <div class="mb-2 pt-2">
+        <div class="flex flex-wrap gap-2">
+          {article.tags.map((tag) => (
+            <a
+              href={`/${locale}/tag/${tag}`}
+              class="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
 
     <!-- Author and Date -->
     <div class="flex items-center space-x-4 pb-8 border-b border-border">
       <div class="flex items-center space-x-3">
-        {article.author.avatar ? (
-          <img
-            src={article.author.avatar}
-            alt={article.author.name}
-            class="h-12 w-12 rounded-full object-cover"
-          />
-        ) : (
-          <div class="h-12 w-12 rounded-full bg-primary flex items-center justify-center">
-            <span class="text-white font-medium text-lg">
-              {article.author.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        )}
-        <div>
-          <p class="font-medium text-foreground">{article.author.name}</p>
-          <time class="text-sm text-muted-foreground" datetime={article.publishedAt}>
-            {formatDate(article.publishedAt)}
-          </time>
-        </div>
+        <time class="text-sm text-muted-foreground" datetime={article.publishedAt}>
+          {formatDate(article.publishedAt)}
+        </time>
+       <span class="text-sm text-muted-foreground"> / By</span>
+        <p class="font-medium text-foreground">{article.author.name}</p>
       </div>
     </div>
   </header>
@@ -100,24 +102,9 @@ const formatDate = (dateString: string) => {
     <div set:html={article.content} />
   </div>
 
-  <!-- Tags -->
-  {article.tags.length > 0 && (
-    <div class="mb-8 pt-8 border-t border-border">
-      <h3 class="text-lg font-semibold mb-4 text-foreground">
-        {locale === 'us' ? 'Tags' : '标签'}
-      </h3>
-      <div class="flex flex-wrap gap-2">
-        {article.tags.map((tag) => (
-          <a
-            href={`/${locale}/tag/${tag}`}
-            class="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
-          >
-            #{tag}
-          </a>
-        ))}
-      </div>
-    </div>
-  )}
+  <!-- Author Section -->
+  <div id="author-section-root"></div>
+ 
 </article>
 
 <style>
