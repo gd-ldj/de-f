@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Globe, Settings } from 'lucide-react';
 import type { Locale } from '@/types';
-import { WalletPopover } from '@/components/common/react/WalletPopover';
 import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
   locale: Locale;
   currentPath: string;
+  userComponent?: React.ReactNode;
 }
 
 /**
  * Main header component with navigation and authentication
  * Enhanced with lucide-react icons and improved internationalization
  */
-export default function Header({ locale, currentPath }: HeaderProps) {
+export default function Header({ locale, currentPath, userComponent}: HeaderProps) {
   const { t } = useTranslation('translation');
   // console.log('🚀 ~ Header ~ t:', t('navigation.allCategories'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -287,14 +287,8 @@ export default function Header({ locale, currentPath }: HeaderProps) {
               )}
             </div>
 
-            {/* Settings */}
-            <WalletPopover>
-              <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={locale === 'us' ? 'Settings' : '设置'}>
-                <img src="/me.svg" alt="logo" className="w-6" />
-              </button>
-            </WalletPopover>
-            {/* Wallet Component */}
-            {/* <Wallet /> */}
+           {/* User Component - Can be customized for different projects */}
+            {userComponent}
           </div>
 
           {/* Mobile menu button */}

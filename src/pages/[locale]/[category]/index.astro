@@ -10,11 +10,13 @@ import FilterBar from '@/components/common/astro/FilterBar.astro'
 
 import { changeLanguage } from "i18next";
 
-changeLanguage(Astro.params.locale);
 export const prerender = false // Enable SSR for this page
 
 const { locale, category } = Astro.params as { locale: Locale; category: string }
 const currentPath = Astro.url.pathname
+
+// Initialize i18n with the locale from params
+changeLanguage(locale);
 
 // Validate category against API data
 const validCategories = ['insights', 'news', 'research']
@@ -90,7 +92,7 @@ const formatDate = (dateString: string) => {
       <!-- Main Content Container -->
       <main class="max-w-[1440px] mx-auto px-4 py-8">
         <!-- Filter Bar -->
-        <FilterBar locale={locale} activeSubcategory="Markets" authorName="Jhon" viewMode="grid" />
+        <FilterBar locale={locale} viewMode="grid" />
 
         <!-- Articles Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 mt-6">
@@ -110,12 +112,6 @@ const formatDate = (dateString: string) => {
                     class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </ArticleLink>
-                <!-- Category Badge -->
-                <div class="absolute top-4 left-4">
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-card/90 text-card-foreground">
-                    {categoryDisplayName}
-                  </span>
-                </div>
               </div>
               
               <!-- Article Content -->
@@ -150,25 +146,25 @@ const formatDate = (dateString: string) => {
         </div>
         
         <!-- Pagination -->
-        <div class="flex items-center justify-center space-x-2">
-          <button class="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center justify-center space-x-1">
+          <button class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
             {locale === 'us' ? 'Prev' : '上一页'}
           </button>
           
           <div class="flex items-center space-x-1">
-            <button class="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md">1</button>
-            <button class="px-3 py-2 text-sm text-foreground hover:bg-accent rounded-md">2</button>
-            <button class="px-3 py-2 text-sm text-foreground hover:bg-accent rounded-md">3</button>
-            <span class="px-2 text-muted-foreground">...</span>
-            <button class="px-3 py-2 text-sm text-foreground hover:bg-accent rounded-md">10</button>
+            <button class="w-8 h-8 text-sm bg-primary text-primary-foreground rounded font-medium">1</button>
+            <button class="w-8 h-8 text-sm text-foreground hover:bg-accent rounded transition-colors">2</button>
+            <button class="w-8 h-8 text-sm text-foreground hover:bg-accent rounded transition-colors">3</button>
+            <span class="px-2 text-muted-foreground text-sm">...</span>
+            <button class="w-8 h-8 text-sm text-foreground hover:bg-accent rounded transition-colors">10</button>
           </div>
           
-          <button class="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            {locale === 'us' ? 'Next' : '下一页'}
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors">
+             {locale === 'us' ? 'Next' : '下一页'}
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
           </button>

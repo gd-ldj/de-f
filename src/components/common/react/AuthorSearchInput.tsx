@@ -120,23 +120,10 @@ export default function AuthorSearchInput({
         type="text"
         value={value}
         onChange={handleChange}
-        className="text-sm text-foreground bg-card border border-border rounded-md pl-8 pr-3 py-1.5 placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 min-w-[160px]"
+        className="text-sm text-foreground bg-transparent border-0 border-b border-border placeholder:text-muted-foreground/70 focus:outline-none focus:border-b-2 focus:border-primary"
         placeholder={placeholder}
         aria-label={placeholder}
       />
-      <svg
-        className="w-4 h-4 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
     </div>
   )
 }

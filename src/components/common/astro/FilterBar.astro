@@ -1,18 +1,16 @@
 ---
-import FilterMultiSelect from '@/components/common/react/FilterMultiSelect'
+import TopicMultiSelect from '@/components/common/react/TopicMultiSelect'
 import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect'
 import AuthorSearchInput from '@/components/common/react/AuthorSearchInput'
 
 export interface Props {
   locale: 'us' | 'asia'
-  activeSubcategory?: 'Markets' | 'Finance' | 'Policy'
   authorName?: string
   viewMode?: 'list' | 'grid'
 }
 
 const {
   locale,
-  activeSubcategory = 'Markets',
   authorName = 'Jhon',
   viewMode = 'grid',
 } = Astro.props as Props
@@ -25,42 +23,9 @@ const i18n = {
   topic: locale === 'us' ? 'Topic' : '主题',
 }
 
-const subcategories = [
-  { key: 'Markets', label: locale === 'us' ? 'Markets' : '市场' },
-  { key: 'Finance', label: locale === 'us' ? 'Finance' : '金融' },
-  { key: 'Policy', label: locale === 'us' ? 'Policy' : '政策' },
-]
 
-// Prepare default categories with nested options to match multi-level selection
-const defaultCategories = [
-  {
-    id: 'markets',
-    label: locale === 'us' ? 'Markets' : '市场',
-    checked: true,
-    children: [
-      { id: 'markets-sub-1', label: 'Sub 1', checked: false },
-      { id: 'markets-sub-2', label: 'Sub 2', checked: false },
-    ],
-  },
-  {
-    id: 'finance',
-    label: locale === 'us' ? 'Finance' : '金融',
-    checked: true,
-    children: [
-      { id: 'finance-sub-1', label: 'Sub 1', checked: false },
 
-    ],
-  },
-  {
-    id: 'policy',
-    label: locale === 'us' ? 'Policy' : '政策',
-    checked: true,
-    children: [
-      { id: 'policy-sub-1', label: 'Sub 1', checked: false },
-      { id: 'policy-sub-2', label: 'Sub 2', checked: false },
-    ],
-  },
-]
+
 ---
 
 <div class="flex items-center bg-card border border-border rounded-md px-4 py-3">
@@ -84,8 +49,9 @@ const defaultCategories = [
     <div class="h-6 w-px bg-border mx-4"></div>
 
     <!-- Category multi-level selector -->
-    <div class="pr-4">
-      <CategoryMultiSelect client:idle locale={locale} categories={defaultCategories} onCategoriesChange={() => {}} activeSubcategory={activeSubcategory} />
+    <div class="flex items-center space-x-2 pr-4">
+       <span class="text-sm text-muted-foreground">{i18n.category}</span>
+      <CategoryMultiSelect client:idle locale={locale} />
     </div>
 
     <div class="h-6 w-px bg-border mx-4"></div>
@@ -97,10 +63,10 @@ const defaultCategories = [
 
     <div class="h-6 w-px bg-border mx-4"></div>
 
-    <!-- Topic section with FilterMultiSelect -->
+    <!-- Topic section with TopicMultiSelect -->
     <div class="flex items-center space-x-2">
       <span class="text-sm text-muted-foreground">{i18n.topic}</span>
-      <FilterMultiSelect client:idle locale={locale} />
+      <TopicMultiSelect client:idle locale={locale} />
     </div>
   </div>
 

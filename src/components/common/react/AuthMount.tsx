@@ -4,6 +4,7 @@ import Header from '@/components/common/react/Header';
 import Login from '@/components/home/react/Login';
 import { IdentityProvider } from '@/components/common/react/IdentityProvider';
 import type { Locale } from '@/types';
+import { WalletPopover } from '@/components/common/react/WalletPopover';
 
 interface AuthMountProps {
   locale: Locale;
@@ -49,13 +50,28 @@ const AuthMount: React.FC<AuthMountProps> = ({
       <>
         {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
         <span style={{ display: 'none' }} data-auth-island="true" />
-        {/* Render Header into its mount point if present */}
-        {headerEl && createPortal(<Header locale={locale} currentPath={currentPath} />, headerEl)}
-        {/* Render Login into its mount point if present */}
-        {loginEl && createPortal(<Login />, loginEl)}
+
+        {/* Header Portal */}
+        {headerEl && createPortal(
+          <Header 
+            locale={locale} 
+            currentPath={currentPath} 
+            userComponent={(
+              <WalletPopover>
+                <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={locale === 'us' ? 'Settings' : '设置'}>
+                  <img src="/me.svg" alt="logo" className="w-6" />
+                </button>
+              </WalletPopover>
+            )}
+          />, 
+          headerEl
+        )}
+
+        {/* Login Portal */}
+        {loginEl && createPortal(<Login locale={locale} />, loginEl)}
       </>
     </IdentityProvider>
   );
-};
+}
 
 export default AuthMount;
