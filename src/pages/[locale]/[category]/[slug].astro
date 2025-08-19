@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro'
 import AuthMount from '@/components/common/react/AuthMount'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import ArticleSidebar from '@/components/article/react/ArticleSidebar'
-import ShareSection from '@/components/article/react/ShareSection'
+// Removed: ShareSection direct import; it will be portaled by AuthMount
 import { fetchArticle } from '@/api/articles'
 import type { Locale } from '@/types'
 
@@ -87,45 +87,38 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
 
   <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
   <div id="header-root"></div>
-  <!-- Single React Island that contains IdentityProvider and portals -->
-  <AuthMount locale={locale} currentPath={currentPath} client:load />
+  <!-- React island: contains PrivyProvider and portals -->
+  <AuthMount 
+    locale={locale} 
+    currentPath={currentPath} 
+    client:load 
+    shareSection={{ locale, title: article.title, url: canonicalUrl }}
+  />
   
-  <!-- <PrivyProvider> -->
-    
-    <main class="min-h-screen mt-[65px]">
-      <div class="max-w-[1440px] mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Left Column - Article Content (SSR/ISR for SEO) -->
-          <div class="lg:col-span-2">
-            <ArticleContent 
-              article={article} 
-              locale={locale} 
-              category={category} 
-              categoryDisplayName={categoryDisplayName} 
-            />
-            
-           
-          </div>
-          
-          <!-- Right Column - Data Display (React Components) -->
-          <div class="lg:col-span-1">
-            <div class="sticky top-8">
-               <!-- Share Section -->
-            <div class="mb-8">
-              <ShareSection 
-                locale={locale} 
-                title={article.title} 
-                url={canonicalUrl} 
-                client:load 
-              />
-            </div>
-              <ArticleSidebar locale={locale} client:load />
-            </div>
+  <main class="min-h-screen mt-[65px]">
+    <div class="max-w-[1440px] mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column - Article Content (SSR/ISR for SEO) -->
+        <div class="lg:col-span-2">
+          <ArticleContent 
+            article={article} 
+            locale={locale} 
+            category={category} 
+            categoryDisplayName={categoryDisplayName} 
+          />
+        </div>
+        
+        <!-- Right Column - Data Display (React Components) -->
+        <div class="lg:col-span-1">
+          <div class="sticky top-8">
+            <!-- Share Section mount: rendered via AuthMount under PrivyProvider -->
+            <div id="share-section-root" class="mb-8"></div>
+            <ArticleSidebar locale={locale} client:load />
           </div>
         </div>
       </div>
-    </main>
-  <!-- </PrivyProvider> -->
+    </div>
+  </main>
 </BaseLayout>
 
 <style>
