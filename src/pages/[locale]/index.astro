@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import { fetchArticles } from '@/api/articles'
 import type { Locale } from '@/types'
 import Sidebar from '@/components/home/astro/Sidebar.astro';
 import MainContent from '@/components/home/astro/MainContent.astro';
@@ -18,10 +17,6 @@ export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
 const currentPath = Astro.url.pathname
-
-// Fetch articles data
-const articlesData = await fetchArticles(locale, 1, 12)
-const { articles } = articlesData
 
 // SEO content based on locale
 const seoContent = {
@@ -52,7 +47,7 @@ const { title, description } = seoContent[locale] || seoContent.us
               <ToFollowList client:load/>
             </div>
             <div class="col-span-6">
-              <MainContent />
+              <MainContent locale={locale} />
             </div>
             <div class="col-span-3 space-y-6">
               <!-- React mount point for Login -->
@@ -60,7 +55,7 @@ const { title, description } = seoContent[locale] || seoContent.us
               <RightSidebar />
             </div>
           </div>
-          <NewsGrid />
+          <NewsGrid locale={locale} />
           <TrendingGrid />
         </div>
         <Footer client:load locale={locale}/>

@@ -62,7 +62,7 @@ cp .env.example .env
 
 ```env
 # API Configuration
-PUBLIC_API_BASE_URL=https://test-api.detake.com/
+PUBLIC_API_BASE_URL=https://preview-api.detake.com/
 
 # Privy Authentication
 PUBLIC_PRIVY_APP_ID=your-privy-app-id-here

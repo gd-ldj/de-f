@@ -11,7 +11,7 @@ export const headerTexts = {
       myCollections: 'My Collections',
       categories: {
         news: 'News',
-        insight: 'Insight',
+        insights: 'Insights',
         research: 'Research'
       }
     },
@@ -41,7 +41,7 @@ export const headerTexts = {
       myCollections: '我的收藏',
       categories: {
         news: '新闻',
-        insight: '洞察',
+        insights: '洞察',
         research: '研究'
       }
     },

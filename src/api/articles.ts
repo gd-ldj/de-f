@@ -1,9 +1,10 @@
-import type { Article, ArticlesResponse, Locale } from '../types'
+import type { Article, ApiArticle, ArticlesResponse, Locale, ArticleCategory, ArticleBusinessType, ArticleTag } from '../types'
 
 /**
  * API configuration
  */
-const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://test-api.detake.com/';
+// Use import.meta.env for browser-safe environment variables in Vite/Astro
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com/';
 
 
 /**
@@ -12,7 +13,7 @@ const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://test-api.detake
  * @param page - Page number
  * @param limit - Items per page
  * @param category - Article category (insights, news, research)
- * @returns Promise with articles response
+ * @returns Promise with articles response containing ApiArticle[] 
  */
 export async function fetchArticles(
   locale: Locale,
@@ -21,11 +22,14 @@ export async function fetchArticles(
   category?: string
 ): Promise<ArticlesResponse> {
   try {
-    return getMockArticles(locale, page, limit, category)
+    // For development - return mock data immediately
+    // return getMockArticles(locale, page, limit, category)
 
     const categoryParam = category ? `&category=${category}` : ''
+    const localeParam = locale === 'us' ? 'en' : 'zh'
+    
     const response = await fetch(
-      `${API_BASE_URL}/articles?locale=${locale}&page=${page}&limit=${limit}${categoryParam}`,
+      `${API_BASE_URL}/api/v1/articles?locale=${localeParam}&page=${page}&limit=${limit}${categoryParam}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +41,20 @@ export async function fetchArticles(
       throw new Error(`Failed to fetch articles: ${response.statusText}`)
     }
 
-    return await response.json()
+    const result = await response.json()
+    if (result.code === 2000 && result.data) {
+      // Transform backend response to our ArticlesResponse format
+      const { articles, pagination } = result.data
+      return {
+        articles: articles || [], // ApiArticle[] from backend
+        total: pagination?.total || 0,
+        page: pagination?.page || page,
+        limit: pagination?.limit || limit,
+        hasMore: (pagination?.page || page) * (pagination?.limit || limit) < (pagination?.total || 0)
+      }
+    } else {
+      throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`)
+    }
   } catch (error) {
     console.error('Error fetching articles:', error)
     // Return mock data for development
@@ -47,22 +64,20 @@ export async function fetchArticles(
 
 /**
  * Fetch single article by slug and category
- * @param locale - Current locale
  * @param slug - Article slug
- * @param category - Article category
- * @returns Promise with article data
+ * @param locale - Current locale (used to map API language to our Locale union)
+ * @param category - Article category (unused in API call but kept for compatibility)
+ * @returns Promise<ApiArticle | null> - Returns backend format directly
  */
 export async function fetchArticle(
-  locale: Locale,
   slug: string,
+  locale?: Locale,
   category?: string
-): Promise<Article | null> {
-    return getMockArticle(locale, slug, category)
-
+): Promise<ApiArticle | null> {
+  // return getMockArticle('us', slug, category)
   try {
-    const categoryParam = category ? `&category=${category}` : ''
     const response = await fetch(
-      `${API_BASE_URL}/articles/${slug}?locale=${locale}${categoryParam}`,
+      `${API_BASE_URL}/api/v1/articles/info?slug=${slug}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -77,24 +92,106 @@ export async function fetchArticle(
       throw new Error(`Failed to fetch article: ${response.statusText}`)
     }
 
-    return await response.json()
+    const result = await response.json()
+    if (result.code === 2000 && result.data) {
+      // Return raw API data directly, components will use backend fields  
+      return result.data
+    } else {
+      throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`)
+    }
   } catch (error) {
     console.error('Error fetching article:', error)
     // Return mock data for development
-    return getMockArticle(locale, slug, category)
+    return getMockArticle(locale as Locale, slug, category)
   }
 }
 
 /**
- * Fetch categories from API
- * @returns Promise with categories data
+ * Fetch article categories from API (new endpoint)
+ * Returns a typed list of categories or an empty array on failure
+ */
+export async function fetchArticleCategories(): Promise<ArticleCategory[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles/categories`, {
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch categories: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    if (result.code === 2000 && Array.isArray(result.data)) {
+      return result.data
+    } else {
+      throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`)
+    }
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    return []
+  }
+}
+
+/**
+ * Fetch article business types from API (new endpoint)
+ * Returns a typed list of business types or an empty array on failure
+ */
+export async function fetchArticleBusinessTypes(): Promise<ArticleBusinessType[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles/business-types`, {
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch business types: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    if (result.code === 2000 && Array.isArray(result.data)) {
+      return result.data
+    } else {
+      throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`)
+    }
+  } catch (error) {
+    console.error('Error fetching business types:', error)
+    return []
+  }
+}
+
+/**
+ * Fetch article tags from API (new endpoint)
+ * Returns a typed list of tags or an empty array on failure
+ */
+export async function fetchArticleTags(): Promise<ArticleTag[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles/tags`, {
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch tags: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    if (result.code === 2000 && Array.isArray(result.data)) {
+      return result.data
+    } else {
+      throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`)
+    }
+  } catch (error) {
+    console.error('Error fetching tags:', error)
+    return []
+  }
+}
+
+/**
+ * Fetch categories endpoint for development
+ * Returns category configuration data
  */
 export async function fetchCategories(): Promise<any> {
   try {
-    const response = await fetch(`${API_BASE_URL}/categories`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const response = await fetch(`${API_BASE_URL}/api/v1/categories`, {
+      headers: { 'Content-Type': 'application/json' },
     })
 
     if (!response.ok) {
@@ -126,98 +223,77 @@ export async function fetchCategories(): Promise<any> {
   }
 }
 
-// Update mock functions to support category filtering
+// Update mock functions to support category filtering and return proper types
 function getMockArticles(locale: Locale, page: number, limit: number, category?: string): ArticlesResponse {
-  const mockArticles: Article[] = [
+  const mockArticles: ApiArticle[] = [
     {
-      id: '1',
-      title: locale === 'us' ? 'Loopscale launches for more efficient Solana DeFi' : 'Loopscale推出更高效的Solana DeFi',
-      content: 'Mary Governance, co-founder of Solana DeFi startup Loopscale, wants to give blockchain farmers "send a facet". This innovative approach aims to revolutionize the DeFi landscape on Solana by providing more efficient lending and borrowing mechanisms.',
-      excerpt: locale === 'us' ? 'Mary Governance, co-founder of Solana DeFi startup Loopscale, wants to give blockchain farmers "send a facet"' : 'Solana DeFi初创公司Loopscale的联合创始人Mary Governance希望为区块链农民提供"发送一个方面"',
-      slug: 'loopscale-launches-efficient-solana-defi',
-      author: {
-        name: 'JACK KUBRIC',
-        avatar: '/avatars/jack-kubric.jpg'
-      },
-      publishedAt: '2024-04-11T00:00:00Z',
-      updatedAt: '2024-04-11T00:00:00Z',
-      category: 'News',
-      tags: ['solana', 'defi', 'loopscale', 'business'],
-      featuredImage: '/placeholder.svg',
-      readTime: 6,
-      locale
+        "entry_id": "dtc-v19v6gMM",
+        "slug": "byreal-dex-from-bybit-off-v6bq",
+        "title": "Byreal DEX From Bybit Officially Launches On Solana",
+        "sub_title": "Bybit has officially launched its Solana-based Decentralized Exchange (DEX) dubbed Byreal on testnet with mainnet launch slated for Q3.",
+        "img_url": "https://api.dicebear.com/7.x/shapes/svg?seed=news-article-1",
+        "created_at": "2025-07-08T19:42:59.246Z",
+        "updated_at": "2025-07-08T19:42:59.246Z",
+        "category_name": "News",
+        "author": {
+          "name": "dannyburger",
+          "avatar_url": "https://api.dicebear.com/7.x/shapes/svg?seed=dannyburger-1",
+          "bio": "Crypto analyst specializing in DeFi protocols"
+        },
+        "body": "Bybit has officially launched its Solana-based Decentralized Exchange (DEX) dubbed Byreal on testnet with mainnet launch slated for Q3.",
+        "tags": ["bybit", "solana", "dex", "defi"],
+        "language": locale === 'us' ? 'en' : 'zh'
     },
     {
-      id: '2',
-      title: locale === 'us' ? 'SEC approves ETH ETF options, faces new DOGE filing' : 'SEC批准ETH ETF期权，面临新的DOGE申请',
-      content: 'Crypto products come to market as BlackRock, Fidelity and others have filed for spot ETH ETF approval, and we may see more developments in the regulatory landscape.',
-      excerpt: locale === 'us' ? 'crypto products come to market BlackRock, Fidelity and others have filed a spot ETH ETF approved, and we may see more' : '加密产品进入市场，BlackRock、Fidelity等公司已申请现货ETH ETF批准，我们可能会看到更多发展',
-      slug: 'sec-approves-eth-etf-options-doge-filing',
-      author: {
-        name: 'JACK KUBRIC',
-        avatar: '/avatars/jack-kubric.jpg'
+      "entry_id": "dtc-eth-etf-news",
+      "slug": "sec-approves-eth-etf-options-doge-filing",
+      "title": locale === 'us' ? 'SEC approves ETH ETF options, faces new DOGE filing' : 'SEC批准ETH ETF期权，面临新的DOGE申请',
+      "sub_title": locale === 'us' ? 'Crypto products come to market BlackRock, Fidelity and others have filed a spot ETH ETF approved, and we may see more' : '加密产品进入市场，BlackRock、Fidelity等公司已申请现货ETH ETF批准，我们可能会看到更多发展',
+      "img_url": "/placeholder.svg",
+      "created_at": "2024-04-11T00:00:00Z",
+      "updated_at": "2024-04-11T00:00:00Z",
+      "category_name": "News",
+      "author": {
+        "name": "JACK KUBRIC",
+        "avatar_url": "/avatars/jack-kubric.jpg"
       },
-      publishedAt: '2024-04-11T00:00:00Z',
-      updatedAt: '2024-04-11T00:00:00Z',
-      category: 'News',
-      tags: ['sec', 'eth', 'etf', 'doge', 'regulation'],
-      featuredImage: '/placeholder.svg',
-      readTime: 3,
-      locale
+      "body": "Crypto products come to market as BlackRock, Fidelity and others have filed for spot ETH ETF approval, and we may see more developments in the regulatory landscape.",
+      "tags": ["sec", "eth", "etf", "doge", "regulation"],
+      "language": locale === 'us' ? 'en' : 'zh'
     },
     {
-      id: '3',
-      title: locale === 'us' ? 'SEC approves ETH ETF options, faces new DOGE filing' : 'SEC批准ETH ETF期权，面临新的DOGE申请',
-      content: 'Crypto products come to market as BlackRock, Fidelity and others have filed for spot ETH ETF approval, and we may see more developments in the regulatory landscape.',
-      excerpt: locale === 'us' ? 'crypto products come to market BlackRock, Fidelity and others have filed a spot ETH ETF approved, and we may see more' : '加密产品进入市场，BlackRock、Fidelity等公司已申请现货ETH ETF批准，我们可能会看到更多发展',
-      slug: 'sec-approves-eth-etf-options-doge-filing-research',
-      author: {
-        name: 'JACK KUBRIC',
-        avatar: '/avatars/jack-kubric.jpg'
+      "entry_id": "dtc-crypto-fundamentals",
+      "slug": "how-crypto-evolving-xG0zT",
+      "title": locale === 'us' ? 'How crypto\'s evolving with fundamentals' : '加密货币如何与基本面共同发展',
+      "sub_title": locale === 'us' ? 'SCALE is one of bitcoin said that certain metrics are becoming more important to gauging the success of projects' : 'SCALE是比特币之一，表示某些指标对于衡量项目成功变得更加重要',
+      "img_url": "/images/crypto-fundamentals.jpg",
+      "created_at": "2024-04-17T10:00:00Z",
+      "updated_at": "2024-04-17T10:00:00Z",
+      "category_name": "Research",
+      "author": {
+        "name": "Jack Kubinec",
+        "avatar_url": "/avatars/jack.jpg"
       },
-      publishedAt: '2024-04-11T00:00:00Z',
-      updatedAt: '2024-04-11T00:00:00Z',
-      category: 'Research',
-      tags: ['sec', 'eth', 'etf', 'doge', 'research'],
-      featuredImage: '/placeholder.svg',
-      readTime: 3,
-      locale
+      "body": "Full article content here...",
+      "tags": ["crypto", "fundamentals", "analysis"],
+      "language": locale === 'us' ? 'en' : 'zh'
     },
     {
-      id: '4',
-      title: locale === 'us' ? 'How crypto\'s evolving with fundamentals' : '加密货币如何与基本面共同发展',
-      content: 'Full article content here...',
-      excerpt: locale === 'us' ? 'SCALE is one of bitcoin said that certain metrics are becoming more important to gauging the success of projects' : 'SCALE是比特币之一，表示某些指标对于衡量项目成功变得更加重要',
-      slug: 'how-crypto-evolving-xG0zT',
-      author: {
-        name: 'Jack Kubinec',
-        avatar: '/avatars/jack.jpg'
+      "entry_id": "dtc-loopscale-solana",
+      "slug": "loopscale-launches-solana-defi",
+      "title": locale === 'us' ? 'Loopscale launches for more efficient Solana DeFi' : 'Loopscale推出更高效的Solana DeFi',
+      "sub_title": locale === 'us' ? 'Mary Generative, co-founder of Solana DeFi startup Loopscale, wants to give blockchain borrow-lend a facelift' : 'Solana DeFi初创公司Loopscale的联合创始人Mary Generative希望为区块链借贷提供新面貌',
+      "img_url": "/images/loopscale-launch.jpg",
+      "created_at": "2024-04-17T08:00:00Z",
+      "updated_at": "2024-04-17T08:00:00Z",
+      "category_name": "News",
+      "author": {
+        "name": "Jack Kubinec",
+        "avatar_url": "/avatars/jack.jpg"
       },
-      publishedAt: '2024-04-17T10:00:00Z',
-      updatedAt: '2024-04-17T10:00:00Z',
-      category: 'News',
-      tags: ['crypto', 'fundamentals', 'analysis'],
-      featuredImage: '/images/crypto-fundamentals.jpg',
-      readTime: 5,
-      locale
-    },
-    {
-      id: '5',
-      title: locale === 'us' ? 'Loopscale launches for more efficient Solana DeFi' : 'Loopscale推出更高效的Solana DeFi',
-      content: 'Full article content here...',
-      excerpt: locale === 'us' ? 'Mary Generative, co-founder of Solana DeFi startup Loopscale, wants to give blockchain borrow-lend a facelift' : 'Solana DeFi初创公司Loopscale的联合创始人Mary Generative希望为区块链借贷提供新面貌',
-      slug: 'loopscale-launches-solana-defi',
-      author: {
-        name: 'Jack Kubinec',
-        avatar: '/avatars/jack.jpg'
-      },
-      publishedAt: '2024-04-17T08:00:00Z',
-      updatedAt: '2024-04-17T08:00:00Z',
-      category: 'News',
-      tags: ['solana', 'defi', 'loopscale'],
-      featuredImage: '/images/loopscale-launch.jpg',
-      readTime: 4,
-      locale
+      "body": "Full article content here...",
+      "tags": ["solana", "defi", "loopscale"],
+      "language": locale === 'us' ? 'en' : 'zh'
     },
   ]
 
@@ -230,8 +306,12 @@ function getMockArticles(locale: Locale, page: number, limit: number, category?:
   }
 }
 
-
-function getMockArticle(locale: Locale, slug: string, category?: string): Article | null {
-  const mockArticles = getMockArticles(locale, 1, 10, category)
-  return mockArticles.articles.find(article => article.slug === slug) || null
+/**
+ * Get mock article for development
+ * Returns ApiArticle format directly 
+ */
+function getMockArticle(locale: Locale, slug: string, category?: string): ApiArticle | null {
+  const mock = getMockArticles(locale, 1, 10, category)
+  const article = mock.articles.find(article => article.slug === slug)
+  return article || null
 }

@@ -142,7 +142,6 @@ export const useAuth = () => {
     isWalletAuthenticated,
     walletAuthData: walletAuth.walletAuthData,
     accessToken: walletAuth.accessToken,
-    refreshToken: walletAuth.refreshToken,
     userId: walletAuth.userId,
     
     // Additional states
@@ -164,7 +163,6 @@ export const useAuth = () => {
     
     // Wallet auth utility methods
     getValidAccessToken: walletAuth.getValidAccessToken,
-    refreshWalletTokens: walletAuth.refreshTokens,
     clearWalletAuthError: walletAuth.clearError,
   };
 };

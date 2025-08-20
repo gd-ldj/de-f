@@ -1,5 +1,29 @@
 /**
- * Article data structure from API
+ * Backend API article data structure (new format)
+ * This matches the fields returned directly from the backend API
+ */
+export interface ApiArticle {
+  entry_id: string
+  title: string
+  sub_title: string
+  slug: string
+  body: string
+  author: {
+    name: string
+    avatar_url?: string
+    bio?: string
+  }
+  created_at: string
+  updated_at: string
+  category_name: string
+  tags: string[]
+  img_url?: string
+  language: string
+}
+
+/**
+ * @deprecated Legacy Article interface - use ApiArticle for new implementations
+ * Article data structure from API (legacy format)
  */
 export interface Article {
   id: string
@@ -9,7 +33,8 @@ export interface Article {
   slug: string
   author: {
     name: string
-    avatar?: string
+    avatar_url?: string
+    bio?: string
   }
   publishedAt: string
   updatedAt: string
@@ -18,13 +43,42 @@ export interface Article {
   featuredImage?: string
   readTime: number
   locale: string
+  /** Raw HTML body used by ArticleContent for rendering */
+  body?: string
 }
 
 /**
- * API response structure for articles list
+ * Article category data structure from API
+ */
+export interface ArticleCategory {
+  id: string
+  name: string
+  description: string
+}
+
+/**
+ * Article business type data structure from API
+ */
+export interface ArticleBusinessType {
+  id: string
+  name: string
+  description: string
+}
+
+/**
+ * Article tag data structure from API
+ */
+export interface ArticleTag {
+  id: string
+  name: string
+  description: string
+}
+
+/**
+ * API response structure for articles list (updated to use backend format)
  */
 export interface ArticlesResponse {
-  articles: Article[]
+  articles: ApiArticle[]
   total: number
   page: number
   limit: number
@@ -104,14 +158,12 @@ export interface WalletLoginRequest {
 
 /**
  * Wallet login response data interface
+ * Updated to match new API format without refreshToken
  */
 export interface WalletLoginData {
+  type: string
   userId: string
-  promoteCode: string
   accessToken: string
-  refreshToken: string
-  accessTokenExpiresAt: string
-  refreshTokenExpiresAt: string
 }
 
 /**

@@ -1,13 +1,11 @@
 import type { WalletLoginRequest, WalletLoginResponse, WalletLoginData } from '../types'
-import { getDefaultStore } from 'jotai'
-import { persistedPromoteCodeAtom } from '../stores'
 
 /**
  * API configuration
  */
-// TODO: 引用process.env.PUBLIC_API_BASE_URL后钱包插件加载异常
-// const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://test-api.detake.com/'
-const API_BASE_URL = 'https://test-api.detake.com/'
+// Use import.meta.env for browser-safe environment variables in Vite/Astro
+// Note: Using process.env in the browser bundle causes "process is not defined"; import.meta.env is the correct approach
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com/'
 
 /**
  * Wallet login function
@@ -19,8 +17,6 @@ export async function loginWithWallet(
   walletAddress: string,
   signature: string
 ): Promise<WalletLoginData | null> {
-    return getMockWalletLoginData(walletAddress)
-
   try {
     const requestBody: WalletLoginRequest = {
       wallet_address: walletAddress,
@@ -28,7 +24,7 @@ export async function loginWithWallet(
     }
 
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/auth/login/wallet`,
+      `${API_BASE_URL}/api/v1/auth/wallet`,
       {
         method: 'POST',
         headers: {
@@ -50,7 +46,7 @@ export async function loginWithWallet(
 
     const result: WalletLoginResponse = await response.json()
     
-    if (result.code === 2001) {
+    if (result.code === 2000) {
       return result.data
     } else {
       throw new Error(`API Error: ${result.msg.en}`)
@@ -58,63 +54,19 @@ export async function loginWithWallet(
   } catch (error) {
     console.error('Error during wallet login:', error)
     // Return mock data for development
-    return getMockWalletLoginData(walletAddress)
+    return getMockWalletLoginData()
   }
 }
 
 /**
  * Mock wallet login data for development
- * @param walletAddress - Wallet address
  * @returns Mock login response data
  */
-function getMockWalletLoginData(walletAddress: string): WalletLoginData {
+function getMockWalletLoginData(): WalletLoginData {
   return {
+    type: "login",
     userId: "5",
-    promoteCode: 'xG3gD',
-    accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-    refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.cThIIoDvwdueQB468K5xDc5633seEFoqwxjF_xSJyQQ",
-    accessTokenExpiresAt: "2025-07-08T10:41:37.035Z",
-    refreshTokenExpiresAt: "2025-07-08T10:41:37.035Z"
-  }
-}
-
-/**
- * Refresh access token using refresh token
- * @param refreshToken - Current refresh token
- * @returns Promise with new login data
- */
-export async function refreshAccessToken(
-  refreshToken: string
-): Promise<WalletLoginData | null> {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/auth/refresh`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${refreshToken}`
-        }
-      }
-    )
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Invalid refresh token')
-      }
-      throw new Error(`Failed to refresh token: ${response.statusText}`)
-    }
-
-    const result: WalletLoginResponse = await response.json()
-    
-    if (result.code === 2001) {
-      return result.data
-    } else {
-      throw new Error(`API Error: ${result.msg.en}`)
-    }
-  } catch (error) {
-    console.error('Error refreshing access token:', error)
-    return null
+    accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1IiwicmFuZG9tIjoiZGE0MDc3MjQxYjQ2YzJmYjU1OTQ1NWEyNjg2N2MxN2U0NDVmMjk3ODU2MTE2OWFkNzFiMzgzZmMwNjlmM2FjNiIsImlhdCI6MTc1NTYwODcwOX0.Q4Jd8L4xmWn9C5hFNIbQhKklLOyNXWdc8xGQQ317DuQ"
   }
 }
 
@@ -124,27 +76,7 @@ export async function refreshAccessToken(
  * @returns Promise with logout success status
  */
 export async function logout(accessToken: string): Promise<boolean> {
+  // NOTE: Backend logout is optional for now; clear client state regardless.
+  // Keeping a stubbed true to avoid blocking UI while backend endpoint stabilizes.
   return true
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/auth/logout`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        }
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error(`Failed to logout: ${response.statusText}`)
-    }
-
-    const result = await response.json()
-    return result.code === 2001
-  } catch (error) {
-    console.error('Error during logout:', error)
-    return false
-  }
 }

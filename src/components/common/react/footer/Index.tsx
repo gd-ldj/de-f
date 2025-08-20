@@ -1,4 +1,3 @@
-import { Mail } from "lucide-react";
 import { footerTexts } from './constants';
 
 // Import social media icons from locale assets

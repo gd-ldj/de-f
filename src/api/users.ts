@@ -3,24 +3,21 @@ import type { UserPersonalInfo, UserPersonalInfoResponse } from '../types'
 /**
  * API configuration
  */
-const API_BASE_URL = process.env.PUBLIC_API_BASE_URL || 'https://test-api.detake.com/';
+// Use import.meta.env for browser-safe environment variables in Vite/Astro
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com/';
 
 /**
  * Fetch user personal information by user ID
- * @param userId - User ID to fetch personal information for
  * @returns Promise with user personal information
  */
-export async function fetchUserPersonalInfo(
-  userId: string
-): Promise<UserPersonalInfo | null> {
-    return getMockUserPersonalInfo(userId)
-
+export async function fetchUserPersonalInfo(accessToken: string): Promise<UserPersonalInfo | null> {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/v1/users/${userId}/personal`,
+      `${API_BASE_URL}/api/v1/users/personal`,
       {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
         },
       }
     )
@@ -34,7 +31,7 @@ export async function fetchUserPersonalInfo(
 
     const result: UserPersonalInfoResponse = await response.json()
     
-    if (result.code === 2001) {
+    if (result.code === 2000) {
       return result.data
     } else {
       throw new Error(`API Error: ${result.msg.en}`)
@@ -42,7 +39,7 @@ export async function fetchUserPersonalInfo(
   } catch (error) {
     console.error('Error fetching user personal info:', error)
     // Return mock data for development
-    return getMockUserPersonalInfo(userId)
+    return getMockUserPersonalInfo("5")
   }
 }
 

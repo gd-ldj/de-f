@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Globe } from 'lucide-react';
 import { headerTexts } from './constants';
 
 // Import icons from local assets
 import DownIcon from './assets/down.svg?url';
 import DetakeLogo from './assets/detake.svg?url';
+import CountryIcon from './assets/country.svg?url';
+import SearchIcon from './assets/search.svg?url';
 
 type Locale = 'us' | 'asia';
 
@@ -146,9 +147,9 @@ export default function Header({ locale, currentPath, userComponent }: HeaderPro
       key: 'news',
     },
     {
-      name: texts.navigation.categories.insight,
-      href: `/${locale}/insight`,
-      key: 'insight',
+      name: texts.navigation.categories.insights,
+      href: `/${locale}/insights`,
+      key: 'insights',
     },
     {
       name: texts.navigation.categories.research,
@@ -257,13 +258,13 @@ export default function Header({ locale, currentPath, userComponent }: HeaderPro
 
             {/* Search Icon */}
             <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search}>
-              <Search className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+              <img src={SearchIcon} alt="SearchIcon" className='w-4 h-4' />
             </button>
 
             {/* Locale Switcher Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button onClick={toggleLocaleDropdown} className={`flex items-center space-x-2 px-2 py-1 hover:bg-gray-100 rounded transition-colors ${localeDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.actions.switchLanguage} aria-expanded={localeDropdownOpen}>
-                <Globe className="w-4 h-4 text-gray-600" />
+                <img src={CountryIcon} alt="CountryIcon" className='w-4 h-4' />
                 <span className="text-sm text-gray-600">{currentLocaleConfig.name}</span>
                 <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${localeDropdownOpen ? 'rotate-180' : ''}`} />
               </button>

@@ -75,12 +75,6 @@ export const walletAuthDataAtom = atom<WalletLoginData | null>(null)
 export const accessTokenAtom = atom<string | null>(null)
 
 /**
- * Refresh token atom with localStorage persistence
- * Automatically syncs refresh token with localStorage
- */
-export const refreshTokenAtom = atom<string | null>(null)
-
-/**
  * Derived atom for access token with localStorage persistence
  * SSR-compatible with localStorage availability check
  */
@@ -98,23 +92,7 @@ export const persistedAccessTokenAtom = atom(
   }
 )
 
-/**
- * Derived atom for refresh token with localStorage persistence
- * SSR-compatible with localStorage availability check
- */
-export const persistedRefreshTokenAtom = atom(
-  (get) => get(refreshTokenAtom),
-  (get, set, newValue: string | null) => {
-    set(refreshTokenAtom, newValue)
-    if (typeof window !== 'undefined') {
-      if (newValue) {
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newValue)
-      } else {
-        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
-      }
-    }
-  }
-)
+
 
 /**
  * Derived atom for complete wallet auth data with localStorage persistence
@@ -130,31 +108,25 @@ export const persistedWalletAuthDataAtom = atom(
         // Store all auth data in localStorage
         localStorage.setItem(STORAGE_KEYS.WALLET_AUTH_DATA, JSON.stringify(newValue))
         localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, newValue.accessToken)
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newValue.refreshToken)
         localStorage.setItem(STORAGE_KEYS.USER_ID, newValue.userId)
         
         // Update individual atoms
         set(accessTokenAtom, newValue.accessToken)
-        set(refreshTokenAtom, newValue.refreshToken)
       } else {
         // Clear all auth data from localStorage
         localStorage.removeItem(STORAGE_KEYS.WALLET_AUTH_DATA)
         localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
-        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
         localStorage.removeItem(STORAGE_KEYS.USER_ID)
         
         // Clear individual atoms
         set(accessTokenAtom, null)
-        set(refreshTokenAtom, null)
       }
     } else {
       // In SSR environment, only update atoms without localStorage
       if (newValue) {
         set(accessTokenAtom, newValue.accessToken)
-        set(refreshTokenAtom, newValue.refreshToken)
       } else {
         set(accessTokenAtom, null)
-        set(refreshTokenAtom, null)
       }
     }
   }

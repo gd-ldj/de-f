@@ -65,7 +65,6 @@ const AuthMount: React.FC<AuthMountProps> = ({
   // Resolve DOM mount points on client and log for debugging in client only
   useEffect(() => {
     const header = document.getElementById(headerTargetId);
-    console.log("🚀 ~ AuthMount ~ header:", header)
     const login = document.getElementById(loginTargetId);
     const share = document.getElementById(shareTargetId);
     const author = document.getElementById(authorTargetId);
@@ -94,8 +93,8 @@ const AuthMount: React.FC<AuthMountProps> = ({
             currentPath={currentPath} 
             userComponent={(
               <WalletPopover>
-                <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={locale === 'us' ? 'Settings' : '设置'}>
-                  <img src="/me.svg" alt="logo" className="w-6" />
+                <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">
+                  <img src="/me.svg" alt="logo" className="w-5" />
                 </button>
               </WalletPopover>
             )}

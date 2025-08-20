@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Locale } from '@/types';
 import copyIcon from '@/assets/imgs/copy.svg';
 import { useAuth } from '@/lib/useAuth';
+import { useWalletAuth } from '@/lib/useWalletAuth';
 
 interface ShareSectionProps {
   locale: Locale;
@@ -19,52 +20,43 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
   const [copied, setCopied] = useState(false);
   const { isEffectivelyLoggedIn, login } = useAuth();
   const [shareUrl, setShareUrl] = useState(url);
+  const { promoteCode: myPromoteCode } = useWalletAuth();
+
   /**
-   * Handle copying URL to clipboard with user feedback
+   * Extract promo code from the last URL segment if it follows the pattern "-<code>".
+   * Returns the code string if present, otherwise null.
    */
-  const handleCopyLink = async () => {
+  const getPromoCodeFromUrl = (inputUrl: string): string | null => {
     try {
-      await navigator.clipboard.writeText(shareUrl); // 使用 shareUrl 而不是 url
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = shareUrl; // 使用 shareUrl
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      const u = new URL(inputUrl);
+      const lastSeg = (u.pathname.split('/').pop() || '').trim();
+      const match = lastSeg.match(/-([^-]+)$/);
+      return match ? match[1] : null;
+    } catch {
+      // Fallback: best-effort extraction from a plain string
+      const match = inputUrl.match(/([^/]+?)-([^-]+)(?:\?|#|$)/);
+      return match ? match[2] : null;
     }
   };
 
-  const handleGenerateMyCode = () => {
-    const mockCode = 'ABCDE';
-    const replaced = replaceLastPromoCodeInUrl(shareUrl, mockCode);
-    console.log("🚀 ~ handleGenerateMyCode ~ replaced:", replaced)
-    setShareUrl(replaced);
-    
-    // Update browser address bar URL - only update the pathname to avoid CORS issues
-    if (typeof window !== 'undefined' && window.history) {
-      try {
-        // Extract pathname from the replaced URL
-        const urlObj = new URL(replaced);
-        const newPath = urlObj.pathname + urlObj.search + urlObj.hash;
-        window.history.pushState(null, '', newPath);
-      } catch (error) {
-        console.warn('Failed to update browser URL:', error);
-        // Fallback: just update the hash or search params if possible
-        const currentUrl = new URL(window.location.href);
-        const replacedUrl = new URL(replaced);
-        if (currentUrl.origin === replacedUrl.origin) {
-          window.history.pushState(null, '', replaced);
-        }
-      }
-    }
+  /**
+   * Centralized evaluation for whether the cross-promo prompt should be visible.
+   * The rule: show only if logged in AND the share URL's code is different from user's own code.
+   */
+  const evaluateShouldShowPrompt = (targetUrl: string, userCode?: string | null, loggedIn?: boolean) => {
+    const urlPromoCode = getPromoCodeFromUrl(targetUrl);
+    return !!(loggedIn && !(urlPromoCode && userCode && urlPromoCode === userCode));
   };
+
+  // Local state for controlling the prompt visibility so we can update it right after actions.
+  const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(() =>
+    evaluateShouldShowPrompt(shareUrl, myPromoteCode, isEffectivelyLoggedIn)
+  );
+
+  // Keep the prompt state in sync if any dependency changes externally.
+  useEffect(() => {
+    setShouldShowPrompt(evaluateShouldShowPrompt(shareUrl, myPromoteCode, isEffectivelyLoggedIn));
+  }, [shareUrl, myPromoteCode, isEffectivelyLoggedIn]);
 
   /**
    * Replace the last promo code segment in the article URL.
@@ -92,6 +84,61 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
   };
 
   /**
+   * Handle generating a link with the user's own promo code and update the URL state.
+   * Using the locally stored promo code ensures the prompt condition re-evaluates
+   * and hides itself when the link already contains the user's code.
+   */
+  const handleGenerateMyCode = () => {
+    const targetCode = myPromoteCode || 'ABCDE';
+    const replaced = replaceLastPromoCodeInUrl(shareUrl, targetCode);
+    setShareUrl(replaced);
+
+    // Immediately update the prompt state after generating new link
+    setShouldShowPrompt(evaluateShouldShowPrompt(replaced, myPromoteCode, isEffectivelyLoggedIn));
+
+    // Update browser address bar URL - only update the pathname to avoid CORS issues
+    if (typeof window !== 'undefined' && window.history) {
+      try {
+        // Extract pathname from the replaced URL
+        const urlObj = new URL(replaced);
+        const newPath = urlObj.pathname + urlObj.search + urlObj.hash;
+        window.history.pushState(null, '', newPath);
+      } catch (error) {
+        console.warn('Failed to update browser URL:', error);
+        // Fallback: just update the hash or search params if possible
+        const currentUrl = new URL(window.location.href);
+        const replacedUrl = new URL(replaced);
+        if (currentUrl.origin === replacedUrl.origin) {
+          window.history.pushState(null, '', replaced);
+        }
+      }
+    }
+  };
+
+  /**
+   * Handle copying the current shareUrl to clipboard with user feedback.
+   * Uses the modern Clipboard API with a safe fallback for older browsers.
+   */
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  /**
    * Handle login trigger when user is not authenticated
    */
   const handleLoginClick = () => {
@@ -108,7 +155,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
       {/* Content */}
       <div className="space-y-4">
         {/* Login Prompt for Unauthenticated Users */}
-        {isEffectivelyLoggedIn && (
+        {shouldShowPrompt && (
           <div className="text-sm text-muted-foreground">
             {locale === 'us' ? (
               <>
@@ -153,7 +200,8 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
             fill="currentColor"
             viewBox="0 0 24 24"
           >
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+-            <path dName="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
++            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
           </svg>
         </div>
 

@@ -23,7 +23,8 @@ export function getCanonicalArticleUrl(
 
 /**
  * Generate structured data (JSON-LD) for an article
- * @param article Article data
+ * Accepts backend field names directly for consistency across the app
+ * @param article Article data with backend fields
  * @param locale Current locale
  * @param baseUrl Site base URL
  * @returns JSON-LD structured data
@@ -31,10 +32,10 @@ export function getCanonicalArticleUrl(
 export function generateArticleStructuredData(
   article: {
     title: string
-    excerpt: string
+    sub_title: string
     slug: string
-    publishedAt: string
-    featuredImage?: string
+    created_at: string
+    img_url?: string
     author?: string
   },
   locale: Locale,
@@ -46,9 +47,9 @@ export function generateArticleStructuredData(
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: article.title,
-    description: article.excerpt,
+    description: article.sub_title,
     url: canonicalUrl,
-    datePublished: article.publishedAt,
+    datePublished: article.created_at,
     author: {
       '@type': 'Organization',
       name: article.author || 'Detake'
@@ -61,7 +62,7 @@ export function generateArticleStructuredData(
         url: `${baseUrl}/logo.png`
       }
     },
-    image: article.featuredImage ? `${baseUrl}${article.featuredImage}` : undefined,
+    image: article.img_url ? `${baseUrl}${article.img_url}` : undefined,
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': canonicalUrl
@@ -71,7 +72,8 @@ export function generateArticleStructuredData(
 
 /**
  * Generate meta tags for article SEO
- * @param article Article data
+ * Accepts backend field names directly for consistency across the app
+ * @param article Article data with backend fields
  * @param locale Current locale
  * @param baseUrl Site base URL
  * @returns Meta tags object
@@ -79,23 +81,23 @@ export function generateArticleStructuredData(
 export function generateArticleMetaTags(
   article: {
     title: string
-    excerpt: string
+    sub_title: string
     slug: string
-    featuredImage?: string
+    img_url?: string
   },
   locale: Locale,
   baseUrl: string = 'https://detake.com'
 ) {
   const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale)}`
-  const imageUrl = article.featuredImage ? `${baseUrl}${article.featuredImage}` : `${baseUrl}/og-default.png`
+  const imageUrl = article.img_url ? `${baseUrl}${article.img_url}` : `${baseUrl}/og-default.png`
   
   return {
     title: article.title,
-    description: article.excerpt,
+    description: article.sub_title,
     canonical: canonicalUrl,
     openGraph: {
       title: article.title,
-      description: article.excerpt,
+      description: article.sub_title,
       url: canonicalUrl,
       type: 'article',
       image: imageUrl
@@ -103,7 +105,7 @@ export function generateArticleMetaTags(
     twitter: {
       card: 'summary_large_image',
       title: article.title,
-      description: article.excerpt,
+      description: article.sub_title,
       image: imageUrl
     }
   }
@@ -111,7 +113,8 @@ export function generateArticleMetaTags(
 
 /**
  * Generate sitemap entry for an article
- * @param article Article data
+ * Accepts backend field names directly for consistency across the app
+ * @param article Article data with backend fields
  * @param locale Current locale
  * @param baseUrl Site base URL
  * @returns Sitemap entry
@@ -119,14 +122,14 @@ export function generateArticleMetaTags(
 export function generateSitemapEntry(
   article: {
     slug: string
-    publishedAt: string
+    created_at: string
   },
   locale: Locale,
   baseUrl: string = 'https://detake.com'
 ) {
   return {
     url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale)}`,
-    lastmod: article.publishedAt,
+    lastmod: article.created_at,
     changefreq: 'weekly' as const,
     priority: 0.8
   }

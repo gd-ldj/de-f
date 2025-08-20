@@ -5,20 +5,23 @@ import { generateArticleStructuredData, generateArticleMetaTags } from '@/utils/
 interface Props {
   article: {
     title: string
-    excerpt: string
+    sub_title: string
     slug: string
-    publishedAt: string
-    featuredImage?: string
-    author?: string
+    created_at: string
+    img_url?: string
+    author?: { name: string } | string
   }
   locale: Locale
   baseUrl?: string
 }
 
-const { article, locale, baseUrl = 'https://detake.com' } = Astro.props
+const { article, locale, baseUrl = 'https://detake.com' } = Astro.props as Props
+
+// Normalize author to string for SEO utilities
+const authorName = typeof article.author === 'string' ? article.author : article.author?.name
 
 // Generate structured data and meta tags
-const structuredData = generateArticleStructuredData(article, locale, baseUrl)
+const structuredData = generateArticleStructuredData({ ...article, author: authorName }, locale, baseUrl)
 const metaTags = generateArticleMetaTags(article, locale, baseUrl)
 ---
 
@@ -42,7 +45,6 @@ const metaTags = generateArticleMetaTags(article, locale, baseUrl)
 <!-- Structured Data (JSON-LD) -->
 <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 
-<!-- Preload critical resources -->
-{article.featuredImage && (
-  <link rel="preload" as="image" href={article.featuredImage} />
+{article.img_url && (
+  <link rel="preload" as="image" href={article.img_url} />
 )}

@@ -1,76 +1,46 @@
 ---
-// News categories and articles data - 新闻分类和文章数据
+import { fetchArticles } from '@/api/articles'
+import type { Locale } from '@/types'
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props as Props
+
+/**
+ * Fetch latest news articles (server-side) for the homepage grid
+ * Keeps UI fast and SEO friendly.
+ */
+const { articles } = await fetchArticles(locale, 1, 6, 'news')
+
+// Static category nav (URLs localized)
 const newsCategories = [
-  { name: "All", url: "/news", active: true },
-  { name: "Opinion", url: "/news/opinion", active: false },
-  { name: "Markets", url: "/news/markets", active: false },
-  { name: "Decibels", url: "/news/decibels", active: false },
-  { name: "Exchange", url: "/news/exchange", active: false },
-  { name: "Feature", url: "/news/feature", active: false },
-  { name: "Announcement", url: "/news/announcement", active: false },
-  { name: "People", url: "/news/people", active: false },
-  { name: "Event", url: "/news/event", active: false },
-  { name: "Analysis", url: "/news/analysis", active: false },
-  { name: "Policy", url: "/news/policy", active: false },
-  { name: "Lightspeed Newsletter", url: "/news/newsletter", active: false },
+  { name: 'All', url: `/${locale}/news`, active: true },
+  { name: 'Opinion', url: `/${locale}/news/opinion`, active: false },
+  { name: 'Markets', url: `/${locale}/news/markets`, active: false },
+  { name: 'Decibels', url: `/${locale}/news/decibels`, active: false },
+  { name: 'Exchange', url: `/${locale}/news/exchange`, active: false },
+  { name: 'Feature', url: `/${locale}/news/feature`, active: false },
+  { name: 'Announcement', url: `/${locale}/news/announcement`, active: false },
+  { name: 'People', url: `/${locale}/news/people`, active: false },
+  { name: 'Event', url: `/${locale}/news/event`, active: false },
+  { name: 'Analysis', url: `/${locale}/news/analysis`, active: false },
+  { name: 'Lightspeed Newsletter', url: `/${locale}/news/newsletter`, active: false },
 ]
 
-const newsArticles = [
-  {
-    title: "US stocks, cryptocurrencies surge on tariff reversal",
-    category: "MARKETS",
-    image: "/placeholder.svg",
-    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
-    url: "/news/us-stocks-crypto-surge-tariff",
-    date: "Apr 11, 2024",
-    author: "JACK KUBRIC"
-  },
-  {
-    title: "US stocks, cryptocurrencies surge on tariff reversal",
-    category: "MARKETS",
-    image: "/placeholder.svg",
-    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
-    url: "/news/market-analysis-tariff-impact",
-    date: "Apr 11, 2024",
-    author: "JACK KUBRIC"
-  },
-  {
-    title: "US stocks, cryptocurrencies surge on tariff reversal",
-    category: "MARKETS",
-    image: "/placeholder.svg",
-    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
-    url: "/news/crypto-market-response",
-    date: "Apr 11, 2024",
-    author: "JACK KUBRIC"
-  },
-  {
-    title: "US stocks, cryptocurrencies surge on tariff reversal",
-    category: "MARKETS",
-    image: "/placeholder.svg",
-    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
-    url: "/news/trade-policy-markets",
-    date: "Apr 11, 2024",
-    author: "JACK KUBRIC"
-  },
-  {
-    title: "US stocks, cryptocurrencies surge on tariff reversal",
-    category: "MARKETS",
-    image: "/placeholder.svg",
-    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
-    url: "/news/economic-indicators-update",
-    date: "Apr 11, 2024",
-    author: "JACK KUBRIC"
-  },
-  {
-    title: "US stocks, cryptocurrencies surge on tariff reversal",
-    category: "MARKETS",
-    image: "/placeholder.svg",
-    excerpt: "Trump and other officials say following news that Trump will pause tariffs",
-    url: "/news/financial-markets-outlook",
-    date: "Apr 11, 2024",
-    author: "JACK KUBRIC"
-  },
-]
+/**
+ * Format date to a short, localized string for cards
+ */
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
 ---
 
 <div class="mt-12">
@@ -79,14 +49,14 @@ const newsArticles = [
     <h2 class="text-xl font-medium text-foreground">News</h2>
     <p class="text-sm text-muted-foreground">Breaking headlines across our core coverage categories</p>
   </div>
-  <a href="/news" class="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
+  <a href={`/${locale}/news`} class="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
       More from News
     </a>
   </div>
 
   <!-- Category Navigation - 分类导航 -->
   <div class="flex space-x-6 mb-8 overflow-x-auto">
-    {newsCategories.map((category, index) => (
+    {newsCategories.map((category) => (
       <a
         href={category.url}
         class={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors ${
@@ -100,26 +70,28 @@ const newsArticles = [
 
   <!-- News Articles Grid - 新闻文章网格 -->
   <div class="grid grid-cols-6 gap-4">
-    {newsArticles.map((article, index) => (
-      <a
-        href={article.url}
+    {articles.map((article) => (
+      <ArticleLink
+        slug={article.slug}
+        category={article.category_name}
+        locale={locale}
         class="bg-white rounded border border-border overflow-hidden hover:shadow-md transition-shadow group"
       >
         <img 
-          src={article.image} 
+          src={article.img_url || '/placeholder.svg'}
           alt={article.title} 
           class="w-full h-32 object-cover group-hover:opacity-90 transition-opacity" 
         />
         <div class="p-4">
-          <span class="text-xs text-primary font-medium">{article.category}</span>
-        <h3 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h3>
-        <p class="text-xs text-muted-foreground mb-3">{article.excerpt}</p>
-        <div class="flex items-center space-x-2 text-xs text-muted-foreground">
-            <span>{article.date}</span>
-            <span>by {article.author}</span>
+          <span class="text-xs text-primary font-medium">{article.category_name}</span>
+          <h3 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h3>
+          <p class="text-xs text-muted-foreground mb-3">{article.sub_title}</p>
+          <div class="flex items-center space-x-2 text-xs text-muted-foreground">
+            <span>{formatDate(article.created_at)}</span>
+            <span>by {article.author.name}</span>
           </div>
         </div>
-      </a>
+      </ArticleLink>
     ))}
   </div>
 </div>
