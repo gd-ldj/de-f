@@ -28,7 +28,7 @@ const i18n = {
 
 ---
 
-<div class="flex items-center bg-card border border-border rounded-md px-4 py-3">
+<div class="flex items-center bg-white border border-border rounded-md px-4 py-3">
   <div class="flex items-center flex-1 min-w-0">
     <!-- Static Filters label -->
     <div class="flex items-center space-x-2 pr-4">
@@ -74,13 +74,13 @@ const i18n = {
   <!-- Right: view toggles -->
   <div class="flex items-center space-x-4">
     <div class="flex overflow-hidden rounded-md border border-border">
-      <button class={`p-2 ${viewMode === 'list' ? 'bg-secondary' : 'bg-card hover:bg-accent'}`} aria-label="List view">
+      <button class={`p-2 ${viewMode === 'list' ? 'bg-secondary' : 'bg-white hover:bg-accent'}`} aria-label="List view">
         <svg class="w-4 h-4 text-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
       <div class="w-px bg-border"></div>
-      <button class={`p-2 ${viewMode === 'grid' ? 'bg-secondary' : 'bg-card hover:bg-accent'}`} aria-label="Grid view">
+      <button class={`p-2 ${viewMode === 'grid' ? 'bg-secondary' : 'bg-white hover:bg-accent'}`} aria-label="Grid view">
         <svg class="w-4 h-4 text-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path>
         </svg>

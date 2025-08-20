@@ -99,10 +99,10 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
   };
 
   return (
-    <div className="bg-card rounded border border-border p-6 max-w-md mx-auto">
+    <div className="bg-white rounded border border-border p-6 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-foreground">{locale === 'us' ? 'Share To Earn Passive Income' : '分享赚取被动收入'}</h3>
+        <h3 className="text-lg font-medium text-foreground">{locale === 'us' ? 'Share To Earn Passive Income' : '分享赚取被动收入'}</h3>
       </div>
 
       {/* Content */}

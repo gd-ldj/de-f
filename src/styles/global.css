@@ -20,8 +20,8 @@
 @theme {
   --color-background: #ffffff;
   --color-foreground: #052019; /* Custom black */
-  --color-card: #ffffff;
-  --color-card-foreground: #052019; /* Custom black */
+  --color-white: #ffffff;
+  --color-white-foreground: #052019; /* Custom black */
   --color-popover: #ffffff;
   --color-popover-foreground: #052019; /* Custom black */
   --color-primary: #06A17E; /* Custom theme color */

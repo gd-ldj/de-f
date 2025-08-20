@@ -76,7 +76,7 @@ const newsArticles = [
 <div class="mt-12">
   <div class="flex items-center justify-between mb-6">
   <div class="flex items-center justify-center gap-2">
-    <h2 class="text-xl font-bold text-foreground">News</h2>
+    <h2 class="text-xl font-medium text-foreground">News</h2>
     <p class="text-sm text-muted-foreground">Breaking headlines across our core coverage categories</p>
   </div>
   <a href="/news" class="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
@@ -103,7 +103,7 @@ const newsArticles = [
     {newsArticles.map((article, index) => (
       <a
         href={article.url}
-        class="bg-card rounded border border-border overflow-hidden hover:shadow-md transition-shadow group"
+        class="bg-white rounded border border-border overflow-hidden hover:shadow-md transition-shadow group"
       >
         <img 
           src={article.image} 
@@ -112,7 +112,7 @@ const newsArticles = [
         />
         <div class="p-4">
           <span class="text-xs text-primary font-medium">{article.category}</span>
-        <h3 class="font-semibold text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h3>
+        <h3 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h3>
         <p class="text-xs text-muted-foreground mb-3">{article.excerpt}</p>
         <div class="flex items-center space-x-2 text-xs text-muted-foreground">
             <span>{article.date}</span>

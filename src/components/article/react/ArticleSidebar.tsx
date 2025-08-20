@@ -54,40 +54,24 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ locale }) => {
   return (
     <div className="space-y-6">
       {/* Share to Earn Passive Income Card */}
-      <div className="bg-card rounded-xl border border-border p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">
-              {locale === 'us' ? 'Table of Contents' : '目录'}
-            </h3>
-            <button className="text-muted-foreground hover:text-foreground">
+      <div className="bg-white rounded-xl border border-border p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium text-foreground">{locale === 'us' ? 'Table of Contents' : '目录'}</h3>
+          <button className="text-muted-foreground hover:text-foreground">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
           </button>
         </div>
-        
+
         {/* Token Info Card */}
         <div className="mb-6">
-          <TokenInfoCard
-            marketCap="$24.71M"
-            liquidity="$1.8M"
-            volume24h="$24.71M"
-            holders="19,861"
-            price="$0.0041"
-            priceChange="+$0.0008"
-            percentage="+60%"
-            isPositive={true}
-          />
+          <TokenInfoCard marketCap="$24.71M" liquidity="$1.8M" volume24h="$24.71M" holders="19,861" price="$0.0041" priceChange="+$0.0008" percentage="+60%" isPositive={true} />
         </div>
 
         {/* Bonus Distribution */}
         <div className="mb-6">
-          <BonusDistribution 
-            locale={locale}
-            currentProgress={60}
-            bonusRate="117.35"
-            views="1K"
-          />
+          <BonusDistribution locale={locale} currentProgress={60} bonusRate="117.35" views="1K" />
         </div>
 
         {/* Bonus Hunters */}
@@ -102,7 +86,7 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ locale }) => {
       </div>
 
       {/* Recent Research */}
-        <RecentResearch locale={locale} />
+      <RecentResearch locale={locale} />
     </div>
   );
 };

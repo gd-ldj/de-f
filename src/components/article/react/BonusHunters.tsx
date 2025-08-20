@@ -65,9 +65,9 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
   ]
 }) => {
   return (
-    <div className="bg-card rounded border border-border p-6">
+    <div className="bg-white rounded border border-border p-6">
       {/* Title */}
-      <h3 className="text-lg font-semibold text-foreground mb-6">{locale === 'us' ? 'Bonus Hunters' : '奖励猎人'}</h3>
+      <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Bonus Hunters' : '奖励猎人'}</h3>
 
       {/* Hunters List */}
       <div className="space-y-4">
@@ -95,7 +95,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
                 </div>
                 {/* Rank badge */}
                 <div className="absolute -bottom-1 -left-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-primary-foreground text-xs font-bold">{hunter.id}</span>
+                  <span className="text-primary-foreground text-xs font-medium">{hunter.id}</span>
                 </div>
               </div>
 
@@ -113,7 +113,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                 </svg>
               </div>
-              <span className="text-sm font-semibold text-foreground">{hunter.amount}</span>
+              <span className="text-sm font-medium text-foreground">{hunter.amount}</span>
             </div>
           </div>
         ))}

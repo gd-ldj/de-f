@@ -46,7 +46,7 @@ const mustReadArticles = [
 
 <div class="space-y-6 mt-4">
   <div>
-    <h4 class="font-semibold text-foreground mb-4">Recommended Topics</h4>
+    <h4 class="font-medium text-foreground mb-4">Recommended Topics</h4>
     <div class="flex flex-wrap gap-2">
       {topics.map((topic, index) => (
         <a
@@ -60,14 +60,14 @@ const mustReadArticles = [
   </div>
 
   <div>
-    <h4 class="text-xl font-bold text-foreground mb-6">Most Read</h4>
+    <h4 class="text-xl font-medium text-foreground mb-6">Most Read</h4>
     <div class="space-y-4">
       {mustReadArticles.map((article, index) => (
         <div class="border-b border-border pb-4 last:border-b-0 last:pb-0">
           <a href={article.url} class="flex items-start justify-between group">
             <div class="flex-1 pr-4">
               <div class="flex items-start space-x-3">
-                <span class="text-primary font-bold text-lg leading-none mt-1">{index + 1}</span>
+                <span class="text-primary font-medium text-lg leading-none mt-1">{index + 1}</span>
                 <div class="flex-1">
                   <h5 class="text-foreground font-medium text-base leading-tight mb-2 group-hover:text-primary transition-colors">
                     {article.title}

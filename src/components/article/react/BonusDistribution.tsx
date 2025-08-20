@@ -23,9 +23,9 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
   const filledSegments = Math.floor((currentProgress / 100) * totalSegments);
   
   return (
-    <div className="bg-card rounded border border-border p-6">
+    <div className="bg-white rounded border border-border p-6">
       {/* Title */}
-      <h3 className="text-lg font-semibold text-foreground mb-6">{locale === 'us' ? 'Bonus Distribution' : '奖励分布'}</h3>
+      <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Bonus Distribution' : '奖励分布'}</h3>
 
       <div className="flex items-center justify-between">
         {/* Left side - Progress section */}
@@ -36,7 +36,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
               <div className="w-2 h-2 rounded-full bg-primary" />
               <span className="text-sm font-medium text-primary">{locale === 'us' ? 'Ongoing' : '进行中'}</span>
             </div>
-            <span className="text-sm font-semibold text-foreground">{currentProgress}%</span>
+            <span className="text-sm font-medium text-foreground">{currentProgress}%</span>
           </div>
 
           {/* Progress bar */}
@@ -56,7 +56,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-foreground">
+            <span className="text-sm font-medium text-foreground">
               {bonusRate} / {views} views
             </span>
           </div>

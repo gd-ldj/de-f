@@ -80,7 +80,7 @@ export const WalletPopover: React.FC<WalletPopoverProps> = ({
       </div>
 
       {isOpen && storedWalletAddress && (
-        <div ref={popoverRef} className="w-[280px] absolute top-full border border-border mt-1 lg:mt-2 right-0 bg-card p-2 rounded z-50 text-sm shadow-lg">
+        <div ref={popoverRef} className="w-[280px] absolute top-full border border-border mt-1 lg:mt-2 right-0 bg-white p-2 rounded z-50 text-sm shadow-lg">
           <div className="pb-2 border-b border-[#D3D3D5]">
             <div className="h-[2.25rem] flex items-center mb-[0.25rem] px-[0.5rem] hover:bg-[#F5F6F7] rounded-[0.38rem] transition-colors cursor-pointer">
               <Image className="w-[1rem] mr-1" src={walletBlackIcon.src} alt="Wallet" />

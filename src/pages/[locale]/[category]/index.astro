@@ -85,7 +85,7 @@ const formatDate = (dateString: string) => {
         </nav>
         
         <!-- Page Title -->
-        <h1 class="text-4xl md:text-5xl font-bold text-foreground">{categoryDisplayName}</h1>
+        <h1 class="text-4xl md:text-5xl font-medium text-foreground">{categoryDisplayName}</h1>
       </div>
 
       <!-- Main Content Container -->
@@ -96,7 +96,7 @@ const formatDate = (dateString: string) => {
         <!-- Articles Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 mt-6">
           {articles.map((article) => (
-            <article class="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <article class="bg-white rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <!-- Article Image -->
               <div class="relative">
                 <ArticleLink 
@@ -115,7 +115,7 @@ const formatDate = (dateString: string) => {
               
               <!-- Article Content -->
               <div class="p-6">
-                <h3 class="text-lg font-semibold text-foreground mb-3 line-clamp-2">
+                <h3 class="text-lg font-medium text-foreground mb-3 line-clamp-2">
                   <ArticleLink 
                     slug={article.slug}
                     category={article.category}

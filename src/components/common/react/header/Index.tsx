@@ -184,7 +184,7 @@ export default function Header({ locale, currentPath, userComponent }: HeaderPro
                 <div className="absolute left-0 right-0 top-[64px] w-screen bg-white z-50 border border-border">
                   <div className="max-w-[1440px] mx-auto px-4">
                     <div className="pt-4 pb-3">
-                      <h3 className="text-lg font-semibold text-foreground mb-2 mt-1">{texts.dropdown.article}</h3>
+                      <h3 className="text-lg font-medium text-foreground mb-2 mt-1">{texts.dropdown.article}</h3>
                       <div className="flex items-center gap-8">
                         {categoriesItems.map((item) => (
                           <a 

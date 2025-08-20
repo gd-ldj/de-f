@@ -4,12 +4,12 @@ import { Wallet } from '@/components/common/react/ConnectWallet';
 export default function Login() {
   return (
     <div className="space-y-6">
-      <div className="bg-card rounded border border-border p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Decentralized Takes.</h3>
+      <div className="bg-white rounded border border-border p-6">
+        <h3 className="text-lg font-medium text-foreground mb-4">Decentralized Takes.</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Log in or sign up for <span className="font-semibold">DeTake</span>
+          Log in or sign up for <span className="font-medium">DeTake</span>
           <br />
-          to get the best <span className="font-semibold">Content</span>
+          to get the best <span className="font-medium">Content</span>
         </p>
 
         <div className="space-y-3">

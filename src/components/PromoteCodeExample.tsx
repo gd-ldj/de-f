@@ -21,17 +21,17 @@ export const PromoteCodeExample: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-card rounded shadow-md">
-      <h2 className="text-xl font-bold mb-4">Promote Code Management</h2>
+    <div className="p-6 bg-white rounded shadow-md">
+      <h2 className="text-xl font-medium mb-4">Promote Code Management</h2>
 
       <div className="space-y-4">
         <div className="p-4 bg-secondary rounded">
-          <h3 className="font-semibold mb-2">Current Promote Code:</h3>
+          <h3 className="font-medium mb-2">Current Promote Code:</h3>
           <p className="text-lg font-mono bg-background p-2 rounded border">{promoteCode}</p>
         </div>
 
         <div className="p-4 bg-secondary rounded">
-          <h3 className="font-semibold mb-2">Authentication Status:</h3>
+          <h3 className="font-medium mb-2">Authentication Status:</h3>
           <p className={`font-medium ${isAuthenticated ? 'text-green-600' : 'text-muted-foreground'}`}>{isAuthenticated ? '✅ Authenticated' : '❌ Not Authenticated'}</p>
           {isAuthenticated && authPromoteCode && (
             <p className="text-sm text-muted-foreground mt-1">
@@ -41,7 +41,7 @@ export const PromoteCodeExample: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <h3 className="font-semibold">Manual Controls:</h3>
+          <h3 className="font-medium">Manual Controls:</h3>
           <div className="flex gap-2">
             <button onClick={handleResetToDefault} className="px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 transition-colors">
               Reset to Default ({DEFAULT_PROMOTE_CODE})
@@ -53,7 +53,7 @@ export const PromoteCodeExample: React.FC = () => {
         </div>
 
         <div className="p-4 bg-secondary rounded border-l-4 border-yellow-400">
-          <h3 className="font-semibold mb-2">How it works:</h3>
+          <h3 className="font-medium mb-2">How it works:</h3>
           <ul className="text-sm space-y-1 text-foreground">
             <li>
               • System starts with default promote code: <code className="bg-background px-1 rounded">{DEFAULT_PROMOTE_CODE}</code>

@@ -39,7 +39,7 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
   ];
 
   return (
-    <div className="bg-card rounded border border-border p-4">
+    <div className="bg-white rounded border border-border p-4">
       <div className="grid grid-cols-2 gap-6">
         {/* Left side - Token metrics */}
         <div className="grid grid-cols-1 gap-y-4">
@@ -48,13 +48,13 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
             {/* Market Cap */}
             <div>
               <div className="text-xs text-muted-foreground mb-1">MKT Cap</div>
-              <div className="text-lg font-bold text-foreground">{marketCap}</div>
+              <div className="text-lg font-medium text-foreground">{marketCap}</div>
             </div>
 
             {/* Liquidity */}
             <div>
               <div className="text-xs text-muted-foreground mb-1">Liquidity</div>
-              <div className="text-lg font-bold text-foreground">{liquidity}</div>
+              <div className="text-lg font-medium text-foreground">{liquidity}</div>
             </div>
           </div>
 
@@ -68,13 +68,13 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="text-lg font-bold text-foreground">{volume24h}</div>
+              <div className="text-lg font-medium text-foreground">{volume24h}</div>
             </div>
 
             {/* Holders */}
             <div>
               <div className="text-xs text-muted-foreground mb-1">Holders</div>
-              <div className="text-lg font-bold text-foreground">{holders}</div>
+              <div className="text-lg font-medium text-foreground">{holders}</div>
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
               {isPositive ? '+' : ''}
               {percentage}
             </div>
-            <div className="text-xl font-bold text-foreground mb-1">{price}</div>
+            <div className="text-xl font-medium text-foreground mb-1">{price}</div>
           </div>
 
           {/* Chart section */}

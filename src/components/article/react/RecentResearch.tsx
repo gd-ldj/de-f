@@ -33,9 +33,9 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
   }
 }) => {
   return (
-    <div className="bg-card rounded border border-border p-6">
+    <div className="bg-white rounded border border-border p-6">
       {/* Title */}
-      <h3 className="text-lg font-semibold text-foreground mb-6">{locale === 'us' ? 'Recent Research' : '最新研究'}</h3>
+      <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Recent Research' : '最新研究'}</h3>
 
       {/* Article Card */}
       <div className="space-y-4">
@@ -58,7 +58,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
           />
           {/* Watermark */}
           <div className="absolute bottom-4 right-4">
-            <span className="text-primary-foreground font-semibold text-sm bg-black/20 px-2 py-1 rounded">Blockworks</span>
+            <span className="text-primary-foreground font-medium text-sm bg-black/20 px-2 py-1 rounded">Blockworks</span>
           </div>
         </div>
 
@@ -72,7 +72,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
         </div>
 
         {/* Article Title */}
-        <h4 className="text-xl font-bold text-foreground leading-tight">{article.title}</h4>
+        <h4 className="text-xl font-medium text-foreground leading-tight">{article.title}</h4>
 
         {/* Article Description */}
         <p className="text-base text-muted-foreground leading-relaxed">{article.description}</p>

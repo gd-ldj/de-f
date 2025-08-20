@@ -67,7 +67,7 @@ const PoolInfo: React.FC<PoolInfoProps> = ({
   };
 
   return (
-    <div className="bg-card rounded border border-border p-6">
+    <div className="bg-white rounded border border-border p-6">
       <div className="divide-y divide-border">
         {poolInfoItems.map((item, index) => (
           <div key={index} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
@@ -86,7 +86,7 @@ const PoolInfo: React.FC<PoolInfoProps> = ({
                   </div>
 
                   {/* Address */}
-                  <span className="text-base font-semibold text-foreground">{item.address}</span>
+                  <span className="text-base font-medium text-foreground">{item.address}</span>
 
                   {/* Copy Icon */}
                   {item.showCopyIcon && (
@@ -98,11 +98,11 @@ const PoolInfo: React.FC<PoolInfoProps> = ({
                   )}
 
                   {/* Value */}
-                  <span className="text-xl font-bold text-foreground">{item.value}</span>
+                  <span className="text-xl font-medium text-foreground">{item.value}</span>
                 </>
               ) : (
                 /* Regular value display */
-                <span className="text-xl font-bold text-foreground">{item.value}</span>
+                <span className="text-xl font-medium text-foreground">{item.value}</span>
               )}
             </div>
           </div>
