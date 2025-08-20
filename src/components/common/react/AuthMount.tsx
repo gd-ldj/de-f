@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import Header from '@/components/common/react/Header';
+import Header from '@/components/common/react/header/Index';
 import Login from '@/components/home/react/Login';
 import { IdentityProvider } from '@/components/common/react/IdentityProvider';
 import type { Locale } from '@/types';

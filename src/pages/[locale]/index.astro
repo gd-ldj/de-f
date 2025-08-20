@@ -7,7 +7,7 @@ import MainContent from '@/components/home/astro/MainContent.astro';
 import RightSidebar from '@/components/home/astro/RightSidebar.astro';
 import NewsGrid from '@/components/home/astro/NewsGrid.astro';
 import TrendingGrid from '@/components/home/astro/TrendingGrid.astro';
-import Footer from '@/components/common/react/Footer';
+import Footer from '@/components/common/react/footer/Index';
 import ToFollowList from '@/components/home/react/ToFollowList';
 import AuthMount from '@/components/common/react/AuthMount';
 
@@ -63,7 +63,7 @@ const { title, description } = seoContent[locale] || seoContent.us
           <NewsGrid />
           <TrendingGrid />
         </div>
-        <Footer client:load />
+        <Footer client:load locale={locale}/>
       </div>
 
 </BaseLayout>

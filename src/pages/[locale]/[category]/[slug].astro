@@ -6,6 +6,7 @@ import ArticleSidebar from '@/components/article/react/ArticleSidebar'
 // Removed: ShareSection direct import; it will be portaled by AuthMount
 import { fetchArticle } from '@/api/articles'
 import type { Locale } from '@/types'
+import Footer from '@/components/common/react/footer/Index';
 
 
 export const prerender = false // Enable SSR for this page
@@ -127,6 +128,8 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
       </div>
     </div>
   </main>
+  <!-- Footer -->
+      <Footer client:load locale={locale}/>
 </BaseLayout>
 
 <style>

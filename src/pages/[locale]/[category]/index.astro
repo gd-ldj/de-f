@@ -5,7 +5,7 @@ import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { fetchArticles } from '@/api/articles'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import type { Locale } from '@/types'
-import Footer from '@/components/common/react/Footer';
+import Footer from '@/components/common/react/footer/Index';
 import FilterBar from '@/components/common/astro/FilterBar.astro'
 
 import { changeLanguage } from "i18next";
@@ -171,7 +171,7 @@ const formatDate = (dateString: string) => {
       </main>
       
       <!-- Footer -->
-      <Footer client:load />
+      <Footer client:load locale={locale}/>
     </div>
 </BaseLayout>
 
