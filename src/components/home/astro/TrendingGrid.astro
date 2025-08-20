@@ -1,47 +1,21 @@
 ---
-// Trending articles data - 热门文章数据
-const trendingArticles = [
-  {
-    title: "Telegram Trading Bots: Robinhood Without Borders",
-    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
-    date: "Apr 11, 2025",
-    author: "JACK KUBINEC",
-    url: "/articles/telegram-trading-bots-robinhood",
-    featured: true
-  },
-  {
-    title: "Telegram Trading Bots: Robinhood Without Borders", 
-    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
-    date: "Apr 11, 2025",
-    author: "JACK KUBINEC",
-    url: "/articles/telegram-trading-bots-analysis",
-    featured: false
-  },
-  {
-    title: "Telegram Trading Bots: Robinhood Without Borders",
-    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
-    date: "Apr 11, 2025", 
-    author: "JACK KUBINEC",
-    url: "/articles/telegram-trading-bots-guide",
-    featured: false
-  },
-  {
-    title: "Telegram Trading Bots: Robinhood Without Borders",
-    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
-    date: "Apr 11, 2025",
-    author: "JACK KUBINEC", 
-    url: "/articles/telegram-trading-bots-review",
-    featured: false
-  },
-  {
-    title: "Telegram Trading Bots: Robinhood Without Borders",
-    description: "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
-    date: "Apr 11, 2025",
-    author: "JACK KUBINEC", 
-    url: "/articles/telegram-trading-bots-latest",
-    featured: false
-  }
-];
+import { fetchHomePageData } from '@/api/articles'
+import type { Locale } from '@/types'
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import { formatDate } from '@/lib/utils'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props as Props
+
+/**
+ * Fetch home page data for the trending grid
+ * Uses mostread articles from the API
+ */
+const homeData = await fetchHomePageData()
+const trendingArticles = homeData.mostread
 ---
 
 <div class="space-y-6">
@@ -53,8 +27,10 @@ const trendingArticles = [
       <!-- Left column: Two stacked cards -->
       <div class="md:col-span-2 space-y-4">
         {trendingArticles.slice(0, 2).map((article, index) => (
-          <a 
-            href={article.url}
+          <ArticleLink
+            slug={article.slug}
+            category="news"
+            locale={locale}
             class="block group hover:scale-[1.02] transition-transform duration-300"
           >
             <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 text-white h-full flex">
@@ -109,28 +85,30 @@ const trendingArticles = [
                   </h4>
                   
                   <p class="text-muted-foreground leading-relaxed mb-4 text-sm">
-                    {article.description}
+                    {article.title}
                   </p>
                 </div>
                 
-                <!-- Author and date -->
+                <!-- Date -->
                 <div class="flex items-center justify-between text-xs text-muted-foreground">
-                  <span class="font-medium">{article.date} / By {article.author}</span>
+                  <span class="font-medium">{formatDate(article.created_at)}</span>
                 </div>
               </div>
               
               <!-- Hover overlay -->
               <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
             </div>
-          </a>
+          </ArticleLink>
         ))}
       </div>
       
       <!-- Right column: Top large card and bottom two text-only cards -->
       <div class="md:col-span-2 space-y-4">
         <!-- Top large card with image -->
-        <a 
-          href={trendingArticles[2].url}
+        <ArticleLink
+          slug={trendingArticles[2].slug}
+          category="news"
+          locale={locale}
           class="block group hover:scale-[1.02] transition-transform duration-300 p-4"
         >
           <div class="relative overflow-hidden rounded-xl text-white h-[200px] flex">
@@ -185,26 +163,28 @@ const trendingArticles = [
                 </h4>
                 
                 <p class="text-muted-foreground leading-relaxed mb-4 text-sm">
-                  {trendingArticles[2].description}
+                  {trendingArticles[2].title}
                 </p>
               </div>
               
-              <!-- Author and date -->
+              <!-- Date -->
               <div class="flex items-center justify-between text-sm text-muted-foreground">
-                <span class="font-medium">{trendingArticles[2].date} / By {trendingArticles[2].author}</span>
+                <span class="font-medium">{formatDate(trendingArticles[2].created_at)}</span>
               </div>
             </div>
             
             <!-- Hover overlay -->
             <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
           </div>
-        </a>
+        </ArticleLink>
         
         <!-- Bottom two text-only cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
           {trendingArticles.slice(3, 5).map((article, index) => (
-            <a 
-              href={article.url}
+            <ArticleLink
+              slug={article.slug}
+              category="news"
+              locale={locale}
               class="block group transition-colors duration-300 p-0"
             >
               <div class="space-y-2">
@@ -213,16 +193,15 @@ const trendingArticles = [
                 </h4>
                 
                 <p class="text-muted-foreground text-xs leading-relaxed line-clamp-2">
-                  {article.description}
+                  {article.title}
                 </p>
                 
-                <!-- Author and date -->
+                <!-- Date -->
                 <div class="flex items-center justify-between text-xs text-muted-foreground">
-                  <span class="font-medium">{article.date}</span>
-                  <span>By {article.author}</span>
+                  <span class="font-medium">{formatDate(article.created_at)}</span>
                 </div>
               </div>
-            </a>
+            </ArticleLink>
           ))}
         </div>
       </div>

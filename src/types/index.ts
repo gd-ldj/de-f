@@ -179,6 +179,72 @@ export interface WalletLoginResponse {
 }
 
 /**
+ * Home page data structures
+ */
+export interface HomeLatestArticle {
+  entry_id: string
+  business_type_name: string
+  slug: string
+  title: string
+  img_url: string
+  created_at: string
+}
+
+export interface HomeWhoToFollow {
+  user_id: string
+  nick: string
+  name: string
+  avatar_url: string
+  profile_bio: string
+}
+
+export interface HomeNewsArticle {
+  entry_id: string
+  slug: string
+  title: string
+  img_url: string
+  created_at: string
+  business_type_name: string
+  author: {
+    name: string
+    avatar_url: string
+    bio: string
+  }
+  body: string
+}
+
+export interface HomeTopic {
+  name: string
+  description: string
+}
+
+export interface HomeMostReadArticle {
+  entry_id: string
+  slug: string
+  business_type_name: string
+  title: string
+  img_url: string
+  created_at: string
+}
+
+export interface HomePageData {
+  lastest: HomeLatestArticle[]
+  who_to_follow: HomeWhoToFollow[]
+  "news_all": HomeNewsArticle[]
+  topics: HomeTopic[]
+  mostread: HomeMostReadArticle[]
+}
+
+export interface HomePageResponse {
+  code: number
+  msg: {
+    en: string
+    zh: string
+  }
+  data: HomePageData
+}
+
+/**
  * API endpoints configuration
  */
 export interface ApiConfig {

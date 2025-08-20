@@ -12,11 +12,12 @@ import AuthMount from '@/components/common/react/AuthMount';
 
 import { changeLanguage } from "i18next";
 
-changeLanguage(Astro.params.locale);
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
-const currentPath = Astro.url.pathname
+
+// Initialize i18n with the locale from params
+changeLanguage(locale);
 
 // SEO content based on locale
 const seoContent = {
@@ -37,7 +38,7 @@ const { title, description } = seoContent[locale] || seoContent.us
      <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
      <div id="header-root"></div>
      <!-- Single React Island that contains IdentityProvider and portals -->
-     <AuthMount locale={locale} currentPath={currentPath} client:load />
+     <AuthMount client:load />
      <div class="min-h-screen bg-white mt-[65px]">
         
         <div class="max-w-[1440px] mx-auto px-4 py-6">
@@ -55,10 +56,10 @@ const { title, description } = seoContent[locale] || seoContent.us
               <RightSidebar />
             </div>
           </div>
-          <NewsGrid locale={locale} />
-          <TrendingGrid />
+          <!-- <NewsGrid locale={locale} /> -->
+          <!-- <TrendingGrid /> -->
         </div>
-        <Footer client:load locale={locale}/>
+        <Footer client:load />
       </div>
 
 </BaseLayout>

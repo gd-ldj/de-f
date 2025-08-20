@@ -10,16 +10,56 @@ import SearchIcon from './assets/search.svg?url';
 type Locale = 'us' | 'asia';
 
 interface HeaderProps {
-  locale: Locale;
-  currentPath: string;
   userComponent?: React.ReactNode;
+}
+
+/**
+ * Extract locale from current URL pathname
+ * @returns Current locale from URL or default 'us'
+ */
+function getLocaleFromURL(): Locale {
+  if (typeof window === 'undefined') return 'us';
+  const pathname = window.location.pathname;
+  const segments = pathname.split('/');
+  const localeSegment = segments[1]; // First segment after domain
+  return (localeSegment === 'asia' || localeSegment === 'us') ? localeSegment : 'us';
+}
+
+/**
+ * Get current path from window location
+ * @returns Current pathname
+ */
+function getCurrentPath(): string {
+  if (typeof window === 'undefined') return '/';
+  return window.location.pathname;
 }
 
 /**
  * Main header component with navigation and authentication
  * Enhanced with lucide-react icons and improved internationalization
+ * Automatically extracts locale and currentPath from URL
  */
-export default function Header({ locale, currentPath, userComponent }: HeaderProps) {
+export default function Header({ userComponent }: HeaderProps) {
+  const [locale, setLocale] = useState<Locale>('us');
+  const [currentPath, setCurrentPath] = useState<string>('/');
+  
+  // Extract locale and path from URL on mount and URL changes
+  useEffect(() => {
+    const updateFromURL = () => {
+      setLocale(getLocaleFromURL());
+      setCurrentPath(getCurrentPath());
+    };
+    
+    updateFromURL();
+    
+    // Listen for navigation changes (popstate for back/forward)
+    window.addEventListener('popstate', updateFromURL);
+    
+    return () => {
+      window.removeEventListener('popstate', updateFromURL);
+    };
+  }, []);
+  
   const texts = headerTexts[locale] || headerTexts.us;
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

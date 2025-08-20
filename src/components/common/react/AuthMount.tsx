@@ -9,8 +9,6 @@ import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
 
 interface AuthMountProps {
-  locale: Locale;
-  currentPath: string;
   headerTargetId?: string;
   loginTargetId?: string;
   // The DOM id where ShareSection should be mounted, optional
@@ -48,8 +46,6 @@ interface AuthMountProps {
  * therefore we portal ShareSection from here so it inherits the context correctly.
  */
 const AuthMount: React.FC<AuthMountProps> = ({
-  locale,
-  currentPath,
   headerTargetId = 'header-root',
   loginTargetId = 'login-root',
   shareTargetId = 'share-section-root',
@@ -89,8 +85,6 @@ const AuthMount: React.FC<AuthMountProps> = ({
         {/* Header Portal */}
         {headerEl && createPortal(
           <Header 
-            locale={locale} 
-            currentPath={currentPath} 
             userComponent={(
               <WalletPopover>
                 <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">

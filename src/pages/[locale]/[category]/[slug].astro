@@ -12,7 +12,6 @@ import Footer from '@/components/common/react/footer/Index';
 export const prerender = false // Enable SSR for this page
 
 const { locale, category, slug } = Astro.params as { locale: Locale; category: string; slug: string }
-const currentPath = Astro.url.pathname
 
 // Validate category
 const validCategories = ['insights', 'news', 'research']
@@ -91,14 +90,12 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
   <div id="header-root"></div>
   <!-- React island: contains PrivyProvider and portals -->
   <AuthMount 
-    locale={locale} 
-    currentPath={currentPath} 
     client:load 
     shareSection={{ locale, title: article.title, url: canonicalUrl }}
     authorSection={{
       author: {
         name: article.author.name,
-        avatar: article.author.avatar
+        avatar: article.author.avatar_url
       },
       locale
     }}
@@ -129,7 +126,7 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
     </div>
   </main>
   <!-- Footer -->
-      <Footer client:load locale={locale}/>
+      <Footer client:load />
 </BaseLayout>
 
 <style>

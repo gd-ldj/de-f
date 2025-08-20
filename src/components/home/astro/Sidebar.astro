@@ -1,60 +1,58 @@
 ---
-// Latest news data - 最新新闻数据
-const latestNews = [
-  {
-    title: "Solana stablecoins have been'stickier than anticipated'",
-    url: "/news/solana-stablecoins-sticky",
-    time: "12H"
-  },
-  {
-    title: "Solana stablecoins have been'stickier than anticipated'", 
-    url: "/news/solana-stablecoins-analysis",
-    time: "12H"
-  },
-  {
-    title: "Solana stablecoins have been'stickier than anticipated'",
-    url: "/news/solana-market-update",
-    time: "12H"
-  },
-  {
-    title: "Solana stablecoins have been'stickier than anticipated'",
-    url: "/news/defi-trends-2024",
-    time: "12H"
-  },
-  {
-    title: "Solana stablecoins have been'stickier than anticipated'",
-    url: "/news/crypto-stability-report",
-    time: "12H"
-  },
-  {
-    title: "Solana stablecoins have been'stickier than anticipated'",
-    url: "/news/blockchain-ecosystem",
-    time: "12H"
-  },
-]
+import { fetchHomePageData } from '@/api/articles'
+import type { Locale } from '@/types'
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import { formatDate } from '@/lib/utils'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props as Props
+
+/**
+ * Fetch home page data for the sidebar
+ * Uses latest articles from the API
+ */
+const homeData = await fetchHomePageData()
+const latestNews = homeData.lastest.slice(0, 5)
+
+// Check if article is within 12 hours for time display
+const isWithin12Hours = (createdAt: string) => {
+  const now = new Date().getTime()
+  const twelveHoursAgo = now - 12 * 60 * 60 * 1000
+  const articleTime = new Date(createdAt).getTime()
+  return articleTime >= twelveHoursAgo
+}
 ---
 
 <div class="space-y-6">
   <div>
     <h3 class="font-medium text-foreground mb-4">Latest</h3>
     <div class="space-y-0">
-      {latestNews.map((news, index) => (
+      {latestNews.map((article, index) => (
         <div>
-          <div class="flex items-start space-x-3 py-3">
-            <span class="text-sm font-medium text-primary flex-shrink-0 mt-0.5">
-              {news.time}
-            </span>
-            <a 
-              href={news.url}
-              class="text-sm text-foreground leading-relaxed hover:text-primary transition-colors cursor-pointer flex-1"
-            >
-              {news.title}
-            </a>
-          </div>
+        <ArticleLink
+          slug={article.slug}
+          category="news"
+          locale={locale}
+          class="flex items-start space-x-3 py-3 group hover:bg-muted/50 transition-colors p-3 rounded"
+        >
+          {isWithin12Hours(article.created_at) && (
+            <div class="flex items-center space-x-2 text-xs text-muted-foreground">
+              <span>{formatDate(article.created_at, locale === 'us' ? 'en-US' : 'zh-CN')}</span>
+            </div>
+          )}
+          <h4 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h4>
+         
+        </ArticleLink>
+         {index < latestNews.length - 1 && (
+            <div class="border-b border-border"></div>
+          )}
           {index < latestNews.length - 1 && (
             <div class="border-b border-border"></div>
           )}
-        </div>
+          </div>
       ))}
     </div>
   </div>

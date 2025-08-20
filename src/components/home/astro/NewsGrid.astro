@@ -1,5 +1,5 @@
 ---
-import { fetchArticles } from '@/api/articles'
+import { fetchHomePageData } from '@/api/articles'
 import type { Locale } from '@/types'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 
@@ -10,10 +10,11 @@ interface Props {
 const { locale } = Astro.props as Props
 
 /**
- * Fetch latest news articles (server-side) for the homepage grid
+ * Fetch home page data for the news grid
  * Keeps UI fast and SEO friendly.
  */
-const { articles } = await fetchArticles(locale, 1, 6, 'news')
+const homeData = await fetchHomePageData()
+const articles = homeData['news_all']
 
 // Static category nav (URLs localized)
 const newsCategories = [
@@ -73,7 +74,7 @@ const formatDate = (dateString: string) => {
     {articles.map((article) => (
       <ArticleLink
         slug={article.slug}
-        category={article.category_name}
+        category="news"
         locale={locale}
         class="bg-white rounded border border-border overflow-hidden hover:shadow-md transition-shadow group"
       >
@@ -83,9 +84,9 @@ const formatDate = (dateString: string) => {
           class="w-full h-32 object-cover group-hover:opacity-90 transition-opacity" 
         />
         <div class="p-4">
-          <span class="text-xs text-primary font-medium">{article.category_name}</span>
+          <span class="text-xs text-primary font-medium">{article.business_type_name}</span>
           <h3 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h3>
-          <p class="text-xs text-muted-foreground mb-3">{article.sub_title}</p>
+          <p class="text-xs text-muted-foreground mb-3">{article.body}</p>
           <div class="flex items-center space-x-2 text-xs text-muted-foreground">
             <span>{formatDate(article.created_at)}</span>
             <span>by {article.author.name}</span>

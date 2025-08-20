@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { footerTexts } from './constants';
 
 // Import social media icons from locale assets
@@ -12,10 +13,29 @@ import DetakeLogo from './assets/detake.svg?url';
 type Locale = 'us' | 'asia';
 
 interface FooterProps {
-  locale: Locale
+  // No props needed - locale extracted from URL
 }
 
-export default function Footer({ locale = 'us' }: FooterProps) {
+/**
+ * Extract locale from current URL pathname
+ * @returns Current locale from URL or default 'us'
+ */
+function getLocaleFromURL(): Locale {
+  if (typeof window === 'undefined') return 'us';
+  const pathname = window.location.pathname;
+  const segments = pathname.split('/');
+  const localeSegment = segments[1]; // First segment after domain
+  return (localeSegment === 'asia' || localeSegment === 'us') ? localeSegment : 'us';
+}
+
+export default function Footer({}: FooterProps) {
+  const [locale, setLocale] = useState<Locale>('us');
+  
+  // Extract locale from URL on mount
+  useEffect(() => {
+    setLocale(getLocaleFromURL());
+  }, []);
+  
   const texts = footerTexts[locale] || footerTexts.us;
 
   return (
