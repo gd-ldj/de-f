@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Load Sequel Sans font files from public/fonts
+   We map Roman to weight 400 and Medium to weight 500 so we can switch by font-weight. */
+@font-face {
+  font-family: "Sequel Sans";
+  src: url('/fonts/Sequel-Sans-Roman-Disp.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sequel Sans";
+  src: url('/fonts/Sequel-Sans-Medium-Disp.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-background: #ffffff;
   --color-foreground: #052019; /* Custom black */
@@ -21,16 +38,50 @@
   --color-input: #e2e8f0;
   --color-ring: #06A17E; /* Custom theme color */
   --radius: 2px;
+  /* Preferred global font family with Sequel Sans at top */
+  --font-sans: "Sequel Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Override Tailwind v4 letter-spacing tokens so utilities like
+     tracking-tight/wide/tighter/etc resolve to zero spacing. */
+  --tracking-tighter: 0rem;
+  --tracking-tight: 0rem;
+  --tracking-normal: 0rem;
+  --tracking-wide: 0rem;
+  --tracking-wider: 0rem;
+  --tracking-widest: 0rem;
 }
 
 @layer base {
   * {
     border-color: hsl(var(--border));
   }
-  body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  html, body {
+    /* Apply global font and default to Medium weight (500) so most text uses Medium */
+    font-family: var(--font-sans);
+    font-weight: 500; /* Medium uses 500 */
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
 }
+
+/* Typography rules for color-based font selection
+   - Gray texts (e.g., secondary/muted content) should use Roman (weight 400)
+   - Everything else defaults to Medium (weight 500 from the base rule above) */
+.text-gray-400,
+.text-gray-500,
+.text-gray-600,
+.text-gray-700,
+.text-muted-foreground {
+  font-weight: 400; /* Roman uses 400 */
+}
+
+/* Also apply Roman to placeholders and disabled, which are typically gray */
+::placeholder {
+  font-weight: 400;
+}
+:disabled,
+[aria-disabled="true"] {
+  font-weight: 400;
 }
 
 /* Custom utilities */
