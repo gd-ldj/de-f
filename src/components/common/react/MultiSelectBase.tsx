@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '@/types';
 import FilterDropdown, { type FilterSection } from './FilterDropdown';
+import { t } from '@/lib/i18n';
 
 export interface MultiSelectBaseProps {
   locale: Locale;
@@ -115,7 +116,7 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
             ))}
           </div>
         ) : (
-          <span className="text-sm text-muted-foreground">{locale === 'us' ? 'None' : '无'}</span>
+          <span className="text-sm text-muted-foreground">{t(locale, 'common.none')}</span>
         )}
 
         {/* Chevron */}

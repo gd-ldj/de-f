@@ -17,8 +17,61 @@
     "northAmerica": "North America",
     "asia": "Asia"
   },
+  "common": {
+    "filters": "Filters",
+    "clearAll": "CLEAR ALL",
+    "category": "Category",
+    "author": "Author",
+    "topic": "Topic",
+    "topics": "Topics",
+    "none": "None",
+    "prev": "Prev",
+    "next": "Next",
+    "searchAuthor": "Search author",
+    "markets": "Markets",
+    "news": "News",
+    "research": "Research"
+  },
+  "pages": {
+    "articles": "Articles",
+    "homeTitle": "DeTake - Crypto News, Analysis & Insights",
+    "homeDescription": "Get the latest cryptocurrency news, market analysis, and blockchain insights. Your trusted source for crypto information."
+  },
   "article": {
-    "minRead": "min read"
+    "minRead": "min read",
+    "aboutAuthor": "About the Author",
+    "subscribe": "Subscribe",
+    "recentResearch": "Recent Research",
+    "by": "By",
+    "tableOfContents": "Table of Contents",
+    "bonusDistribution": "Bonus Distribution",
+    "ongoing": "Ongoing",
+    "realtimeBonusRate": "Realtime Bonus Rate",
+    "bonusHunters": "Bonus Hunters",
+    "pairCreated": "Pair created",
+    "pooledToken": "Pooled Token",
+    "pooledSol": "Pooled $SOL",
+    "liquidity": "Liquidity",
+    "shareToEarn": "Share To Earn Passive Income",
+    "copyLink": "Copy link",
+    "loginNow": "Log in now",
+    "generatePromoCode": "to generate your own promotion code",
+    "viewingPromoCode": "You are viewing the promotional code of xxx.",
+    "generateYourCode": "Generate your own promotional code now.",
+    "marketCap": "MKT Cap",
+    "holders": "Holders",
+    "views": "Views",
+    "volume24h": "24h Volume"
+  },
+  "home": {
+    "decentralizedTakes": "Decentralized Takes.",
+    "loginDescription": "Log in or sign up for DeTake to get the best Content",
+    "whoToFollow": "Who To Follow",
+    "latest": "Latest",
+    "trending": "Trending",
+    "recommendedTopics": "Recommended Topics",
+    "mostRead": "Most Read",
+    "highlights": "Highlights"
   },
   "footer": {
     "newsletter": "NEWSLETTER",

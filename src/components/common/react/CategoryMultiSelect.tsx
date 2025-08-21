@@ -3,6 +3,7 @@ import type { Locale } from '@/types'
 import type { FilterSection } from './FilterDropdown'
 import MultiSelectBase from './MultiSelectBase'
 import { fetchArticleCategories } from '@/api/articles'
+import { t } from '@/lib/i18n'
 
 export interface CategoryMultiSelectProps {
   locale: Locale
@@ -20,7 +21,7 @@ export default function CategoryMultiSelect({
   const [sections, setSections] = useState<FilterSection[]>([
     {
       id: 'category',
-      title: locale === 'us' ? 'Category' : '分类',
+      title: t(locale, 'common.category'),
       options: [],
     },
   ])
@@ -44,7 +45,7 @@ export default function CategoryMultiSelect({
           setSections([
             {
               id: 'category',
-              title: locale === 'us' ? 'Category' : '分类',
+              title: t(locale, 'common.category'),
               options: mapCategoriesToOptions(cats),
             },
           ])
@@ -53,11 +54,11 @@ export default function CategoryMultiSelect({
           setSections([
             {
               id: 'category',
-              title: locale === 'us' ? 'Category' : '分类',
+              title: t(locale, 'common.category'),
               options: [
-                { id: 'markets', label: locale === 'us' ? 'Markets' : '市场', checked: false },
-                { id: 'news', label: locale === 'us' ? 'News' : '新闻', checked: false },
-                { id: 'research', label: locale === 'us' ? 'Research' : '研究', checked: false },
+                { id: 'markets', label: t(locale, 'common.markets'), checked: false },
+                { id: 'news', label: t(locale, 'common.news'), checked: false },
+                { id: 'research', label: t(locale, 'common.research'), checked: false },
               ],
             },
           ])
@@ -68,11 +69,11 @@ export default function CategoryMultiSelect({
         setSections([
           {
             id: 'category',
-            title: locale === 'us' ? 'Category' : '分类',
+            title: t(locale, 'common.category'),
             options: [
-              { id: 'markets', label: locale === 'us' ? 'Markets' : '市场', checked: false },
-              { id: 'news', label: locale === 'us' ? 'News' : '新闻', checked: false },
-              { id: 'research', label: locale === 'us' ? 'Research' : '研究', checked: false },
+              { id: 'markets', label: t(locale, 'common.markets'), checked: false },
+              { id: 'news', label: t(locale, 'common.news'), checked: false },
+              { id: 'research', label: t(locale, 'common.research'), checked: false },
             ],
           },
         ])

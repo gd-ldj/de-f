@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { Locale } from '@/types'
+import { t } from '@/lib/i18n'
 
 interface AuthorSearchInputProps {
   locale: Locale
@@ -112,7 +113,7 @@ export default function AuthorSearchInput({
     }
   }, [])
 
-  const placeholder = locale === 'us' ? 'Search author' : '搜索作者'
+  const placeholder = t(locale, 'common.searchAuthor')
 
   return (
     <div className={`relative ${className}`}>

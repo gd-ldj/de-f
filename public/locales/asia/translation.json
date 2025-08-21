@@ -17,8 +17,61 @@
     "northAmerica": "北美地区",
     "asia": "亚洲地区"
   },
+  "common": {
+    "filters": "筛选",
+    "clearAll": "清空",
+    "category": "分类",
+    "author": "作者",
+    "topic": "主题",
+    "topics": "主题",
+    "none": "无",
+    "prev": "上一页",
+    "next": "下一页",
+    "searchAuthor": "搜索作者",
+    "markets": "市场",
+    "news": "新闻",
+    "research": "研究"
+  },
+  "pages": {
+    "articles": "文章",
+    "homeTitle": "DeTake - 加密货币新闻、分析与洞察",
+    "homeDescription": "获取最新的加密货币新闻、市场分析和区块链洞察。您值得信赖的加密信息来源。"
+  },
   "article": {
-    "minRead": "分钟阅读"
+    "minRead": "分钟阅读",
+    "aboutAuthor": "关于作者",
+    "subscribe": "订阅",
+    "recentResearch": "最新研究",
+    "by": "作者",
+    "tableOfContents": "目录",
+    "bonusDistribution": "奖励分布",
+    "ongoing": "进行中",
+    "realtimeBonusRate": "实时奖励率",
+    "bonusHunters": "奖励猎人",
+    "pairCreated": "交易对创建",
+    "pooledToken": "池化代币",
+    "pooledSol": "池化$SOL",
+    "liquidity": "流动性",
+    "shareToEarn": "分享赚取被动收入",
+    "copyLink": "复制链接",
+    "loginNow": "立即登录",
+    "generatePromoCode": "生成您的专属推广码",
+    "viewingPromoCode": "您正在查看xxx的推广码。",
+    "generateYourCode": "立即生成您的专属推广码。",
+    "marketCap": "市值",
+    "holders": "持有者",
+    "views": "浏览量",
+    "volume24h": "24小时成交量"
+  },
+  "home": {
+    "decentralizedTakes": "去中心化观点。",
+    "loginDescription": "登录或注册 DeTake 获取最佳内容",
+    "whoToFollow": "推荐关注",
+    "latest": "最新",
+    "trending": "热门",
+    "recommendedTopics": "推荐主题",
+    "mostRead": "最多阅读",
+    "highlights": "精选"
   },
   "footer": {
     "newsletter": "新闻通讯",

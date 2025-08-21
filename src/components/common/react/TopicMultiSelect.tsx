@@ -3,6 +3,7 @@ import type { Locale } from '@/types';
 import MultiSelectBase from './MultiSelectBase';
 import type { FilterSection } from './FilterDropdown';
 import { fetchArticleTags } from '@/api/articles';
+import { t } from '@/lib/i18n';
 
 export interface TopicMultiSelectProps {
   locale: Locale;
@@ -17,7 +18,7 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
   const [sections, setSections] = useState<FilterSection[]>([
     {
       id: 'topics',
-      title: locale === 'us' ? 'Topics' : '主题',
+      title: t(locale, 'common.topics'),
       options: [],
     },
   ]);
@@ -41,7 +42,7 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
           setSections([
             {
               id: 'topics',
-              title: locale === 'us' ? 'Topics' : '主题',
+              title: t(locale, 'common.topics'),
               options: mapTagsToOptions(tags),
             },
           ])
@@ -50,7 +51,7 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
           setSections([
             {
               id: 'topics',
-              title: locale === 'us' ? 'Topics' : '主题',
+              title: t(locale, 'common.topics'),
               options: [
                 { id: 'blockchain', label: 'Blockchain', checked: false },
                 { id: 'defi', label: 'DeFi', checked: false },
@@ -66,7 +67,7 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
         setSections([
           {
             id: 'topics',
-            title: locale === 'us' ? 'Topics' : '主题',
+            title: t(locale, 'common.topics'),
             options: [
               { id: 'blockchain', label: 'Blockchain', checked: false },
               { id: 'defi', label: 'DeFi', checked: false },

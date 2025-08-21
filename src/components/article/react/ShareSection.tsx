@@ -3,6 +3,7 @@ import type { Locale } from '@/types';
 import copyIcon from '@/assets/imgs/copy.svg';
 import { useAuth } from '@/lib/useAuth';
 import { useWalletAuth } from '@/lib/useWalletAuth';
+import { t } from '@/lib/i18n';
 
 interface ShareSectionProps {
   locale: Locale;
@@ -149,7 +150,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
     <div className="bg-white rounded border border-border p-6 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-foreground">{locale === 'us' ? 'Share To Earn Passive Income' : '分享赚取被动收入'}</h3>
+        <h3 className="text-lg font-medium text-foreground">{t(locale, 'article.shareToEarn')}</h3>
       </div>
 
       {/* Content */}
@@ -157,21 +158,12 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
         {/* Login Prompt for Unauthenticated Users */}
         {shouldShowPrompt && (
           <div className="text-sm text-muted-foreground">
-            {locale === 'us' ? (
-              <>
-                You are viewing the promotional code of xxx.
-                <button onClick={handleGenerateMyCode} className="text-primary hover:underline ml-1">
-                  Generate your own promotional code now.
-                </button>
-              </>
-            ) : (
-              <>
-                您正在查看xxx的推广码。
-                <button onClick={handleGenerateMyCode} className="text-primary hover:underline ml-1">
-                  立即生成您的专属推广码。
-                </button>
-              </>
-            )}
+            <>
+              {t(locale, 'article.viewingPromoCode')}
+              <button onClick={handleGenerateMyCode} className="text-primary hover:underline ml-1">
+                {t(locale, 'article.generateYourCode')}
+              </button>
+            </>
           </div>
         )}
 
@@ -179,7 +171,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
           {/* URL Input with Copy Button */}
           <div className="relative flex-1">
             <input type="text" value={shareUrl} readOnly className="w-full px-4 py-3 pr-12 border border-border rounded text-sm text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="https://xxxxxxxxx" />
-            <button onClick={handleCopyLink} className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md transition-all duration-200 ${copied ? 'text-green-600 bg-green-50' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} title={locale === 'us' ? 'Copy link' : '复制链接'}>
+            <button onClick={handleCopyLink} className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md transition-all duration-200 ${copied ? 'text-green-600 bg-green-50' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} title={t(locale, 'article.copyLink')}>
               {copied ? (
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -209,9 +201,9 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
         {!isEffectivelyLoggedIn && (
           <div className="text-xs text-muted-foreground">
             <span onClick={handleLoginClick} className="text-primary hover:underline cursor-pointer">
-              {locale === 'us' ? 'Log in now' : '立即登录'}
+              {t(locale, 'article.loginNow')}
             </span>
-            <span className="ml-1">{locale === 'us' ? 'to generate your own promotion code' : '生成您的专属推广码'}</span>
+            <span className="ml-1">{t(locale, 'article.generatePromoCode')}</span>
           </div>
         )}
       </div>

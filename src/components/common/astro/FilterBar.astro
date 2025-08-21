@@ -2,6 +2,7 @@
 import TopicMultiSelect from '@/components/common/react/TopicMultiSelect'
 import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect'
 import AuthorSearchInput from '@/components/common/react/AuthorSearchInput'
+import { t } from '@/lib/i18n'
 
 export interface Props {
   locale: 'us' | 'asia'
@@ -16,11 +17,11 @@ const {
 } = Astro.props as Props
 
 const i18n = {
-  filters: locale === 'us' ? 'Filters' : '筛选',
-  clearAll: locale === 'us' ? 'CLEAR ALL' : '清空',
-  category: locale === 'us' ? 'Category' : '分类',
-  author: locale === 'us' ? 'Author' : '作者',
-  topic: locale === 'us' ? 'Topic' : '主题',
+  filters: t(locale, 'common.filters'),
+  clearAll: t(locale, 'common.clearAll'),
+  category: t(locale, 'common.category'),
+  author: t(locale, 'common.author'),
+  topic: t(locale, 'common.topic'),
 }
 
 

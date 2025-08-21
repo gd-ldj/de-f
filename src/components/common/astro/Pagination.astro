@@ -1,5 +1,6 @@
 ---
 import type { Locale } from '@/types'
+import { t } from '@/lib/i18n'
 
 interface Props {
   currentPage: number
@@ -90,7 +91,7 @@ const getPageUrl = (page: number) => {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
-        {locale === 'us' ? 'Prev' : '上一页'}
+        {t(locale, 'common.prev')}
       </a>
     ) : (
       <button 
@@ -100,7 +101,7 @@ const getPageUrl = (page: number) => {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
-        {locale === 'us' ? 'Prev' : '上一页'}
+        {t(locale, 'common.prev')}
       </button>
     )}
     
@@ -130,7 +131,7 @@ const getPageUrl = (page: number) => {
         href={getPageUrl(currentPage + 1)}
         class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors"
       >
-        {locale === 'us' ? 'Next' : '下一页'}
+        {t(locale, 'common.next')}
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -140,7 +141,7 @@ const getPageUrl = (page: number) => {
         disabled
         class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-muted-foreground rounded cursor-not-allowed opacity-50"
       >
-        {locale === 'us' ? 'Next' : '下一页'}
+        {t(locale, 'common.next')}
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
