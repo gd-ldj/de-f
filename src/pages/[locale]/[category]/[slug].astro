@@ -71,7 +71,7 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
     )}
     <meta property="article:published_time" content={article.created_at} />
     <meta property="article:modified_time" content={article.updated_at} />
-    <meta property="article:author" content={article.author.name} />
+    <meta property="article:author" content={article?.author?.name} />
     <meta property="article:section" content={categoryDisplayName} />
     {article.tags.map(tag => (
       <meta property="article:tag" content={tag} />
@@ -94,8 +94,11 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
     shareSection={{ locale, title: article.title, url: canonicalUrl }}
     authorSection={{
       author: {
-        name: article.author.name,
-        avatar: article.author.avatar_url
+        name: article?.author?.name || '',
+        avatar: article?.author?.avatar_url,
+        bio: article?.author?.bio,
+        email: article?.contact?.email,
+        twitter: article?.contact?.twitter,
       },
       locale
     }}

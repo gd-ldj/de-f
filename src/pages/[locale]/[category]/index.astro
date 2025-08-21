@@ -7,12 +7,15 @@ import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
 import FilterBar from '@/components/common/astro/FilterBar.astro'
+import Pagination from '@/components/common/astro/Pagination.astro'
 
 import { changeLanguage } from "i18next";
 
 export const prerender = false // Enable SSR for this page
 
-const { locale, category } = Astro.params as { locale: Locale; category: string }
+// Extract Astro properties at the top
+const { params, url, redirect } = Astro
+const { locale, category } = params as { locale: Locale; category: string }
 
 // Initialize i18n with the locale from params
 changeLanguage(locale);
@@ -20,13 +23,18 @@ changeLanguage(locale);
 // Validate category against API data
 const validCategories = ['insights', 'news', 'research']
 if (!validCategories.includes(category.toLowerCase())) {
-  return Astro.redirect('/404')
+  return redirect('/404')
 }
 
-// Fetch articles data for specific category
-const articlesData = await fetchArticles(locale, 1, 12, category)
+// Get pagination parameters from URL
+const currentPage = parseInt(url.searchParams.get('page') || '1', 10)
+const itemsPerPage = 12
+
+// Fetch articles data for specific category with pagination
+const articlesData = await fetchArticles(locale, currentPage, itemsPerPage, {business_type_name: category.toLowerCase()})
 // Use typed response directly (ArticlesResponse with ApiArticle[])
-const { articles } = articlesData
+const { articles, total } = articlesData || { articles: [], total: 0 }
+console.log("🚀 ~ articles:", articles)
 
 // Category display names
 const categoryNames = {
@@ -132,10 +140,10 @@ const formatDate = (dateString: string) => {
                 
                 <!-- Article Meta -->
                 <div class="flex items-center justify-between text-xs text-muted-foreground">
-                  <div class="flex items-center space-x-2">
+                  <div class="flex items-center space-x-1">
                     <span>{formatDate(article.created_at)}</span>
-                    <span>•</span>
-                    <span>by {article.author.name}</span>
+                    <span>/ by </span>
+                    <span class="text-foreground">{article.author_name}</span>
                   </div>
                 </div>
               </div>
@@ -143,30 +151,14 @@ const formatDate = (dateString: string) => {
           ))}
         </div>
         
-        <!-- Pagination -->
-        <div class="flex items-center justify-center space-x-1">
-          <button class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-            {locale === 'us' ? 'Prev' : '上一页'}
-          </button>
-          
-          <div class="flex items-center space-x-1">
-            <button class="w-8 h-8 text-sm bg-primary text-primary-foreground rounded font-medium">1</button>
-            <button class="w-8 h-8 text-sm text-foreground hover:bg-accent rounded transition-colors">2</button>
-            <button class="w-8 h-8 text-sm text-foreground hover:bg-accent rounded transition-colors">3</button>
-            <span class="px-2 text-muted-foreground text-sm">...</span>
-            <button class="w-8 h-8 text-sm text-foreground hover:bg-accent rounded transition-colors">10</button>
-          </div>
-          
-          <button class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors">
-             {locale === 'us' ? 'Next' : '下一页'}
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-        </div>
+        <!-- Dynamic Pagination -->
+         <Pagination 
+           currentPage={currentPage}
+           totalItems={total}
+           itemsPerPage={itemsPerPage}
+           baseUrl={`/${locale}/${category}`}
+           locale={locale}
+         />
       </main>
       
       <!-- Footer -->

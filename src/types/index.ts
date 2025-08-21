@@ -7,18 +7,32 @@ export interface ApiArticle {
   title: string
   sub_title: string
   slug: string
-  body: string
-  author: {
+  body?: string
+  author_name: string
+  author_avatar?: string
+  created_at: string
+  updated_at: string
+  category_name: string
+  business_type_name: string
+  tags: string[]
+  img_url?: string
+  language?: string
+  page_view?: string
+  unique_vistor?: string
+  contact?: {
+    email: string
+    phone: string
+    title: string
+    company: string
+    full_name: string
+    twitter?: string
+  }
+  // Legacy author object for backward compatibility
+  author?: {
     name: string
     avatar_url?: string
     bio?: string
   }
-  created_at: string
-  updated_at: string
-  category_name: string
-  tags: string[]
-  img_url?: string
-  language: string
 }
 
 /**
@@ -83,6 +97,7 @@ export interface ArticlesResponse {
   page: number
   limit: number
   hasMore: boolean
+  nextCursor?: string | null
 }
 
 /**

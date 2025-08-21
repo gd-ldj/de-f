@@ -28,7 +28,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
       username: "Risk",
       timeAgo: "3d 2h",
       amount: "0.025",
-      avatar: "/placeholder-avatar.jpg"
+      avatar: "/detake.svg"
     },
     {
       id: 2,
@@ -36,7 +36,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
       username: "8Nty9...DaU",
       timeAgo: "11d 1h",
       amount: "0.025",
-      avatar: "/placeholder-avatar.jpg"
+      avatar: "/detake.svg"
     },
     {
       id: 3,
@@ -44,7 +44,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
       username: "3TsRA...KSq",
       timeAgo: "1d 2h",
       amount: "0.025",
-      avatar: "/placeholder-avatar.jpg"
+      avatar: "/detake.svg"
     },
     {
       id: 4,
@@ -52,7 +52,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
       username: "6EPdr...65u",
       timeAgo: "10d 14h",
       amount: "0.025",
-      avatar: "/placeholder-avatar.jpg"
+      avatar: "/detake.svg"
     },
     {
       id: 5,
@@ -60,7 +60,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
       username: "A4DCA...XgL",
       timeAgo: "21h",
       amount: "0.025",
-      avatar: "/placeholder-avatar.jpg"
+      avatar: "/detake.svg"
     }
   ]
 }) => {

@@ -14,7 +14,7 @@ const { locale = 'us' as Locale } = Astro.props as Props
 
 // Fetch home page data
 const homeData = await fetchHomePageData()
-const { news_all } = homeData
+const { news_all = [] } = homeData
 console.log("🚀 ~ lastest:", news_all)
 
 // Get the main featured article (first one)

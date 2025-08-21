@@ -33,9 +33,10 @@ const { article, locale, category, categoryDisplayName } = Astro.props
      <nav class="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
        <a href={`/${locale}`} class="hover:text-primary">Articles</a>
        <span>/</span>
-       <a href={`/${locale}/${category}`} class="hover:text-primary">{categoryDisplayName}</a>
+       <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
        <span>/</span>
-       <span class="text-foreground">{article.title}</span>
+       <!-- <span class="text-foreground">{article.title}</span> -->
+       <a href={`/${locale}/category/${article.category_name.toLowerCase()}`} class="hover:text-primary">{article.category_name}</a>
      </nav>
  
      <!-- Title -->
@@ -48,31 +49,60 @@ const { article, locale, category, categoryDisplayName } = Astro.props
        {article.sub_title}
      </p>
  
-      <!-- Tags -->
-     {article.tags.length > 0 && (
-       <div class="mb-2 pt-2">
-         <div class="flex flex-wrap gap-2">
-           {article.tags.map((tag) => (
-             <a
-               href={`/${locale}/tag/${tag}`}
-               class="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
-             >
-               #{tag}
-             </a>
-           ))}
-         </div>
-       </div>
-     )}
- 
-     <!-- Author and Date -->
-     <div class="flex items-center space-x-4 pb-8 border-b border-border">
-       <div class="flex items-center space-x-3">
-         <time class="text-sm text-muted-foreground" datetime={article.created_at}>
-           {formatDate(article.created_at)}
-         </time>
-        <span class="text-sm text-muted-foreground"> / By</span>
-         <p class="font-medium text-foreground">{article.author.name}</p>
-       </div>
+     <div class="flex items-center justify-between pb-8">
+      <div class="">
+          <!-- Tags -->
+        {article.tags.length > 0 && (
+          <div class="mb-2 pt-2">
+            <div class="flex flex-wrap gap-2">
+              {article.tags.map((tag) => (
+                <a
+                  href={`/${locale}/tag/${tag}`}
+                  class="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+                >
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+    
+        <!-- Author and Date -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <time class="text-sm text-muted-foreground" datetime={article.created_at}>
+              {formatDate(article.created_at)}
+            </time>
+            
+            <p class="font-medium text-foreground">
+              <span class="text-sm text-muted-foreground mr-[2px]"> / By</span>
+              {article.author?.name || article.author_name}
+            </p>
+          </div>
+          
+          
+        </div>
+      </div>
+      <!-- Reading Stats -->
+      <div class="flex items-center space-x-6">
+        <!-- View Count -->
+        <div class="flex flex-col items-center space-x-1">
+          <div class="text-[32px]">{article?.page_view || 0}</div>
+            <div class="flex items-center space-x-1">
+            <img src="/eyes.svg" alt="Views" class="w-4 h-4 text-muted-foreground" />
+            <span class="text-sm text-muted-foreground">Views</span>
+          </div>
+        </div>
+
+        <!-- Author Avatar -->
+        <div class="flex flex-col items-center space-x-1">
+          <div class="text-[32px]">{article?.unique_vistor || 0}</div>
+          <div class="flex items-center space-x-1">
+            <img src="/avatar_2.svg" alt="Author" class="w-4 h-4 text-muted-foreground" />
+            <span class="text-sm text-muted-foreground">Holders</span>
+          </div>
+        </div>
+      </div>
      </div>
    </header>
  

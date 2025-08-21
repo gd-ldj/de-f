@@ -28,7 +28,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
     description: "Ethereum core developers finalize Pectra's May 7 launch and wrap scoping of the next upgrade",
     author: "JACK KUBINEC",
     date: "Apr 11, 2025",
-    image: "/placeholder-research.jpg",
+    image: "/detake.svg",
     categories: ["MARKETS POLICY", "DEFI"]
   }
 }) => {
