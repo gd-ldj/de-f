@@ -8,6 +8,7 @@ interface LoginProps {
 }
 
 export default function Login({ locale }: LoginProps) {
+  console.log('🚀 ~ Login ~ locale:', locale);
   return (
     <div className="space-y-6 px-6 border-b border-border pb-5">
       <div className="bg-white mb-6">

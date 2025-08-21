@@ -32,12 +32,22 @@ export const useWalletAuth = () => {
 
   /**
    * Initialize authentication state from localStorage on mount
+   * Use async loading to prevent blocking initial render
    */
   useEffect(() => {
-    const initializeAuth = () => {
+    const initializeAuth = async () => {
       try {
         // Only initialize from localStorage in browser environment
         if (typeof window !== 'undefined') {
+          // Use requestIdleCallback or setTimeout to defer localStorage reads
+          await new Promise(resolve => {
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(resolve);
+            } else {
+              setTimeout(resolve, 0);
+            }
+          });
+
           // Load stored auth data
           const storedAuthData = localStorage.getItem(STORAGE_KEYS.WALLET_AUTH_DATA)
           const storedAccessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)

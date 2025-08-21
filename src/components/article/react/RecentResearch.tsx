@@ -1,8 +1,10 @@
 import React from 'react';
 import type { Locale } from '@/types';
+import { DEFAULT_PROMOTE_CODE } from '@/config/constants';
 
 interface ResearchArticle {
   id: string;
+  slug?: string; // Article slug for URL generation
   title: string;
   description: string;
   author: string;
@@ -24,6 +26,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
   locale, 
   article = {
     id: "1",
+    slug: "fusaka-fork-takes-shape-as-pectra-enters-final-stretch",
     title: "Fusaka fork takes shape as Pectra enters final stretch",
     description: "Ethereum core developers finalize Pectra's May 7 launch and wrap scoping of the next upgrade",
     author: "JACK KUBINEC",
@@ -32,19 +35,31 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
     categories: ["MARKETS POLICY", "DEFI"]
   }
 }) => {
+  /**
+   * Generate article URL with promote code
+   * Follows the same pattern as ArticleLink.astro component
+   */
+  const getArticleUrl = (slug: string) => {
+    // Get promote code from localStorage or use default
+    const promoteCode = (typeof window !== 'undefined' ? 
+      localStorage.getItem('promote_code') : null) || DEFAULT_PROMOTE_CODE;
+    return `/${locale}/research/${slug}-${promoteCode}`;
+  };
+
+  const articleUrl = article.slug ? getArticleUrl(article.slug) : '#';
   return (
-    <div className="bg-white rounded border border-border p-6">
+    <div className="">
       {/* Title */}
       <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Recent Research' : '最新研究'}</h3>
 
       {/* Article Card */}
       <div className="space-y-4">
         {/* Article Image */}
-        <div className="relative w-full h-48 rounded overflow-hidden">
+        <a href={articleUrl} className="block relative w-full h-48 rounded overflow-hidden group">
           <img
             src={article.image}
             alt={article.title}
-            className="w-full h-full object-fill"
+            className="w-full h-full object-fill group-hover:opacity-90 transition-opacity cursor-pointer"
             onError={(e) => {
               // Fallback to a placeholder color background if image fails to load
               const target = e.target as HTMLImageElement;
@@ -60,7 +75,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
           <div className="absolute bottom-4 right-4">
             <span className="text-primary-foreground font-medium text-sm bg-black/20 px-2 py-1 rounded">Blockworks</span>
           </div>
-        </div>
+        </a>
 
         {/* Categories */}
         <div className="flex flex-wrap gap-2">
@@ -72,7 +87,11 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
         </div>
 
         {/* Article Title */}
-        <h4 className="text-xl font-medium text-foreground leading-tight">{article.title}</h4>
+        <h4 className="text-xl font-medium text-foreground leading-tight">
+          <a href={articleUrl} className="hover:text-primary transition-colors cursor-pointer">
+            {article.title}
+          </a>
+        </h4>
 
         {/* Article Description */}
         <p className="text-base text-muted-foreground leading-relaxed">{article.description}</p>

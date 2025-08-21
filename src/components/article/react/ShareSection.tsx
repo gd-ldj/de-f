@@ -147,7 +147,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
   };
 
   return (
-    <div className="bg-white rounded border border-border p-6 max-w-md mx-auto">
+    <div className="bg-white px-6 pt-5 pb-8 max-w-md mx-auto border-b border-border">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-medium text-foreground">{t(locale, 'article.shareToEarn')}</h3>
@@ -192,8 +192,8 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
             fill="currentColor"
             viewBox="0 0 24 24"
           >
--            <path dName="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            - <path dName="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            + <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
           </svg>
         </div>
 

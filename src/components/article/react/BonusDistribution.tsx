@@ -23,7 +23,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
   const filledSegments = Math.floor((currentProgress / 100) * totalSegments);
   
   return (
-    <div className="bg-white rounded border border-border p-6">
+    <div className="">
       {/* Title */}
       <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Bonus Distribution' : '奖励分布'}</h3>
 

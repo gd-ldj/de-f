@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Header from '@/components/common/react/header/Index';
 import Login from '@/components/home/react/Login';
@@ -89,28 +89,91 @@ const AuthMount: React.FC<AuthMountProps> = ({
   // When isAuthenticated changes (login/logout), this component re-renders
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
 
-  // Resolve DOM mount points on client and log for debugging in client only
+  // Memoize DOM element queries to avoid repeated lookups
+  const domElements = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    
+    return {
+      header: document.getElementById(headerTargetId),
+      login: document.getElementById(loginTargetId),
+      share: document.getElementById(shareTargetId),
+      author: document.getElementById(authorTargetId),
+      toFollow: document.getElementById(toFollowTargetId)
+    };
+  }, [headerTargetId, loginTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
+
+  // Resolve DOM mount points on client
   useEffect(() => {
-    const header = document.getElementById(headerTargetId);
-    const login = document.getElementById(loginTargetId);
-    const share = document.getElementById(shareTargetId);
-    const author = document.getElementById(authorTargetId);
-    const toFollow = document.getElementById(toFollowTargetId);
-    setHeaderEl(header);
-    setLoginEl(login);
-    setShareEl(share);
-    setAuthorEl(author);
-    setToFollowEl(toFollow);
+    if (!domElements) return;
+    
+    setHeaderEl(domElements.header);
+    setLoginEl(domElements.login);
+    setShareEl(domElements.share);
+    setAuthorEl(domElements.author);
+    setToFollowEl(domElements.toFollow);
 
     // Update locale from URL on mount
     setLocale(getLocaleFromURL());
 
     // Debug: verify hydration ran in the browser and mount points were found
-    // This runs only on the client after hydration
-    if (typeof window !== 'undefined' && import.meta.env.DEV) {
-      console.log('[AuthMount] hydrated. headerEl:', header, 'loginEl:', login, 'shareEl:', share, 'authorEl:', author, 'toFollowEl:', toFollow);
+    if (import.meta.env.DEV) {
+      console.log('[AuthMount] hydrated. Elements found:', domElements);
     }
-  }, [headerTargetId, loginTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
+  }, [domElements]);
+
+  // Memoize user component to prevent re-renders
+  const userComponent = useMemo(() => (
+    <WalletPopover locale={locale}>
+      <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">
+        <img src="/me.svg" alt="logo" className="w-5" />
+      </button>
+    </WalletPopover>
+  ), [locale]);
+
+  // Memoize portals to prevent unnecessary re-renders
+  const headerPortal = useMemo(() => {
+    if (!headerEl) return null;
+    return createPortal(
+      <Header userComponent={userComponent} />, 
+      headerEl
+    );
+  }, [headerEl, userComponent]);
+
+  const loginPortal = useMemo(() => {
+    if (!loginEl || isAuthenticated) return null;
+    return createPortal(<Login locale={locale} />, loginEl);
+  }, [loginEl, isAuthenticated, locale]);
+
+  const sharePortal = useMemo(() => {
+    if (!shareEl || !shareSection) return null;
+    return createPortal(
+      <ShareSection 
+        locale={shareSection.locale}
+        title={shareSection.title}
+        url={shareSection.url}
+      />,
+      shareEl
+    );
+  }, [shareEl, shareSection]);
+
+  const authorPortal = useMemo(() => {
+    if (!authorEl || !authorSection) return null;
+    return createPortal(
+      <AuthorSection 
+        author={authorSection.author}
+        locale={authorSection.locale}
+      />,
+      authorEl
+    );
+  }, [authorEl, authorSection]);
+
+  const toFollowPortal = useMemo(() => {
+    if (!toFollowEl || !toFollowSection) return null;
+    return createPortal(
+      <ToFollowList locale={toFollowSection.locale} />,
+      toFollowEl
+    );
+  }, [toFollowEl, toFollowSection]);
 
   return (
     <IdentityProvider>
@@ -118,62 +181,12 @@ const AuthMount: React.FC<AuthMountProps> = ({
         {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
         <span style={{ display: 'none' }} data-auth-island="true" />
 
-        {/* Header Portal */}
-        {headerEl && createPortal(
-          <Header 
-            userComponent={(
-              <WalletPopover locale={locale}>
-                <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">
-                  <img src="/me.svg" alt="logo" className="w-5" />
-                </button>
-              </WalletPopover>
-            )}
-          />, 
-          headerEl
-        )}
-
-        {/* Login Portal - only render when NOT authenticated */}
-        {loginEl && !isAuthenticated && createPortal(<Login locale={locale} />, loginEl)}
- 
-        {/* ShareSection Portal (under PrivyProvider) */}
-        {/**
-         * Render ShareSection only when we both have mount point and props.
-         * This guarantees ShareSection has access to Privy context, fixing
-         * "You need to wrap your application with the <PrivyProvider>" error.
-         */}
-        {shareEl && shareSection && createPortal(
-          <ShareSection 
-            locale={shareSection.locale}
-            title={shareSection.title}
-            url={shareSection.url}
-          />,
-          shareEl
-        )}
-
-        {/* AuthorSection Portal (under PrivyProvider) */}
-        {/**
-         * Render AuthorSection only when we both have mount point and props.
-         * This guarantees AuthorSection has access to Privy context if needed.
-         */}
-        {authorEl && authorSection && createPortal(
-          <AuthorSection 
-            author={authorSection.author}
-            locale={authorSection.locale}
-          />,
-          authorEl
-        )}
-
-        {/* ToFollowList Portal (under PrivyProvider) */}
-        {/**
-         * Render ToFollowList only when we both have mount point and props.
-         * This guarantees ToFollowList has access to Privy context for useAuth hook.
-         */}
-        {toFollowEl && toFollowSection && createPortal(
-          <ToFollowList 
-            locale={toFollowSection.locale}
-          />,
-          toFollowEl
-        )}
+        {/* Render memoized portals */}
+        {headerPortal}
+        {loginPortal}
+        {sharePortal}
+        {authorPortal}
+        {toFollowPortal}
 
         {/* Global Toasts */}
         <ToastContainer />

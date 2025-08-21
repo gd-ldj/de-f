@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import { Plus } from "lucide-react"
-import Image from '@/components/common/react/Image'
-import { fetchHomePageData } from '@/api/articles'
-import type { HomeWhoToFollow, Locale } from '@/types'
-import { t } from '@/lib/i18n'
-import { getLocaleFromPath } from '@/lib/utils'
-import { useAuth } from '@/lib/useAuth'
-import { followAuthor } from '@/api/users'
-import { toast } from '@/components/common/react/Toast'
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Plus } from 'lucide-react';
+import Image from '@/components/common/react/Image';
+import { fetchHomePageData } from '@/api/articles';
+import type { HomeWhoToFollow, Locale } from '@/types';
+import { t } from '@/lib/i18n';
+import { getLocaleFromPath } from '@/lib/utils';
+import { useAuth } from '@/lib/useAuth';
+import { followAuthor } from '@/api/users';
+import { toast } from '@/components/common/react/Toast';
 
 interface ToFollowListProps {
   locale?: Locale;
@@ -27,30 +27,39 @@ function getLocale(propsLocale?: Locale): Locale {
 }
 
 export default function ToFollowList({ locale: propsLocale }: ToFollowListProps) {
-  const locale = getLocale(propsLocale);
-  const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([])
-  const [loading, setLoading] = useState(true)
+  const locale = useMemo(() => getLocale(propsLocale), [propsLocale]);
+  const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // Authentication utilities
-  const { isEffectivelyLoggedIn, login, getValidAccessToken } = useAuth()
+  const { isEffectivelyLoggedIn, login, getValidAccessToken } = useAuth();
   // Track follow request loading state per user
-  const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({})
+  const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
   // Track hover state for each user item
-  const [hoveredUserId, setHoveredUserId] = useState<string | null>(null)
+  const [hoveredUserId, setHoveredUserId] = useState<string | null>(null);
+
+  // Memoize the data fetching function
+  const loadFollowUsers = useCallback(async () => {
+    try {
+      setError(null);
+      const homeData = await fetchHomePageData();
+      setFollowUsers(homeData?.who_to_follow || []);
+    } catch (error) {
+      console.error('Failed to load follow users:', error);
+      setError('Failed to load recommendations');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadFollowUsers = async () => {
-      try {
-        const homeData = await fetchHomePageData()
-        setFollowUsers(homeData?.who_to_follow || [])
-      } catch (error) {
-        console.error('Failed to load follow users:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+    // Add a small delay to prevent blocking initial render
+    const timer = setTimeout(() => {
+      loadFollowUsers();
+    }, 100);
 
-    loadFollowUsers()
-  }, [])
+    return () => clearTimeout(timer);
+  }, [loadFollowUsers]);
 
   /**
    * Handle follow (subscribe) action for a specific user
@@ -59,36 +68,55 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
    * 3) Call real backend API: POST /api/v1/users/follow with { author_id }
    * 4) Show success message based on current locale using server-provided text
    */
-  const handleFollow = async (userId: string) => {
-    try {
-      // Request login if not authenticated
-      if (!isEffectivelyLoggedIn) {
-        login()
-        return
+  const handleFollow = useCallback(
+    async (userId: string) => {
+      try {
+        // Request login if not authenticated
+        if (!isEffectivelyLoggedIn) {
+          login();
+          return;
+        }
+
+        setFollowingMap((prev) => ({ ...prev, [userId]: true }));
+
+        const token = await getValidAccessToken();
+        if (!token) throw new Error('Missing access token');
+
+        const res = await followAuthor(token, userId);
+        const successMsg = locale === 'us' ? res.msg.en : res.msg.zh;
+
+        // Show success toast message using global Toast container
+        toast.success(successMsg);
+      } catch (err) {
+        console.error('Follow failed:', err);
+        toast.error(locale === 'us' ? 'Failed to follow author. Please try again.' : '关注失败，请稍后重试');
+      } finally {
+        setFollowingMap((prev) => ({ ...prev, [userId]: false }));
       }
+    },
+    [isEffectivelyLoggedIn, login, getValidAccessToken, locale]
+  );
 
-      setFollowingMap(prev => ({ ...prev, [userId]: true }))
-
-      const token = await getValidAccessToken()
-      if (!token) throw new Error('Missing access token')
-
-      const res = await followAuthor(token, userId)
-      const successMsg = locale === 'us' ? res.msg.en : res.msg.zh
-
-      // Show success toast message using global Toast container
-      toast.success(successMsg)
-
-    } catch (err) {
-      console.error('Follow failed:', err)
-      toast.error(locale === 'us' ? 'Failed to follow author. Please try again.' : '关注失败，请稍后重试')
-    } finally {
-      setFollowingMap(prev => ({ ...prev, [userId]: false }))
-    }
+  // Handle error state
+  if (error) {
+    return (
+      <div className="space-y-6 px-6 border-t border-border pt-5">
+        <div>
+          <h3 className="font-medium text-foreground mb-4">Who To Follow</h3>
+          <div className="text-center py-8">
+            <p className="text-muted-foreground mb-4">{error}</p>
+            <button onClick={loadFollowUsers} className="text-primary hover:text-primary/80 text-sm">
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (loading) {
     return (
-      <div className="space-y-6 px-6">
+      <div className="space-y-6 px-6 border-t border-border pt-5">
         <div>
           <h3 className="font-medium text-foreground mb-4">{t(locale, 'common.whoToFollow')}</h3>
           <div className="space-y-4">

@@ -200,15 +200,15 @@ export default function Header({ userComponent }: HeaderProps) {
 
   return (
     <header className="border-b border-gray-200 fixed w-screen top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95 bg-white/95">
-      <div className="max-w-[1440px] mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-[1440px] mx-auto pl-4 pr-6">
+        <div className="flex items-center h-16">
           {/* Left Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-8 flex-1">
             {/* Categories Dropdown */}
             <div className="" ref={categoriesDropdownRef}>
               <button 
                 onClick={toggleCategoriesDropdown} 
-                className={`flex items-center space-x-1 text-sm px-3 py-1.5 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`}
+                className={`flex items-center space-x-1 text-sm py-1.5 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`}
                 aria-label={texts.navigation.allCategories} 
                 aria-expanded={categoriesDropdownOpen}
               >
@@ -260,14 +260,14 @@ export default function Header({ userComponent }: HeaderProps) {
           </div>
 
           {/* Logo - Center */}
-          <div className="flex items-center">
+          <div className="flex items-center justify-center flex-shrink-0">
             <a href={`/${locale}`} className="flex items-center">
               <img src={DetakeLogo} alt="logo" className="w-24" />
             </a>
           </div>
 
           {/* Right Navigation & Actions */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-6 flex-1 justify-end">
             {/* Collections Dropdown */}
             <div className="relative" ref={collectionsDropdownRef}>
               <button onClick={toggleCollectionsDropdown} className={`flex items-center space-x-1 text-sm px-3 py-1.5 transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>

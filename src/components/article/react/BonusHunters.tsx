@@ -65,7 +65,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
   ]
 }) => {
   return (
-    <div className="bg-white rounded border border-border p-6">
+    <div className="">
       {/* Title */}
       <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Bonus Hunters' : '奖励猎人'}</h3>
 

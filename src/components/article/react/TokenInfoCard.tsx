@@ -43,7 +43,7 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded border border-border p-4">
+    <div className="">
       <div className="grid grid-cols-2 gap-6">
         {/* Left side - Token metrics */}
         <div className="grid grid-cols-1 gap-y-4">
