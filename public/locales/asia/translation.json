@@ -92,7 +92,9 @@
     "decentralizedTakes": "去中心化观点。",
     "loginDescription": "登录或注册 DeTake 获取最佳内容",
     "loginFor": "登录或注册",
-    "getBestContent": "获取最佳内容"
+    "deTake": "DeTake",
+    "getStartedWith": "开始",
+    "contentFi": "去中心化内容"
   },
   "footer": {
     "newsletter": "新闻通讯",

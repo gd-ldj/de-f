@@ -9,13 +9,14 @@ interface LoginProps {
 
 export default function Login({ locale }: LoginProps) {
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded border border-border p-6">
-        <h3 className="text-lg font-medium text-foreground mb-4">{t(locale, 'home.decentralizedTakes')}</h3>
+    <div className="space-y-6 px-6 border-b border-border pb-5">
+      <div className="bg-white mb-6">
+        <h3 className="text-lg font-medium text-primary mb-4">{t(locale, 'home.decentralizedTakes')}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          {t(locale, 'home.loginFor')} <span className="font-medium">DeTake</span>
+          {t(locale, 'home.loginFor')} <span className="font-medium text-foreground">{t(locale, 'home.deTake')}</span>
           <br />
-          {t(locale, 'home.getBestContent')}
+          {t(locale, 'home.getStartedWith')}
+          <span className="font-medium text-foreground"> {t(locale, 'home.contentFi')}</span>
         </p>
 
         <div className="space-y-3">

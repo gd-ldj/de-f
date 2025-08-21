@@ -92,7 +92,9 @@
     "decentralizedTakes": "Decentralized Takes.",
     "loginDescription": "Log in or sign up for DeTake to get the best Content",
     "loginFor": "Log in or sign up for",
-    "getBestContent": "to get the best Content"
+    "deTake": "DeTake",
+    "getStartedWith": "Get started with",
+    "contentFi": "ContentFi"
   },
   "footer": {
     "newsletter": "NEWSLETTER",

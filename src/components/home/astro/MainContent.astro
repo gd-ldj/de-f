@@ -66,11 +66,11 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
 
 ---
 
-<div class="space-y-6">
+<div class="space-y-0">
   {/* Featured Article */}
   {featuredArticle && (
-    <div class="bg-white rounded border border-border overflow-hidden">
-      <div class="p-6">
+    <div class="bg-white">
+      <div class="mb-6">
         <h3 class="font-medium text-foreground mb-4">Highlights</h3>
         <p class="text-[12px] text-primary font-medium uppercase mb-2">{featuredArticle.business_type_name}</p>
 
@@ -100,7 +100,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
             <img
               src={featuredArticle.img_url || '/placeholder.svg'}
               alt={featuredArticle.title}
-              class="w-full h-64 object-cover rounded hover:opacity-90 transition-opacity"
+              class="w-full h-84 object-cover rounded hover:opacity-90 transition-opacity"
             />
           </ArticleLink>
         </div>
@@ -111,7 +111,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
   {/* Sidebar Articles */}
   <div class="space-y-4">
     {sidebarArticles.map((article: HomeNewsArticle) => (
-      <div class="bg-white rounded border border-border p-6">
+      <div class="bg-white mb-6">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-primary font-medium uppercase">{article.business_type_name}</span>
         </div>

@@ -37,8 +37,8 @@ function formatDate(dateString: string): string {
 }
 ---
 
-<div class="space-y-6 mt-4">
-  <div>
+<div class="space-y-6">
+  <div class="px-6">
     <h4 class="font-medium text-foreground mb-4">{t(locale, 'common.recommendedTopics')}</h4>
     <div class="flex flex-wrap gap-2">
       {topics.map((topic, index) => (
@@ -52,8 +52,8 @@ function formatDate(dateString: string): string {
     </div>
   </div>
 
-  <div>
-    <h4 class="text-xl font-medium text-foreground mb-6">{t(locale, 'common.mostRead')}</h4>
+  <div class="px-6 border-t border-border pt-5" >
+    <h4 class="font-medium text-foreground mb-4">{t(locale, 'common.mostRead')}</h4>
     <div class="space-y-4">
       {mostReadArticles.map((article: HomeMostReadArticle, index: number) => (
         <div class="border-b border-border pb-4 last:border-b-0 last:pb-0">
@@ -90,7 +90,7 @@ function formatDate(dateString: string): string {
         </div>
       ))}
     </div>
-    <a href="/news" class="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
+    <a href="/news" class="w-full text-right text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
       {t(locale, 'common.moreFromNews')}
     </a>
   </div>

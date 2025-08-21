@@ -46,17 +46,17 @@ const { title, description } = seoContent[locale] || seoContent.us
      />
      <div class="min-h-screen bg-white mt-[65px]">
         
-        <div class="max-w-[1440px] mx-auto px-4 py-6">
-          <div class="grid grid-cols-12 gap-6">
-            <div class="col-span-3 space-y-6">
+        <div class="max-w-[1440px] mx-auto">
+          <div class="grid grid-cols-12">
+            <div class="col-span-3 space-y-6 py-5 border border-t-0 border-r-0 border-border">
               <Sidebar />
               <!-- React mount point for ToFollowList -->
               <div id="to-follow-root"></div>
             </div>
-            <div class="col-span-6">
+            <div class="col-span-6 border border-t-0 border-border py-5 px-6">
               <MainContent locale={locale} />
             </div>
-            <div class="col-span-3 space-y-6">
+            <div class="col-span-3 space-y-6 py-5 border border-t-0 border-l-0 border-border">
               <!-- React mount point for Login -->
               <div id="login-root" ></div>
               <RightSidebar />

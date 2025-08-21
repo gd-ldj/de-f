@@ -29,7 +29,7 @@ const isWithin12Hours = (createdAt: string) => {
 }
 ---
 
-<div class="space-y-6">
+<div class="space-y-6 px-6">
   <div>
     <h3 class="font-medium text-foreground mb-4">{t(locale, 'common.latest')}</h3>
     <div class="space-y-0">
@@ -39,7 +39,7 @@ const isWithin12Hours = (createdAt: string) => {
           slug={article.slug}
           category={article.business_type_name.toLowerCase()}
           locale={locale}
-          class="flex items-start space-x-3 py-3 group hover:bg-muted/50 transition-colors p-3 rounded"
+          class="flex items-start space-x-3 py-3 group transition-colors"
         >
           {isWithin12Hours(article.created_at) && (
             <div class="flex items-center space-x-2 text-xs text-muted-foreground">
@@ -50,9 +50,6 @@ const isWithin12Hours = (createdAt: string) => {
          
         </ArticleLink>
          {index < latestNews.length - 1 && (
-            <div class="border-b border-border"></div>
-          )}
-          {index < latestNews.length - 1 && (
             <div class="border-b border-border"></div>
           )}
           </div>

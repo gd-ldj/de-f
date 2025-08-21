@@ -88,7 +88,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 px-6">
         <div>
           <h3 className="font-medium text-foreground mb-4">{t(locale, 'common.whoToFollow')}</h3>
           <div className="space-y-4">
@@ -106,20 +106,16 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
           </div>
         </div>
       </div>
-    )
+    );
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-6 border-t border-border pt-5">
       <div>
         <h3 className="font-medium text-foreground mb-4">Who To Follow</h3>
         <div className="space-y-4">
           {followUsers.map((user, index) => (
             <div key={index}>
-              <div 
-                className="flex items-start justify-between py-3"
-                onMouseEnter={() => setHoveredUserId(user.user_id)}
-                onMouseLeave={() => setHoveredUserId(null)}
-              >
+              <div className="flex items-start justify-between py-3" onMouseEnter={() => setHoveredUserId(user.user_id)} onMouseLeave={() => setHoveredUserId(null)}>
                 <div className="flex items-start space-x-3">
                   <Image src={user.avatar_url} alt={user.name} className="w-12 h-12 rounded-full flex-shrink-0" />
                   <div className="flex-1">
@@ -128,20 +124,10 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
                   </div>
                 </div>
                 <div className="relative flex-shrink-0">
-                  <button 
-                    className={`p-1.5 hover:bg-accent rounded transition-all duration-300 ease-in-out ${
-                      hoveredUserId === user.user_id ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-                    }`}
-                  >
+                  <button className={`p-1.5 hover:bg-accent rounded transition-all duration-300 ease-in-out ${hoveredUserId === user.user_id ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
                     <Plus className="w-5 h-5 text-muted-foreground" />
                   </button>
-                  <button 
-                    onClick={() => handleFollow(user.user_id)}
-                    disabled={!!followingMap[user.user_id]}
-                    className={`bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed text-primary-foreground px-4 py-1.5 rounded text-sm font-medium transition-all duration-300 ease-in-out items-center space-x-1 absolute right-0 top-0 flex ${
-                      hoveredUserId === user.user_id ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-                    }`}
-                  >
+                  <button onClick={() => handleFollow(user.user_id)} disabled={!!followingMap[user.user_id]} className={`bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed text-primary-foreground px-4 py-1.5 rounded text-sm font-medium transition-all duration-300 ease-in-out items-center space-x-1 absolute right-0 top-0 flex ${hoveredUserId === user.user_id ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
                     <Plus className="w-4 h-4" />
                     <span>{t(locale, 'common.subscribe')}</span>
                   </button>
