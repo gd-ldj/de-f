@@ -2,6 +2,7 @@
 import { fetchHomePageData } from '@/api/articles'
 import type { Locale } from '@/types'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import { t } from '@/lib/i18n'
 
 interface Props {
   locale: Locale
@@ -18,17 +19,17 @@ const articles = homeData['news_all']
 
 // Static category nav (URLs localized)
 const newsCategories = [
-  { name: 'All', url: `/${locale}/news`, active: true },
-  { name: 'Opinion', url: `/${locale}/news/opinion`, active: false },
-  { name: 'Markets', url: `/${locale}/news/markets`, active: false },
-  { name: 'Decibels', url: `/${locale}/news/decibels`, active: false },
-  { name: 'Exchange', url: `/${locale}/news/exchange`, active: false },
-  { name: 'Feature', url: `/${locale}/news/feature`, active: false },
-  { name: 'Announcement', url: `/${locale}/news/announcement`, active: false },
-  { name: 'People', url: `/${locale}/news/people`, active: false },
-  { name: 'Event', url: `/${locale}/news/event`, active: false },
-  { name: 'Analysis', url: `/${locale}/news/analysis`, active: false },
-  { name: 'Lightspeed Newsletter', url: `/${locale}/news/newsletter`, active: false },
+  { name: t(locale, 'common.all'), url: `/${locale}/news`, active: true },
+  { name: t(locale, 'common.opinion'), url: `/${locale}/news/opinion`, active: false },
+  { name: t(locale, 'common.markets'), url: `/${locale}/news/markets`, active: false },
+  { name: t(locale, 'common.decibels'), url: `/${locale}/news/decibels`, active: false },
+  { name: t(locale, 'common.exchange'), url: `/${locale}/news/exchange`, active: false },
+  { name: t(locale, 'common.feature'), url: `/${locale}/news/feature`, active: false },
+  { name: t(locale, 'common.announcement'), url: `/${locale}/news/announcement`, active: false },
+  { name: t(locale, 'common.people'), url: `/${locale}/news/people`, active: false },
+  { name: t(locale, 'common.event'), url: `/${locale}/news/event`, active: false },
+  { name: t(locale, 'common.analysis'), url: `/${locale}/news/analysis`, active: false },
+  { name: t(locale, 'common.lightspeedNewsletter'), url: `/${locale}/news/newsletter`, active: false },
 ]
 
 /**
@@ -47,11 +48,11 @@ const formatDate = (dateString: string) => {
 <div class="mt-12">
   <div class="flex items-center justify-between mb-6">
   <div class="flex items-center justify-center gap-2">
-    <h2 class="text-xl font-medium text-foreground">News</h2>
-    <p class="text-sm text-muted-foreground">Breaking headlines across our core coverage categories</p>
+    <h2 class="text-xl font-medium text-foreground">{t(locale, 'common.news')}</h2>
+    <p class="text-sm text-muted-foreground">{t(locale, 'common.breakingHeadlines')}</p>
   </div>
   <a href={`/${locale}/news`} class="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
-      More from News
+      {t(locale, 'common.moreFromNews')}
     </a>
   </div>
 

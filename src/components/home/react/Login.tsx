@@ -1,15 +1,21 @@
 import React from 'react';
 import { Wallet } from '@/components/common/react/ConnectWallet';
+import type { Locale } from '@/types';
+import { t } from '@/lib/i18n';
 
-export default function Login() {
+interface LoginProps {
+  locale: Locale;
+}
+
+export default function Login({ locale }: LoginProps) {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded border border-border p-6">
-        <h3 className="text-lg font-medium text-foreground mb-4">Decentralized Takes.</h3>
+        <h3 className="text-lg font-medium text-foreground mb-4">{t(locale, 'home.decentralizedTakes')}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Log in or sign up for <span className="font-medium">DeTake</span>
+          {t(locale, 'home.loginFor')} <span className="font-medium">DeTake</span>
           <br />
-          to get the best <span className="font-medium">Content</span>
+          {t(locale, 'home.getBestContent')}
         </p>
 
         <div className="space-y-3">

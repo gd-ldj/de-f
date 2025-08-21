@@ -53,10 +53,10 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
               id: 'topics',
               title: t(locale, 'common.topics'),
               options: [
-                { id: 'blockchain', label: 'Blockchain', checked: false },
-                { id: 'defi', label: 'DeFi', checked: false },
-                { id: 'nft', label: 'NFT', checked: false },
-                { id: 'web3', label: 'Web3', checked: false },
+                { id: 'blockchain', label: t(locale, 'common.blockchain'), checked: false },
+                { id: 'defi', label: t(locale, 'common.defi'), checked: false },
+                { id: 'nft', label: t(locale, 'common.nft'), checked: false },
+                { id: 'web3', label: t(locale, 'common.web3'), checked: false },
               ],
             },
           ])
@@ -69,10 +69,10 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
             id: 'topics',
             title: t(locale, 'common.topics'),
             options: [
-              { id: 'blockchain', label: 'Blockchain', checked: false },
-              { id: 'defi', label: 'DeFi', checked: false },
-              { id: 'nft', label: 'NFT', checked: false },
-              { id: 'web3', label: 'Web3', checked: false },
+              { id: 'blockchain', label: t(locale, 'common.blockchain'), checked: false },
+              { id: 'defi', label: t(locale, 'common.defi'), checked: false },
+              { id: 'nft', label: t(locale, 'common.nft'), checked: false },
+              { id: 'web3', label: t(locale, 'common.web3'), checked: false },
             ],
           },
         ])

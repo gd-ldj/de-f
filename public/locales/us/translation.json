@@ -30,7 +30,31 @@
     "searchAuthor": "Search author",
     "markets": "Markets",
     "news": "News",
-    "research": "Research"
+    "research": "Research",
+    "whoToFollow": "Who To Follow",
+    "subscribe": "Subscribe",
+    "latest": "Latest",
+    "mostRead": "Most Read",
+    "trending": "Trending",
+    "recommendedTopics": "Recommended Topics",
+    "moreFromNews": "More from News",
+    "copy": "Copy",
+    "copied": "Copied",
+    "all": "All",
+    "opinion": "Opinion",
+    "decibels": "Decibels",
+    "exchange": "Exchange",
+    "feature": "Feature",
+    "announcement": "Announcement",
+    "people": "People",
+    "event": "Event",
+    "analysis": "Analysis",
+    "lightspeedNewsletter": "Lightspeed Newsletter",
+    "breakingHeadlines": "Breaking headlines across our core coverage categories",
+    "blockchain": "Blockchain",
+    "defi": "DeFi",
+    "nft": "NFT",
+    "web3": "Web3"
   },
   "pages": {
     "articles": "Articles",
@@ -61,17 +85,14 @@
     "marketCap": "MKT Cap",
     "holders": "Holders",
     "views": "Views",
-    "volume24h": "24h Volume"
+    "volume24h": "Vol. (24h)",
+    "articles": "Articles"
   },
   "home": {
     "decentralizedTakes": "Decentralized Takes.",
     "loginDescription": "Log in or sign up for DeTake to get the best Content",
-    "whoToFollow": "Who To Follow",
-    "latest": "Latest",
-    "trending": "Trending",
-    "recommendedTopics": "Recommended Topics",
-    "mostRead": "Most Read",
-    "highlights": "Highlights"
+    "loginFor": "Log in or sign up for",
+    "getBestContent": "to get the best Content"
   },
   "footer": {
     "newsletter": "NEWSLETTER",

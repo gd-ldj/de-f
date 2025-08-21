@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { Plus } from "lucide-react"
 import Image from '@/components/common/react/Image'
 import { fetchHomePageData } from '@/api/articles'
-import type { HomeWhoToFollow } from '@/types'
+import type { HomeWhoToFollow, Locale } from '@/types'
+import { t } from '@/lib/i18n'
 
-export default function ToFollowList() {
+interface ToFollowListProps {
+  locale: Locale;
+}
+
+export default function ToFollowList({ locale }: ToFollowListProps) {
   const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -32,7 +37,7 @@ export default function ToFollowList() {
     return (
       <div className="space-y-6">
         <div>
-          <h3 className="font-medium text-foreground mb-4">Who To Follow</h3>
+          <h3 className="font-medium text-foreground mb-4">{t(locale, 'common.whoToFollow')}</h3>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -74,7 +79,7 @@ export default function ToFollowList() {
                     className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded text-sm font-medium transition-all duration-300 ease-in-out items-center space-x-1 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 absolute right-0 top-0 flex"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>Subscribe</span>
+                    <span>{t(locale, 'common.subscribe')}</span>
                   </button>
                 </div>
               </div>

@@ -1,5 +1,7 @@
 import React from 'react';
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
+import type { Locale } from '@/types';
+import { t } from '@/lib/i18n';
 
 interface TokenInfoCardProps {
   marketCap: string;
@@ -10,6 +12,7 @@ interface TokenInfoCardProps {
   priceChange: string;
   percentage: string;
   isPositive?: boolean;
+  locale: Locale;
 }
 
 /**
@@ -24,7 +27,8 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
   price,
   priceChange,
   percentage,
-  isPositive = true
+  isPositive = true,
+  locale
 }) => {
   // Mock chart data for the price trend line
   const chartData = [
@@ -47,13 +51,13 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
           <div className="grid grid-cols-2 gap-x-6">
             {/* Market Cap */}
             <div>
-              <div className="text-xs text-muted-foreground mb-1">MKT Cap</div>
+              <div className="text-xs text-muted-foreground mb-1">{t(locale, 'article.marketCap')}</div>
               <div className="text-lg font-medium text-foreground">{marketCap}</div>
             </div>
 
             {/* Liquidity */}
             <div>
-              <div className="text-xs text-muted-foreground mb-1">Liquidity</div>
+              <div className="text-xs text-muted-foreground mb-1">{t(locale, 'article.liquidity')}</div>
               <div className="text-lg font-medium text-foreground">{liquidity}</div>
             </div>
           </div>
@@ -63,7 +67,7 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
             {/* Volume 24h */}
             <div>
               <div className="text-xs text-muted-foreground mb-1 flex items-center">
-                Vol. (24h)
+                {t(locale, 'article.volume24h')}
                 <svg className="w-3 h-3 ml-1 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
@@ -73,7 +77,7 @@ const TokenInfoCard: React.FC<TokenInfoCardProps> = ({
 
             {/* Holders */}
             <div>
-              <div className="text-xs text-muted-foreground mb-1">Holders</div>
+              <div className="text-xs text-muted-foreground mb-1">{t(locale, 'article.holders')}</div>
               <div className="text-lg font-medium text-foreground">{holders}</div>
             </div>
           </div>

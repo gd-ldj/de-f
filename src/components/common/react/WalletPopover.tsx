@@ -5,6 +5,8 @@ import { useAuth } from '@/lib/useAuth'
 import Image from './Image'
 import disconnectIcon from '@/assets/imgs/disconnect.svg';
 import walletBlackIcon from '@/assets/imgs/wallet-black.svg';
+import type { Locale } from '@/types';
+import { t } from '@/lib/i18n';
 
 
 interface WalletPopoverProps {
@@ -15,11 +17,13 @@ interface WalletPopoverProps {
   onDisconnect?: () => void
   className?: string
   children?: React.ReactNode
+  locale: Locale
 }
 
 export const WalletPopover: React.FC<WalletPopoverProps> = ({
   className = '',
-  children
+  children,
+  locale
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
@@ -86,7 +90,7 @@ export const WalletPopover: React.FC<WalletPopoverProps> = ({
               <Image className="w-[1rem] mr-1" src={walletBlackIcon.src} alt="Wallet" />
               <span className={'text-sm text-[#4D5060]'}>{shortenAddress(walletAddress ?? '')}</span>
               <span className={`ml-auto cursor-pointer ${isCopied ? 'text-green-500' : 'text-primary'}`} onClick={handleCopyAddress}>
-                {isCopied ? 'Copied' : 'Copy'}
+                {isCopied ? t(locale, 'common.copied') : t(locale, 'common.copy')}
               </span>
             </div>
           </div>

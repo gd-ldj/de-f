@@ -3,19 +3,21 @@ import { fetchHomePageData } from '@/api/articles'
 import type { Locale } from '@/types'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { formatDate } from '@/lib/utils'
+import { t } from '@/lib/i18n'
 
 interface Props {
   locale: Locale
 }
 
 const { locale } = Astro.props as Props
+console.log("🚀 ~ locale:", locale)
 
 /**
  * Fetch home page data for the sidebar
  * Uses latest articles from the API
  */
 const homeData = await fetchHomePageData()
-const latestNews = homeData.lastest.slice(0, 5)
+const latestNews = homeData?.lastest || []
 
 // Check if article is within 12 hours for time display
 const isWithin12Hours = (createdAt: string) => {
@@ -28,7 +30,7 @@ const isWithin12Hours = (createdAt: string) => {
 
 <div class="space-y-6">
   <div>
-    <h3 class="font-medium text-foreground mb-4">Latest</h3>
+    <h3 class="font-medium text-foreground mb-4">{t(locale, 'common.latest')}</h3>
     <div class="space-y-0">
       {latestNews.map((article, index) => (
         <div>

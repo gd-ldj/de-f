@@ -1,6 +1,13 @@
 ---
 import { fetchHomePageData } from '@/api/articles'
-import type { HomeTopic, HomeMostReadArticle } from '@/types'
+import type { HomeTopic, HomeMostReadArticle, Locale } from '@/types'
+import { t } from '@/lib/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props as Props
 
 // Fetch home page data from API - 从API获取首页数据
 const homeData = await fetchHomePageData()
@@ -33,7 +40,7 @@ function formatDate(dateString: string): string {
 
 <div class="space-y-6 mt-4">
   <div>
-    <h4 class="font-medium text-foreground mb-4">Recommended Topics</h4>
+    <h4 class="font-medium text-foreground mb-4">{t(locale, 'common.recommendedTopics')}</h4>
     <div class="flex flex-wrap gap-2">
       {topics.map((topic, index) => (
         <a
@@ -47,7 +54,7 @@ function formatDate(dateString: string): string {
   </div>
 
   <div>
-    <h4 class="text-xl font-medium text-foreground mb-6">Most Read</h4>
+    <h4 class="text-xl font-medium text-foreground mb-6">{t(locale, 'common.mostRead')}</h4>
     <div class="space-y-4">
       {mostReadArticles.map((article: HomeMostReadArticle, index: number) => (
         <div class="border-b border-border pb-4 last:border-b-0 last:pb-0">
@@ -80,7 +87,7 @@ function formatDate(dateString: string): string {
       ))}
     </div>
     <a href="/news" class="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
-      More from News
+      {t(locale, 'common.moreFromNews')}
     </a>
   </div>
 </div>

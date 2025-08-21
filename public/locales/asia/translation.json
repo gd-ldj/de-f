@@ -30,7 +30,31 @@
     "searchAuthor": "搜索作者",
     "markets": "市场",
     "news": "新闻",
-    "research": "研究"
+    "research": "研究",
+    "whoToFollow": "关注推荐",
+    "subscribe": "订阅",
+    "latest": "最新",
+    "mostRead": "热门阅读",
+    "trending": "热门趋势",
+    "recommendedTopics": "推荐主题",
+    "moreFromNews": "更多新闻",
+    "copy": "复制",
+    "copied": "已复制",
+    "all": "全部",
+    "opinion": "观点",
+    "decibels": "分贝",
+    "exchange": "交易所",
+    "feature": "专题",
+    "announcement": "公告",
+    "people": "人物",
+    "event": "活动",
+    "analysis": "分析",
+    "lightspeedNewsletter": "光速通讯",
+    "breakingHeadlines": "核心覆盖类别的突发新闻标题",
+    "blockchain": "区块链",
+    "defi": "DeFi",
+    "nft": "NFT",
+    "web3": "Web3"
   },
   "pages": {
     "articles": "文章",
@@ -61,17 +85,14 @@
     "marketCap": "市值",
     "holders": "持有者",
     "views": "浏览量",
-    "volume24h": "24小时成交量"
+    "volume24h": "24小时成交量",
+    "articles": "文章"
   },
   "home": {
     "decentralizedTakes": "去中心化观点。",
     "loginDescription": "登录或注册 DeTake 获取最佳内容",
-    "whoToFollow": "推荐关注",
-    "latest": "最新",
-    "trending": "热门",
-    "recommendedTopics": "推荐主题",
-    "mostRead": "最多阅读",
-    "highlights": "精选"
+    "loginFor": "登录或注册",
+    "getBestContent": "获取最佳内容"
   },
   "footer": {
     "newsletter": "新闻通讯",
