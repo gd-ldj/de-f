@@ -63,12 +63,6 @@ export const persistedWalletAddressAtom = atom(
 )
 
 /**
- * Wallet authentication data atom
- * Stores the complete authentication information after wallet login
- */
-export const walletAuthDataAtom = atom<WalletLoginData | null>(null)
-
-/**
  * Access token atom with localStorage persistence
  * Automatically syncs access token with localStorage
  */
@@ -92,42 +86,36 @@ export const persistedAccessTokenAtom = atom(
   }
 )
 
-
+/**
+ * Helper function to handle authentication data updates
+ * Updates both access token and user ID atoms and localStorage
+ */
+const updateAuthData = (set: any, accessToken: string | null, userId: string | null) => {
+  set(accessTokenAtom, accessToken)
+  set(userIdAtom, userId)
+  
+  if (typeof window !== 'undefined') {
+    if (accessToken && userId) {
+      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken)
+      localStorage.setItem(STORAGE_KEYS.USER_ID, userId)
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
+      localStorage.removeItem(STORAGE_KEYS.USER_ID)
+    }
+  }
+}
 
 /**
- * Derived atom for complete wallet auth data with localStorage persistence
- * Automatically syncs all authentication data with localStorage
- * SSR-compatible with localStorage availability check
+ * Combined auth data setter for wallet login
+ * Updates both access token and user ID simultaneously
  */
-export const persistedWalletAuthDataAtom = atom(
-  (get) => get(walletAuthDataAtom),
+export const setWalletAuthDataAtom = atom(
+  null,
   (get, set, newValue: WalletLoginData | null) => {
-    set(walletAuthDataAtom, newValue)
-    if (typeof window !== 'undefined') {
-      if (newValue) {
-        // Store all auth data in localStorage
-        localStorage.setItem(STORAGE_KEYS.WALLET_AUTH_DATA, JSON.stringify(newValue))
-        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, newValue.access_token)
-        localStorage.setItem(STORAGE_KEYS.USER_ID, newValue.user_id)
-        
-        // Update individual atoms
-        set(accessTokenAtom, newValue.access_token)
-      } else {
-        // Clear all auth data from localStorage
-        localStorage.removeItem(STORAGE_KEYS.WALLET_AUTH_DATA)
-        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
-        localStorage.removeItem(STORAGE_KEYS.USER_ID)
-        
-        // Clear individual atoms
-        set(accessTokenAtom, null)
-      }
+    if (newValue) {
+      updateAuthData(set, newValue.access_token, newValue.user_id)
     } else {
-      // In SSR environment, only update atoms without localStorage
-      if (newValue) {
-        set(accessTokenAtom, newValue.access_token)
-      } else {
-        set(accessTokenAtom, null)
-      }
+      updateAuthData(set, null, null)
     }
   }
 )

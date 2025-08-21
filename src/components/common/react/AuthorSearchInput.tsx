@@ -113,7 +113,7 @@ export default function AuthorSearchInput({
     }
   }, [])
 
-  const placeholder = t(locale, 'common.searchAuthor')
+  const placeholder = t(locale, 'common.inputAuthor');
 
   return (
     <div className={`relative ${className}`}>

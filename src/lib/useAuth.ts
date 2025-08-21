@@ -140,7 +140,6 @@ export const useAuth = () => {
     // Wallet authentication
     walletLogin: handleWalletLogin,
     isWalletAuthenticated,
-    walletAuthData: walletAuth.walletAuthData,
     accessToken: walletAuth.accessToken,
     userId: walletAuth.userId,
     

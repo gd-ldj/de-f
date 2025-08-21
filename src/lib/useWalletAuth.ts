@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { loginWithWallet, logout } from '../api/auth'
 import { fetchUserPersonalInfo } from '../api/users'
 import {
-  persistedWalletAuthDataAtom,
+  setWalletAuthDataAtom,
   persistedAccessTokenAtom,
   userIdAtom,
   persistedWalletAddressAtom,
@@ -19,7 +19,7 @@ import type { WalletLoginData, UserPersonalInfo } from '../types'
  * Integrates with the backend wallet login API and manages authentication persistence
  */
 export const useWalletAuth = () => {
-  const [walletAuthData, setWalletAuthData] = useAtom(persistedWalletAuthDataAtom)
+  const [, setWalletAuthData] = useAtom(setWalletAuthDataAtom)
   const [accessToken, setAccessToken] = useAtom(persistedAccessTokenAtom)
   const [userId, setUserId] = useAtom(userIdAtom)
   const [isAuthenticated] = useAtom(isAuthenticatedAtom)
@@ -49,15 +49,9 @@ export const useWalletAuth = () => {
           });
 
           // Load stored auth data
-          const storedAuthData = localStorage.getItem(STORAGE_KEYS.WALLET_AUTH_DATA)
           const storedAccessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
           const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID)
           const storedWalletAddress = localStorage.getItem(STORAGE_KEYS.WALLET_ADDRESS)
-
-          if (storedAuthData) {
-            const authData: WalletLoginData = JSON.parse(storedAuthData)
-            setWalletAuthData(authData)
-          }
 
           if (storedAccessToken) setAccessToken(storedAccessToken)
           if (storedUserId) setUserId(storedUserId)
@@ -187,7 +181,6 @@ export const useWalletAuth = () => {
     isAuthenticated,
     isLoading,
     error,
-    walletAuthData,
     accessToken,
     userId,
     walletAddress,

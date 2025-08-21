@@ -12,7 +12,7 @@ export interface Props {
 
 const {
   locale,
-  authorName = 'Jhon',
+  authorName = '',
   viewMode = 'grid',
 } = Astro.props as Props
 
@@ -32,7 +32,7 @@ const i18n = {
 <div class="flex items-center bg-white border border-border rounded-md px-4 py-3">
   <div class="flex items-center flex-1 min-w-0">
     <!-- Static Filters label -->
-    <div class="flex items-center space-x-2 pr-4">
+    <div class="flex items-center justify-center space-x-2 pr-4">
       <svg class="w-4 h-4 text-foreground/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"></path>
       </svg>
@@ -50,14 +50,14 @@ const i18n = {
     <div class="h-6 w-px bg-border mx-4"></div>
 
     <!-- Category multi-level selector -->
-    <div class="flex items-center space-x-2 pr-4">
+    <div class="flex items-center justify-center space-x-2 pr-4">
        <span class="text-sm text-muted-foreground">{i18n.category}</span>
       <CategoryMultiSelect client:idle locale={locale} />
     </div>
 
     <div class="h-6 w-px bg-border mx-4"></div>
 
-    <div class="flex items-center space-x-2 pr-4">
+    <div class="flex items-center justify-center space-x-2 pr-4">
       <span class="text-sm text-muted-foreground">{i18n.author}</span>
       <AuthorSearchInput client:idle locale={locale} defaultValue={authorName} />
     </div>

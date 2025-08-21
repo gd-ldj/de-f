@@ -107,7 +107,7 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
       {/* Trigger as plain text list, no border, no chips */}
       <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-2 px-0 py-1 text-foreground hover:text-primary transition-colors focus:outline-none" aria-expanded={open} aria-haspopup="dialog">
         {/* Selected labels inline */}
-        {selectedOptions.length > 0 ? (
+        {selectedOptions.length > 0 && (
           <div className="flex items-center gap-4">
             {selectedOptions.map((o) => (
               <span key={o.id} className="text-sm text-primary font-medium">
@@ -115,8 +115,6 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
               </span>
             ))}
           </div>
-        ) : (
-          <span className="text-sm text-muted-foreground">{t(locale, 'common.none')}</span>
         )}
 
         {/* Chevron */}

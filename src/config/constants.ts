@@ -23,7 +23,6 @@ export const AUTH_CONFIG = {
 export const STORAGE_KEYS = {
   WALLET_ADDRESS: 'wallet_address',
   ACCESS_TOKEN: 'access_token',
-  WALLET_AUTH_DATA: 'wallet_auth_data',
   USER_ID: 'user_id',
   PROMOTE_CODE: 'promote_code',
   VISITOR_ID: 'visitor_id',
