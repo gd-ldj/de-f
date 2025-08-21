@@ -18,7 +18,6 @@ export const useAuth = () => {
   const walletAuth = useWalletAuth();
   // console.log("🚀 ~ useAuth ~ walletAuth:", walletAuth)
 
-
   // Initialize stored wallet address from localStorage on first load
   // SSR-compatible with localStorage availability check
   useEffect(() => {
@@ -45,19 +44,19 @@ export const useAuth = () => {
 
   // Monitor wallet address changes and sync with global state
   useEffect(() => {
-    if(!ready) return;
+    if (!ready) return;
     const currentWalletAddress = user?.wallet?.address;
-    
+
     if (authenticated && currentWalletAddress) {
       // User is authenticated and has wallet address - store it globally
       setStoredWalletAddress(currentWalletAddress);
 
       const mockSignature = `auto_login_${currentWalletAddress}_${Date.now()}`;
-     handleWalletLogin(currentWalletAddress, mockSignature)
+      handleWalletLogin(currentWalletAddress, mockSignature);
     } else if (!authenticated || !currentWalletAddress) {
       // User is not authenticated or lost wallet address - clear global state
       setStoredWalletAddress(null);
-       handleLogout();
+      handleLogout();
     }
   }, [user?.wallet?.address]);
 
@@ -78,10 +77,7 @@ export const useAuth = () => {
 
   // Determine if auth section should be shown
   const showAuthSection = ready || privyTimeout;
-  
-  // Check if user should be considered "logged in" based on both Privy state and global state
-  const isEffectivelyLoggedIn = authenticated && !!user?.wallet?.address && !!storedWalletAddress;
-  
+
   // Enhanced login function with error handling
   const handleLogin = async () => {
     try {
@@ -131,35 +127,35 @@ export const useAuth = () => {
     ready,
     authenticated,
     user,
-    
+
     // Enhanced functions
     login: handleLogin,
     logout: handleLogout,
     forceLogout: handleForceLogout,
-    
+
     // Wallet authentication
     walletLogin: handleWalletLogin,
     isWalletAuthenticated,
     accessToken: walletAuth.accessToken,
     userId: walletAuth.userId,
-    
+
     // Additional states
     privyTimeout,
     showAuthSection,
     storedWalletAddress,
-    isEffectivelyLoggedIn: authenticated && !!user?.wallet?.address && !!storedWalletAddress,
-    
+    isEffectivelyLoggedIn: !!storedWalletAddress,
+
     // Combined authentication status
     // isFullyAuthenticated: isWalletAuthenticated && authenticated,
-    
+
     // Utility functions
     isLoading: (!ready && !privyTimeout) || walletAuth.isLoading,
     hasError: (privyTimeout && !ready) || !!walletAuth.error,
     error: walletAuth.error,
-    
+
     // Wallet address getter with fallback
     walletAddress: user?.wallet?.address || storedWalletAddress,
-    
+
     // Wallet auth utility methods
     getValidAccessToken: walletAuth.getValidAccessToken,
     clearWalletAuthError: walletAuth.clearError,

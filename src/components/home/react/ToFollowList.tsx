@@ -8,6 +8,7 @@ import { getLocaleFromPath } from '@/lib/utils';
 import { useAuth } from '@/lib/useAuth';
 import { followAuthor } from '@/api/users';
 import { toast } from '@/components/common/react/Toast';
+import { AvatarSkeleton, TextSkeleton } from '@/components/common/react/Skeleton';
 
 interface ToFollowListProps {
   locale?: Locale;
@@ -118,17 +119,19 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
     return (
       <div className="space-y-6 px-6 border-t border-border pt-5">
         <div>
-          <h3 className="font-medium text-foreground mb-4">{t(locale, 'common.whoToFollow')}</h3>
+          <h3 className="font-medium text-foreground mb-4">Who To Follow</h3>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse">
+              <div key={i}>
                 <div className="flex items-start space-x-3 py-3">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                  <AvatarSkeleton size={48} />
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <TextSkeleton className="mb-1" />
+                    <TextSkeleton className="w-2/3" />
                   </div>
+                  <div className="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
                 </div>
+                {i < 2 && <div className="border-b border-border"></div>}
               </div>
             ))}
           </div>
