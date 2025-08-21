@@ -30,42 +30,45 @@ export async function fetchArticles(
 ): Promise<ArticlesResponse | null > {
   try {
 
-    // Build query parameters
-    const params = new URLSearchParams();
+    // Build query parameters manually to avoid encoding commas in tag parameter
+    const queryParts: string[] = [];
     
     // Add locale parameter
     const localeParam = locale === 'us' ? 'en' : 'zh';
-    params.append('locale', localeParam);
+    queryParts.push(`locale=${encodeURIComponent(localeParam)}`);
     
     // Add limit
-    params.append('limit', limit.toString());
+    queryParts.push(`limit=${encodeURIComponent(limit.toString())}`);
     
     // Add optional filtering parameters
     if (options?.business_type_name) {
-      params.append('business_type_name', options.business_type_name);
+      queryParts.push(`business_type_name=${encodeURIComponent(options.business_type_name)}`);
     }
     if (options?.category_name) {
-      params.append('category_name', options.category_name);
+      // Don't encode commas in category_name parameter to preserve comma-separated values
+      queryParts.push(`category_name=${options.category_name}`);
     }
     if (options?.tag) {
-      params.append('tag', options.tag);
+      // Don't encode commas in tag parameter to preserve comma-separated values
+      queryParts.push(`tag=${options.tag}`);
     }
     if (options?.author_name) {
-      params.append('author_name', options.author_name);
+      queryParts.push(`author_name=${encodeURIComponent(options.author_name)}`);
     }
     if (options?.order_by) {
-      params.append('order_by', options.order_by);
+      queryParts.push(`order_by=${encodeURIComponent(options.order_by)}`);
     }
     if (options?.cursor) {
-      params.append('cursor', options.cursor);
+      queryParts.push(`cursor=${encodeURIComponent(options.cursor)}`);
     }
     
     // Legacy category support (map to business_type_name)
     if (options?.category && !options?.business_type_name) {
-      params.append('business_type_name', options.category);
+      queryParts.push(`business_type_name=${encodeURIComponent(options.category)}`);
     }
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles?${params.toString()}`, {
+    const queryString = queryParts.join('&');
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles?${queryString}`, {
       headers: {
         'Content-Type': 'application/json',
       },

@@ -9,12 +9,16 @@ export interface FilterBarProps {
   locale: Locale
   authorName?: string
   viewMode?: 'list' | 'grid'
+  initialCategoryName?: string | string[]
+  initialTag?: string | string[]
 }
 
 export default function FilterBar({
   locale,
   authorName = '',
   viewMode = 'grid',
+  initialCategoryName,
+  initialTag,
 }: FilterBarProps) {
   const [anyActive, setAnyActive] = useState(false)
   const [catActive, setCatActive] = useState(false)
@@ -38,6 +42,7 @@ export default function FilterBar({
   // Click handler to broadcast global clearing events to all filter widgets
   const handleClearAllFilters = () => {
     if (!anyActive) return
+    // Send clear events to all filter components
     document.dispatchEvent(new CustomEvent('filter:clear-all'))
     document.dispatchEvent(new CustomEvent('category:clear-all'))
     document.dispatchEvent(new CustomEvent('author:clear'))
@@ -49,31 +54,34 @@ export default function FilterBar({
 
   useEffect(() => {
     // Listen to filter changes from children and recompute the button state
-    const handleCategoryChange = (e: CustomEvent) => {
-      const detail = (e && e.detail !== undefined) ? e.detail : {}
+    const handleCategoryChange = (e: Event) => {
+      const customEvent = e as CustomEvent
+      const detail = (customEvent && customEvent.detail !== undefined) ? customEvent.detail : {}
       setCatActive(Boolean(detail.hasSelection))
     }
 
-    const handleTopicChange = (e: CustomEvent) => {
-      const detail = (e && e.detail !== undefined) ? e.detail : {}
+    const handleTopicChange = (e: Event) => {
+      const customEvent = e as CustomEvent
+      const detail = (customEvent && customEvent.detail !== undefined) ? customEvent.detail : {}
       setTopicActive(Boolean(detail.hasSelection))
     }
 
-    const handleAuthorChange = (e: CustomEvent) => {
-      const detail = (e && e.detail !== undefined) ? e.detail : {}
+    const handleAuthorChange = (e: Event) => {
+      const customEvent = e as CustomEvent
+      const detail = (customEvent && customEvent.detail !== undefined) ? customEvent.detail : {}
       setAuthorActive(Boolean(detail.hasText))
     }
 
     // Add event listeners
-    document.addEventListener('category:changed', handleCategoryChange)
-    document.addEventListener('filter:changed', handleTopicChange)
-    document.addEventListener('author:changed', handleAuthorChange)
+    document.addEventListener('category:changed', handleCategoryChange as EventListener)
+    document.addEventListener('filter:changed', handleTopicChange as EventListener)
+    document.addEventListener('author:changed', handleAuthorChange as EventListener)
 
     return () => {
       // Cleanup event listeners
-      document.removeEventListener('category:changed', handleCategoryChange)
-      document.removeEventListener('filter:changed', handleTopicChange)
-      document.removeEventListener('author:changed', handleAuthorChange)
+      document.removeEventListener('category:changed', handleCategoryChange as EventListener)
+      document.removeEventListener('filter:changed', handleTopicChange as EventListener)
+      document.removeEventListener('author:changed', handleAuthorChange as EventListener)
     }
   }, [])
 
@@ -114,7 +122,7 @@ export default function FilterBar({
         {/* Category multi-level selector */}
         <div className="flex items-center justify-center space-x-2 pr-4">
           <span className="text-sm text-muted-foreground">{i18n.category}</span>
-          <CategoryMultiSelect locale={locale} />
+          <CategoryMultiSelect locale={locale} initialValues={initialCategoryName} />
         </div>
 
         <div className="h-6 w-px bg-border mx-4"></div>
@@ -129,7 +137,7 @@ export default function FilterBar({
         {/* Topic section with TopicMultiSelect */}
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">{i18n.topic}</span>
-          <TopicMultiSelect locale={locale} />
+          <TopicMultiSelect locale={locale} initialValues={initialTag} />
         </div>
       </div>
 

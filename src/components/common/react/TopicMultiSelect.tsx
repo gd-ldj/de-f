@@ -6,7 +6,8 @@ import { fetchArticleTags } from '@/api/articles';
 import { t } from '@/lib/i18n';
 
 export interface TopicMultiSelectProps {
-  locale: Locale;
+  locale: Locale
+  initialValues?: string | string[]
 }
 
 /**
@@ -14,7 +15,7 @@ export interface TopicMultiSelectProps {
  * Loads tag options from backend API and renders via shared MultiSelectBase.
  * Falls back to a small set of defaults if the API fails.
  */
-export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
+export default function TopicMultiSelect({ locale, initialValues }: TopicMultiSelectProps) {
   const [sections, setSections] = useState<FilterSection[]>([
     {
       id: 'topics',
@@ -25,9 +26,15 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
 
   /**
    * Map API tag payload into UI filter options shape
+   * @param tags - Tag data from API
+   * @param selectedValues - Array of initially selected tag names
    */
-  const mapTagsToOptions = (tags: { id: string; name: string }[]) => {
-    return tags.map((t) => ({ id: t.id, label: t.name, checked: false }))
+  const mapTagsToOptions = (tags: { id: string; name: string }[], selectedValues: string[] = []) => {
+    return tags.map((t) => ({ 
+      id: t.id, 
+      label: t.name, 
+      checked: selectedValues.includes(t.name) 
+    }))
   }
 
   /**
@@ -39,11 +46,16 @@ export default function TopicMultiSelect({ locale }: TopicMultiSelectProps) {
       .then((tags) => {
         if (!mounted) return
         if (Array.isArray(tags) && tags.length > 0) {
+          // Parse initial values into array format
+          const selectedValues = initialValues 
+            ? (Array.isArray(initialValues) ? initialValues : initialValues.split(',').map(v => v.trim()))
+            : [];
+          
           setSections([
             {
               id: 'topics',
               title: t(locale, 'common.topics'),
-              options: mapTagsToOptions(tags),
+              options: mapTagsToOptions(tags, selectedValues),
             },
           ])
         } else {

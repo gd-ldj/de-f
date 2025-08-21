@@ -27,11 +27,21 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   const [articles, setArticles] = useState<ApiArticle[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  // Helper function to parse comma-separated values from URL parameters
+  const parseCommaSeparatedValue = (value: string): string | string[] => {
+    if (!value) return '';
+    const parts = value
+      .split(',')
+      .map((part) => part.trim())
+      .filter((part) => part);
+    return parts.length > 1 ? parts : value;
+  };
+
   const [filters, setFilters] = useState<FilterState>({
     page: initialPage,
-    categoryName: initialCategoryName,
+    categoryName: parseCommaSeparatedValue(initialCategoryName),
     authorName: initialAuthorName,
-    tag: initialTag,
+    tag: parseCommaSeparatedValue(initialTag),
     orderBy: initialOrderBy,
   });
 
@@ -39,65 +49,70 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
   // Update URL when filters change
   const updateURL = useCallback((newFilters: FilterState) => {
+    console.log('🚀 ~ CategoryPage ~ newFilters:', newFilters.categoryName);
     const url = new URL(window.location.href);
-    const params = url.searchParams;
 
-    // Update URL parameters
+    // Clear existing search params to rebuild them
+    const newSearchParams = new URLSearchParams();
+
+    // Update URL parameters based on filters
     if (newFilters.page > 1) {
-      params.set('page', newFilters.page.toString());
-    } else {
-      params.delete('page');
-    }
-
-    if (newFilters.categoryName) {
-      const categoryValue = Array.isArray(newFilters.categoryName) 
-        ? newFilters.categoryName.join(',') 
-        : newFilters.categoryName;
-      params.set('category_name', categoryValue);
-    } else {
-      params.delete('category_name');
+      newSearchParams.set('page', newFilters.page.toString());
     }
 
     if (newFilters.authorName) {
-      params.set('author_name', newFilters.authorName);
-    } else {
-      params.delete('author_name');
-    }
-
-    if (newFilters.tag) {
-      const tagValue = Array.isArray(newFilters.tag) 
-        ? newFilters.tag.join(',') 
-        : newFilters.tag;
-      params.set('tag', tagValue);
-    } else {
-      params.delete('tag');
+      newSearchParams.set('author_name', newFilters.authorName);
     }
 
     if (newFilters.orderBy !== 'Latest') {
-      params.set('order_by', newFilters.orderBy);
-    } else {
-      params.delete('order_by');
+      newSearchParams.set('order_by', newFilters.orderBy);
+    }
+
+    // Build the final URL manually to handle tag and category_name parameters without encoding
+    let finalUrl = `${url.origin}${url.pathname}`;
+    const searchParamsString = newSearchParams.toString();
+
+    const manualParams = [];
+    console.log('🚀 ~ CategoryPage ~ newFilters:', newFilters.categoryName);
+    if (newFilters.categoryName) {
+      const categoryValue = Array.isArray(newFilters.categoryName) ? newFilters.categoryName.join(',') : newFilters.categoryName;
+      manualParams.push(`category_name=${categoryValue}`);
+    }
+
+    if (newFilters.tag) {
+      const tagValue = Array.isArray(newFilters.tag) ? newFilters.tag.join(',') : newFilters.tag;
+      manualParams.push(`tag=${tagValue}`);
+    }
+    if (!newFilters.categoryName && !newFilters.tag) {
+      manualParams.length = 0;
+    }
+    console.log('🚀 ~ CategoryPage ~ manualParams:', manualParams);
+    const allParams = [];
+    if (searchParamsString) {
+      allParams.push(searchParamsString);
+    }
+    if (manualParams.length > 0) {
+      allParams.push(...manualParams);
+    }
+
+    if (allParams.length > 0) {
+      finalUrl += `?${allParams.join('&')}`;
     }
 
     // Update URL without page reload
-    window.history.replaceState({}, '', url.toString());
+    window.history.replaceState({}, '', finalUrl);
   }, []);
 
   // Fetch articles based on current filters
   const fetchArticlesData = useCallback(
     async (currentFilters: FilterState) => {
-      console.log('🚀 ~ CategoryPage ~ currentFilters:', currentFilters);
       setLoading(true);
       try {
         const options = {
           business_type_name: category.toLowerCase(),
-          category_name: Array.isArray(currentFilters.categoryName) 
-            ? currentFilters.categoryName.join(',') 
-            : currentFilters.categoryName || undefined,
+          category_name: Array.isArray(currentFilters.categoryName) ? currentFilters.categoryName.join(',') : currentFilters.categoryName || undefined,
           author_name: currentFilters.authorName || undefined,
-          tag: Array.isArray(currentFilters.tag) 
-            ? currentFilters.tag.join(',') 
-            : currentFilters.tag || undefined,
+          tag: Array.isArray(currentFilters.tag) ? currentFilters.tag.join(',') : currentFilters.tag || undefined,
           order_by: currentFilters.orderBy,
         };
         console.log('🚀 ~ CategoryPage ~ options:', options);
@@ -125,7 +140,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   // Handle filter changes from FilterBar
   const handleFilterChange = useCallback(
     (filterType: string, value: any) => {
-      console.log('🚀 ~ CategoryPage ~ filterType:', filterType);
       let newFilters = { ...filters };
 
       switch (filterType) {
@@ -212,7 +226,10 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     };
 
     const handleClearAllEvent = () => {
-      handleClearAll();
+      // Use setTimeout to ensure all components have processed the clear event first
+      setTimeout(() => {
+        handleClearAll();
+      }, 0);
     };
 
     // Add event listeners
@@ -238,7 +255,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   return (
     <main className="max-w-[1440px] mx-auto px-4 py-8">
       {/* Filter Bar */}
-      <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} />
+      <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialTag={filters.tag} />
 
       {/* Loading State */}
       {loading && (

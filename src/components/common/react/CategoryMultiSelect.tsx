@@ -8,6 +8,7 @@ import { t } from '@/lib/i18n'
 export interface CategoryMultiSelectProps {
   locale: Locale
   activeSubcategory?: string
+  initialValues?: string | string[]
 }
 
 /**
@@ -17,6 +18,7 @@ export interface CategoryMultiSelectProps {
  */
 export default function CategoryMultiSelect({
   locale,
+  initialValues,
 }: CategoryMultiSelectProps) {
   const [sections, setSections] = useState<FilterSection[]>([
     {
@@ -28,9 +30,15 @@ export default function CategoryMultiSelect({
 
   /**
    * Map API category payload into UI filter options shape
+   * @param cats - Category data from API
+   * @param selectedValues - Array of initially selected category names
    */
-  const mapCategoriesToOptions = (cats: { id: string; name: string }[]) => {
-    return cats.map((c) => ({ id: c.id, label: c.name, checked: false }))
+  const mapCategoriesToOptions = (cats: { id: string; name: string }[], selectedValues: string[] = []) => {
+    return cats.map((c) => ({ 
+      id: c.id, 
+      label: c.name, 
+      checked: selectedValues.includes(c.name) 
+    }))
   }
 
   /**
@@ -42,11 +50,16 @@ export default function CategoryMultiSelect({
       .then((cats) => {
         if (!mounted) return
         if (Array.isArray(cats) && cats.length > 0) {
+          // Parse initial values into array format
+          const selectedValues = initialValues 
+            ? (Array.isArray(initialValues) ? initialValues : initialValues.split(',').map(v => v.trim()))
+            : [];
+          
           setSections([
             {
               id: 'category',
               title: t(locale, 'common.category'),
-              options: mapCategoriesToOptions(cats),
+              options: mapCategoriesToOptions(cats, selectedValues),
             },
           ])
         } else {

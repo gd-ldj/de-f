@@ -208,7 +208,7 @@ export default function Header({ userComponent }: HeaderProps) {
             <div className="" ref={categoriesDropdownRef}>
               <button 
                 onClick={toggleCategoriesDropdown} 
-                className={`flex items-center space-x-1 text-sm py-1.5 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`}
+                className={`flex items-center space-x-1 text-sm px-3 py-1.5 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`}
                 aria-label={texts.navigation.allCategories} 
                 aria-expanded={categoriesDropdownOpen}
               >

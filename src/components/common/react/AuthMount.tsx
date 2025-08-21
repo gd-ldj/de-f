@@ -117,7 +117,7 @@ const AuthMount: React.FC<AuthMountProps> = ({ headerTargetId = 'header-root', l
     () => (
       <WalletPopover locale={locale}>
         <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">
-          <img src="/me.svg" alt="logo" className="w-5" />
+          <img src="/me.svg" alt="logo" className="w-5 h-5" />
         </button>
       </WalletPopover>
     ),
