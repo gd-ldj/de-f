@@ -53,20 +53,7 @@ export async function loginWithWallet(
     }
   } catch (error) {
     console.error('Error during wallet login:', error)
-    // Return mock data for development
-    return getMockWalletLoginData()
-  }
-}
-
-/**
- * Mock wallet login data for development
- * @returns Mock login response data
- */
-function getMockWalletLoginData(): WalletLoginData {
-  return {
-    type: "login",
-    userId: "5",
-    accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1IiwicmFuZG9tIjoiZGE0MDc3MjQxYjQ2YzJmYjU1OTQ1NWEyNjg2N2MxN2U0NDVmMjk3ODU2MTE2OWFkNzFiMzgzZmMwNjlmM2FjNiIsImlhdCI6MTc1NTYwODcwOX0.Q4Jd8L4xmWn9C5hFNIbQhKklLOyNXWdc8xGQQ317DuQ"
+    return null
   }
 }
 

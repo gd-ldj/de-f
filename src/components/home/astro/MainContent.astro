@@ -1,7 +1,7 @@
 ---
 // Astro component script (runs at build time)
 import { fetchHomePageData } from '@/api/articles'
-import type { Locale } from '@/types'
+import type { Locale, HomeNewsArticle } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 
@@ -14,8 +14,7 @@ const { locale = 'us' as Locale } = Astro.props as Props
 
 // Fetch home page data
 const homeData = await fetchHomePageData()
-const { news_all = [] } = homeData
-console.log("🚀 ~ lastest:", news_all)
+const news_all: HomeNewsArticle[] = homeData?.news_all || []
 
 // Get the main featured article (first one)
 const featuredArticle = news_all[0]
@@ -36,6 +35,35 @@ const formatDate = (dateString: string) => {
   })
 }
 
+/**
+ * Extract plain text from rich text content and truncate to specified length
+ * @param richText - Rich text content that may contain HTML tags
+ * @param maxLength - Maximum number of characters to return (default: 200)
+ * @returns Plain text string truncated to maxLength
+ */
+const extractPlainText = (richText: string, maxLength: number = 200): string => {
+  if (!richText) return ''
+  
+  // Remove HTML tags using regex
+  const plainText = richText
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+    .replace(/&amp;/g, '&') // Replace &amp; with &
+    .replace(/&lt;/g, '<') // Replace &lt; with <
+    .replace(/&gt;/g, '>') // Replace &gt; with >
+    .replace(/&quot;/g, '"') // Replace &quot; with "
+    .replace(/&#39;/g, "'") // Replace &#39; with '
+    .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
+    .trim() // Remove leading/trailing whitespace
+  
+  // Truncate to maxLength and add ellipsis if needed
+  if (plainText.length <= maxLength) {
+    return plainText
+  }
+  
+  return plainText.substring(0, maxLength).trim() + '...'
+}
+
 ---
 
 <div class="space-y-6">
@@ -43,10 +71,8 @@ const formatDate = (dateString: string) => {
   {featuredArticle && (
     <div class="bg-white rounded border border-border overflow-hidden">
       <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <span class="text-sm text-primary font-medium">Highlights</span>
-      <span class="text-sm text-muted-foreground uppercase">{featuredArticle.business_type_name}</span>
-        </div>
+        <h3 class="font-medium text-foreground mb-4">Highlights</h3>
+        <p class="text-[12px] text-primary font-medium uppercase mb-2">{featuredArticle.business_type_name}</p>
 
         <h2 class="text-2xl font-medium text-foreground mb-4">
           <ArticleLink 
@@ -58,8 +84,11 @@ const formatDate = (dateString: string) => {
           </ArticleLink>
         </h2>
 
-        <div class="flex items-center space-x-4 text-sm text-muted-foreground mb-6">
-          <span>{formatDate(featuredArticle.created_at)}</span>
+        <p class=" text-muted-foreground mb-2 leading-relaxed">{extractPlainText(featuredArticle.body, 200)}</p>
+
+        <div class="flex items-center space-x-1 text-sm text-muted-foreground mb-6">
+          <span>{formatDate(featuredArticle.created_at)} / by</span>
+          <span class='text-foreground uppercase'>{featuredArticle.author.name}</span>
         </div>
 
         <div class="relative">
@@ -81,7 +110,7 @@ const formatDate = (dateString: string) => {
 
   {/* Sidebar Articles */}
   <div class="space-y-4">
-    {sidebarArticles.map((article) => (
+    {sidebarArticles.map((article: HomeNewsArticle) => (
       <div class="bg-white rounded border border-border p-6">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-primary font-medium uppercase">{article.business_type_name}</span>
@@ -95,9 +124,10 @@ const formatDate = (dateString: string) => {
             {article.title}
           </ArticleLink>
         </h3>
-        <div class="flex items-center space-x-4 text-xs text-muted-foreground">
-          <span>{formatDate(article.created_at)}</span>
-          <span>by {article.author.name}</span>
+        <p class=" text-muted-foreground mb-2 leading-relaxed">{extractPlainText(article.body, 200)}</p>
+         <div class="flex items-center space-x-1 text-sm text-muted-foreground">
+          <span>{formatDate(article.created_at)} / by</span>
+          <span class='text-foreground uppercase'>{article.author.name}</span>
         </div>
       </div>
     ))}

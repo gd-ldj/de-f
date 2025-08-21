@@ -7,7 +7,6 @@ import RightSidebar from '@/components/home/astro/RightSidebar.astro';
 import NewsGrid from '@/components/home/astro/NewsGrid.astro';
 import TrendingGrid from '@/components/home/astro/TrendingGrid.astro';
 import Footer from '@/components/common/react/footer/Index';
-import ToFollowList from '@/components/home/react/ToFollowList';
 import AuthMount from '@/components/common/react/AuthMount';
 
 import { changeLanguage } from "i18next";
@@ -40,14 +39,19 @@ const { title, description } = seoContent[locale] || seoContent.us
      <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
      <div id="header-root"></div>
      <!-- Single React Island that contains IdentityProvider and portals -->
-     <AuthMount client:load />
+     <AuthMount 
+       client:load 
+       toFollowTargetId="to-follow-root"
+       toFollowSection={{locale}}
+     />
      <div class="min-h-screen bg-white mt-[65px]">
         
         <div class="max-w-[1440px] mx-auto px-4 py-6">
           <div class="grid grid-cols-12 gap-6">
             <div class="col-span-3 space-y-6">
               <Sidebar />
-              <ToFollowList client:load/>
+              <!-- React mount point for ToFollowList -->
+              <div id="to-follow-root"></div>
             </div>
             <div class="col-span-6">
               <MainContent locale={locale} />

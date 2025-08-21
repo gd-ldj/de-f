@@ -94,7 +94,8 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
     shareSection={{ locale, title: article.title, url: canonicalUrl }}
     authorSection={{
       author: {
-        name: article?.author?.name || '',
+        id: article?.author?.id,
+        name: article?.author?.name || article.author_name || '',
         avatar: article?.author?.avatar_url,
         bio: article?.author?.bio,
         email: article?.contact?.email,

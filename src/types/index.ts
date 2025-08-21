@@ -29,6 +29,7 @@ export interface ApiArticle {
   }
   // Legacy author object for backward compatibility
   author?: {
+    id: string
     name: string
     avatar_url?: string
     bio?: string
@@ -177,8 +178,8 @@ export interface WalletLoginRequest {
  */
 export interface WalletLoginData {
   type: string
-  userId: string
-  accessToken: string
+  user_id: string
+  access_token: string
 }
 
 /**
@@ -245,7 +246,7 @@ export interface HomeMostReadArticle {
 export interface HomePageData {
   lastest: HomeLatestArticle[]
   who_to_follow: HomeWhoToFollow[]
-  "news_all": HomeNewsArticle[]
+  news_all: HomeNewsArticle[]
   topics: HomeTopic[]
   mostread: HomeMostReadArticle[]
 }

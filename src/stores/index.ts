@@ -107,11 +107,11 @@ export const persistedWalletAuthDataAtom = atom(
       if (newValue) {
         // Store all auth data in localStorage
         localStorage.setItem(STORAGE_KEYS.WALLET_AUTH_DATA, JSON.stringify(newValue))
-        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, newValue.accessToken)
-        localStorage.setItem(STORAGE_KEYS.USER_ID, newValue.userId)
+        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, newValue.access_token)
+        localStorage.setItem(STORAGE_KEYS.USER_ID, newValue.user_id)
         
         // Update individual atoms
-        set(accessTokenAtom, newValue.accessToken)
+        set(accessTokenAtom, newValue.access_token)
       } else {
         // Clear all auth data from localStorage
         localStorage.removeItem(STORAGE_KEYS.WALLET_AUTH_DATA)
@@ -124,7 +124,7 @@ export const persistedWalletAuthDataAtom = atom(
     } else {
       // In SSR environment, only update atoms without localStorage
       if (newValue) {
-        set(accessTokenAtom, newValue.accessToken)
+        set(accessTokenAtom, newValue.access_token)
       } else {
         set(accessTokenAtom, null)
       }

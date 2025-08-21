@@ -2,6 +2,7 @@
 import { fetchHomePageData } from '@/api/articles'
 import type { HomeTopic, HomeMostReadArticle, Locale } from '@/types'
 import { t } from '@/lib/i18n'
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
 
 interface Props {
@@ -22,13 +23,8 @@ const mostReadArticles: HomeMostReadArticle[] = homeData?.mostread || []
 // Transform topics to include URL - 转换主题数据以包含URL
 const topics = rawTopics.map(topic => ({
   ...topic,
-  url: `/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`
+  url: `${locale}/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`
 }))
-
-// Helper function to generate article URL - 生成文章URL的辅助函数
-function getArticleUrl(article: HomeMostReadArticle): string {
-  return `/${article.business_type_name.toLowerCase()}/${article.slug}`
-}
 
 // Helper function to format date - 格式化日期的辅助函数
 function formatDate(dateString: string): string {
@@ -61,7 +57,12 @@ function formatDate(dateString: string): string {
     <div class="space-y-4">
       {mostReadArticles.map((article: HomeMostReadArticle, index: number) => (
         <div class="border-b border-border pb-4 last:border-b-0 last:pb-0">
-          <a href={getArticleUrl(article)} class="flex items-start justify-between group">
+          <ArticleLink
+            slug={article.slug}
+            category={article.business_type_name.toLowerCase()}
+            locale={locale}
+            class="flex items-start justify-between group"
+          >
             <div class="flex-1 pr-4">
               <div class="flex items-start space-x-3">
                 <span class="text-primary font-medium text-lg leading-none mt-1">{index + 1}</span>
@@ -85,7 +86,7 @@ function formatDate(dateString: string): string {
                 class="w-16 h-16 rounded object-cover"
               />
             </div>
-          </a>
+          </ArticleLink>
         </div>
       ))}
     </div>

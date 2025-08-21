@@ -7,6 +7,18 @@ import type { UserPersonalInfo, UserPersonalInfoResponse } from '../types'
 const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com/';
 
 /**
+ * Follow author API response type
+ */
+interface FollowAuthorResponse {
+  code: number;
+  msg: {
+    en: string;
+    zh: string;
+  };
+  data?: any;
+}
+
+/**
  * Fetch user personal information by user ID
  * @returns Promise with user personal information
  */
@@ -40,6 +52,44 @@ export async function fetchUserPersonalInfo(accessToken: string): Promise<UserPe
     console.error('Error fetching user personal info:', error)
     // Return mock data for development
     return getMockUserPersonalInfo("5")
+  }
+}
+
+/**
+ * Follow an author for the current authenticated user
+ * This function sends a POST request with Authorization header and author_id in the body.
+ * It returns the server response message which contains i18n strings for both EN and ZH.
+ */
+export async function followAuthor(accessToken: string, authorId: string): Promise<FollowAuthorResponse> {
+  console.log("🚀 ~ followAuthor ~ accessToken:", accessToken)
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/users/follow`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ author_id: authorId })
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error(`Failed to follow author: ${response.status} ${response.statusText}`)
+    }
+
+    const result: FollowAuthorResponse = await response.json()
+
+    if (result.code === 2000) {
+      return result
+    } else {
+      // Backend may return error codes with message
+      throw new Error(result?.msg?.en || 'Failed to follow author')
+    }
+  } catch (error) {
+    console.error('Error following author:', error)
+    throw error
   }
 }
 

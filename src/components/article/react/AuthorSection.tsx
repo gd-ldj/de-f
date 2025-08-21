@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Locale } from '@/types';
 import { useAuth } from '@/lib/useAuth';
 import Image from '@/components/common/react/Image'
+import { followAuthor } from '@/api/users'
+import { toast } from '@/components/common/react/Toast'
 
 interface Author {
+  id?: string;
   name: string;
   bio?: string;
   avatar?: string;
@@ -40,22 +43,43 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
   };
 
   // Get authentication state and functions
-  const { isEffectivelyLoggedIn, login } = useAuth();
+  const { isEffectivelyLoggedIn, login, getValidAccessToken } = useAuth();
+  const [subscribing, setSubscribing] = useState(false);
 
   /**
    * Handle subscribe button click
-   * Check if user is logged in, if not, show login modal
+   * - Ensure user is logged in (open login modal if not)
+   * - Retrieve a valid access token from auth hook
+   * - Call real backend API to follow/subscribe the author
+   * - Show localized success or error toast based on result
    */
-  const handleSubscribeClick = () => {
+  const handleSubscribeClick = async () => {
     if (!isEffectivelyLoggedIn) {
       // User is not logged in, trigger login modal
       login();
       return;
     }
-    
-    // User is logged in, proceed with subscription logic
-    // TODO: Implement subscription logic
-    console.log('Subscribe clicked for author:', author.name);
+
+    if (!author.id) {
+      // Missing author identifier; cannot proceed
+      toast.error(locale === 'us' ? 'Author ID is missing. Please refresh the page and try again.' : '作者ID缺失，无法订阅，请刷新页面后重试');
+      return;
+    }
+
+    try {
+      setSubscribing(true);
+      const token = await getValidAccessToken();
+      if (!token) throw new Error('Missing access token');
+
+      const res = await followAuthor(token, author.id);
+      const successMsg = locale === 'us' ? res.msg.en : res.msg.zh;
+      toast.success(successMsg);
+    } catch (error) {
+      console.error('Subscribe failed:', error);
+      toast.error(locale === 'us' ? 'Failed to subscribe. Please try again.' : '订阅失败，请稍后重试');
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   return (
@@ -103,7 +127,7 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
           )}
 
           {/* Subscribe Button */}
-          <button onClick={handleSubscribeClick} className="px-4 py-2 bg-primary text-white text-sm font-medium rounded hover:bg-teal-700 transition-colors">
+          <button onClick={handleSubscribeClick} disabled={subscribing || !author.id} className="px-4 py-2 bg-primary text-white text-sm font-medium rounded hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
             + {locale === 'us' ? 'Subscribe' : '订阅'}
           </button>
         </div>

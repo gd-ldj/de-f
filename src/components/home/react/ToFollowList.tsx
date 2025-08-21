@@ -5,6 +5,9 @@ import { fetchHomePageData } from '@/api/articles'
 import type { HomeWhoToFollow, Locale } from '@/types'
 import { t } from '@/lib/i18n'
 import { getLocaleFromPath } from '@/lib/utils'
+import { useAuth } from '@/lib/useAuth'
+import { followAuthor } from '@/api/users'
+import { toast } from '@/components/common/react/Toast'
 
 interface ToFollowListProps {
   locale?: Locale;
@@ -27,6 +30,12 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
   const locale = getLocale(propsLocale);
   const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([])
   const [loading, setLoading] = useState(true)
+  // Authentication utilities
+  const { isEffectivelyLoggedIn, login, getValidAccessToken } = useAuth()
+  // Track follow request loading state per user
+  const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({})
+  // Track hover state for each user item
+  const [hoveredUserId, setHoveredUserId] = useState<string | null>(null)
 
   useEffect(() => {
     const loadFollowUsers = async () => {
@@ -43,9 +52,38 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
     loadFollowUsers()
   }, [])
 
-  const handleFollow = (userId: string) => {
-    // In a real app, this would make an API call
-    console.log(`Following user ${userId}`)
+  /**
+   * Handle follow (subscribe) action for a specific user
+   * 1) Ensure user is logged in (trigger login modal if not)
+   * 2) Retrieve valid access token from auth hook
+   * 3) Call real backend API: POST /api/v1/users/follow with { author_id }
+   * 4) Show success message based on current locale using server-provided text
+   */
+  const handleFollow = async (userId: string) => {
+    try {
+      // Request login if not authenticated
+      if (!isEffectivelyLoggedIn) {
+        login()
+        return
+      }
+
+      setFollowingMap(prev => ({ ...prev, [userId]: true }))
+
+      const token = await getValidAccessToken()
+      if (!token) throw new Error('Missing access token')
+
+      const res = await followAuthor(token, userId)
+      const successMsg = locale === 'us' ? res.msg.en : res.msg.zh
+
+      // Show success toast message using global Toast container
+      toast.success(successMsg)
+
+    } catch (err) {
+      console.error('Follow failed:', err)
+      toast.error(locale === 'us' ? 'Failed to follow author. Please try again.' : '关注失败，请稍后重试')
+    } finally {
+      setFollowingMap(prev => ({ ...prev, [userId]: false }))
+    }
   }
 
   if (loading) {
@@ -77,7 +115,11 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
         <div className="space-y-4">
           {followUsers.map((user, index) => (
             <div key={index}>
-              <div className="flex items-start justify-between py-3">
+              <div 
+                className="flex items-start justify-between py-3"
+                onMouseEnter={() => setHoveredUserId(user.user_id)}
+                onMouseLeave={() => setHoveredUserId(null)}
+              >
                 <div className="flex items-start space-x-3">
                   <Image src={user.avatar_url} alt={user.name} className="w-12 h-12 rounded-full flex-shrink-0" />
                   <div className="flex-1">
@@ -85,13 +127,20 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
                     <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{user.profile_bio}</p>
                   </div>
                 </div>
-                <div className="group relative flex-shrink-0">
-                  <button className="p-1.5 hover:bg-accent rounded transition-all duration-300 ease-in-out group-hover:opacity-0 group-hover:scale-95">
+                <div className="relative flex-shrink-0">
+                  <button 
+                    className={`p-1.5 hover:bg-accent rounded transition-all duration-300 ease-in-out ${
+                      hoveredUserId === user.user_id ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+                    }`}
+                  >
                     <Plus className="w-5 h-5 text-muted-foreground" />
                   </button>
                   <button 
                     onClick={() => handleFollow(user.user_id)}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-1.5 rounded text-sm font-medium transition-all duration-300 ease-in-out items-center space-x-1 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 absolute right-0 top-0 flex"
+                    disabled={!!followingMap[user.user_id]}
+                    className={`bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed text-primary-foreground px-4 py-1.5 rounded text-sm font-medium transition-all duration-300 ease-in-out items-center space-x-1 absolute right-0 top-0 flex ${
+                      hoveredUserId === user.user_id ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                    }`}
                   >
                     <Plus className="w-4 h-4" />
                     <span>{t(locale, 'common.subscribe')}</span>

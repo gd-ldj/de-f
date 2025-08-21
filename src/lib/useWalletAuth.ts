@@ -95,13 +95,13 @@ export const useWalletAuth = () => {
       if (loginData) {
         // Store authentication data globally
         setWalletAuthData(loginData)
-        setAccessToken(loginData.accessToken)
-        setUserId(loginData.userId)
+        setAccessToken(loginData.access_token)
+        setUserId(loginData.user_id)
         setWalletAddress(walletAddress)
 
         // Fetch user personal info after login and update promoteCode
         try {
-          const personal = await fetchUserPersonalInfo(loginData.accessToken)
+          const personal = await fetchUserPersonalInfo(loginData.access_token)
           setUserPersonalInfo(personal)
           if (personal?.promote_code) {
             setPromoteCode(personal.promote_code)
@@ -111,7 +111,7 @@ export const useWalletAuth = () => {
         }
         
         console.log('Wallet login successful:', {
-          userId: loginData.userId,
+          userId: loginData.user_id,
           walletAddress,
         })
         

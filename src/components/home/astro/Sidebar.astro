@@ -12,7 +12,6 @@ interface Props {
 // Get locale from props or extract from URL - 从props获取locale或从URL中提取
 const { locale: propsLocale } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
-console.log("🚀 ~ locale:", locale)
 
 /**
  * Fetch home page data for the sidebar
@@ -38,7 +37,7 @@ const isWithin12Hours = (createdAt: string) => {
         <div>
         <ArticleLink
           slug={article.slug}
-          category="news"
+          category={article.business_type_name.toLowerCase()}
           locale={locale}
           class="flex items-start space-x-3 py-3 group hover:bg-muted/50 transition-colors p-3 rounded"
         >
