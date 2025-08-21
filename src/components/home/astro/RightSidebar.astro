@@ -1,47 +1,34 @@
 ---
-// Topics and articles data - 主题和文章数据
-const topics = [
-  { name: "Data Science", url: "/topics/data-science" },
-  { name: "Self Improvement", url: "/topics/self-improvement" },
-  { name: "Writing", url: "/topics/writing" },
-  { name: "Technology", url: "/topics/technology" },
-  { name: "Politics", url: "/topics/politics" },
-  { name: "Relationships", url: "/topics/relationships" },
-  { name: "Cryptocurrency", url: "/topics/cryptocurrency" },
-]
+import { fetchHomePageData } from '@/api/articles'
+import type { HomeTopic, HomeMostReadArticle } from '@/types'
 
-const mustReadArticles = [
-  {
-    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
-    date: "Apr 11, 2024",
-    image: "/placeholder.svg?height=60&width=60",
-    url: "/news/meta-trial-instagram-whatsapp"
-  },
-  {
-    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
-    date: "Apr 11, 2024",
-    image: "/placeholder.svg?height=60&width=60",
-    url: "/news/meta-antitrust-case"
-  },
-  {
-    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
-    date: "Apr 11, 2024",
-    image: "/placeholder.svg?height=60&width=60",
-    url: "/news/social-media-regulation"
-  },
-  {
-    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
-    date: "Apr 11, 2024",
-    image: "/placeholder.svg?height=60&width=60",
-    url: "/news/tech-monopoly-debate"
-  },
-  {
-    title: "Meta goes to trial to avoid a breakup of Instagram and WhatsApp",
-    date: "Apr 11, 2024",
-    image: "/placeholder.svg?height=60&width=60",
-    url: "/news/platform-competition"
-  },
-]
+// Fetch home page data from API - 从API获取首页数据
+const homeData = await fetchHomePageData()
+
+// Extract topics and most read articles from API response - 从API响应中提取主题和热门文章
+const rawTopics: HomeTopic[] = homeData?.topics || []
+const mostReadArticles: HomeMostReadArticle[] = homeData?.mostread || []
+
+// Transform topics to include URL - 转换主题数据以包含URL
+const topics = rawTopics.map(topic => ({
+  ...topic,
+  url: `/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`
+}))
+
+// Helper function to generate article URL - 生成文章URL的辅助函数
+function getArticleUrl(article: HomeMostReadArticle): string {
+  return `/${article.business_type_name.toLowerCase()}/${article.slug}`
+}
+
+// Helper function to format date - 格式化日期的辅助函数
+function formatDate(dateString: string): string {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  })
+}
 ---
 
 <div class="space-y-6 mt-4">
@@ -62,9 +49,9 @@ const mustReadArticles = [
   <div>
     <h4 class="text-xl font-medium text-foreground mb-6">Most Read</h4>
     <div class="space-y-4">
-      {mustReadArticles.map((article, index) => (
+      {mostReadArticles.map((article: HomeMostReadArticle, index: number) => (
         <div class="border-b border-border pb-4 last:border-b-0 last:pb-0">
-          <a href={article.url} class="flex items-start justify-between group">
+          <a href={getArticleUrl(article)} class="flex items-start justify-between group">
             <div class="flex-1 pr-4">
               <div class="flex items-start space-x-3">
                 <span class="text-primary font-medium text-lg leading-none mt-1">{index + 1}</span>
@@ -76,14 +63,14 @@ const mustReadArticles = [
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
                     </svg>
-                    <span>{article.date}</span>
+                    <span>{formatDate(article.created_at)}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="flex-shrink-0">
               <img
-                src={article.image || "/placeholder.svg"}
+                src={article.img_url || "/placeholder.svg"}
                 alt={article.title}
                 class="w-16 h-16 rounded object-cover"
               />
