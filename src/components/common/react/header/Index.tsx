@@ -201,7 +201,7 @@ export default function Header({ userComponent }: HeaderProps) {
   return (
     <header className="border-b border-gray-200 fixed w-screen top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95 bg-white/95">
       <div className="max-w-[1440px] mx-auto pl-4 pr-6">
-        <div className="flex items-center h-16">
+        <div className="flex items-center h-[96px]">
           {/* Left Navigation */}
           <div className="hidden md:flex items-center space-x-8 flex-1">
             {/* Categories Dropdown */}
@@ -222,7 +222,7 @@ export default function Header({ userComponent }: HeaderProps) {
 
               {/* Categories Dropdown Menu */}
               {categoriesDropdownOpen && (
-                <div className="absolute left-0 right-0 top-[64px] w-screen bg-white z-50 border border-border">
+                <div className="absolute left-0 right-0 top-[96px] w-screen bg-white z-50 border border-border">
                   <div className="max-w-[1440px] mx-auto px-4">
                     <div className="pt-4 pb-3">
                       <h3 className="text-lg font-medium text-foreground mb-2 mt-1">{texts.dropdown.article}</h3>

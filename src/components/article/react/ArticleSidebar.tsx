@@ -77,7 +77,7 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ locale }) => {
       </div>
 
       {/* Recent Research */}
-      <div className="px-6 p-5 border-b border-border">
+      <div className="px-6 p-5">
         <RecentResearch locale={locale} />
       </div>
     </div>
