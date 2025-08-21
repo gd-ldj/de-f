@@ -71,7 +71,8 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
   useEffect(() => {
     const selectedCount = countSelected(sections);
     const hasSelection = selectedCount > 0;
-    document.dispatchEvent(new CustomEvent(changedEventName, { detail: { selectedCount, hasSelection } }));
+    const selectedValues = sections.flatMap((s) => s.options.filter((o) => o.checked).map((o) => o.label));
+    document.dispatchEvent(new CustomEvent(changedEventName, { detail: { selectedCount, hasSelection, selectedValues } }));
   }, [sections, changedEventName]);
 
   /**

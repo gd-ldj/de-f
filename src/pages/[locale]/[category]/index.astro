@@ -1,13 +1,9 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import AuthMount from '@/components/common/react/AuthMount';
-import ArticleLink from '@/components/common/astro/ArticleLink.astro'
-import { fetchArticles } from '@/api/articles'
-import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
-import FilterBar from '@/components/common/astro/FilterBar.astro'
-import Pagination from '@/components/common/astro/Pagination.astro'
+import CategoryPage from '@/components/pages/CategoryPage';
 
 import { changeLanguage } from "i18next";
 
@@ -26,15 +22,12 @@ if (!validCategories.includes(category.toLowerCase())) {
   return redirect('/404')
 }
 
-// Get pagination parameters from URL
-const currentPage = parseInt(url.searchParams.get('page') || '1', 10)
-const itemsPerPage = 12
-
-// Fetch articles data for specific category with pagination
-const articlesData = await fetchArticles(locale, currentPage, itemsPerPage, {business_type_name: category.toLowerCase()})
-// Use typed response directly (ArticlesResponse with ApiArticle[])
-const { articles, total } = articlesData || { articles: [], total: 0 }
-console.log("🚀 ~ articles:", articles)
+// Get initial URL parameters
+const initialPage = parseInt(url.searchParams.get('page') || '1', 10)
+const initialCategoryName = url.searchParams.get('category_name') || ''
+const initialAuthorName = url.searchParams.get('author_name') || ''
+const initialTag = url.searchParams.get('tag') || ''
+const initialOrderBy = (url.searchParams.get('order_by') as 'Latest' | 'Popular' | 'Trending') || 'Latest'
 
 // Category display names
 const categoryNames = {
@@ -60,17 +53,6 @@ const seoContent = {
 
 const { title, description } = seoContent[locale] || seoContent.us
 
-/**
- * Format date to readable string
- */
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 
 ---
 
@@ -96,70 +78,17 @@ const formatDate = (dateString: string) => {
         <h1 class="text-4xl md:text-5xl font-medium text-foreground">{categoryDisplayName}</h1>
       </div>
 
-      <!-- Main Content Container -->
-      <main class="max-w-[1440px] mx-auto px-4 py-8">
-        <!-- Filter Bar -->
-        <FilterBar locale={locale} viewMode="grid" />
-
-        <!-- Articles Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 mt-6">
-          {articles.map((article) => (
-            <article class=" rounded overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <!-- Article Image -->
-              <div class="relative">
-                <ArticleLink 
-                  slug={article.slug}
-                  locale={locale}
-                  category={article.category_name}
-                  class="block group"
-                >
-                  <img 
-                    src={article.img_url || '/placeholder.svg'} 
-                    alt={article.title}
-                    class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </ArticleLink>
-              </div>
-              
-              <!-- Article Content -->
-              <div class="p-6">
-                <h3 class="text-lg font-medium text-foreground mb-3 line-clamp-2">
-                  <ArticleLink 
-                    slug={article.slug}
-                    category={article.category_name}
-                    locale={locale}
-                    class="hover:text-primary transition-colors"
-                  >
-                    {article.title}
-                  </ArticleLink>
-                </h3>
-                
-                <p class="text-muted-foreground text-sm mb-4 line-clamp-3">
-                  {article.sub_title}
-                </p>
-                
-                <!-- Article Meta -->
-                <div class="flex items-center justify-between text-xs text-muted-foreground">
-                  <div class="flex items-center space-x-1">
-                    <span>{formatDate(article.created_at)}</span>
-                    <span>/ by </span>
-                    <span class="text-foreground">{article.author_name}</span>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-        
-        <!-- Dynamic Pagination -->
-         <Pagination 
-           currentPage={currentPage}
-           totalItems={total}
-           itemsPerPage={itemsPerPage}
-           baseUrl={`/${locale}/${category}`}
-           locale={locale}
-         />
-      </main>
+      <!-- Category Page Component -->
+      <CategoryPage 
+        client:load
+        locale={locale}
+        category={category}
+        initialPage={initialPage}
+        initialCategoryName={initialCategoryName}
+        initialAuthorName={initialAuthorName}
+        initialTag={initialTag}
+        initialOrderBy={initialOrderBy}
+      />
       
       <!-- Footer -->
       <Footer client:load />

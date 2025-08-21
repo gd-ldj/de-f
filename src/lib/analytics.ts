@@ -267,10 +267,10 @@ export class AnalyticsManager {
    */
   trackEvent(type: string, data: Record<string, any> = {}): void {
     if (!this.visitorData) {
-      console.warn('[Analytics] Cannot track event - visitor data not initialized')
-      return
+      console.warn('[Analytics] Cannot track event - visitor data not initialized');
+      return;
     }
-    
+
     const event: BehaviorEvent = {
       type,
       timestamp: Date.now(),
@@ -279,25 +279,25 @@ export class AnalyticsManager {
         userAgent: navigator.userAgent,
         screenResolution: `${screen.width}x${screen.height}`,
         viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
       visitorId: this.visitorData.visitorId,
       sessionId: this.visitorData.sessionId,
-      pageUrl: window.location.href
-    }
-    
-    this.eventQueue.push(event)
-    this.lastActivityTime = Date.now()
-    
+      pageUrl: window.location.href,
+    };
+
+    this.eventQueue.push(event);
+    this.lastActivityTime = Date.now();
+
     // Send to Google Analytics if available
     if (window.gtag && type === TRACKING_EVENTS.PAGE_VIEW) {
       window.gtag('event', 'page_view', {
         page_title: data.title,
-        page_location: data.url
-      })
+        page_location: data.url,
+      });
     }
-    
-    console.log('[Analytics] Event tracked:', event)
+
+    // console.log('[Analytics] Event tracked:', event)
   }
 
   /**
