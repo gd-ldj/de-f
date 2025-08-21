@@ -4,12 +4,27 @@ import Image from '@/components/common/react/Image'
 import { fetchHomePageData } from '@/api/articles'
 import type { HomeWhoToFollow, Locale } from '@/types'
 import { t } from '@/lib/i18n'
+import { getLocaleFromPath } from '@/lib/utils'
 
 interface ToFollowListProps {
-  locale: Locale;
+  locale?: Locale;
 }
 
-export default function ToFollowList({ locale }: ToFollowListProps) {
+/**
+ * Get locale from props or extract from current URL
+ * @param propsLocale - Locale from props (optional)
+ * @returns Current locale
+ */
+function getLocale(propsLocale?: Locale): Locale {
+  if (propsLocale) return propsLocale;
+  if (typeof window !== 'undefined') {
+    return getLocaleFromPath(window.location.pathname) as Locale;
+  }
+  return 'us'; // fallback
+}
+
+export default function ToFollowList({ locale: propsLocale }: ToFollowListProps) {
+  const locale = getLocale(propsLocale);
   const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -17,7 +32,7 @@ export default function ToFollowList({ locale }: ToFollowListProps) {
     const loadFollowUsers = async () => {
       try {
         const homeData = await fetchHomePageData()
-        setFollowUsers(homeData.who_to_follow)
+        setFollowUsers(homeData?.who_to_follow || [])
       } catch (error) {
         console.error('Failed to load follow users:', error)
       } finally {

@@ -212,7 +212,7 @@ export default function Header({ userComponent }: HeaderProps) {
                 aria-label={texts.navigation.allCategories} 
                 aria-expanded={categoriesDropdownOpen}
               >
-                <span>{texts.navigation.allCategories}</span>
+                <span className='text-gray-600'>{texts.navigation.allCategories}</span>
                 <img 
                   src={DownIcon} 
                   alt="dropdown" 
@@ -271,7 +271,7 @@ export default function Header({ userComponent }: HeaderProps) {
             {/* Collections Dropdown */}
             <div className="relative" ref={collectionsDropdownRef}>
               <button onClick={toggleCollectionsDropdown} className={`flex items-center space-x-1 text-sm px-3 py-1.5 transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
-                <span>{texts.navigation.collections}</span>
+                <span className='text-gray-600'>{texts.navigation.collections}</span>
                 <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 

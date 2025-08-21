@@ -17,7 +17,9 @@ export const prerender = false // Enable SSR for this page
 const { locale } = Astro.params as { locale: Locale }
 
 // Initialize i18n with the locale from params
-changeLanguage(locale);
+if (typeof changeLanguage === 'function') {
+  changeLanguage(locale);
+}
 
 // SEO content based on locale
 const seoContent = {

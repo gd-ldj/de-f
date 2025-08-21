@@ -1,6 +1,7 @@
 ---
 import type { Locale, ApiArticle } from '@/types'
 import { t } from '@/lib/i18n'
+import Image from '@/components/common/astro/ImageSSR.astro'
 
 interface Props {
   // ApiArticle: the raw article shape returned by backend API
@@ -29,9 +30,9 @@ const { article, locale, category, categoryDisplayName } = Astro.props
  
  <article class="bg-white">
    <!-- Article Header -->
-   <header class="mb-8">
+   <header class="mb-4">
      <!-- Breadcrumb -->
-     <nav class="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
+     <nav class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
        <a href={`/${locale}`} class="hover:text-primary">{t(locale, 'article.articles')}</a>
        <span>/</span>
        <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
@@ -41,16 +42,16 @@ const { article, locale, category, categoryDisplayName } = Astro.props
      </nav>
  
      <!-- Title -->
-     <h1 class="text-4xl font-medium tracking-tight text-foreground mb-6 leading-tight">
+     <h1 class="text-4xl font-medium tracking-tight text-foreground mb-4 leading-tight">
        {article.title}
      </h1>
  
      <!-- Excerpt -->
-     <p class="text-xl text-muted-foreground mb-2 leading-relaxed">
+     <p class="text-xl text-muted-foreground leading-relaxed">
        {article.sub_title}
      </p>
  
-     <div class="flex items-center justify-between pb-8">
+     <div class="flex items-center justify-between mb-1 pb-2">
       <div class="">
           <!-- Tags -->
         {article.tags.length > 0 && (
@@ -59,9 +60,9 @@ const { article, locale, category, categoryDisplayName } = Astro.props
               {article.tags.map((tag) => (
                 <a
                   href={`/${locale}/tag/${tag}`}
-                  class="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+                  class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
                 >
-                  #{tag}
+                  {tag}
                 </a>
               ))}
             </div>
@@ -70,13 +71,13 @@ const { article, locale, category, categoryDisplayName } = Astro.props
     
         <!-- Author and Date -->
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-1">
             <time class="text-sm text-muted-foreground" datetime={article.created_at}>
               {formatDate(article.created_at)}
             </time>
             
-            <p class="font-medium text-foreground">
-              <span class="text-sm text-muted-foreground mr-[2px]"> / {t(locale, 'article.by')}</span>
+            <p class="text-sm font-medium text-foreground">
+              <span class="text-muted-foreground mr-[2px]">/ {t(locale, 'article.by')}</span>
               {article.author?.name || article.author_name}
             </p>
           </div>
@@ -110,19 +111,21 @@ const { article, locale, category, categoryDisplayName } = Astro.props
    <!-- Featured Image -->
    {article.img_url && (
      <div class="mb-8">
-       <img
+       <Image
          src={article.img_url}
          alt={article.title}
-         class="w-full h-auto rounded shadow-lg"
+         className="w-full h-auto rounded shadow-lg"
          loading="lazy"
        />
      </div>
    )}
  
    <!-- Article Content -->
-   <div class="prose prose-lg max-w-none mb-12">
+   <div class="mb-8">
      <div set:html={article.body} />
    </div>
+
+   <div class="w-full border-t border-border"></div>
  
    <!-- Author Section -->
    <div id="author-section-root"></div>

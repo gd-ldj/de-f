@@ -81,7 +81,7 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
                   <img
                     src={hunter.avatar}
                     alt={hunter.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-fill"
                     onError={(e) => {
                       // Fallback to initials if image fails to load
                       const target = e.target as HTMLImageElement;

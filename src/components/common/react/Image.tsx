@@ -87,19 +87,6 @@ const Image: React.FC<ImageProps> = ({
     }
   };
 
-  /**
-   * Reset error state when src prop changes
-   */
-  useEffect(() => {
-    console.log("🔄 src changed:", src, "current imgSrc:", imgSrc);
-    if (src !== imgSrc) {
-      // Reset all states when src changes
-      setHasError(false);
-      setIsLoading(true);
-      setImgSrc(src);
-    }
-  }, [src, imgSrc]);
-
   return (
     <img
       {...props}

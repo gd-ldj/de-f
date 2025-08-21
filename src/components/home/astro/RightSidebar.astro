@@ -2,12 +2,15 @@
 import { fetchHomePageData } from '@/api/articles'
 import type { HomeTopic, HomeMostReadArticle, Locale } from '@/types'
 import { t } from '@/lib/i18n'
+import { getLocaleFromPath } from '@/lib/utils'
 
 interface Props {
-  locale: Locale
+  locale?: Locale
 }
 
-const { locale } = Astro.props as Props
+// Get locale from props or extract from URL - 从props获取locale或从URL中提取
+const { locale: propsLocale } = Astro.props as Props
+const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
 // Fetch home page data from API - 从API获取首页数据
 const homeData = await fetchHomePageData()

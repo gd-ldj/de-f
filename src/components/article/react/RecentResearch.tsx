@@ -44,7 +44,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({
           <img
             src={article.image}
             alt={article.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-fill"
             onError={(e) => {
               // Fallback to a placeholder color background if image fails to load
               const target = e.target as HTMLImageElement;

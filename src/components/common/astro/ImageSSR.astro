@@ -1,0 +1,215 @@
+---
+import placeholderImg from '@/assets/imgs/placeholder.svg';
+
+export interface Props {
+  src: string;
+  alt: string;
+  fallbackSrc?: string;
+  class?: string;
+  className?: string;
+  loading?: 'lazy' | 'eager';
+  width?: number;
+  height?: number;
+  style?: string;
+}
+
+const {
+  src,
+  alt,
+  fallbackSrc,
+  class: cssClass = '',
+  className = '',
+  loading = 'lazy',
+  width,
+  height,
+  style,
+  ...props
+} = Astro.props;
+
+// Ensure fallbackSrc has a valid default value
+let defaultFallbackPath: string;
+
+if (fallbackSrc) {
+  defaultFallbackPath = fallbackSrc;
+} else if (placeholderImg && typeof placeholderImg === 'object' && 'src' in placeholderImg) {
+  // Use the Astro imported asset path
+  defaultFallbackPath = (placeholderImg as { src: string }).src;
+} else if (typeof placeholderImg === 'string') {
+  defaultFallbackPath = placeholderImg;
+} else {
+  // Fallback to public directory path
+  defaultFallbackPath = '/placeholder.svg';
+}
+
+const finalClass = `${cssClass} ${className}`.trim();
+---
+
+<img
+  {...props}
+  src={src}
+  alt={alt}
+  class={`astro-image-ssr ${finalClass}`}
+  loading={loading}
+  width={width}
+  height={height}
+  style={style}
+  data-fallback={defaultFallbackPath}
+/>
+
+<script>
+  /**
+   * Enhanced Image handling for Astro SSR with automatic fallback
+   * Handles image loading errors and network issues like net::ERR_CONNECTION_CLOSED
+   */
+  
+  function initImageHandling() {
+    // Find all SSR images on the page
+    const images = document.querySelectorAll('.astro-image-ssr');
+    
+    images.forEach((img) => {
+      if (!(img instanceof HTMLImageElement)) return;
+      
+      const fallbackSrc = img.dataset.fallback;
+      if (!fallbackSrc) return;
+      
+      let hasError = false;
+      let loadTimeout: NodeJS.Timeout | null = null;
+      
+      // Handle successful image loading
+      const handleLoad = () => {
+        if (loadTimeout) {
+          clearTimeout(loadTimeout);
+          loadTimeout = null;
+        }
+        img.classList.remove('image-loading');
+        img.classList.add('image-loaded');
+        console.log("✅ SSR Image loaded successfully:", img.src);
+      };
+      
+      // Handle image loading errors
+      const handleError = (event: Event) => {
+        if (loadTimeout) {
+          clearTimeout(loadTimeout);
+          loadTimeout = null;
+        }
+        
+        console.log("❌ SSR Image failed to load:", img.src, "hasError:", hasError);
+        
+        img.classList.remove('image-loading');
+        
+        if (!hasError && img.src !== fallbackSrc) {
+          console.log("🔄 SSR Switching to fallback:", fallbackSrc);
+          hasError = true;
+          img.src = fallbackSrc;
+          img.classList.add('image-fallback');
+        } else {
+          console.log("⚠️ SSR Fallback also failed or already in error state");
+        }
+      };
+      
+      // Handle cases where onError doesn't fire (like net::ERR_CONNECTION_CLOSED)
+      const setupTimeout = () => {
+        if (loadTimeout) {
+          clearTimeout(loadTimeout);
+        }
+        
+        loadTimeout = setTimeout(() => {
+          console.log("⏰ SSR Image load timeout - possibly due to network error (net::ERR_CONNECTION_CLOSED)");
+          if (!hasError && img.src !== fallbackSrc) {
+            console.log("🔄 SSR Switching to fallback due to timeout:", fallbackSrc);
+            hasError = true;
+            img.src = fallbackSrc;
+            img.classList.remove('image-loading');
+            img.classList.add('image-fallback');
+          }
+        }, 10000); // 10 second timeout
+      };
+      
+      // Add loading class initially
+      img.classList.add('image-loading');
+      
+      // Set up event listeners
+      img.addEventListener('load', handleLoad);
+      img.addEventListener('error', handleError);
+      
+      // Set up timeout for network errors
+      setupTimeout();
+      
+      // If image is already loaded (from cache), handle it
+      if (img.complete) {
+        if (img.naturalWidth > 0) {
+          handleLoad();
+        } else {
+          handleError(new Event('error'));
+        }
+      }
+      
+      // Cleanup function for when element is removed
+      const cleanup = () => {
+        if (loadTimeout) {
+          clearTimeout(loadTimeout);
+        }
+        img.removeEventListener('load', handleLoad);
+        img.removeEventListener('error', handleError);
+      };
+      
+      // Store cleanup function on element for potential future use
+      (img as any).__imageCleanup = cleanup;
+    });
+  }
+  
+  // Initialize when DOM is loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initImageHandling);
+  } else {
+    initImageHandling();
+  }
+  
+  // Also handle dynamic content (if needed)
+  // You can call initImageHandling() after adding new images dynamically
+  window.__reinitImageHandling = initImageHandling;
+</script>
+
+<style>
+  .astro-image-ssr {
+    transition: opacity 0.3s ease;
+  }
+  
+  .astro-image-ssr.image-loading {
+    opacity: 0.7;
+  }
+  
+  .astro-image-ssr.image-loaded {
+    opacity: 1;
+  }
+  
+  .astro-image-ssr.image-fallback {
+    opacity: 1;
+    filter: grayscale(0.2);
+  }
+  
+  /* Loading animation */
+  .astro-image-ssr.image-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: astro-image-spin 1s linear infinite;
+  }
+  
+  @keyframes astro-image-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Ensure relative positioning for loading animation */
+  .astro-image-ssr.image-loading {
+    position: relative;
+  }
+</style>
