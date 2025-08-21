@@ -11,6 +11,7 @@ import ToFollowList from '@/components/home/react/ToFollowList';
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
 import { ToastContainer } from '@/components/common/react/Toast';
+import { usePrivy } from '@privy-io/react-auth';
 
 interface AuthMountProps {
   headerTargetId?: string;
@@ -57,17 +58,106 @@ function getLocaleFromURL(): Locale {
 }
 
 /**
- * AuthMount
- *
- * A single React island that hosts Privy's IdentityProvider and renders
- * all auth-aware UI (Header, Login, ShareSection, etc.) into specific DOM mount points
- * using React portals. By keeping everything under one React root, we ensure
- * Privy's context (usePrivy) is shared across components and "ready" can be true.
- *
- * NOTE: Components that call useAuth/usePrivy MUST be rendered under this provider,
- * therefore we portal ShareSection from here so it inherits the context correctly.
+ * Placeholder Header Component
+ * Renders a static version of the header without wallet functionality
+ * to prevent layout shift during wallet initialization
  */
-const AuthMount: React.FC<AuthMountProps> = ({ headerTargetId = 'header-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareSection, authorTargetId = 'author-section-root', authorSection, toFollowTargetId = 'to-follow-root', toFollowSection }) => {
+const PlaceholderHeader: React.FC<{ userComponent?: React.ReactNode }> = ({ userComponent }) => {
+  return (
+    <Header 
+      userComponent={
+        userComponent || (
+          <button 
+            className="p-1 hover:bg-gray-100 rounded-md transition-colors opacity-50 cursor-not-allowed"
+            disabled
+          >
+            <img src="/me.svg" alt="logo" className="w-5 h-5" />
+          </button>
+        )
+      } 
+    />
+  );
+};
+
+/**
+ * Placeholder Login Component
+ * Shows a static login interface during wallet initialization
+ */
+const PlaceholderLogin: React.FC<{ locale: Locale }> = ({ locale }) => {
+  return (
+    <div className="flex items-center justify-center p-4">
+      <div className="animate-pulse">
+        <div className="h-10 w-32 bg-gray-200 rounded-md"></div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Placeholder ShareSection Component
+ * Shows a static share interface during wallet initialization
+ */
+const PlaceholderShareSection: React.FC<{ title: string; url: string; locale: Locale }> = ({ title, url, locale }) => {
+  return (
+    <div className="flex items-center space-x-2 opacity-50">
+      <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
+      <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
+      <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+  );
+};
+
+/**
+ * Placeholder AuthorSection Component
+ * Shows a static author interface during wallet initialization
+ */
+const PlaceholderAuthorSection: React.FC<{ author: any; locale: Locale }> = ({ author, locale }) => {
+  return (
+    <div className="flex items-center space-x-3 p-4">
+      <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
+      <div className="flex-1">
+        <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-2"></div>
+        <div className="h-3 w-32 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Placeholder ToFollowList Component
+ * Shows a static follow list during wallet initialization
+ */
+const PlaceholderToFollowList: React.FC<{ locale: Locale }> = ({ locale }) => {
+  return (
+    <div className="space-y-3 p-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+          <div className="flex-1">
+            <div className="h-3 w-20 bg-gray-200 rounded animate-pulse mb-1"></div>
+            <div className="h-2 w-16 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="h-6 w-16 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/**
+ * AuthMountContent - Inner component that uses Privy hooks
+ * This component is rendered inside IdentityProvider to access Privy context
+ */
+const AuthMountContent: React.FC<AuthMountProps> = ({ 
+  headerTargetId = 'header-root', 
+  loginTargetId = 'login-root', 
+  shareTargetId = 'share-section-root', 
+  shareSection, 
+  authorTargetId = 'author-section-root', 
+  authorSection, 
+  toFollowTargetId = 'to-follow-root', 
+  toFollowSection 
+}) => {
   const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
   const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
@@ -79,6 +169,9 @@ const AuthMount: React.FC<AuthMountProps> = ({ headerTargetId = 'header-root', l
   // Read global authentication state from jotai store
   // When isAuthenticated changes (login/logout), this component re-renders
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
+  
+  // Get Privy ready state to determine when to show real components
+  const { ready } = usePrivy();
 
   // Memoize DOM element queries to avoid repeated lookups
   const domElements = useMemo(() => {
@@ -125,48 +218,210 @@ const AuthMount: React.FC<AuthMountProps> = ({ headerTargetId = 'header-root', l
   );
 
   // Memoize portals to prevent unnecessary re-renders
+  // Only show real components when Privy is ready
   const headerPortal = useMemo(() => {
-    if (!headerEl) return null;
+    if (!headerEl || !ready) return null;
     return createPortal(<Header userComponent={userComponent} />, headerEl);
-  }, [headerEl, userComponent]);
+  }, [headerEl, userComponent, ready]);
 
   const loginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated) return null;
+    if (!loginEl || isAuthenticated || !ready) return null;
     return createPortal(<Login locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale]);
+  }, [loginEl, isAuthenticated, locale, ready]);
 
   const sharePortal = useMemo(() => {
-    if (!shareEl || !shareSection) return null;
-    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} />, shareEl);
-  }, [shareEl, shareSection]);
+    if (!shareEl || !shareSection || !ready) return null;
+    return createPortal(
+      <ShareSection 
+        locale={shareSection.locale} 
+        title={shareSection.title} 
+        url={shareSection.url} 
+      />, 
+      shareEl
+    );
+  }, [shareEl, shareSection, ready]);
 
   const authorPortal = useMemo(() => {
-    if (!authorEl || !authorSection) return null;
-    return createPortal(<AuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
-  }, [authorEl, authorSection]);
+    if (!authorEl || !authorSection || !ready) return null;
+    return createPortal(
+      <AuthorSection 
+        author={authorSection.author} 
+        locale={authorSection.locale} 
+      />, 
+      authorEl
+    );
+  }, [authorEl, authorSection, ready]);
 
   const toFollowPortal = useMemo(() => {
-    if (!toFollowEl || !toFollowSection) return null;
+    if (!toFollowEl || !toFollowSection || !ready) return null;
     return createPortal(<ToFollowList locale={toFollowSection.locale} />, toFollowEl);
-  }, [toFollowEl, toFollowSection]);
+  }, [toFollowEl, toFollowSection, ready]);
 
   return (
-    <IdentityProvider>
-      <>
-        {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
-        <span style={{ display: 'none' }} data-auth-island="true" />
+    <>
+      {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
+      <span style={{ display: 'none' }} data-auth-island="true" />
 
-        {/* Render memoized portals */}
-        {headerPortal}
-        {loginPortal}
-        {sharePortal}
-        {authorPortal}
-        {toFollowPortal}
+      {/* Render memoized portals */}
+      {headerPortal}
+      {loginPortal}
+      {sharePortal}
+      {authorPortal}
+      {toFollowPortal}
 
-        {/* Global Toasts */}
-        <ToastContainer />
-      </>
-    </IdentityProvider>
+      {/* Global Toasts */}
+      <ToastContainer />
+    </>
+  );
+};
+
+/**
+ * Main AuthMount component that handles placeholder rendering and IdentityProvider
+ */
+const AuthMount: React.FC<AuthMountProps> = (props) => {
+  const { 
+    headerTargetId = 'header-root', 
+    loginTargetId = 'login-root', 
+    shareTargetId = 'share-section-root', 
+    shareSection, 
+    authorTargetId = 'author-section-root', 
+    authorSection, 
+    toFollowTargetId = 'to-follow-root', 
+    toFollowSection 
+  } = props;
+  
+  const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
+  const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
+  const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
+  const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
+  const [toFollowEl, setToFollowEl] = useState<HTMLElement | null>(null);
+  const [locale, setLocale] = useState<Locale>('us');
+  const [privyMounted, setPrivyMounted] = useState(false);
+  
+  // Read global authentication state from jotai store
+  const [isAuthenticated] = useAtom(isAuthenticatedAtom);
+
+  // Memoize DOM element queries to avoid repeated lookups
+  const domElements = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+
+    return {
+      header: document.getElementById(headerTargetId),
+      login: document.getElementById(loginTargetId),
+      share: document.getElementById(shareTargetId),
+      author: document.getElementById(authorTargetId),
+      toFollow: document.getElementById(toFollowTargetId),
+    };
+  }, [headerTargetId, loginTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
+
+  // Resolve DOM mount points on client
+  useEffect(() => {
+    if (!domElements) return;
+
+    setHeaderEl(domElements.header);
+    setLoginEl(domElements.login);
+    setShareEl(domElements.share);
+    setAuthorEl(domElements.author);
+    setToFollowEl(domElements.toFollow);
+
+    // Update locale from URL on mount
+    setLocale(getLocaleFromURL());
+
+    // Debug: verify hydration ran in the browser and mount points were found
+    if (import.meta.env.DEV) {
+      console.log('[AuthMount] hydrated. Elements found:', domElements);
+    }
+  }, [domElements]);
+  
+  // Track when Privy provider is mounted to switch from placeholder to real components
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPrivyMounted(true);
+    }, 100); // Small delay to ensure Privy is initialized
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Memoize placeholder portals
+  const placeholderHeaderPortal = useMemo(() => {
+    if (!headerEl || privyMounted) return null;
+    return createPortal(
+      <PlaceholderHeader 
+        userComponent={
+          <button 
+            className="p-1 hover:bg-gray-100 rounded-md transition-colors opacity-50 cursor-not-allowed"
+            disabled
+          >
+            <img src="/me.svg" alt="logo" className="w-5 h-5" />
+          </button>
+        } 
+      />, 
+      headerEl
+    );
+  }, [headerEl, privyMounted]);
+
+  const placeholderLoginPortal = useMemo(() => {
+    if (!loginEl || isAuthenticated || privyMounted) return null;
+    return createPortal(<PlaceholderLogin locale={locale} />, loginEl);
+  }, [loginEl, isAuthenticated, locale, privyMounted]);
+
+  const placeholderSharePortal = useMemo(() => {
+    if (!shareEl || !shareSection || privyMounted) return null;
+    return createPortal(
+      <PlaceholderShareSection 
+        locale={shareSection.locale} 
+        title={shareSection.title} 
+        url={shareSection.url} 
+      />, 
+      shareEl
+    );
+  }, [shareEl, shareSection, privyMounted]);
+
+  const placeholderAuthorPortal = useMemo(() => {
+    if (!authorEl || !authorSection || privyMounted) return null;
+    return createPortal(
+      <PlaceholderAuthorSection 
+        author={authorSection.author} 
+        locale={authorSection.locale} 
+      />, 
+      authorEl
+    );
+  }, [authorEl, authorSection, privyMounted]);
+
+  const placeholderToFollowPortal = useMemo(() => {
+    if (!toFollowEl || !toFollowSection || privyMounted) return null;
+    return createPortal(
+      <PlaceholderToFollowList locale={toFollowSection.locale} />, 
+      toFollowEl
+    );
+  }, [toFollowEl, toFollowSection, privyMounted]);
+
+  return (
+    <>
+      {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
+      <span style={{ display: 'none' }} data-auth-island="true" />
+      
+      {/* Show placeholder components immediately while Privy is loading */}
+      {!privyMounted && (
+        <>
+          {placeholderHeaderPortal}
+          {placeholderLoginPortal}
+          {placeholderSharePortal}
+          {placeholderAuthorPortal}
+          {placeholderToFollowPortal}
+        </>
+      )}
+      
+      {/* Mount Privy provider and real components */}
+      {privyMounted && (
+        <IdentityProvider>
+          <AuthMountContent {...props} />
+        </IdentityProvider>
+      )}
+      
+      {/* Global Toasts - always available */}
+      <ToastContainer />
+    </>
   );
 };
 

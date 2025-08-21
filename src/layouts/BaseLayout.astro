@@ -145,13 +145,13 @@ const currentUrl = canonicalUrl || Astro.url.href
               const newUrl = `/${locale}/news/${slug}-${currentPromoteCode}`
               link.href = newUrl
               
-              console.log('[ArticleLink] Updated link:', {
-                slug,
-                locale,
-                oldHref,
-                newHref: newUrl,
-                promoteCode: currentPromoteCode
-              })
+              // console.log('[ArticleLink] Updated link:', {
+              //   slug,
+              //   locale,
+              //   oldHref,
+              //   newHref: newUrl,
+              //   promoteCode: currentPromoteCode
+              // })
             }
           })
         } catch (error) {
