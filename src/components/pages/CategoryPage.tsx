@@ -26,8 +26,6 @@ interface FilterState {
 export default function CategoryPage({ locale, category, initialPage, initialCategoryName, initialAuthorName, initialTag, initialOrderBy }: CategoryPageProps) {
   const [articles, setArticles] = useState<ApiArticle[]>([]);
   const [total, setTotal] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
-  console.log('🚀 ~ CategoryPage ~ hasMore:', hasMore);
   const [loading, setLoading] = useState(false);
   // Helper function to parse comma-separated values from URL parameters
   const parseCommaSeparatedValue = (value: string): string | string[] => {
@@ -121,16 +119,13 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         if (response) {
           setArticles(response.articles || []);
           setTotal(response.total || 0);
-          setHasMore(response.hasMore || false);
         } else {
           setArticles([]);
           setTotal(0);
-          setHasMore(false);
         }
       } catch (error) {
         setArticles([]);
         setTotal(0);
-        setHasMore(false);
       } finally {
         setLoading(false);
       }
@@ -267,7 +262,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       )}
 
       {/* Pagination */}
-      {!loading && (true || total > itemsPerPage) && <PaginationReact currentPage={filters.page} totalItems={total} itemsPerPage={itemsPerPage} onPageChange={handlePageChange} locale={locale} onlyNext={true} hasMore={hasMore} />}
+      {!loading && total > itemsPerPage && <PaginationReact currentPage={filters.page} totalItems={total} itemsPerPage={itemsPerPage} onPageChange={handlePageChange} locale={locale} />}
     </main>
   );
 }

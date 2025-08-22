@@ -1,82 +1,74 @@
-import type { Locale } from '@/types'
+import type { Locale } from '@/types';
 
 interface PaginationProps {
-  currentPage: number
-  totalItems: number
-  itemsPerPage: number
-  onPageChange: (page: number) => void
-  locale: Locale
-  onlyNext?: boolean
-  hasMore?: boolean
+  currentPage: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+  locale: Locale;
+  onlyNext?: boolean;
+  hasMore?: boolean;
 }
 
-export default function Pagination({
-  currentPage,
-  totalItems,
-  itemsPerPage,
-  onPageChange,
-  locale,
-  onlyNext = false,
-  hasMore = false
-}: PaginationProps) {
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
+export default function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange, locale, onlyNext = false, hasMore = false }: PaginationProps) {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Don't render if there's only one page (unless using onlyNext mode)
   if (!onlyNext && totalPages <= 1) {
-    return null
+    return null;
   }
 
   // For onlyNext mode, don't render if on first page and no more pages
   if (onlyNext && currentPage === 1 && !hasMore) {
-    return null
+    return null;
   }
 
   const handlePageChange = (page: number) => {
     if (onlyNext) {
       // For onlyNext mode, allow navigation based on hasMore and current page
       if ((page === currentPage - 1 && currentPage > 1) || (page === currentPage + 1 && hasMore)) {
-        onPageChange(page)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        onPageChange(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } else {
       // Original logic for full pagination
       if (page >= 1 && page <= totalPages && page !== currentPage) {
-        onPageChange(page)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        onPageChange(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
-  }
+  };
 
   // Generate page numbers to display
   const getPageNumbers = () => {
-    const delta = 2 // Number of pages to show around current page
-    const range = []
-    const rangeWithDots = []
+    const delta = 2; // Number of pages to show around current page
+    const range = [];
+    const rangeWithDots = [];
 
     for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-      range.push(i)
+      range.push(i);
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, '...')
+      rangeWithDots.push(1, '...');
     } else {
-      rangeWithDots.push(1)
+      rangeWithDots.push(1);
     }
 
-    rangeWithDots.push(...range)
+    rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push('...', totalPages)
+      rangeWithDots.push('...', totalPages);
     } else {
       if (totalPages > 1) {
-        rangeWithDots.push(totalPages)
+        rangeWithDots.push(totalPages);
       }
     }
 
-    return rangeWithDots
-  }
+    return rangeWithDots;
+  };
 
-  const pageNumbers = getPageNumbers()
+  const pageNumbers = getPageNumbers();
 
   return (
     <nav className="flex items-center justify-center space-x-1 mt-8" aria-label="Pagination">
@@ -86,10 +78,7 @@ export default function Pagination({
         disabled={currentPage === 1}
         className={`
           flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md
-          ${currentPage === 1
-            ? 'text-muted-foreground cursor-not-allowed'
-            : 'text-foreground hover:bg-accent hover:text-accent-foreground'
-          }
+          ${currentPage === 1 ? 'text-muted-foreground cursor-not-allowed' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
         `}
         aria-label={locale === 'us' ? 'Previous page' : '上一页'}
       >
@@ -108,10 +97,10 @@ export default function Pagination({
                 <span key={`dots-${index}`} className="px-3 py-2 text-muted-foreground">
                   ...
                 </span>
-              )
+              );
             }
 
-            const isCurrentPage = pageNumber === currentPage
+            const isCurrentPage = pageNumber === currentPage;
 
             return (
               <button
@@ -119,17 +108,14 @@ export default function Pagination({
                 onClick={() => handlePageChange(pageNumber as number)}
                 className={`
                   flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md min-w-[40px]
-                  ${isCurrentPage
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground hover:bg-accent hover:text-accent-foreground'
-                  }
+                  ${isCurrentPage ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
                 `}
                 aria-label={`${locale === 'us' ? 'Page' : '第'} ${pageNumber} ${locale === 'us' ? '' : '页'}`}
                 aria-current={isCurrentPage ? 'page' : undefined}
               >
                 {pageNumber}
               </button>
-            )
+            );
           })}
         </div>
       )}
@@ -140,10 +126,7 @@ export default function Pagination({
         disabled={onlyNext ? !hasMore : currentPage === totalPages}
         className={`
           flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md
-          ${(onlyNext ? !hasMore : currentPage === totalPages)
-            ? 'text-muted-foreground cursor-not-allowed'
-            : 'text-foreground hover:bg-accent hover:text-accent-foreground'
-          }
+          ${(onlyNext ? !hasMore : currentPage === totalPages) ? 'text-muted-foreground cursor-not-allowed' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
         `}
         aria-label={locale === 'us' ? 'Next page' : '下一页'}
       >
@@ -153,5 +136,5 @@ export default function Pagination({
         </svg>
       </button>
     </nav>
-  )
+  );
 }

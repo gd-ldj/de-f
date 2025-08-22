@@ -86,10 +86,10 @@ export async function fetchArticles(
 
     if (result.code === 2000 && result.data) {
       // Transform backend response to our ArticlesResponse format
-      const { list, pagination, next } = result.data;
+      const { list, pagination, next, total } = result.data;
       return {
         articles: list || [], // ApiArticle[] from backend
-        total: pagination?.total || 0,
+        total: pagination?.total || total || 0,
         page: page, // Keep for compatibility
         limit: pagination?.limit || limit,
         hasMore: pagination?.next || next || false,
