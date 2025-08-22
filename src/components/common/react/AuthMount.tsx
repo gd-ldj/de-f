@@ -253,11 +253,7 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
 
   // Track when Privy provider is mounted to switch from placeholder to real components
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPrivyMounted(true);
-    }, 100); // Small delay to ensure Privy is initialized
-
-    return () => clearTimeout(timer);
+    setPrivyMounted(true);
   }, []);
 
   // Memoize placeholder portals

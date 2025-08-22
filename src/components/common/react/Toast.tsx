@@ -189,13 +189,9 @@ export const ToastContainer: React.FC = () => {
   if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="fixed top-4 right-4 z-50 flex flex-col space-y-3 pointer-events-none max-h-screen overflow-hidden">
+    <div className="fixed top-20 right-4 z-50 flex flex-col space-y-3 pointer-events-none max-h-screen overflow-hidden">
       {toasts.map((toast) => (
-        <ToastItem
-          key={toast.id}
-          {...toast}
-          onDismiss={dismissToast}
-        />
+        <ToastItem key={toast.id} {...toast} onDismiss={dismissToast} />
       ))}
     </div>,
     document.body

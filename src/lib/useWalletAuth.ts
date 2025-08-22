@@ -143,18 +143,17 @@ export const useWalletAuth = () => {
     setError(null)
 
     try {
-      let logoutSuccess = true
-      
+      let logoutSuccess = true;
+
       // Attempt to logout from backend if we have an access token
       if (accessToken) {
-        logoutSuccess = await logout(accessToken)
+        logoutSuccess = await logout(accessToken);
       }
-      
+
       // Clear local state regardless of backend logout result
-      clearAuthState()
-      
-      console.log('Logout completed:', { success: logoutSuccess })
-      return logoutSuccess
+      clearAuthState();
+
+      return logoutSuccess;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       setError(`Logout failed: ${errorMessage}`)

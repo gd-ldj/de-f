@@ -62,7 +62,6 @@ const Image: React.FC<ImageProps> = ({
    */
   const handleLoad = () => {
     setIsLoading(false);
-    console.log("✅ Image loaded successfully:", imgSrc);
   };
 
   /**
