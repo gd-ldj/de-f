@@ -4,6 +4,7 @@ import { fetchHomePageData } from '@/api/articles'
 import type { Locale, HomeNewsArticle } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import {formatDate} from '@/utils/util'
 
 // Get locale from props or default to 'us'
 interface Props {
@@ -20,20 +21,6 @@ const news_all: HomeNewsArticle[] = homeData?.news_all || []
 const featuredArticle = news_all[0]
 // Get the rest for the sidebar articles
 const sidebarArticles = news_all.slice(1, 3)
-
-/**
- * Format date to readable string
- * @param dateString - ISO date string
- * @returns Formatted date string
- */
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 
 /**
  * Extract plain text from rich text content and truncate to specified length
@@ -94,7 +81,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
         <p class=" text-muted-foreground mb-2 leading-relaxed">{extractPlainText(featuredArticle.body, 200)}</p>
 
         <div class="flex items-center space-x-1 text-sm text-muted-foreground mb-6">
-          <span>{formatDate(featuredArticle.created_at)} / by</span>
+          <span>{formatDate(featuredArticle.created_at, locale)} / by</span>
           <span class='text-foreground uppercase'>{featuredArticle.author.name}</span>
         </div>
 
@@ -138,7 +125,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
         </h3>
         <p class=" text-muted-foreground mb-2 leading-relaxed">{extractPlainText(article.body, 200)}</p>
          <div class="flex items-center space-x-1 text-sm text-muted-foreground">
-          <span>{formatDate(article.created_at)} / by</span>
+          <span>{formatDate(article.created_at, locale)} / by</span>
           <span class='text-foreground uppercase'>{article.author.name}</span>
         </div>
       </div>

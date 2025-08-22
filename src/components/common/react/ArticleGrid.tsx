@@ -1,5 +1,6 @@
 import type { ApiArticle, Locale } from '@/types'
 import ArticleLink from './ArticleLink'
+import { formatDate } from '@/utils/util';
 
 interface ArticleGridProps {
   articles: ApiArticle[]
@@ -7,17 +8,7 @@ interface ArticleGridProps {
 }
 
 export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
-  /**
-   * Format date to readable string
-   */
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12 mt-6">
@@ -58,7 +49,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
             {/* Article Meta */}
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center space-x-1">
-                <span>{formatDate(article.created_at)}</span>
+                <span>{formatDate(article.created_at, locale)}</span>
                 <span>/ by </span>
                 <span className="text-foreground">{article.author_name}</span>
               </div>

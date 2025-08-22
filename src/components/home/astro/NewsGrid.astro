@@ -3,6 +3,7 @@ import { fetchHomePageData } from '@/api/articles'
 import type { Locale } from '@/types'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { t } from '@/lib/i18n'
+import {formatDate} from '@/utils/util'
 
 interface Props {
   locale: Locale
@@ -32,17 +33,6 @@ const newsCategories = [
   { name: t(locale, 'common.lightspeedNewsletter'), url: `/${locale}/news/newsletter`, active: false },
 ]
 
-/**
- * Format date to a short, localized string for cards
- */
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
 ---
 
 <div class="mt-12">
@@ -89,7 +79,7 @@ const formatDate = (dateString: string) => {
           <h3 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h3>
           <p class="text-xs text-muted-foreground mb-3">{article.body}</p>
           <div class="flex items-center space-x-2 text-xs text-muted-foreground">
-            <span>{formatDate(article.created_at)}</span>
+            <span>{formatDate(article.created_at, locale)}</span>
             <span>by {article.author.name}</span>
           </div>
         </div>

@@ -49,7 +49,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
   // Update URL when filters change
   const updateURL = useCallback((newFilters: FilterState) => {
-    console.log('🚀 ~ CategoryPage ~ newFilters:', newFilters.categoryName);
     const url = new URL(window.location.href);
 
     // Clear existing search params to rebuild them
@@ -73,7 +72,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     const searchParamsString = newSearchParams.toString();
 
     const manualParams = [];
-    console.log('🚀 ~ CategoryPage ~ newFilters:', newFilters.categoryName);
     if (newFilters.categoryName) {
       const categoryValue = Array.isArray(newFilters.categoryName) ? newFilters.categoryName.join(',') : newFilters.categoryName;
       manualParams.push(`category_name=${categoryValue}`);
@@ -86,7 +84,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     if (!newFilters.categoryName && !newFilters.tag) {
       manualParams.length = 0;
     }
-    console.log('🚀 ~ CategoryPage ~ manualParams:', manualParams);
     const allParams = [];
     if (searchParamsString) {
       allParams.push(searchParamsString);
@@ -115,19 +112,16 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
           tag: Array.isArray(currentFilters.tag) ? currentFilters.tag.join(',') : currentFilters.tag || undefined,
           order_by: currentFilters.orderBy,
         };
-        console.log('🚀 ~ CategoryPage ~ options:', options);
 
         const response = await fetchArticles(locale, currentFilters.page, itemsPerPage, options);
-
         if (response) {
-          setArticles(response.articles);
-          setTotal(response.total);
+          setArticles(response.articles || []);
+          setTotal(response.total || 0);
         } else {
           setArticles([]);
           setTotal(0);
         }
       } catch (error) {
-        console.error('Error fetching articles:', error);
         setArticles([]);
         setTotal(0);
       } finally {
@@ -195,31 +189,22 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   // Listen for filter events from FilterBar
   useEffect(() => {
     const handleCategoryChange = (e: Event) => {
-      console.log('category:changed event:', e);
       const customEvent = e as CustomEvent;
-      console.log('customEvent.detail:', customEvent.detail);
       const { selectedValues } = customEvent.detail;
-      console.log('categoryName:', selectedValues);
       // Pass the entire selectedValues array for multi-select support
       const categoryName = Array.isArray(selectedValues) && selectedValues.length > 0 ? selectedValues : '';
       handleFilterChange('category', categoryName);
     };
 
     const handleAuthorSearch = (e: Event) => {
-      console.log('author:search event:', e);
       const customEvent = e as CustomEvent;
-      console.log('customEvent.detail:', customEvent.detail);
       const { query } = customEvent.detail;
-      console.log('authorQuery:', query);
       handleFilterChange('author', query || '');
     };
 
     const handleTopicChange = (e: Event) => {
-      console.log('filter:changed event:', e);
       const customEvent = e as CustomEvent;
-      console.log('customEvent.detail:', customEvent.detail);
       const { selectedValues } = customEvent.detail;
-      console.log('tag:', selectedValues);
       // Pass the entire selectedValues array for multi-select support
       const tag = Array.isArray(selectedValues) && selectedValues.length > 0 ? selectedValues : '';
       handleFilterChange('tag', tag);
@@ -250,7 +235,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   // Fetch articles when filters change
   useEffect(() => {
     fetchArticlesData(filters);
-  }, [filters]);
+  }, [filters, fetchArticlesData]);
 
   return (
     <main className="max-w-[1440px] mx-auto px-4 py-8">
