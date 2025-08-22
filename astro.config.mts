@@ -42,7 +42,7 @@ export default defineConfig({
         nodePolyfills({
           globals: { Buffer: true, global: true, process: true },
           protocolImports: true,
-          include: ['buffer', 'process', 'path', 'util', 'fs', 'os'],
+          include: ['buffer', 'process', 'path', 'util', 'os'],
         }),
         fixAstroI18nextPlugin(),
       ],
