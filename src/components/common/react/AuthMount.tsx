@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import Header from '@/components/common/react/header/Index';
 import Login from '@/components/home/react/Login';
 import { IdentityProvider } from '@/components/common/react/IdentityProvider';
 import type { Locale } from '@/types';
 import { WalletPopover } from '@/components/common/react/WalletPopover';
+import { Wallet } from '@/components/common/react/ConnectWallet';
 import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
 import ToFollowList from '@/components/home/react/ToFollowList';
@@ -14,8 +14,10 @@ import { ToastContainer } from '@/components/common/react/Toast';
 import { usePrivy } from '@privy-io/react-auth';
 
 interface AuthMountProps {
-  headerTargetId?: string;
-  loginTargetId?: string;
+  // 用户按钮挂载点 (Header 中的用户头像按钮)
+  userButtonTargetId?: string;
+  // 登录按钮挂载点 (Login 组件中的连接钱包按钮)
+  loginButtonTargetId?: string;
   // The DOM id where ShareSection should be mounted, optional
   shareTargetId?: string;
   // Props used to render ShareSection under PrivyProvider
@@ -58,26 +60,16 @@ function getLocaleFromURL(): Locale {
 }
 
 /**
- * Placeholder Header Component
- * Renders a static version of the header without wallet functionality
- * to prevent layout shift during wallet initialization
+ * 占位用户按钮 - 在钱包未就绪时显示
  */
-const PlaceholderHeader: React.FC<{ userComponent?: React.ReactNode }> = ({ userComponent }) => {
-  return (
-    <Header 
-      userComponent={
-        userComponent || (
-          <button 
-            className="p-1 hover:bg-gray-100 rounded-md transition-colors opacity-50 cursor-not-allowed"
-            disabled
-          >
-            <img src="/me.svg" alt="logo" className="w-5 h-5" />
-          </button>
-        )
-      } 
-    />
-  );
-};
+const PlaceholderUserButton: React.FC = () => (
+  <button 
+    className="p-1 hover:bg-gray-100 rounded-md transition-colors opacity-50 cursor-not-allowed"
+    disabled
+  >
+    <img src="/me.svg" alt="logo" className="w-5 h-5" />
+  </button>
+);
 
 /**
  * Placeholder Login Component
@@ -149,8 +141,8 @@ const PlaceholderToFollowList: React.FC<{ locale: Locale }> = ({ locale }) => {
  * This component is rendered inside IdentityProvider to access Privy context
  */
 const AuthMountContent: React.FC<AuthMountProps> = ({ 
-  headerTargetId = 'header-root', 
-  loginTargetId = 'login-root', 
+  userButtonTargetId = 'user-button-root', 
+  loginButtonTargetId = 'login-button-root', 
   shareTargetId = 'share-section-root', 
   shareSection, 
   authorTargetId = 'author-section-root', 
@@ -158,8 +150,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({
   toFollowTargetId = 'to-follow-root', 
   toFollowSection 
 }) => {
-  const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
-  const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
+  const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
+  const [loginButtonEl, setLoginButtonEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
   const [toFollowEl, setToFollowEl] = useState<HTMLElement | null>(null);
@@ -178,20 +170,20 @@ const AuthMountContent: React.FC<AuthMountProps> = ({
     if (typeof window === 'undefined') return null;
 
     return {
-      header: document.getElementById(headerTargetId),
-      login: document.getElementById(loginTargetId),
+      userButton: document.getElementById(userButtonTargetId),
+      loginButton: document.getElementById(loginButtonTargetId),
       share: document.getElementById(shareTargetId),
       author: document.getElementById(authorTargetId),
       toFollow: document.getElementById(toFollowTargetId),
     };
-  }, [headerTargetId, loginTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
+  }, [userButtonTargetId, loginButtonTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
 
   // Resolve DOM mount points on client
   useEffect(() => {
     if (!domElements) return;
 
-    setHeaderEl(domElements.header);
-    setLoginEl(domElements.login);
+    setUserButtonEl(domElements.userButton);
+    setLoginButtonEl(domElements.loginButton);
     setShareEl(domElements.share);
     setAuthorEl(domElements.author);
     setToFollowEl(domElements.toFollow);
@@ -205,29 +197,24 @@ const AuthMountContent: React.FC<AuthMountProps> = ({
     }
   }, [domElements]);
 
-  // Memoize user component to prevent re-renders
-  const userComponent = useMemo(
-    () => (
+  // Memoize portals to prevent unnecessary re-renders
+  // Only show real components when Privy is ready
+  const userButtonPortal = useMemo(() => {
+    if (!userButtonEl || !ready) return null;
+    return createPortal(
       <WalletPopover locale={locale}>
         <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">
           <img src="/me.svg" alt="logo" className="w-5 h-5" />
         </button>
-      </WalletPopover>
-    ),
-    [locale]
-  );
+      </WalletPopover>, 
+      userButtonEl
+    );
+  }, [userButtonEl, ready, locale]);
 
-  // Memoize portals to prevent unnecessary re-renders
-  // Only show real components when Privy is ready
-  const headerPortal = useMemo(() => {
-    if (!headerEl || !ready) return null;
-    return createPortal(<Header userComponent={userComponent} />, headerEl);
-  }, [headerEl, userComponent, ready]);
-
-  const loginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated || !ready) return null;
-    return createPortal(<Login locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale, ready]);
+  const loginButtonPortal = useMemo(() => {
+    if (!loginButtonEl || isAuthenticated || !ready) return null;
+    return createPortal(<Wallet />, loginButtonEl);
+  }, [loginButtonEl, isAuthenticated, ready]);
 
   const sharePortal = useMemo(() => {
     if (!shareEl || !shareSection || !ready) return null;
@@ -263,8 +250,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({
       <span style={{ display: 'none' }} data-auth-island="true" />
 
       {/* Render memoized portals */}
-      {headerPortal}
-      {loginPortal}
+      {userButtonPortal}
+      {loginButtonPortal}
       {sharePortal}
       {authorPortal}
       {toFollowPortal}
@@ -280,8 +267,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({
  */
 const AuthMount: React.FC<AuthMountProps> = (props) => {
   const { 
-    headerTargetId = 'header-root', 
-    loginTargetId = 'login-root', 
+    userButtonTargetId = 'user-button-root', 
+    loginButtonTargetId = 'login-button-root', 
     shareTargetId = 'share-section-root', 
     shareSection, 
     authorTargetId = 'author-section-root', 
@@ -290,8 +277,8 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     toFollowSection 
   } = props;
   
-  const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
-  const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
+  const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
+  const [loginButtonEl, setLoginButtonEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
   const [toFollowEl, setToFollowEl] = useState<HTMLElement | null>(null);
@@ -306,20 +293,20 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     if (typeof window === 'undefined') return null;
 
     return {
-      header: document.getElementById(headerTargetId),
-      login: document.getElementById(loginTargetId),
+      userButton: document.getElementById(userButtonTargetId),
+      loginButton: document.getElementById(loginButtonTargetId),
       share: document.getElementById(shareTargetId),
       author: document.getElementById(authorTargetId),
       toFollow: document.getElementById(toFollowTargetId),
     };
-  }, [headerTargetId, loginTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
+  }, [userButtonTargetId, loginButtonTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
 
   // Resolve DOM mount points on client
   useEffect(() => {
     if (!domElements) return;
 
-    setHeaderEl(domElements.header);
-    setLoginEl(domElements.login);
+    setUserButtonEl(domElements.userButton);
+    setLoginButtonEl(domElements.loginButton);
     setShareEl(domElements.share);
     setAuthorEl(domElements.author);
     setToFollowEl(domElements.toFollow);
@@ -343,27 +330,15 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
   }, []);
   
   // Memoize placeholder portals
-  const placeholderHeaderPortal = useMemo(() => {
-    if (!headerEl || privyMounted) return null;
-    return createPortal(
-      <PlaceholderHeader 
-        userComponent={
-          <button 
-            className="p-1 hover:bg-gray-100 rounded-md transition-colors opacity-50 cursor-not-allowed"
-            disabled
-          >
-            <img src="/me.svg" alt="logo" className="w-5 h-5" />
-          </button>
-        } 
-      />, 
-      headerEl
-    );
-  }, [headerEl, privyMounted]);
+  const placeholderUserButtonPortal = useMemo(() => {
+    if (!userButtonEl || privyMounted) return null;
+    return createPortal(<PlaceholderUserButton />, userButtonEl);
+  }, [userButtonEl, privyMounted]);
 
-  const placeholderLoginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated || privyMounted) return null;
-    return createPortal(<PlaceholderLogin locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale, privyMounted]);
+  const placeholderLoginButtonPortal = useMemo(() => {
+    if (!loginButtonEl || isAuthenticated || privyMounted) return null;
+    return createPortal(<PlaceholderLogin locale={locale} />, loginButtonEl);
+  }, [loginButtonEl, isAuthenticated, locale, privyMounted]);
 
   const placeholderSharePortal = useMemo(() => {
     if (!shareEl || !shareSection || privyMounted) return null;
@@ -404,8 +379,8 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
       {/* Show placeholder components immediately while Privy is loading */}
       {!privyMounted && (
         <>
-          {placeholderHeaderPortal}
-          {placeholderLoginPortal}
+          {placeholderUserButtonPortal}
+          {placeholderLoginButtonPortal}
           {placeholderSharePortal}
           {placeholderAuthorPortal}
           {placeholderToFollowPortal}

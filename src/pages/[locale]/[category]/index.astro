@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import AuthMount from '@/components/common/react/AuthMount';
+import Header from '@/components/common/react/header/Index';
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
 import CategoryPage from '@/components/pages/CategoryPage';
@@ -57,10 +58,10 @@ const { title, description } = seoContent[locale] || seoContent.us
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
-    <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
-    <div id="header-root"></div>
-    <!-- Single React Island that contains IdentityProvider and portals -->
-    <AuthMount client:load />
+    <!-- React Header - 独立加载 -->
+    <Header client:load />
+    <!-- AuthMount 只管理钱包相关按钮 -->
+    <AuthMount client:load userButtonTargetId="user-button-root" />
     
     <div class="min-h-screen bg-background mt-[97px]">
       <!-- Category Header: simplified to match visual design (breadcrumb + large title) -->

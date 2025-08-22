@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import AuthMount from '@/components/common/react/AuthMount'
+import Header from '@/components/common/react/header/Index'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import ArticleSidebar from '@/components/article/react/ArticleSidebar'
 // Removed: ShareSection direct import; it will be portaled by AuthMount
@@ -87,10 +88,12 @@ const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
   </>
 
   <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
-  <div id="header-root"></div>
-  <!-- React island: contains PrivyProvider and portals -->
+  <!-- React Header - 独立加载 -->
+  <Header client:load />
+  <!-- AuthMount 管理钱包相关按钮和分享、作者组件 -->
   <AuthMount 
     client:load 
+    userButtonTargetId="user-button-root"
     shareSection={{ locale, title: article.title, url: canonicalUrl }}
     authorSection={{
       author: {

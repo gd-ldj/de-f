@@ -8,6 +8,7 @@ import NewsGrid from '@/components/home/astro/NewsGrid.astro';
 import TrendingGrid from '@/components/home/astro/TrendingGrid.astro';
 import Footer from '@/components/common/react/footer/Index';
 import AuthMount from '@/components/common/react/AuthMount';
+import Header from '@/components/common/react/header/Index';
 
 import { changeLanguage } from "i18next";
 
@@ -36,11 +37,12 @@ const { title, description } = seoContent[locale] || seoContent.us
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
-     <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
-     <div id="header-root"></div>
-     <!-- Single React Island that contains IdentityProvider and portals -->
+     <!-- React Header - 独立加载 -->
+     <Header client:load />
+     <!-- AuthMount 只管理钱包相关按钮 -->
      <AuthMount 
        client:load 
+       userButtonTargetId="user-button-root"
        toFollowTargetId="to-follow-root"
        toFollowSection={{locale}}
      />

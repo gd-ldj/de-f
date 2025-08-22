@@ -325,7 +325,14 @@ export default function Header({ userComponent }: HeaderProps) {
             </div>
 
            {/* User Component - Can be customized for different projects */}
-            {userComponent}
+            {userComponent || (
+              <button 
+                className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
+                onClick={() => window.open('https://caaaeee.vercel.app/' + locale, '_blank')}
+              >
+                <img src="/me.svg" alt="logo" className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Mobile menu button */}
