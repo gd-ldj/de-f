@@ -8,9 +8,8 @@ interface LoginProps {
 }
 
 export default function Login({ locale }: LoginProps) {
-  console.log('🚀 ~ Login ~ locale:', locale);
   return (
-    <div className="space-y-6 px-6 border-b border-border pb-5">
+    <div className="space-y-6 px-6 border-b border-border mb-5">
       <div className="bg-white mb-6">
         <h3 className="text-lg font-medium text-primary mb-4">{t(locale, 'home.decentralizedTakes')}</h3>
         <p className="text-sm text-muted-foreground mb-4">
