@@ -7,6 +7,7 @@ import { WalletPopover } from '@/components/common/react/WalletPopover';
 import { Wallet } from '@/components/common/react/ConnectWallet';
 import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
+import { accessTokenAtom } from '@/stores';
 
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
@@ -39,7 +40,6 @@ interface AuthMountProps {
     };
     locale: Locale;
   };
-
 }
 
 /**
@@ -106,8 +106,6 @@ const PlaceholderAuthorSection: React.FC<{ author: any; locale: Locale }> = ({ a
   );
 };
 
-
-
 /**
  * AuthMountContent - Inner component that uses Privy hooks
  * This component is rendered inside IdentityProvider to access Privy context
@@ -123,6 +121,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   // Read global authentication state from jotai store
   // When isAuthenticated changes (login/logout), this component re-renders
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
+  const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
 
   // Get Privy ready state to determine when to show real components
   const { ready } = usePrivy();
@@ -151,6 +150,9 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     // Update locale from URL on mount
     setLocale(getLocaleFromURL());
 
+    // Handle logout from URL parameter (ac=q)
+    // handleLogoutFromURL();
+
     // Debug: verify hydration ran in the browser and mount points were found
     if (import.meta.env.DEV) {
       console.log('[AuthMount] hydrated. Elements found:', domElements);
@@ -172,9 +174,9 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   }, [userButtonEl, ready, locale]);
 
   const loginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated || !ready) return null;
+    if (!loginEl || isAuthenticated || !ready || accessToken) return null;
     return createPortal(<Login locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale, ready]);
+  }, [loginEl, isAuthenticated, locale, ready, accessToken]);
 
   const sharePortal = useMemo(() => {
     if (!shareEl || !shareSection || !ready) return null;
@@ -185,8 +187,6 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     if (!authorEl || !authorSection || !ready) return null;
     return createPortal(<AuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
   }, [authorEl, authorSection, ready]);
-
-
 
   return (
     <>
@@ -276,8 +276,6 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     if (!authorEl || !authorSection || privyMounted) return null;
     return createPortal(<PlaceholderAuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
   }, [authorEl, authorSection, privyMounted]);
-
-
 
   return (
     <>

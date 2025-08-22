@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { headerTexts } from './constants';
+import { STORAGE_KEYS } from '@/config/constants';
+import { toast } from '@/components/common/react/Toast';
 
 // Import icons from local assets
 import DownIcon from './assets/down.svg?url';
@@ -328,7 +330,14 @@ export default function Header({ userComponent }: HeaderProps) {
             {userComponent || (
               <button 
                 className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
-                onClick={() => window.open('https://caaaeee.vercel.app/' + locale, '_blank')}
+                onClick={() => {
+                  const storedAccessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+                  if (storedAccessToken) {
+                    window.open(`https://caaaeee.vercel.app/${locale}?t=${storedAccessToken}`, '_blank');
+                  } else {
+                    toast.error('请先登录后再访问');
+                  }
+                }}
               >
                 <img src="/me.svg" alt="logo" className="w-5 h-5" />
               </button>

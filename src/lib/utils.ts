@@ -79,3 +79,56 @@ export function shortenEmail(email: string, startLength: number): string {
 
   return `${shortenedUsername}@${domain}`
 }
+
+/**
+ * Handle logout logic when URL contains ac=q parameter
+ * Clears all authentication-related localStorage data
+ * @returns boolean - true if logout was triggered, false otherwise
+ */
+export function handleLogoutFromURL(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const acParam = urlParams.get('ac');
+    
+    // Check if ac=q parameter exists
+    if (acParam === 'q') {
+      // Clear all authentication-related localStorage data
+      localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.USER_ID);
+      localStorage.removeItem(STORAGE_KEYS.WALLET_ADDRESS);
+      localStorage.removeItem(STORAGE_KEYS.PROMOTE_CODE);
+      
+      // Clear Privy wallet plugin data
+      const privyKeys = Object.keys(localStorage).filter(key => key.startsWith('privy:'));
+      privyKeys.forEach(key => localStorage.removeItem(key));
+      
+      // Clear AppKit wallet connection data
+      const appkitKeys = Object.keys(localStorage).filter(key => key.startsWith('@appkit/'));
+      appkitKeys.forEach(key => localStorage.removeItem(key));
+      
+      // Clear other wallet-related data
+      localStorage.removeItem('isWhitelist');
+      
+      // Optional: Clear other user-related data
+      // localStorage.removeItem(STORAGE_KEYS.VISITOR_ID);
+      // localStorage.removeItem(STORAGE_KEYS.GA_CLIENT_ID);
+      // localStorage.removeItem(STORAGE_KEYS.USER_BEHAVIOR_DATA);
+      
+      console.log('[Logout] Cleared authentication data due to ac=q parameter');
+      
+      // Remove the ac parameter from URL to clean up
+      urlParams.delete('ac');
+      const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+      window.history.replaceState({}, '', newUrl);
+      
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('[Logout] Error handling logout from URL:', error);
+    return false;
+  }
+}
