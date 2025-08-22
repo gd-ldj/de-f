@@ -40,7 +40,7 @@ function formatDate(dateString: string): string {
 <div class="space-y-6">
   <div class="px-6">
     <h4 class="font-medium text-foreground mb-4">{t(locale, 'common.recommendedTopics')}</h4>
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-3">
       {topics.map((topic, index) => (
         <a
           href={topic.url}
@@ -65,9 +65,9 @@ function formatDate(dateString: string): string {
           >
             <div class="flex-1 pr-4">
               <div class="flex items-start space-x-3">
-                <span class="text-primary font-medium text-lg leading-none mt-1">{index + 1}</span>
+                <span class="text-primary font-medium text-[12px] leading-none mt-1">{index + 1}</span>
                 <div class="flex-1">
-                  <h5 class="text-foreground font-medium text-base leading-tight mb-2 group-hover:text-primary transition-colors">
+                  <h5 class="text-foreground font-medium text-[14px] leading-tight mb-2 group-hover:text-primary transition-colors">
                     {article.title}
                   </h5>
                   <div class="flex items-center text-xs text-muted-foreground">

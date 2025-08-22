@@ -10,17 +10,11 @@ interface LoginProps {
 
 export default function Login({ locale }: LoginProps) {
   return (
-    <motion.div 
-      className="space-y-6 px-6 border-b border-border mb-5" 
-      initial={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} 
-      animate={{ opacity: 1, maxHeight: '500px', overflow: 'visible' }} 
-      exit={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} 
-      transition={{ duration: 0.8, ease: 'easeInOut' }}
-    >
+    <motion.div className="space-y-6 px-6 border-b border-border mb-5" initial={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} animate={{ opacity: 1, maxHeight: '500px', overflow: 'visible' }} exit={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} transition={{ duration: 0.8, ease: 'easeInOut' }}>
       <div className="bg-white mb-6">
-        <h3 className="text-lg font-medium text-primary mb-4">{t(locale, 'home.decentralizedTakes')}</h3>
+        <h3 className="text-[30px] font-medium text-primary mb-4">{t(locale, 'home.decentralizedTakes')}</h3>
 
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-[18px] text-muted-foreground mb-4">
           {t(locale, 'home.loginFor')} <span className="font-medium text-foreground">{t(locale, 'home.deTake')}</span>
           <br />
           {t(locale, 'home.getStartedWith')}
