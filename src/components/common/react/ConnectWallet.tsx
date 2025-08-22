@@ -11,14 +11,21 @@ const ButtonAuthentication = () => {
   // Early return with loading state when not ready
   if (!ready) {
     return (
-      <button disabled className="opacity-50 cursor-not-allowed">
+      <button 
+        disabled 
+        className="w-full bg-primary text-primary-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 opacity-50 cursor-not-allowed"
+      >
         Loading...
       </button>
     );
   }
 
   return (
-    <button disabled={disableInteractions} onClick={shouldShowLogin ? login : logout}>
+    <button 
+      disabled={disableInteractions} 
+      onClick={shouldShowLogin ? login : logout}
+      className="w-full bg-primary text-primary-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
       {shouldShowLogin ? <>Continue with Wallet</> : <>Continued</>}
     </button>
   );

@@ -9,6 +9,7 @@ import TrendingGrid from '@/components/home/astro/TrendingGrid.astro';
 import Footer from '@/components/common/react/footer/Index';
 import AuthMount from '@/components/common/react/AuthMount';
 import Header from '@/components/common/react/header/Index';
+import ToFollowList from '@/components/home/react/ToFollowList';
 
 import { changeLanguage } from "i18next";
 
@@ -43,8 +44,6 @@ const { title, description } = seoContent[locale] || seoContent.us
      <AuthMount 
        client:load 
        userButtonTargetId="user-button-root"
-       toFollowTargetId="to-follow-root"
-       toFollowSection={{locale}}
      />
      <div class="min-h-screen bg-white mt-[97px]">
         
@@ -52,8 +51,8 @@ const { title, description } = seoContent[locale] || seoContent.us
           <div class="grid grid-cols-12">
             <div class="col-span-3 space-y-6 py-5 border border-t-0 border-r-0 border-border">
               <Sidebar />
-              <!-- React mount point for ToFollowList -->
-              <div id="to-follow-root"></div>
+              <!-- ToFollowList 组件直接渲染 -->
+              <ToFollowList client:load locale={locale} />
             </div>
             <div class="col-span-6 border border-t-0 border-border py-5 px-6">
               <MainContent locale={locale} />

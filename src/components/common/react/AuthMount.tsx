@@ -7,7 +7,7 @@ import { WalletPopover } from '@/components/common/react/WalletPopover';
 import { Wallet } from '@/components/common/react/ConnectWallet';
 import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
-import ToFollowList from '@/components/home/react/ToFollowList';
+
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
 import { ToastContainer } from '@/components/common/react/Toast';
@@ -39,12 +39,7 @@ interface AuthMountProps {
     };
     locale: Locale;
   };
-  // The DOM id where ToFollowList should be mounted, optional
-  toFollowTargetId?: string;
-  // Props used to render ToFollowList under PrivyProvider
-  toFollowSection?: {
-    locale: Locale;
-  };
+
 }
 
 /**
@@ -111,37 +106,17 @@ const PlaceholderAuthorSection: React.FC<{ author: any; locale: Locale }> = ({ a
   );
 };
 
-/**
- * Placeholder ToFollowList Component
- * Shows a static follow list during wallet initialization
- */
-const PlaceholderToFollowList: React.FC<{ locale: Locale }> = ({ locale }) => {
-  return (
-    <div className="space-y-3 p-4">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
-          <div className="flex-1">
-            <div className="h-3 w-20 bg-gray-200 rounded animate-pulse mb-1"></div>
-            <div className="h-2 w-16 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-          <div className="h-6 w-16 bg-gray-200 rounded animate-pulse"></div>
-        </div>
-      ))}
-    </div>
-  );
-};
+
 
 /**
  * AuthMountContent - Inner component that uses Privy hooks
  * This component is rendered inside IdentityProvider to access Privy context
  */
-const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareSection, authorTargetId = 'author-section-root', authorSection, toFollowTargetId = 'to-follow-root', toFollowSection }) => {
+const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareSection, authorTargetId = 'author-section-root', authorSection }) => {
   const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
   const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
-  const [toFollowEl, setToFollowEl] = useState<HTMLElement | null>(null);
   // Track locale for children that require it (Login, WalletPopover)
   const [locale, setLocale] = useState<Locale>('us');
 
@@ -161,9 +136,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       login: document.getElementById(loginTargetId),
       share: document.getElementById(shareTargetId),
       author: document.getElementById(authorTargetId),
-      toFollow: document.getElementById(toFollowTargetId),
     };
-  }, [userButtonTargetId, loginTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
+  }, [userButtonTargetId, loginTargetId, shareTargetId, authorTargetId]);
 
   // Resolve DOM mount points on client
   useEffect(() => {
@@ -173,7 +147,6 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     setLoginEl(domElements.login);
     setShareEl(domElements.share);
     setAuthorEl(domElements.author);
-    setToFollowEl(domElements.toFollow);
 
     // Update locale from URL on mount
     setLocale(getLocaleFromURL());
@@ -213,10 +186,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     return createPortal(<AuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
   }, [authorEl, authorSection, ready]);
 
-  const toFollowPortal = useMemo(() => {
-    if (!toFollowEl || !toFollowSection || !ready) return null;
-    return createPortal(<ToFollowList locale={toFollowSection.locale} />, toFollowEl);
-  }, [toFollowEl, toFollowSection, ready]);
+
 
   return (
     <>
@@ -228,7 +198,6 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       {loginPortal}
       {sharePortal}
       {authorPortal}
-      {toFollowPortal}
 
       {/* Global Toasts */}
       <ToastContainer />
@@ -240,13 +209,12 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
  * Main AuthMount component that handles placeholder rendering and IdentityProvider
  */
 const AuthMount: React.FC<AuthMountProps> = (props) => {
-  const { userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareSection, authorTargetId = 'author-section-root', authorSection, toFollowTargetId = 'to-follow-root', toFollowSection } = props;
+  const { userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareSection, authorTargetId = 'author-section-root', authorSection } = props;
 
   const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
   const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
-  const [toFollowEl, setToFollowEl] = useState<HTMLElement | null>(null);
   const [locale, setLocale] = useState<Locale>('us');
   const [privyMounted, setPrivyMounted] = useState(false);
 
@@ -262,9 +230,8 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
       login: document.getElementById(loginTargetId),
       share: document.getElementById(shareTargetId),
       author: document.getElementById(authorTargetId),
-      toFollow: document.getElementById(toFollowTargetId),
     };
-  }, [userButtonTargetId, loginTargetId, shareTargetId, authorTargetId, toFollowTargetId]);
+  }, [userButtonTargetId, loginTargetId, shareTargetId, authorTargetId]);
 
   // Resolve DOM mount points on client
   useEffect(() => {
@@ -274,7 +241,6 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     setLoginEl(domElements.login);
     setShareEl(domElements.share);
     setAuthorEl(domElements.author);
-    setToFollowEl(domElements.toFollow);
 
     // Update locale from URL on mount
     setLocale(getLocaleFromURL());
@@ -315,10 +281,7 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     return createPortal(<PlaceholderAuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
   }, [authorEl, authorSection, privyMounted]);
 
-  const placeholderToFollowPortal = useMemo(() => {
-    if (!toFollowEl || !toFollowSection || privyMounted) return null;
-    return createPortal(<PlaceholderToFollowList locale={toFollowSection.locale} />, toFollowEl);
-  }, [toFollowEl, toFollowSection, privyMounted]);
+
 
   return (
     <>
@@ -332,7 +295,6 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
           {placeholderLoginPortal}
           {placeholderSharePortal}
           {placeholderAuthorPortal}
-          {placeholderToFollowPortal}
         </>
       )}
 

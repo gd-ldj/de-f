@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Wallet } from '@/components/common/react/ConnectWallet';
 import type { Locale } from '@/types';
 import { t } from '@/lib/i18n';
@@ -9,9 +10,10 @@ interface LoginProps {
 
 export default function Login({ locale }: LoginProps) {
   return (
-    <div className="space-y-6 px-6 border-b border-border mb-5">
+    <motion.div className="space-y-6 px-6 border-b border-border mb-5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 1 }}>
       <div className="bg-white mb-6">
         <h3 className="text-lg font-medium text-primary mb-4">{t(locale, 'home.decentralizedTakes')}</h3>
+
         <p className="text-sm text-muted-foreground mb-4">
           {t(locale, 'home.loginFor')} <span className="font-medium text-foreground">{t(locale, 'home.deTake')}</span>
           <br />
@@ -20,19 +22,21 @@ export default function Login({ locale }: LoginProps) {
         </p>
 
         <div className="space-y-3">
-          <button className="w-full bg-primary text-primary-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 hover:bg-primary/90">
+          <div>
             <Wallet />
-          </button>
+          </div>
 
           {/*
            * You can re-enable the email option when it's ready
-           * <button className="w-full border border-border text-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 hover:bg-accent">
+           * <button
+           *   className="w-full border border-border text-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 hover:bg-accent"
+           * >
            *   <Mail className="w-4 h-4" />
            *   <span>Continue with Email</span>
            * </button>
            */}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
