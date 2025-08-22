@@ -15,9 +15,9 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api
  * @returns Promise with articles response containing ApiArticle[]
  */
 export async function fetchArticles(
-  locale: Locale, 
-  page: number = 1, 
-  limit: number = 10, 
+  locale: Locale,
+  page: number = 1,
+  limit: number = 10,
   options?: {
     category?: string;
     business_type_name?: string;
@@ -26,20 +26,24 @@ export async function fetchArticles(
     author_name?: string;
     order_by?: 'Latest' | 'Popular' | 'Trending';
     cursor?: string;
+    page?: number;
   }
-): Promise<ArticlesResponse | null > {
+): Promise<ArticlesResponse | null> {
   try {
-
     // Build query parameters manually to avoid encoding commas in tag parameter
     const queryParts: string[] = [];
-    
+
     // Add locale parameter
     const localeParam = locale === 'us' ? 'en' : 'zh';
     queryParts.push(`locale=${encodeURIComponent(localeParam)}`);
-    
+
     // Add limit
     queryParts.push(`limit=${encodeURIComponent(limit.toString())}`);
-    
+
+    // Add page parameter (use options.page if provided, otherwise use the page parameter)
+    const pageNumber = options?.page || page;
+    queryParts.push(`page=${encodeURIComponent(pageNumber.toString())}`);
+
     // Add optional filtering parameters
     if (options?.business_type_name) {
       queryParts.push(`business_type_name=${encodeURIComponent(options.business_type_name)}`);
@@ -61,7 +65,7 @@ export async function fetchArticles(
     if (options?.cursor) {
       queryParts.push(`cursor=${encodeURIComponent(options.cursor)}`);
     }
-    
+
     // Legacy category support (map to business_type_name)
     if (options?.category && !options?.business_type_name) {
       queryParts.push(`business_type_name=${encodeURIComponent(options.category)}`);
@@ -82,13 +86,13 @@ export async function fetchArticles(
 
     if (result.code === 2000 && result.data) {
       // Transform backend response to our ArticlesResponse format
-      const { list, pagination } = result.data;
+      const { list, pagination, next } = result.data;
       return {
         articles: list || [], // ApiArticle[] from backend
         total: pagination?.total || 0,
         page: page, // Keep for compatibility
         limit: pagination?.limit || limit,
-        hasMore: pagination?.has_more || false,
+        hasMore: pagination?.next || next || false,
         nextCursor: pagination?.next_cursor || null,
       };
     } else {
@@ -131,7 +135,7 @@ export async function fetchArticle(slug: string, locale?: Locale, category?: str
     }
   } catch (error) {
     console.error('Error fetching article:', error);
-     return null;
+    return null;
   }
 }
 
