@@ -25,6 +25,9 @@ export const headerTexts = {
       switchLanguage: 'Switch Language',
       openMenu: 'Open menu'
     },
+    messages: {
+      pleaseLoginFirst: 'Please login first to access'
+    },
     dropdown: {
       article: 'Article'
     }
@@ -53,6 +56,9 @@ export const headerTexts = {
       search: '搜索',
       switchLanguage: '切换语言',
       openMenu: '打开菜单'
+    },
+    messages: {
+      pleaseLoginFirst: '请先登录后再访问'
     },
     dropdown: {
       article: '文章'

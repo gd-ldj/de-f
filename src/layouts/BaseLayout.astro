@@ -134,13 +134,13 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
       document.addEventListener('DOMContentLoaded', async () => {
         try {
           // Handle logout from URL parameter first
-          const { handleLogoutFromURL } = await import('/src/lib/utils.js')
+          const { handleLogoutFromURL } = await import('../lib/utils.js')
           setTimeout(() => {
             handleLogoutFromURL()
           }, 1000);
           
           // Dynamically import analytics module
-          const { initializeAnalytics } = await import('/src/lib/analytics.js')
+          const { initializeAnalytics } = await import('../lib/analytics.js')
           const analytics = await initializeAnalytics()
           
           // Make analytics available globally for debugging

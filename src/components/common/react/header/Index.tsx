@@ -335,7 +335,7 @@ export default function Header({ userComponent }: HeaderProps) {
                   if (storedAccessToken) {
                     window.open(`https://caaaeee.vercel.app/${locale}?t=${storedAccessToken}`, '_blank');
                   } else {
-                    toast.error('请先登录后再访问');
+                    toast.error(texts.messages.pleaseLoginFirst);
                   }
                 }}
               >
