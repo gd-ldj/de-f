@@ -15,7 +15,7 @@ const { locale } = Astro.props as Props
  * Keeps UI fast and SEO friendly.
  */
 const homeData = await fetchHomePageData()
-const articles = homeData['news_all']
+const articles = homeData?.['news_all'] || []
 
 // Static category nav (URLs localized)
 const newsCategories = [
@@ -75,7 +75,7 @@ const formatDate = (dateString: string) => {
     {articles.map((article) => (
       <ArticleLink
         slug={article.slug}
-        category="news"
+        business="news"
         locale={locale}
         class="bg-white rounded border border-border overflow-hidden hover:shadow-md transition-shadow group"
       >

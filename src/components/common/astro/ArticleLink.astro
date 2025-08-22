@@ -5,13 +5,13 @@ import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 interface Props {
   slug: string
   locale: Locale
-  category: string
+  business: string
   children?: any
   class?: string
   onClick?: string
 }
 
-const { slug, locale, category, class: className = '', onClick } = Astro.props
+const { slug, locale, business, class: className = '', onClick } = Astro.props
 
 /**
  * Generate article URL with promote code from cookies (SSR-friendly)
@@ -20,7 +20,7 @@ const { slug, locale, category, class: className = '', onClick } = Astro.props
 const getArticleUrl = (slug: string) => {
   // Get promote code from cookies (SSR-compatible) or use default
   const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
-  return `/${locale}/${category}/${slug}-${promoteCode}`
+  return `/${locale}/${business.toLowerCase()}/${slug}-${promoteCode}`
 }
 
 const articleUrl = getArticleUrl(slug)

@@ -85,7 +85,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           <ArticleLink 
             slug={featuredArticle.slug}
             locale={locale}
-            category="news"
+            business="news"
           >
             {featuredArticle.title}
           </ArticleLink>
@@ -102,7 +102,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           <ArticleLink 
             slug={featuredArticle.slug}
             locale={locale}
-            category="news"
+            business="news"
           >
             <img
               src={featuredArticle.img_url || '/placeholder.svg'}
@@ -131,7 +131,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           <ArticleLink 
             slug={article.slug}
             locale={locale}
-            category="news"
+            business="news"
           >
             {article.title}
           </ArticleLink>

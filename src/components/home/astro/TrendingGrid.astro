@@ -16,7 +16,7 @@ const { locale } = Astro.props as Props
  * Uses mostread articles from the API
  */
 const homeData = await fetchHomePageData()
-const trendingArticles = homeData.mostread
+const trendingArticles = homeData?.mostread || []
 ---
 
 <div class="space-y-6">
@@ -30,7 +30,7 @@ const trendingArticles = homeData.mostread
         {trendingArticles.slice(0, 2).map((article, index) => (
           <ArticleLink
             slug={article.slug}
-            category="news"
+            business="news"
             locale={locale}
             class="block group hover:scale-[1.02] transition-transform duration-300"
           >
@@ -108,7 +108,7 @@ const trendingArticles = homeData.mostread
         <!-- Top large card with image -->
         <ArticleLink
           slug={trendingArticles[2].slug}
-          category="news"
+          business="news"
           locale={locale}
           class="block group hover:scale-[1.02] transition-transform duration-300 p-4"
         >
@@ -184,7 +184,7 @@ const trendingArticles = homeData.mostread
           {trendingArticles.slice(3, 5).map((article, index) => (
             <ArticleLink
               slug={article.slug}
-              category="news"
+              business="news"
               locale={locale}
               class="block group transition-colors duration-300 p-0"
             >
