@@ -8,10 +8,42 @@ export interface Props {
   description?: string
   locale: 'us' | 'asia'
   canonicalUrl?: string
+  // SEO 和社交分享优化
+  ogImage?: string
+  ogImageAlt?: string
+  ogType?: 'website' | 'article'
+  twitterCard?: 'summary' | 'summary_large_image'
+  author?: string
+  publishedTime?: string
+  modifiedTime?: string
+  keywords?: string[]
+  articleSection?: string
 }
 
-const { title, description = 'DeTake - Crypto News and Analysis', locale, canonicalUrl } = Astro.props
+const { 
+  title, 
+  description = 'DeTake - Crypto News and Analysis', 
+  locale, 
+  canonicalUrl,
+  ogImage,
+  ogImageAlt,
+  ogType = 'website',
+  twitterCard = 'summary_large_image',
+  author,
+  publishedTime,
+  modifiedTime,
+  keywords,
+  articleSection
+} = Astro.props
+
 const currentUrl = canonicalUrl || Astro.url.href
+
+// 默认的 OG 图片
+const defaultOgImage = `${Astro.site}og-default.png`
+const finalOgImage = ogImage || defaultOgImage
+
+// 生成关键词元标签
+const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, DeFi, news, analysis'
 ---
 
 <!DOCTYPE html>
@@ -25,15 +57,46 @@ const currentUrl = canonicalUrl || Astro.url.href
     
     <!-- SEO Meta Tags -->
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywordsContent} />
+    {author && <meta name="author" content={author} />}
+    
+    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={currentUrl} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="DeTake" />
+    <meta property="og:image" content={finalOgImage} />
+    {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={locale === 'us' ? 'en_US' : 'zh_CN'} />
     
-    <meta name="twitter:card" content="summary_large_image" />
+    {/* 文章特定的 Open Graph 标签 */}
+    {ogType === 'article' && (
+      <>
+        {author && <meta property="article:author" content={author} />}
+        {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+        {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+        {articleSection && <meta property="article:section" content={articleSection} />}
+        {keywords && keywords.map(keyword => (
+          <meta property="article:tag" content={keyword} />
+        ))}
+      </>
+    )}
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:site" content="@DeTakeOfficial" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={finalOgImage} />
+    {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
+    
+    <!-- 其他 SEO 优化 -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="image_src" href={finalOgImage} />
     
     <!-- Canonical URL -->
     <link rel="canonical" href={currentUrl} />
