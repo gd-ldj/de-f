@@ -1,5 +1,6 @@
 ---
 import i18next from 'i18next';
+import AnalyticsProvider from '../components/common/AnalyticsProvider';
 
 import '../styles/global.css'
 
@@ -127,6 +128,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     <div class="relative flex min-h-screen flex-col">
       <slot />
     </div>
+    <AnalyticsProvider client:load />
     
     <script is:inline>
       //logout
@@ -172,24 +174,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
       })
     </script>
 
-    <!-- Analytics and Tracking Initialization -->
-    <script is:inline>
-      // Initialize analytics system on page load
-      document.addEventListener('DOMContentLoaded', async () => {
-        try {
-          // Dynamically import analytics module - use relative path without extension for better compatibility
-          const { initializeAnalytics } = await import('/src/lib/analytics.js')
-          const analytics = await initializeAnalytics()
-          
-          // Make analytics available globally for debugging
-          window.detakeAnalytics = analytics
-          
-          console.log('[DeTake] Analytics system initialized')
-        } catch (error) {
-          console.error('[DeTake] Failed to initialize analytics:', error)
-        }
-      })
-    </script>
+    <!-- Analytics initialization is now handled by AnalyticsProvider React component -->
     
     <!-- Global ArticleLink management script -->
     <script is:inline>
