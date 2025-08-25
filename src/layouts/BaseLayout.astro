@@ -177,8 +177,8 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
       // Initialize analytics system on page load
       document.addEventListener('DOMContentLoaded', async () => {
         try {
-          // Dynamically import analytics module
-          const { initializeAnalytics } = await import('../lib/analytics.js')
+          // Dynamically import analytics module - use relative path without extension for better compatibility
+          const { initializeAnalytics } = await import('/src/lib/analytics.js')
           const analytics = await initializeAnalytics()
           
           // Make analytics available globally for debugging
