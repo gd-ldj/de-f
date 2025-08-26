@@ -1,8 +1,8 @@
 import type { Locale } from '@/types';
 
-// Import translation files directly
-import usTranslations from '../../public/locales/us/translation.json';
-import asiaTranslations from '../../public/locales/asia/translation.json';
+// Import translation files directly from src (avoid importing from public)
+import usTranslations from '@/locales/us/translation.json';
+import asiaTranslations from '@/locales/asia/translation.json';
 
 /**
  * Translation data type
@@ -16,7 +16,7 @@ interface TranslationData {
  */
 const translations: Record<Locale, TranslationData> = {
   us: usTranslations as TranslationData,
-  asia: asiaTranslations as TranslationData
+  asia: asiaTranslations as TranslationData,
 };
 
 /**
@@ -25,7 +25,7 @@ const translations: Record<Locale, TranslationData> = {
 const getNestedValue = (obj: TranslationData, path: string): string => {
   const keys = path.split('.');
   let value: any = obj;
-  
+
   for (const key of keys) {
     if (value && typeof value === 'object' && key in value) {
       value = value[key];
@@ -33,7 +33,7 @@ const getNestedValue = (obj: TranslationData, path: string): string => {
       return path; // Return the key if not found
     }
   }
-  
+
   return typeof value === 'string' ? value : path;
 };
 
@@ -47,12 +47,12 @@ const getNestedValue = (obj: TranslationData, path: string): string => {
 export const t = (locale: Locale, key: string, fallback?: string): string => {
   const localeData = translations[locale] || translations.us;
   const translatedValue = getNestedValue(localeData, key);
-  
+
   // If translation found, return it
   if (translatedValue !== key) {
     return translatedValue;
   }
-  
+
   // Try fallback locale (us) if current locale failed
   if (locale !== 'us') {
     const fallbackValue = getNestedValue(translations.us, key);
@@ -60,7 +60,7 @@ export const t = (locale: Locale, key: string, fallback?: string): string => {
       return fallbackValue;
     }
   }
-  
+
   // Return provided fallback or the key itself
   return fallback || key;
 };
@@ -72,6 +72,6 @@ export const t = (locale: Locale, key: string, fallback?: string): string => {
  */
 export const useTranslation = (locale: Locale) => {
   return {
-    t: (key: string, fallback?: string) => t(locale, key, fallback)
+    t: (key: string, fallback?: string) => t(locale, key, fallback),
   };
 };

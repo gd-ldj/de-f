@@ -341,6 +341,7 @@ export default function Header({ userComponent }: HeaderProps) {
               >
                 <img src="/me.svg" alt="logo" className="w-5 h-5" />
               </button>
+              // <div id="user-button-root" className="flex items-center" />
             )}
           </div>
 

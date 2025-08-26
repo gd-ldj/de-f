@@ -200,7 +200,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       {authorPortal}
 
       {/* Global Toasts */}
-      <ToastContainer />
+      {/* Removed duplicate ToastContainer to avoid multiple portal mounts */}
+      {/* <ToastContainer /> */}
     </>
   );
 };

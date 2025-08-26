@@ -7,7 +7,7 @@ import { t } from '@/lib/i18n';
 import { getLocaleFromPath } from '@/lib/utils';
 import { useAuth } from '@/lib/useAuth';
 import { followAuthor } from '@/api/users';
-import { toast, ToastContainer } from '@/components/common/react/Toast';
+import { toast } from '@/components/common/react/Toast';
 import { AvatarSkeleton, TextSkeleton } from '@/components/common/react/Skeleton';
 
 interface ToFollowListProps {
@@ -171,7 +171,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
           </div>
         </div>
       </div>
-      <ToastContainer />
+      {/* ToastContainer is provided globally in AuthMount; no local container here */}
     </>
   );
 }
