@@ -181,7 +181,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     </script>
     <div style="display:none" data-analytics-event='{"type":"USER_ENGAGEMENT","data":{"source":"ssr-dom","ts":0}}'></div>
 
-    <AnalyticsProvider client:load />
+    <AnalyticsProvider client:only="react" />
     
     <script is:inline>
       //logout

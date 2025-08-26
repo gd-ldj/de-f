@@ -178,15 +178,24 @@ const ToastItem: React.FC<ToastState & { onDismiss: (id: string) => void }> = ({
  */
 export const ToastContainer: React.FC = () => {
   const [toasts, setToasts] = useState<ToastState[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     toastListeners.push(setToasts);
     return () => {
       toastListeners = toastListeners.filter(listener => listener !== setToasts);
     };
   }, []);
 
-  if (typeof document === 'undefined') return null;
+  // Return consistent structure for SSR and client
+  if (!isClient) {
+    return (
+      <div className="fixed top-20 right-4 z-50 flex flex-col space-y-3 pointer-events-none max-h-screen overflow-hidden">
+        {/* Empty during SSR */}
+      </div>
+    );
+  }
 
   return createPortal(
     <div className="fixed top-20 right-4 z-50 flex flex-col space-y-3 pointer-events-none max-h-screen overflow-hidden">

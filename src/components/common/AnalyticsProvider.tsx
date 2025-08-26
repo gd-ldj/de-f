@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { initializeAnalytics } from '../../lib/analytics';
 
 // ---- Types (module-level) ----
@@ -21,6 +21,11 @@ declare global {
  *  - Observing DOM mutations to capture late/hydrated elements
  */
 export default function AnalyticsProvider({ children }: { children?: React.ReactNode }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   /**
    * Parse an analytics event from a DOM element's data-analytics-event attribute.
    * Returns null if parsing fails or if attribute is missing.
@@ -67,6 +72,8 @@ export default function AnalyticsProvider({ children }: { children?: React.React
   };
 
   useEffect(() => {
+    if (!isClient) return;
+    
     let observer: MutationObserver | null = null;
 
     // Initialize analytics system on component mount
@@ -137,7 +144,7 @@ export default function AnalyticsProvider({ children }: { children?: React.React
         // no-op
       }
     };
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, [isClient]); // Run when client-side hydration is complete
 
   return children ? <>{children}</> : null;
 }
