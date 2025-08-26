@@ -1,6 +1,7 @@
 ---
 import i18next from 'i18next';
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
+import { Analytics } from '@vercel/analytics/react';
 
 import '../styles/global.css'
 
@@ -182,6 +183,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     <div style="display:none" data-analytics-event='{"type":"USER_ENGAGEMENT","data":{"source":"ssr-dom","ts":0}}'></div>
 
     <AnalyticsProvider client:only="react" />
+    <Analytics client:only="react" />
     
     <script is:inline>
       //logout
