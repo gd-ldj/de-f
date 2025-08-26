@@ -39,7 +39,7 @@ export default function Footer({}: FooterProps) {
   const texts = footerTexts[locale] || footerTexts.us;
 
   return (
-    <footer className="bg-gray-900 text-white mt-16">
+    <footer className="bg-gray-900 text-white">
       <div className="max-w-[1440px] mx-auto pb-12">
         <div className="grid grid-cols-2 gap-12">
           <div className="p-12 pl-12">
@@ -47,14 +47,8 @@ export default function Footer({}: FooterProps) {
             <h4 className="text-xl font-medium mb-4">{texts.newsletter.subtitle}</h4>
             <p className="text-white/60 mb-6">{texts.newsletter.description}</p>
             <div className="flex">
-              <input 
-                type="email" 
-                placeholder={texts.newsletter.emailPlaceholder} 
-                className="flex-1 px-4 py-2 bg-white !text-[#909399] border border-gray-700 rounded-l focus:outline-none focus:border-teal-500" 
-              />
-              <button className="bg-teal-500 px-6 py-2 rounded-r hover:bg-[#06A17E] flex items-center">
-                {texts.newsletter.subscribeButton}
-              </button>
+              <input type="email" placeholder={texts.newsletter.emailPlaceholder} className="flex-1 px-4 py-2 bg-white !text-[#909399] border border-gray-700 rounded-l focus:outline-none focus:border-teal-500" />
+              <button className="bg-teal-500 px-6 py-2 rounded-r hover:bg-[#06A17E] flex items-center">{texts.newsletter.subscribeButton}</button>
             </div>
           </div>
 

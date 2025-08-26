@@ -126,5 +126,16 @@
     "copied": "已复制",
     "disconnect": "断开连接"
   },
+  "research": {
+    "title": "研究报告",
+    "subtitle": "不可错过的投资洞察。",
+    "moreResearch": "更多研究",
+    "readReport": "阅读研究报告",
+    "blockworksResearch": "Blockworks 研究",
+    "telegramTradingBots": "Telegram 交易机器人：无国界的 Robinhood",
+    "tradingBotsDescription": "Telegram 交易机器人在高度投机性代币发行和零售主导的模因币市场中找到了主要利基，许多功能专门针对代币狙击和跟单交易策略量身定制。",
+    "authorDanny": "Danny K",
+    "authorJack": "JACK KUBINEC"
+  },
   "test": "测试"
 }

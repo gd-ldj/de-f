@@ -4,8 +4,9 @@ import type { Locale } from '@/types'
 import Sidebar from '@/components/home/astro/Sidebar.astro';
 import MainContent from '@/components/home/astro/MainContent.astro';
 import RightSidebar from '@/components/home/astro/RightSidebar.astro';
-import NewsGrid from '@/components/home/astro/NewsGrid.astro';
-import TrendingGrid from '@/components/home/astro/TrendingGrid.astro';
+import NewsSection from '@/components/home/astro/NewsSection.astro';
+import TrendingSection from '@/components/home/astro/TrendingSection.astro';
+import ResearchSection from '@/components/home/astro/ResearchSection.astro';
 import Footer from '@/components/common/react/footer/Index';
 import AuthMount from '@/components/common/react/AuthMount';
 import Header from '@/components/common/react/header/Index';
@@ -63,8 +64,9 @@ const { title, description } = seoContent[locale] || seoContent.us
               <RightSidebar />
             </div>
           </div>
-          <!-- <NewsGrid locale={locale} /> -->
-          <!-- <TrendingGrid /> -->
+          <!-- <NewsSection locale={locale} />
+          <TrendingSection />
+          <ResearchSection locale={locale} /> -->
         </div>
         <Footer client:load />
       </div>

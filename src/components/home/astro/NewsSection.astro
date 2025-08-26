@@ -1,0 +1,24 @@
+---
+import { fetchHomePageData } from '@/api/articles'
+import type { Locale } from '@/types'
+import NewsGrid from '@/components/home/react/NewsGrid'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props as Props
+
+/**
+ * Fetch home page data for the news grid
+ * Provides initial data for the React component
+ */
+const homeData = await fetchHomePageData()
+const articles = homeData?.['news_all'] || []
+---
+
+<NewsGrid 
+  initialArticles={articles} 
+  locale={locale}
+  client:load
+/>

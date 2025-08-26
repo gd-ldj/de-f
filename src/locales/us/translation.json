@@ -37,7 +37,7 @@
     "mostRead": "Most Read",
     "trending": "Trending",
     "recommendedTopics": "Recommended Topics",
-    "moreFromNews": "More from News",
+    "moreFromNews": "More From News",
     "copy": "Copy",
     "copied": "Copied",
     "all": "All",
@@ -125,6 +125,17 @@
     "copy": "Copy",
     "copied": "Copied",
     "disconnect": "Disconnect"
+  },
+  "research": {
+    "title": "Research",
+    "subtitle": "Insights you can't invest without.",
+    "moreResearch": "More Research",
+    "readReport": "Read research report",
+    "blockworksResearch": "Blockworks Research",
+    "telegramTradingBots": "Telegram Trading Bots: Robinhood Without Borders",
+    "tradingBotsDescription": "Telegram trading bots have found their primary niche in highly speculative token launches and retail-dominated memecoin markets, with many features specifically tailored to token sniping and copy-trading strategies.",
+    "authorDanny": "Danny K",
+    "authorJack": "JACK KUBINEC"
   },
   "test": "test"
 }
