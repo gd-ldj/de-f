@@ -5,7 +5,7 @@ import type { WalletLoginRequest, WalletLoginResponse, WalletLoginData } from '.
  */
 // Use import.meta.env for browser-safe environment variables in Vite/Astro
 // Note: Using process.env in the browser bundle causes "process is not defined"; import.meta.env is the correct approach
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com/'
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com';
 
 /**
  * Wallet login function

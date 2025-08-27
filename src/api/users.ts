@@ -4,7 +4,7 @@ import type { UserPersonalInfo, UserPersonalInfoResponse } from '../types'
  * API configuration
  */
 // Use import.meta.env for browser-safe environment variables in Vite/Astro
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com/';
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com';
 
 /**
  * Follow author API response type
