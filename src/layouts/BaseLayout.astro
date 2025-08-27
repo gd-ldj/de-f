@@ -322,14 +322,13 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     <script is:inline>
       // 只在生产环境加载 Cloudflare Analytics，避免本地开发跨域问题
       (function() {
-        const isProduction = import.meta.env.PROD;
         const isLocalhost = typeof window !== 'undefined' && (
           window.location.hostname === 'localhost' ||
           window.location.hostname === '127.0.0.1' ||
           window.location.hostname.startsWith('192.168.')
         );
 
-        if (isProduction && !isLocalhost) {
+        if (!isLocalhost) {
           const script = document.createElement('script');
           script.defer = true;
           script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
