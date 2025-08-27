@@ -1,6 +1,6 @@
 ---
 import type { Locale } from '@/types'
-import { t } from '@/lib/i18n'
+import i18next, { t } from 'i18next'
 
 interface Props {
   currentPage: number
@@ -11,6 +11,9 @@ interface Props {
 }
 
 const { currentPage, totalItems, itemsPerPage, locale, baseUrl } = Astro.props
+
+// Set the language for i18next
+i18next.changeLanguage(locale)
 
 /**
  * Calculate pagination data based on current state
@@ -91,7 +94,7 @@ const getPageUrl = (page: number) => {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
-        {t(locale, 'common.prev')}
+        {t('common.prev')}
       </a>
     ) : (
       <button 
@@ -101,7 +104,7 @@ const getPageUrl = (page: number) => {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
-        {t(locale, 'common.prev')}
+        {t('common.prev')}
       </button>
     )}
     
@@ -131,7 +134,7 @@ const getPageUrl = (page: number) => {
         href={getPageUrl(currentPage + 1)}
         class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors"
       >
-        {t(locale, 'common.next')}
+        {t('common.next')}
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -141,7 +144,7 @@ const getPageUrl = (page: number) => {
         disabled
         class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-muted-foreground rounded cursor-not-allowed opacity-50"
       >
-        {t(locale, 'common.next')}
+        {t('common.next')}
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>

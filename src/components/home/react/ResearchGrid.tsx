@@ -1,7 +1,7 @@
 import React from 'react';
 import type { HomeMostReadArticle, Locale } from '@/types';
 import { formatDate } from '@/utils/util';
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
 interface ResearchGridProps {
@@ -10,7 +10,7 @@ interface ResearchGridProps {
 }
 
 export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
-  const { t } = useTranslation(locale);
+  const { t } = useTranslation();
   const researchArticles = articles.slice(0, 4); // 只显示前4篇文章
 
   return (

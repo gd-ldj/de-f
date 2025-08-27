@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import Image from '@/components/common/react/Image';
 import { fetchHomePageData } from '@/api/articles';
 import type { HomeWhoToFollow, Locale } from '@/types';
-import { t } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
 import { getLocaleFromPath } from '@/lib/utils';
 import { useAuth } from '@/lib/useAuth';
 import { followAuthor } from '@/api/users';
@@ -28,6 +28,7 @@ function getLocale(propsLocale?: Locale): Locale {
 }
 
 export default function ToFollowList({ locale: propsLocale }: ToFollowListProps) {
+  const { t } = useTranslation();
   const locale = useMemo(() => getLocale(propsLocale), [propsLocale]);
   const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -161,7 +162,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
                     </button>
                     <button onClick={() => handleFollow(user.user_id)} disabled={!!followingMap[user.user_id]} className={`bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed text-primary-foreground px-4 py-1.5 rounded text-sm font-medium transition-all duration-300 ease-in-out items-center space-x-1 absolute right-0 top-0 flex ${hoveredUserId === user.user_id ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
                       <Plus className="w-4 h-4" />
-                      <span>{t(locale, 'common.subscribe')}</span>
+                      <span>{t('common.subscribe')}</span>
                     </button>
                   </div>
                 </div>

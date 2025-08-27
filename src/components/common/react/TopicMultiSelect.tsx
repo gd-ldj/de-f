@@ -3,7 +3,7 @@ import type { Locale } from '@/types';
 import MultiSelectBase from './MultiSelectBase';
 import type { FilterSection } from './FilterDropdown';
 import { fetchArticleTags } from '@/api/articles';
-import { t } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
 
 export interface TopicMultiSelectProps {
   locale: Locale
@@ -16,10 +16,11 @@ export interface TopicMultiSelectProps {
  * Falls back to a small set of defaults if the API fails.
  */
 export default function TopicMultiSelect({ locale, initialValues }: TopicMultiSelectProps) {
+  const { t } = useTranslation();
   const [sections, setSections] = useState<FilterSection[]>([
     {
       id: 'topics',
-      title: t(locale, 'common.topics'),
+      title: t('common.topics'),
       options: [],
     },
   ]);
@@ -54,7 +55,7 @@ export default function TopicMultiSelect({ locale, initialValues }: TopicMultiSe
           setSections([
             {
               id: 'topics',
-              title: t(locale, 'common.topics'),
+              title: t('common.topics'),
               options: mapTagsToOptions(tags, selectedValues),
             },
           ])
@@ -63,12 +64,12 @@ export default function TopicMultiSelect({ locale, initialValues }: TopicMultiSe
           setSections([
             {
               id: 'topics',
-              title: t(locale, 'common.topics'),
+              title: t('common.topics'),
               options: [
-                { id: 'blockchain', label: t(locale, 'common.blockchain'), checked: false },
-                { id: 'defi', label: t(locale, 'common.defi'), checked: false },
-                { id: 'nft', label: t(locale, 'common.nft'), checked: false },
-                { id: 'web3', label: t(locale, 'common.web3'), checked: false },
+                { id: 'blockchain', label: t('common.blockchain'), checked: false },
+                { id: 'defi', label: t('common.defi'), checked: false },
+                { id: 'nft', label: t('common.nft'), checked: false },
+                { id: 'web3', label: t('common.web3'), checked: false },
               ],
             },
           ])
@@ -79,12 +80,12 @@ export default function TopicMultiSelect({ locale, initialValues }: TopicMultiSe
         setSections([
           {
             id: 'topics',
-            title: t(locale, 'common.topics'),
+            title: t('common.topics'),
             options: [
-              { id: 'blockchain', label: t(locale, 'common.blockchain'), checked: false },
-              { id: 'defi', label: t(locale, 'common.defi'), checked: false },
-              { id: 'nft', label: t(locale, 'common.nft'), checked: false },
-              { id: 'web3', label: t(locale, 'common.web3'), checked: false },
+              { id: 'blockchain', label: t('common.blockchain'), checked: false },
+              { id: 'defi', label: t('common.defi'), checked: false },
+              { id: 'nft', label: t('common.nft'), checked: false },
+              { id: 'web3', label: t('common.web3'), checked: false },
             ],
           },
         ])

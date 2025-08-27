@@ -1,7 +1,7 @@
 import React from 'react';
 import type { HomeMostReadArticle, Locale } from '@/types';
 import { formatDate } from '@/utils/util';
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
 interface TrendingGridProps {
@@ -10,7 +10,7 @@ interface TrendingGridProps {
 }
 
 export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
-  const { t } = useTranslation(locale);
+  const { t } = useTranslation();
 
   if (!articles || articles.length === 0) {
     return null;

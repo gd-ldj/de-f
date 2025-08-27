@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { HomeNewsArticle, Locale } from '@/types';
 import { formatDate } from '@/utils/util';
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
 import { fetchArticles } from '@/api/articles';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
@@ -18,7 +18,7 @@ interface NewsCategory {
 }
 
 export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
-  const { t } = useTranslation(locale);
+  const { t } = useTranslation();
   const [articles, setArticles] = useState<any[]>(initialArticles);
   const [activeCategory, setActiveCategory] = useState('all');
   const [loading, setLoading] = useState(false);

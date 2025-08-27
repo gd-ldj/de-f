@@ -1,5 +1,4 @@
 ---
-import i18next from 'i18next';
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -49,7 +48,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
 ---
 
 <!DOCTYPE html>
-<html lang={i18next.language}>
+<html lang={locale === 'us' ? 'en' : 'zh'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />

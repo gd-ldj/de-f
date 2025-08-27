@@ -3,7 +3,7 @@ import { fetchHomePageData } from '@/api/articles'
 import type { Locale } from '@/types'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
-import { t } from '@/lib/i18n'
+import i18next, { t } from 'i18next'
 import {formatDate} from '@/utils/util'
 
 interface Props {
@@ -13,6 +13,9 @@ interface Props {
 // Get locale from props or extract from URL - 从props获取locale或从URL中提取
 const { locale: propsLocale } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
+
+// Set the language for i18next
+i18next.changeLanguage(locale)
 
 /**
  * Fetch home page data for the sidebar
@@ -32,7 +35,7 @@ const isWithin12Hours = (createdAt: string) => {
 
 <div class="space-y-6 px-6">
   <div>
-    <h3 class="font-medium text-foreground mb-4">{t(locale, 'common.latest')}</h3>
+    <h3 class="font-medium text-foreground mb-4">{t('common.latest')}</h3>
     <div class="space-y-0">
       {latestNews.map((article, index) => (
         <div>

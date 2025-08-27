@@ -1,6 +1,6 @@
 ---
 import type { Locale, ApiArticle } from '@/types'
-import { t } from '@/lib/i18n'
+import i18next, { t } from 'i18next'
 import Image from '@/components/common/astro/ImageSSR.astro'
 import {formatDate} from '@/utils/util'
 
@@ -15,6 +15,9 @@ interface Props {
 
 const { article, locale, category, categoryDisplayName } = Astro.props
 
+// Set the language for i18next
+i18next.changeLanguage(locale)
+
 ---
  
  <article class="bg-white">
@@ -22,7 +25,7 @@ const { article, locale, category, categoryDisplayName } = Astro.props
    <header class="mb-4">
      <!-- Breadcrumb -->
      <nav class="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-       <a href={`/${locale}`} class="hover:text-primary">{t(locale, 'article.articles')}</a>
+       <a href={`/${locale}`} class="hover:text-primary">{t('article.articles')}</a>
        <span>/</span>
        <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
        <span>/</span>
@@ -66,7 +69,7 @@ const { article, locale, category, categoryDisplayName } = Astro.props
             </time>
             
             <p class="text-sm font-medium text-foreground">
-              <span class="text-muted-foreground mr-[2px]">/ {t(locale, 'article.by')}</span>
+              <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
               {article.author?.name || article.author_name}
             </p>
           </div>
@@ -81,7 +84,7 @@ const { article, locale, category, categoryDisplayName } = Astro.props
           <div class="text-[32px]">{article?.page_view || 0}</div>
             <div class="flex items-center space-x-1">
             <img src="/eyes.svg" alt="Views" class="w-4 h-4 text-muted-foreground" />
-            <span class="text-sm text-muted-foreground">{t(locale, 'article.views')}</span>
+            <span class="text-sm text-muted-foreground">{t('article.views')}</span>
           </div>
         </div>
 
@@ -90,7 +93,7 @@ const { article, locale, category, categoryDisplayName } = Astro.props
           <div class="text-[32px]">{article?.unique_vistor || 0}</div>
           <div class="flex items-center space-x-1">
             <img src="/avatar_2.svg" alt="Author" class="w-4 h-4 text-muted-foreground" />
-            <span class="text-sm text-muted-foreground">{t(locale, 'article.holders')}</span>
+            <span class="text-sm text-muted-foreground">{t('article.holders')}</span>
           </div>
         </div>
       </div>
