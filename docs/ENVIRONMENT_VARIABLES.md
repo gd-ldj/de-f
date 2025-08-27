@@ -21,8 +21,11 @@ PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ### 2. Cloudflare Turnstile 配置
 ```bash
 PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY=0x4AAAAAAAxxxxxxxxxxxxxxxxxx
+CLOUDFLARE_TURNSTILE_SECRET_KEY=0x4AAAAAAAxxxxxxxxxxxxxxxxxx
 ```
-- **用途**: Cloudflare Turnstile 站点密钥，用于机器人防护
+- **用途**: 
+  - `PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY`: 客户端站点密钥，用于显示验证挑战
+  - `CLOUDFLARE_TURNSTILE_SECRET_KEY`: 服务端密钥，用于验证令牌（敏感信息，不含 PUBLIC_ 前缀）
 - **获取网站**: https://dash.cloudflare.com/
 - **获取步骤**:
   1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
@@ -30,8 +33,10 @@ PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY=0x4AAAAAAAxxxxxxxxxxxxxxxxxx
   3. 点击「Add site」创建新站点
   4. 填写站点名称和域名
   5. 选择 Widget Mode（推荐 Managed）
-  6. 复制生成的「Site Key」
-- **示例**: `0x4AAAAAAABkKtQlHLVyQcgq`
+  6. 复制生成的「Site Key」和「Secret Key」
+- **示例**: 
+  - Site Key: `0x4AAAAAAABkKtQlHLVyQcgq`
+  - Secret Key: `0x4AAAAAAABkKtQlHLVyQcgq`（与 Site Key 不同）
 
 ### 3. Cloudflare Analytics 配置
 ```bash
@@ -298,6 +303,7 @@ PUBLIC_GA_MEASUREMENT_ID=G-1234567890
 
 # Cloudflare Turnstile 配置
 PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY=0x4AAAAAAABkKtQlHLVyQcgq
+CLOUDFLARE_TURNSTILE_SECRET_KEY=0x4AAAAAAAyour_secret_key_here
 
 # Cloudflare Analytics 配置
 PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN=your_actual_cloudflare_token_here

@@ -11,16 +11,19 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api
  * Wallet login function
  * @param walletAddress - User's wallet address
  * @param signature - Wallet signature for authentication
+ * @param turnstileToken - Optional Cloudflare Turnstile verification token
  * @returns Promise with login response data
  */
 export async function loginWithWallet(
   walletAddress: string,
-  signature: string
+  signature: string,
+  turnstileToken?: string | null
 ): Promise<WalletLoginData | null> {
   try {
     const requestBody: WalletLoginRequest = {
       wallet_address: walletAddress,
-      signature: signature
+      signature: signature,
+      ...(turnstileToken && { turnstile_token: turnstileToken })
     }
 
     const response = await fetch(

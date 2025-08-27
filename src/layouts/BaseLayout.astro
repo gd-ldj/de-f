@@ -113,51 +113,6 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://challenges.cloudflare.com" />
 
-    <!-- Minimal non-module Buffer shim to prevent early hydration ReferenceError -->
-    <script is:inline>
-      if (!('Buffer' in window)) {
-        (function(){
-          function hexToBytes(hex){
-            const out=[]; for(let i=0;i<hex.length;i+=2){ out.push(parseInt(hex.substr(i,2),16)||0); } return new Uint8Array(out);
-          }
-          function bytesToHex(bytes){
-            return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
-          }
-          class MiniBuffer extends Uint8Array {
-            static from(input, encoding){
-              if (input instanceof Uint8Array || Array.isArray(input)) return new MiniBuffer(input);
-              if (typeof input === 'string'){
-                const enc = (encoding||'utf8').toLowerCase();
-                if (enc === 'base64'){
-                  try { const bin = atob(input); const arr = new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); return new MiniBuffer(arr); } catch(e){ return new MiniBuffer([]); }
-                }
-                if (enc === 'hex'){
-                  return new MiniBuffer(hexToBytes(input));
-                }
-                // utf8 default
-                return new MiniBuffer(new TextEncoder().encode(input));
-              }
-              return new MiniBuffer([]);
-            }
-            toString(encoding){
-              const enc = (encoding||'utf8').toLowerCase();
-              if (enc === 'base64'){
-                let s=''; const bytes=new Uint8Array(this); for(let i=0;i<bytes.length;i++){ s+=String.fromCharCode(bytes[i]); }
-                return btoa(s);
-              }
-              if (enc === 'hex'){
-                return (bytesToHex(new Uint8Array(this)));
-              }
-              return new TextDecoder().decode(new Uint8Array(this));
-            }
-          }
-          // @ts-ignore attach minimal shim; real polyfill (module) may override later
-          window.Buffer = MiniBuffer;
-          console.warn('[Polyfill] Minimal Buffer shim attached; real Buffer polyfill will override when ready');
-        })();
-      }
-    </script>
-     
     <!-- Buffer polyfill for browser using ESM (real polyfill overrides the shim when loaded) -->
     <script is:inline type="module">
       import { Buffer } from 'https://esm.sh/buffer@6.0.3';

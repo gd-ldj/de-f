@@ -170,6 +170,7 @@ export interface UserPersonalInfoResponse {
 export interface WalletLoginRequest {
   wallet_address: string
   signature: string
+  turnstile_token?: string
 }
 
 /**

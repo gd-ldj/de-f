@@ -26,265 +26,272 @@ export interface TurnstileInstance {
 }
 
 export interface TurnstileOptions {
-  sitekey: string
-  callback?: (token: string) => void
-  'error-callback'?: () => void
-  'expired-callback'?: () => void
-  'before-interactive-callback'?: () => void
-  'after-interactive-callback'?: () => void
-  'unsupported-callback'?: () => void
-  'timeout-callback'?: () => void
-  theme?: 'light' | 'dark' | 'auto'
-  size?: 'normal' | 'compact'
-  action?: string
-  cData?: string
-  retry?: 'auto' | 'never'
-  'retry-interval'?: number
-  'refresh-expired'?: 'auto' | 'manual' | 'never'
-  language?: string
-  appearance?: 'always' | 'execute' | 'interaction-only'
-  execution?: 'render' | 'execute'
+  sitekey: string;
+  callback?: (token: string) => void;
+  'error-callback'?: () => void;
+  'expired-callback'?: () => void;
+  theme?: 'light' | 'dark' | 'auto';
+  size?: 'normal' | 'compact';
+  action?: string;
+  cData?: string;
+  retry?: 'auto' | 'never';
+  'retry-interval'?: number;
+  'refresh-expired'?: 'auto' | 'manual' | 'never';
 }
 
 /**
  * Cloudflare Turnstile verification component
- * Integrates with Cloudflare's bot protection service
  */
-export const TurnstileVerification: React.FC<TurnstileProps> = ({
-  onVerify,
-  onError,
-  onExpire,
-  onLoad,
-  size = 'normal',
-  theme = 'auto',
-  className = '',
-  action,
-  cData
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const widgetIdRef = useRef<string | undefined>(undefined)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export const TurnstileVerification: React.FC<TurnstileProps> = ({ onVerify, onError, onExpire, onLoad, size = 'normal', theme = 'auto', className = '', action, cData }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | undefined>(undefined);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [needsInteraction, setNeedsInteraction] = useState(false);
+  const [autoVerified, setAutoVerified] = useState(false);
+  const [isInvisible, setIsInvisible] = useState(true);
+
+  // Generate unique container ID
+  const containerId = React.useMemo(() => `turnstile-${Math.random().toString(36).substring(2, 15)}`, []);
 
   /**
    * Load Cloudflare Turnstile script
    */
   const loadTurnstileScript = (): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Check if already loaded
       if (window.turnstile) {
-        resolve()
-        return
+        resolve();
+        return;
       }
 
-      // Check if script is already being loaded
-      const existingScript = document.querySelector('script[src*="challenges.cloudflare.com"]')
+      const existingScript = document.querySelector('script[src*="challenges.cloudflare.com"]');
       if (existingScript) {
-        existingScript.addEventListener('load', () => resolve())
-        existingScript.addEventListener('error', reject)
-        return
+        existingScript.addEventListener('load', () => resolve());
+        existingScript.addEventListener('error', reject);
+        return;
       }
 
-      const script = document.createElement('script')
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
-      script.async = true
-      script.defer = true
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.async = true;
+      script.defer = true;
 
-      script.onload = () => {
-        console.log('[Turnstile] Script loaded successfully')
-        resolve()
-      }
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load Turnstile script'));
 
-      script.onerror = (error) => {
-        console.error('[Turnstile] Failed to load script:', error)
-        reject(new Error('Failed to load Turnstile script'))
-      }
-
-      document.head.appendChild(script)
-    })
-  }
+      document.head.appendChild(script);
+    });
+  };
 
   /**
    * Render Turnstile widget
    */
   const renderWidget = async (): Promise<void> => {
-    if (!containerRef.current || !window.turnstile || !ANALYTICS_CONFIG.TURNSTILE_SITE_KEY) {
-      return
+    if (!window.turnstile || !ANALYTICS_CONFIG.TURNSTILE_SITE_KEY) {
+      return;
     }
 
     try {
       const options: TurnstileOptions = {
         sitekey: ANALYTICS_CONFIG.TURNSTILE_SITE_KEY,
         callback: (token: string) => {
-          console.log('[Turnstile] Verification successful')
-          setError(null)
-          onVerify?.(token)
+          setError(null);
+          setAutoVerified(true);
+          setNeedsInteraction(false);
+          onVerify?.(token);
         },
         'error-callback': () => {
-          const error = 'Verification error'
-          console.error('[Turnstile] Verification error:', error)
-          setError(error)
-          onError?.(error)
+          // 当验证失败时，显示交互式验证
+          setIsInvisible(false);
+          setNeedsInteraction(true);
+          const error = 'Verification required';
+          setError(error);
+          onError?.(error);
         },
         'expired-callback': () => {
-          console.warn('[Turnstile] Token expired')
-          setError('Token expired')
-          onExpire?.()
-        },
-        'timeout-callback': () => {
-          console.warn('[Turnstile] Verification timeout')
-          setError('Verification timeout')
-          onError?.('Verification timeout')
-        },
-        'unsupported-callback': () => {
-          console.error('[Turnstile] Browser not supported')
-          setError('Browser not supported')
-          onError?.('Browser not supported')
+          setAutoVerified(false);
+          setError('Token expired');
+          onExpire?.();
         },
         theme,
-        size,
+        size: isInvisible ? 'compact' : size, // 隐形模式使用紧凑尺寸
         retry: 'auto',
         'retry-interval': 8000,
-        'refresh-expired': 'auto'
-      }
+        'refresh-expired': 'auto',
+      };
 
-      if (action) options.action = action
-      if (cData) options.cData = cData
+      if (action) options.action = action;
+      if (cData) options.cData = cData;
 
       // Remove existing widget if any
-      if (widgetIdRef.current) {
-        window.turnstile.remove(widgetIdRef.current)
+      if (widgetIdRef.current && window.turnstile) {
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch (removeError) {
+          console.warn('[Turnstile] Failed to remove existing widget:', removeError);
+        }
+        widgetIdRef.current = undefined;
       }
 
-      // Render new widget
-      widgetIdRef.current = window.turnstile.render(containerRef.current, options)
-      setIsLoaded(true)
-      onLoad?.()
+      // Make sure the container element exists in DOM
+      const containerElement = document.getElementById(containerId);
+      if (!containerElement) {
+        throw new Error(`Container element with ID ${containerId} not found in DOM`);
+      }
 
+      // Clear existing content
+      containerElement.innerHTML = '';
+
+      // Render widget using container ID
+      widgetIdRef.current = window.turnstile.render(`#${containerId}`, options);
+
+      if (widgetIdRef.current) {
+        setIsLoaded(true);
+        onLoad?.();
+      } else {
+        throw new Error('Widget render returned empty ID');
+      }
     } catch (error) {
-      console.error('[Turnstile] Failed to render widget:', error)
-      setError('Failed to render verification widget')
-      onError?.('Failed to render verification widget')
+      console.error('[Turnstile] Failed to render widget:', error);
+      setError('Failed to render verification widget');
+      onError?.('Failed to render verification widget');
     }
-  }
+  };
 
   /**
-   * Initialize Turnstile
+   * Initialize Turnstile with user-friendly approach
    */
   useEffect(() => {
     const initializeTurnstile = async () => {
       if (!ANALYTICS_CONFIG.TURNSTILE_SITE_KEY) {
-        console.warn('[Turnstile] Site key not configured')
-        setError('Turnstile not configured')
-        return
+        // 如果没有配置，暂时允许通过验证
+        console.warn('[Turnstile] Site key not configured, auto-verifying');
+        setAutoVerified(true);
+        onVerify?.('dev-bypass-token');
+        return;
       }
 
-      setIsLoading(true)
-      setError(null)
+      // 先假设用户是合法的，进行后台验证
+      setAutoVerified(true);
+      onVerify?.('pending-verification');
+
+      // Check if container exists in DOM
+      const containerElement = document.getElementById(containerId);
+      if (!containerElement) {
+        // Retry after a short delay
+        setTimeout(initializeTurnstile, 100);
+        return;
+      }
+
+      setIsLoading(false); // 不显示加载状态，用户无感知
+      setError(null);
 
       try {
-        await loadTurnstileScript()
-        await renderWidget()
+        await loadTurnstileScript();
+
+        // Ensure Turnstile API is available
+        if (!window.turnstile) {
+          throw new Error('Turnstile API not available after script load');
+        }
+
+        await renderWidget();
       } catch (error) {
-        console.error('[Turnstile] Initialization failed:', error)
-        setError('Failed to initialize verification')
-        onError?.('Failed to initialize verification')
-      } finally {
-        setIsLoading(false)
+        console.error('[Turnstile] Background verification failed:', error);
+        // 后台验证失败时，显示交互式验证
+        setIsInvisible(false);
+        setNeedsInteraction(true);
+        setAutoVerified(false);
+        setError('Please complete verification');
+        onError?.('Verification required');
       }
-    }
+    };
 
-    initializeTurnstile()
+    const timeoutId = setTimeout(initializeTurnstile, 50);
 
-    // Cleanup on unmount
     return () => {
+      clearTimeout(timeoutId);
       if (widgetIdRef.current && window.turnstile) {
-        window.turnstile.remove(widgetIdRef.current)
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch (error) {
+          console.warn('[Turnstile] Failed to cleanup widget:', error);
+        }
       }
-    }
-  }, []) // Empty dependency array - only run once
+    };
+  }, []);
 
   /**
    * Reset widget when props change
    */
   useEffect(() => {
     if (isLoaded && widgetIdRef.current && window.turnstile) {
-      window.turnstile.reset(widgetIdRef.current)
+      window.turnstile.reset(widgetIdRef.current);
     }
-  }, [theme, size, action, cData])
+  }, [theme, size, action, cData]);
 
   /**
    * Reset the widget manually
    */
   const reset = (): void => {
-    if (widgetIdRef.current && window.turnstile) {
-      window.turnstile.reset(widgetIdRef.current)
-      setError(null)
-    }
-  }
+    setError(null);
 
-  /**
-   * Get current response token
-   */
-  const getResponse = (): string | undefined => {
     if (widgetIdRef.current && window.turnstile) {
-      return window.turnstile.getResponse(widgetIdRef.current)
+      try {
+        window.turnstile.reset(widgetIdRef.current);
+      } catch (resetError) {
+        console.warn('[Turnstile] Reset failed, re-rendering widget:', resetError);
+        renderWidget();
+      }
+    } else {
+      renderWidget();
     }
-    return undefined
-  }
-
-  // Expose methods via ref
-  React.useImperativeHandle(containerRef, () => {
-    const element = containerRef.current
-    if (!element) {
-      return {
-        reset: () => {},
-        getResponse: () => undefined,
-      } as any
-    }
-    
-    return Object.assign(element, {
-      reset,
-      getResponse
-    })
-  })
+  };
 
   if (!ANALYTICS_CONFIG.TURNSTILE_SITE_KEY) {
     return (
       <div className={`turnstile-container ${className}`}>
-        <div className="text-sm text-muted-foreground">
-          Verification not configured
-        </div>
+        <div className="text-sm text-muted-foreground">Turnstile not configured</div>
       </div>
-    )
+    );
   }
 
   return (
     <div className={`turnstile-container ${className}`}>
-      <div ref={containerRef} className="turnstile-widget" />
-      
-      {isLoading && (
-        <div className="flex items-center justify-center p-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span className="ml-2 text-sm text-muted-foreground">Loading verification...</span>
+      {/* 自动验证成功状态 - 无感知 */}
+
+      {/* 交互式验证组件 - 仅在需要时显示 */}
+      {(needsInteraction || !isInvisible) && (
+        <div>
+          <div id={containerId} ref={containerRef} className="turnstile-widget" style={{ minHeight: '65px' }} />
+
+          {isLoading && (
+            <div className="flex items-center justify-center p-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <span className="ml-2 text-sm text-muted-foreground">Loading verification...</span>
+            </div>
+          )}
+
+          {error && needsInteraction && (
+            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+              {error}
+              <button onClick={reset} className="ml-2 underline hover:no-underline">
+                Retry
+              </button>
+            </div>
+          )}
         </div>
       )}
-      
-      {error && (
-        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600">
-          {error}
-          <button 
-            onClick={reset}
-            className="ml-2 underline hover:no-underline"
-          >
-            Retry
-          </button>
+
+      {/* 隐形验证容器 - 始终存在但隐藏 */}
+      {isInvisible && !needsInteraction && (
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0 }}>
+          <div id={containerId} ref={containerRef} className="turnstile-widget" />
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 /**
  * Hook for using Turnstile verification

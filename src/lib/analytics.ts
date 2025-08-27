@@ -177,7 +177,7 @@ export class AnalyticsManager {
    */
   private loadGoogleAnalytics(): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (window.gtag) {
+      if (typeof window.gtag === 'function') {
         resolve()
         return
       }
@@ -445,7 +445,7 @@ export class AnalyticsManager {
    */
   private generateVisitorId(): string {
     const timestamp = Date.now().toString(36)
-    const randomPart = Math.random().toString(36).substr(2, 9)
+    const randomPart = Math.random().toString(36).substring(2, 11)
     return `${timestamp}-${randomPart}`
   }
 
@@ -453,7 +453,7 @@ export class AnalyticsManager {
    * Generate session ID
    */
   private generateSessionId(): string {
-    return `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    return `session-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
   }
 
   /**

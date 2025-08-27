@@ -65,4 +65,10 @@ export const TRACKING_EVENTS = {
   CLICK_EVENT: 'click_event',
   SEARCH_EVENT: 'search_event',
   USER_ENGAGEMENT: 'user_engagement',
+  // Turnstile 相关事件
+  TURNSTILE_VERIFY: 'turnstile_verify',
+  TURNSTILE_ERROR: 'turnstile_error',
+  LOGIN_ATTEMPT: 'login_attempt',
+  LOGIN_SUCCESS: 'login_success',
+  LOGIN_FAILURE: 'login_failure',
 } as const

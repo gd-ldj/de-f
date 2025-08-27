@@ -84,17 +84,19 @@ export const useWalletAuth = () => {
    * Handle wallet login with signature
    * @param walletAddress - User's wallet address
    * @param signature - Wallet signature for authentication
+   * @param turnstileToken - Optional Cloudflare Turnstile verification token
    * @returns Promise with login success status
    */
   const handleWalletLogin = useCallback(async (
     walletAddress: string,
-    signature: string
+    signature: string,
+    turnstileToken?: string | null
   ): Promise<boolean> => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const loginData = await loginWithWallet(walletAddress, signature)
+      const loginData = await loginWithWallet(walletAddress, signature, turnstileToken)
       
       if (loginData) {
         // Store authentication data globally

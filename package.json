@@ -13,6 +13,7 @@
     "type-check": "astro check"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.4",
     "@astrojs/node": "^9.4.2",
     "@astrojs/react": "^4.3.0",
     "@astrojs/vercel": "^8.2.6",
@@ -50,6 +51,7 @@
     "recharts": "^3.1.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.2",
     "vite-plugin-node-polyfills": "^0.24.0",
     "zod": "^3.22.4"
   },

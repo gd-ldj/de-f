@@ -78,10 +78,17 @@ export const useAuth = () => {
   // Determine if auth section should be shown
   const showAuthSection = ready || privyTimeout;
 
-  // Enhanced login function with error handling
-  const handleLogin = async () => {
+  // Enhanced login function with error handling and Turnstile token support
+  const handleLogin = async (turnstileToken?: string | null) => {
     try {
-      await login();
+      // 如果有 Turnstile 令牌，可以在这里处理或传递给相关服务
+      if (turnstileToken) {
+        console.log('Login with Turnstile token:', turnstileToken);
+        // 可以将令牌保存到状态或传递给后端进行验证
+        // 例如：存储到 localStorage 或发送到验证 API
+        localStorage.setItem('turnstile_token', turnstileToken);
+      }
+      login();
     } catch (error) {
       console.error('Login failed:', error);
     }
@@ -101,9 +108,9 @@ export const useAuth = () => {
   };
 
   // Handle wallet login with signature
-  const handleWalletLogin = async (walletAddress: string, signature: string) => {
+  const handleWalletLogin = async (walletAddress: string, signature: string, turnstileToken?: string | null) => {
     try {
-      const success = await walletAuth.login(walletAddress, signature);
+      const success = await walletAuth.login(walletAddress, signature, turnstileToken);
       if (success) {
         setStoredWalletAddress(walletAddress);
       }
