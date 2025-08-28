@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet } from '@/components/common/react/ConnectWallet';
-import { TurnstileVerification, useTurnstile } from '@/components/common/react/TurnstileVerification';
 import { getAnalytics } from '@/lib/analytics';
 import { TRACKING_EVENTS } from '@/config/constants';
 import type { Locale } from '@/types';
@@ -13,40 +12,6 @@ interface LoginProps {
 
 export default function Login({ locale }: LoginProps) {
   const { t } = useTranslation();
-  const { isVerified, token, error, handleVerify, handleError, handleExpire, reset } = useTurnstile();
-  console.log('🚀 ~ Login ~ isVerified:', isVerified);
-
-  // 处理 Turnstile 验证成功
-  const handleTurnstileVerify = (verificationToken: string) => {
-    handleVerify(verificationToken);
-    // 记录分析事件
-    try {
-      const analytics = getAnalytics();
-      analytics.trackEvent(TRACKING_EVENTS.TURNSTILE_VERIFY, {
-        success: true,
-        timestamp: Date.now(),
-        locale,
-      });
-    } catch (error) {
-      console.warn('Failed to track Turnstile verify event:', error);
-    }
-  };
-
-  // 处理 Turnstile 验证错误
-  const handleTurnstileError = (errorMessage: string) => {
-    handleError(errorMessage);
-    // 记录分析事件
-    try {
-      const analytics = getAnalytics();
-      analytics.trackEvent(TRACKING_EVENTS.TURNSTILE_ERROR, {
-        error: errorMessage,
-        timestamp: Date.now(),
-        locale,
-      });
-    } catch (error) {
-      console.warn('Failed to track Turnstile error event:', error);
-    }
-  };
 
   return (
     <motion.div className="space-y-6 px-6 border-b border-border mb-5" initial={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} animate={{ opacity: 1, maxHeight: '500px', overflow: 'visible' }} exit={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} transition={{ duration: 0.8, ease: 'easeInOut' }}>
@@ -61,14 +26,9 @@ export default function Login({ locale }: LoginProps) {
         </p>
 
         <div className="space-y-4">
-          {/* Turnstile 验证组件 */}
-          <div className="mb-4">
-            <TurnstileVerification onVerify={handleTurnstileVerify} onError={handleTurnstileError} onExpire={handleExpire} size="normal" theme="auto" action="login" className="flex justify-center" />
-          </div>
-
-          {/* 钱包连接按钮 - 只有验证通过后才能点击 */}
+          {/* 钱包连接按钮 */}
           <div>
-            <Wallet turnstileToken={token} isVerified={isVerified} />
+            <Wallet />
           </div>
 
           {/*

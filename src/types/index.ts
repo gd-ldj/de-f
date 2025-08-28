@@ -168,9 +168,8 @@ export interface UserPersonalInfoResponse {
  * Wallet login request interface
  */
 export interface WalletLoginRequest {
-  wallet_address: string
-  signature: string
-  turnstile_token?: string
+  wallet_address: string;
+  signature: string;
 }
 
 /**

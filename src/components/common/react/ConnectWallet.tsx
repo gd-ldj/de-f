@@ -3,21 +3,12 @@ import { useMemo } from 'react';
 import Image from './Image';
 import walletWhiteIcon from '@/assets/imgs/wallet-white.svg';
 
-interface ButtonAuthenticationProps {
-  turnstileToken?: string | null;
-  isVerified?: boolean;
-}
-
-const ButtonAuthentication = ({ turnstileToken, isVerified = true }: ButtonAuthenticationProps) => {
+const ButtonAuthentication = () => {
   const { ready, authenticated, login, logout, user, isEffectivelyLoggedIn, walletAddress, storedWalletAddress } = useAuth();
 
   // Memoize computed values to prevent unnecessary re-renders
-  const disableInteractions = useMemo(() => !ready || !isVerified, [ready, isVerified]);
+  const disableInteractions = useMemo(() => !ready, [ready]);
   const shouldShowLogin = useMemo(() => !storedWalletAddress, [storedWalletAddress]);
-  
-  console.log('🚀 ~ ButtonAuthentication ~ ready:', ready);
-  console.log('🚀 ~ ButtonAuthentication ~ isVerified:', isVerified);
-  console.log('🚀 ~ ButtonAuthentication ~ turnstileToken:', turnstileToken);
   
   // Early return with loading state when not ready
   if (!ready) {
@@ -28,19 +19,17 @@ const ButtonAuthentication = ({ turnstileToken, isVerified = true }: ButtonAuthe
     );
   }
 
-  // Handle wallet login with Turnstile token
+  // Handle wallet login
   const handleWalletAction = async () => {
     if (shouldShowLogin) {
-      // 传递 Turnstile 令牌到登录流程
-      await login(turnstileToken);
+      await login();
     } else {
       await logout();
     }
   };
 
-  // Button text and state based on verification
+  // Button text based on login state
   const getButtonText = () => {
-    if (!isVerified) return 'Complete verification first';
     return shouldShowLogin ? 'Continue with Wallet' : 'Disconnect Wallet';
   };
 
@@ -60,11 +49,6 @@ const ButtonAuthentication = ({ turnstileToken, isVerified = true }: ButtonAuthe
   );
 };
 
-interface WalletProps {
-  turnstileToken?: string | null;
-  isVerified?: boolean;
-}
-
-export const Wallet = ({ turnstileToken, isVerified }: WalletProps) => {
-    return <ButtonAuthentication turnstileToken={turnstileToken} isVerified={isVerified} />
+export const Wallet = () => {
+    return <ButtonAuthentication />
 }

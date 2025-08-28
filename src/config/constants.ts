@@ -37,8 +37,7 @@ export const ANALYTICS_CONFIG = {
   // Google Analytics configuration
   GA_MEASUREMENT_ID: import.meta.env.PUBLIC_GA_MEASUREMENT_ID,
   
-  // Cloudflare Turnstile configuration
-  TURNSTILE_SITE_KEY: import.meta.env.PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY,
+
   
   // Cloudflare Analytics token
   CLOUDFLARE_ANALYTICS_TOKEN: import.meta.env.PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
@@ -65,9 +64,7 @@ export const TRACKING_EVENTS = {
   CLICK_EVENT: 'click_event',
   SEARCH_EVENT: 'search_event',
   USER_ENGAGEMENT: 'user_engagement',
-  // Turnstile 相关事件
-  TURNSTILE_VERIFY: 'turnstile_verify',
-  TURNSTILE_ERROR: 'turnstile_error',
+
   LOGIN_ATTEMPT: 'login_attempt',
   LOGIN_SUCCESS: 'login_success',
   LOGIN_FAILURE: 'login_failure',

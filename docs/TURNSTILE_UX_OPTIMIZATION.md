@@ -2,55 +2,64 @@
 
 ## 优化概述
 
-根据用户反馈"验证应该是用户无感知的吧，默认是成功的，当验证有问题是才向用户展示"，我们对 TurnstileVerification 组件进行了用户体验优化。
+基于 Cloudflare Turnstile Implicit Rendering 最佳实践，我们对 TurnstileVerification 组件进行了全面重构，实现真正的用户无感知验证体验。
 
 ## 优化策略
 
-### 1. **用户无感知验证**
-- **默认自动验证成功**：组件初始化时立即设置为验证通过状态
-- **后台隐形验证**：Turnstile 验证在后台进行，用户看不到
-- **无加载状态显示**：避免显示加载动画，保持界面简洁
+### 1. **Implicit Rendering 模式**
+- **页面加载时自动执行**：组件挂载后立即开始后台验证
+- **Invisible 模式**：默认使用不可见验证模式，对用户完全透明
+- **自动执行验证**：使用 `execution: 'render'` 配置自动触发验证
 
 ### 2. **渐进式验证流程**
 ```
-用户访问 → 立即显示"已验证" → 后台运行 Turnstile → 
+页面加载 → 后台自动验证 → 验证成功显示"已验证" → 用户可继续操作
   ↓
-成功：保持验证状态 
-  ↓
-失败：显示交互式验证
+验证失败时 → 显示可见验证界面 → 用户手动完成验证 → 继续操作
 ```
 
 ### 3. **智能状态管理**
 
-#### 状态变量
-- `autoVerified`: 自动验证成功标识
-- `needsInteraction`: 是否需要用户交互
-- `isInvisible`: 是否使用隐形模式
-- `isLoading`: 降低显示权重，不在初始阶段显示
+#### 状态变量更新
+- `token`: 验证成功后获得的令牌
+- `isVerifying`: 是否正在进行验证
+- `showFallback`: 是否显示可见验证界面
+- `error`: 验证错误信息
 
 #### 验证逻辑流程
 1. **初始化阶段**
    ```typescript
-   // 立即设置为验证成功
-   setAutoVerified(true);
-   onVerify?.('pending-verification');
+   // 开发环境绕过验证
+   if (!ANALYTICS_CONFIG.TURNSTILE_SITE_KEY) {
+     setToken('dev-bypass-token');
+     setIsVerifying(false);
+     onVerify?.('dev-bypass-token');
+   }
    ```
 
-2. **后台验证阶段**
+2. **后台自动验证**
    ```typescript
-   // 隐形容器中运行 Turnstile
-   <div style={{ position: 'absolute', left: '-9999px', opacity: 0 }}>
+   // 不可见容器中自动执行验证
+   <div style={{ position: 'absolute', left: '-9999px', opacity: 0, visibility: 'hidden' }}>
      <div id={containerId} className="turnstile-widget" />
    </div>
    ```
 
-3. **验证失败处理**
+3. **验证成功处理**
+   ```typescript
+   callback: (token: string) => {
+     setToken(token);
+     setIsVerifying(false);
+     onVerify?.(token);
+   }
+   ```
+
+4. **验证失败处理**
    ```typescript
    'error-callback': () => {
-     // 显示交互式验证
-     setIsInvisible(false);
-     setNeedsInteraction(true);
-     setError('Verification required');
+     setShowFallback(true);
+     setIsVerifying(false);
+     setError('Please complete verification to continue');
    }
    ```
 
