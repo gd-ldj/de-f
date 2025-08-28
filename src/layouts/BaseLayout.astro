@@ -1,6 +1,7 @@
 ---
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
 import { Analytics } from '@vercel/analytics/react';
+import { TurnstileVerification } from '../components/common/react/TurnstileVerification';
 
 import '../styles/global.css'
 
@@ -126,7 +127,9 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     <div class="relative flex min-h-screen flex-col">
       <slot />
     </div>
-
+   <!-- Turnstile verification for all pages to filter bot traffic (except 404 page) -->
+    {Astro.url.pathname !== '/404' && <TurnstileVerification client:load />}
+    
     <!-- SSR-to-client analytics bridge examples -->
     <script is:inline>
       // Example A: Preloaded events queue. Declared by SSR, executed in browser, consumed by AnalyticsProvider.
