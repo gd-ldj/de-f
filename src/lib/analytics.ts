@@ -384,18 +384,6 @@ export class AnalyticsManager {
           error_code: (data as any).errorCode || undefined,
           reason: (data as any).reason || undefined,
         });
-      } else if (type === TRACKING_EVENTS.TURNSTILE_VERIFY) {
-        // Custom event for Turnstile verification results
-        window.gtag('event', 'turnstile_verify', {
-          status: (data as any).status || undefined,
-          error: (data as any).error || undefined,
-        });
-      } else if (type === TRACKING_EVENTS.TURNSTILE_ERROR) {
-        // Custom event for Turnstile errors
-        window.gtag('event', 'turnstile_error', {
-          code: (data as any).code || undefined,
-          message: (data as any).message || undefined,
-        });
       }
     }
 

@@ -1,6 +1,6 @@
-# DeTake Analytics & Verification System
+# DeTake Analytics System
 
-本文档介绍了 DeTake 项目中集成的分析追踪和验证系统，包括访客标识生成、虚假流量过滤和用户行为数据采集功能。
+本文档介绍了 DeTake 项目中集成的分析追踪系统，包括访客标识生成、用户行为数据采集功能。
 
 ## 🎯 功能概述
 
@@ -9,12 +9,7 @@
 - **Google Analytics Client ID**: 集成 GA4 获取客户端标识符
 - **混合标识策略**: 结合多种数据源确保访客标识的唯一性和持久性
 
-### 2. 虚假流量过滤
-- **Cloudflare Turnstile**: 集成 Cloudflare 的机器人检测和验证服务
-- **行为模式分析**: 检测异常点击、滚动和访问模式
-- **多维度验证**: 结合 IP、User-Agent、访问频率等多个维度进行流量质量评估
-
-### 3. 用户行为数据采集
+### 2. 用户行为数据采集
 - **页面浏览追踪**: PV/UV 统计和页面停留时间
 - **文章互动追踪**: 文章查看、分享、评论等行为
 - **滚动深度分析**: 用户阅读深度和内容消费模式
@@ -28,373 +23,255 @@
 │                 │    │                  │    │   Processing    │
 ├─────────────────┤    ├──────────────────┤    ├─────────────────┤
 │ • Analytics.ts  │───▶│ /api/analytics/  │───▶│ • Event Storage │
-│ • Turnstile.tsx │    │   events         │    │ • Fraud Filter  │
-│ • BaseLayout    │    │ /api/cf-visitor- │    │ • Real-time     │
-│ • Event Tracking│    │   id             │    │   Dashboard     │
+│ • VisitorID.ts  │    │   events         │    │ • Batch Process │
+│ • Tracking.ts   │    │ /api/cf-visitor  │    │ • Real-time     │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
-## 📁 文件结构
+## 📂 文件结构
 
 ```
 src/
 ├── lib/
-│   └── analytics.ts              # 核心分析系统类
-├── components/common/react/
-│   └── TurnstileVerification.tsx  # Cloudflare Turnstile 组件
-├── config/
-│   └── constants.ts              # 分析配置常量
-├── pages/api/
-│   ├── analytics/
-│   │   └── events.ts             # 事件收集 API
-│   └── cf-visitor-id.ts          # Cloudflare 访客 ID API
-├── layouts/
-│   └── BaseLayout.astro          # 全局分析初始化
+│   └── analytics.ts              # 核心分析系统
+├── components/
+│   └── common/
+│       ├── AnalyticsProvider.tsx  # 分析服务提供者
+│       └── react/
 └── pages/
-    └── test-analytics.astro      # 分析功能测试页面
+    └── api/
+        ├── analytics/
+        │   └── events.ts          # 事件收集端点
+        └── cf-visitor-id.ts       # Cloudflare 访客 ID 端点
 ```
 
-## ⚙️ 配置说明
+## 🚀 快速开始
 
-### 环境变量配置
+### 1. 环境配置
 
-在 `.env` 文件中添加以下配置：
+确保以下环境变量已正确配置：
 
 ```bash
-# Google Analytics
+# .env.local
 PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-
-# Cloudflare Turnstile
-PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY=0x4AAAAAAAxxxxxxxxxxxxxxxxxx
-
-# Cloudflare Analytics
-PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN=your_cloudflare_analytics_token
+PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN=your_token_here
 ```
 
-### 常量配置
-
-在 `src/config/constants.ts` 中可以调整以下参数：
+### 2. 基础集成
 
 ```typescript
-export const ANALYTICS_CONFIG = {
-  // 行为追踪间隔
-  HEARTBEAT_INTERVAL: 30000,     // 心跳间隔 (30秒)
-  SCROLL_THROTTLE: 500,          // 滚动节流 (500ms)
-  CLICK_DEBOUNCE: 300,           // 点击防抖 (300ms)
-  
-  // 数据收集限制
-  MAX_EVENTS_QUEUE: 100,         // 最大事件队列长度
-  BATCH_SEND_INTERVAL: 60000,    // 批量发送间隔 (1分钟)
+// 在 layout 中添加 Analytics Provider
+import AnalyticsProvider from '@/components/common/AnalyticsProvider'
+
+export default function Layout({ children }) {
+  return (
+    <>
+      {children}
+      <AnalyticsProvider />
+    </>
+  )
 }
 ```
 
-## 🚀 使用指南
+### 3. 事件追踪
 
-### 1. 基础集成
+```typescript
+import { getAnalytics } from '@/lib/analytics'
 
-分析系统会在 `BaseLayout.astro` 中自动初始化，无需额外配置：
+// 追踪页面浏览
+const analytics = getAnalytics()
+analytics.trackEvent('page_view', {
+  page: window.location.pathname,
+  title: document.title
+})
 
-```javascript
-// 系统会自动初始化，并在全局暴露 analytics 实例
-window.detakeAnalytics // 可用于调试和手动事件追踪
-```
-
-### 2. 文章追踪
-
-在文章页面中追踪用户行为：
-
-```javascript
 // 追踪文章查看
-window.detakeAnalytics.trackArticleView('article-123', 'Article Title', 'crypto')
-
-// 追踪文章分享
-window.detakeAnalytics.trackArticleShare('article-123', 'twitter')
-```
-
-### 3. 自定义事件
-
-追踪自定义用户行为：
-
-```javascript
-window.detakeAnalytics.trackEvent('custom_event', {
-  action: 'button_click',
-  category: 'navigation',
-  value: 1
+analytics.trackEvent('article_view', {
+  articleId: 'article-123',
+  category: 'news',
+  author: 'John Doe'
 })
 ```
 
-### 4. Turnstile 验证
+## 📊 支持的事件类型
 
-在需要验证的组件中使用：
+### 核心事件
+- `page_view`: 页面浏览
+- `article_view`: 文章查看
+- `article_share`: 文章分享
+- `scroll_depth`: 滚动深度
+- `time_on_page`: 页面停留时间
 
-```tsx
-import TurnstileVerification from '../components/common/react/TurnstileVerification'
+### 用户交互事件
+- `click_event`: 点击事件
+- `search_event`: 搜索事件
+- `user_engagement`: 用户参与度
 
-<TurnstileVerification
-  onVerify={(token) => console.log('Verified:', token)}
-  onError={(error) => console.error('Verification failed:', error)}
-  size="normal"
-  theme="auto"
-/>
+### 认证事件
+- `login_attempt`: 登录尝试
+- `login_success`: 登录成功
+- `login_failure`: 登录失败
+
+### 自定义 UI 事件
+- `header_user_button_click`: 头部用户按钮点击
+- `wallet_button_click`: 钱包按钮点击
+
+## 🔧 API 端点
+
+### 事件收集端点
 ```
+POST /api/analytics/events
+Content-Type: application/json
 
-## 📊 数据收集说明
-
-### 自动收集的数据
-
-1. **页面数据**
-   - 页面 URL 和标题
-   - 访问时间和停留时长
-   - 来源页面 (Referrer)
-
-2. **设备信息**
-   - 屏幕分辨率和视窗大小
-   - 用户代理 (User-Agent)
-   - 时区和语言设置
-
-3. **行为数据**
-   - 点击事件和位置
-   - 滚动深度和模式
-   - 表单交互
-
-4. **访客标识**
-   - Cloudflare Visitor ID
-   - Google Analytics Client ID
-   - 会话 ID 和访问历史
-
-### 隐私保护
-
-- 所有个人身份信息都经过哈希处理
-- IP 地址仅用于地理位置分析，不存储完整 IP
-- 用户可以通过浏览器设置禁用追踪
-- 遵循 GDPR 和其他隐私法规要求
-
-## 🔍 虚假流量检测
-
-### 检测规则
-
-1. **时间模式异常**
-   - 短时间内大量事件 (10秒内超过50个事件)
-   - 规律性过强的访问模式
-
-2. **行为模式异常**
-   - 快速连续点击 (100ms内多次点击)
-   - 不可能的滚动跳跃 (单次滚动超过50%)
-
-3. **技术特征**
-   - 可疑的 User-Agent
-   - 已知的机器人 IP 段
-   - 缺少必要的浏览器特征
-
-### 处理策略
-
-- **轻度可疑**: 标记但保留数据
-- **中度可疑**: 降低数据权重
-- **高度可疑**: 过滤掉相关事件
-
-## 🧪 测试和调试
-
-### 测试页面
-
-访问 `/test-analytics` 页面进行功能测试：
-
-- 实时事件追踪演示
-- Turnstile 验证测试
-- 访客信息查看
-- 事件日志监控
-
-### 调试工具
-
-```javascript
-// 查看访客信息
-window.detakeAnalytics.getVisitorData()
-
-// 手动触发事件发送
-window.detakeAnalytics.sendQueuedEvents(true)
-
-// 清理分析数据
-window.detakeAnalytics.destroy()
-```
-
-### 控制台日志
-
-系统会输出详细的调试信息：
-
-```
-[Analytics] System initialized successfully
-[Analytics] Event tracked: { type: 'page_view', ... }
-[Analytics] Sent 10 events successfully
-[Turnstile] Verification successful
-```
-
-## 🔧 高级配置
-
-### 自定义事件类型
-
-在 `constants.ts` 中添加新的事件类型：
-
-```typescript
-export const TRACKING_EVENTS = {
-  // 现有事件...
-  CUSTOM_ACTION: 'custom_action',
-  USER_FEEDBACK: 'user_feedback',
-}
-```
-
-### 扩展分析功能
-
-继承 `AnalyticsManager` 类添加自定义功能：
-
-```typescript
-class CustomAnalytics extends AnalyticsManager {
-  trackCustomMetric(metric: string, value: number) {
-    this.trackEvent('custom_metric', { metric, value })
+{
+  "type": "page_view",
+  "data": {
+    "page": "/news/article-123",
+    "title": "Article Title"
   }
 }
 ```
 
-## 📈 性能优化
+### Cloudflare 访客 ID
+```
+GET /api/cf-visitor-id
+Response: {
+  "visitorId": "unique-visitor-id",
+  "timestamp": 1623456789
+}
+```
 
-### 数据传输优化
+## 📈 数据模型
 
-- **批量发送**: 事件累积到一定数量后批量发送
-- **压缩传输**: 使用 gzip 压缩减少传输大小
-- **异步处理**: 所有分析操作都在后台异步执行
+### 访客数据
+```typescript
+interface VisitorData {
+  visitorId: string
+  gaClientId?: string
+  cfVisitorId?: string
+  sessionId: string
+  firstVisit: number
+  lastVisit: number
+}
+```
 
-### 内存管理
+### 行为事件
+```typescript
+interface BehaviorEvent {
+  type: string
+  timestamp: number
+  data: Record<string, any>
+  visitorId: string
+  sessionId: string
+  pageUrl: string
+}
+```
 
-- **事件队列限制**: 防止内存泄漏
-- **定期清理**: 自动清理过期数据
-- **懒加载**: 按需加载分析模块
+## 🎛️ 配置选项
 
-## 🚨 故障排除
+### Analytics 配置
+```typescript
+export const ANALYTICS_CONFIG = {
+  // Google Analytics configuration
+  GA_MEASUREMENT_ID: import.meta.env.PUBLIC_GA_MEASUREMENT_ID,
+  
+  // Cloudflare Analytics token
+  CLOUDFLARE_ANALYTICS_TOKEN: import.meta.env.PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
+  
+  // Behavior tracking intervals
+  HEARTBEAT_INTERVAL: 30000, // 30 seconds
+  SCROLL_THROTTLE: 500, // 500ms
+  CLICK_DEBOUNCE: 300, // 300ms
+  
+  // Data collection limits
+  MAX_EVENTS_QUEUE: 100,
+  BATCH_SEND_INTERVAL: 60000, // 1 minute
+} as const
+```
+
+## 🔒 隐私与合规
+
+### 数据收集原则
+- 仅收集必要的分析数据
+- 不收集个人身份信息 (PII)
+- 支持用户 opt-out
+- 遵循 GDPR/CCPA 等隐私法规
+
+### 数据保护措施
+- 客户端数据加密
+- 安全的 API 传输
+- 定期数据清理
+- 访问权限控制
+
+## 📝 测试与调试
+
+### 开发环境测试
+```typescript
+// 启用调试模式
+window.__ANALYTICS_DEBUG = true
+
+// 检查事件发送
+console.log(window.__ANALYTICS_EVENTS)
+```
+
+### 生产环境监控
+- 事件发送成功率监控
+- API 响应时间追踪
+- 错误日志收集
+
+## 🐛 故障排除
 
 ### 常见问题
 
-1. **分析系统未初始化**
-   - 检查环境变量配置
-   - 确认网络连接正常
-   - 查看控制台错误信息
+**1. GA 事件未显示**
+- 检查 GA4 配置和测量 ID
+- 确认事件格式正确
+- 验证网络连接
 
-2. **Turnstile 验证失败**
-   - 验证 Site Key 配置
-   - 检查域名白名单设置
-   - 确认网络可以访问 Cloudflare
+**2. 访客 ID 未生成**
+- 检查 Cloudflare headers
+- 验证 API 端点可访问性
+- 确认环境变量配置
 
-3. **事件发送失败**
-   - 检查 API 端点状态
-   - 验证请求格式正确
-   - 查看服务器日志
+**3. 事件队列堆积**
+```bash
+# 检查事件发送状态
+curl -X POST https://yoursite.com/api/analytics/events \
+  -H "Content-Type: application/json" \
+  -d '{"type": "test_event", "data": {}}'
+```
 
-### 监控和告警
+## 📚 最佳实践
 
-建议设置以下监控指标：
+### 1. 事件命名规范
+- 使用下划线分隔词汇
+- 保持名称简洁明确
+- 避免使用动态事件名称
 
-- 事件发送成功率
-- 虚假流量检测率
-- API 响应时间
-- 系统错误率
+### 2. 数据结构
+- 保持事件数据结构一致
+- 避免嵌套过深的对象
+- 使用标准化的字段名
 
-## 🧭 GA4 集成与事件映射
+### 3. 性能优化
+- 批量发送事件
+- 使用防抖和节流
+- 避免阻塞主线程
 
-本节说明 Google Analytics 4（GA4）在本项目中的启用方式、事件映射规则、参数规范以及验证与维护方法。以下内容与自定义分析系统并行工作：所有事件仍会通过批量机制发送到 `/api/analytics/events`，同时关键事件将按规则转发到 GA4。
+## 🔄 更新与维护
 
-### 1) 启用与前置条件
-- 配置环境变量 `PUBLIC_GA_MEASUREMENT_ID`（形如 `G-XXXXXXXXXX`）。
-- 站点在全局模板已加载 GA 脚本（参见 `layouts/BaseLayout.astro`）。
-- 事件转发的核心逻辑集中于 `src/lib/analytics.ts` 的 `trackEvent` 方法中。
+### 版本追踪
+- 事件 schema 版本管理
+- 向后兼容性保证
+- 渐进式功能升级
 
-### 2) 事件映射规则（自定义 → GA4）
-以下为已实现的事件映射及主要参数。若无特殊说明，均在 `trackEvent` 内根据事件类型分支发送。
+### 监控指标
+- 事件收集覆盖率
+- API 性能指标
+- 错误率监控
 
-- 页面浏览
-  - 自定义: `TRACKING_EVENTS.PAGE_VIEW`
-  - GA4: `page_view`
-  - 参数: `page_title`、`page_location`
-
-- 文章浏览
-  - 自定义: `TRACKING_EVENTS.ARTICLE_VIEW`
-  - GA4: `view_item`
-  - 参数: `items: [{ item_id, item_name, item_category, content_type: 'article' }]`
-
-- 文章分享
-  - 自定义: `TRACKING_EVENTS.ARTICLE_SHARE`
-  - GA4: `share`
-  - 参数: `method`（平台名称，如 twitter）、`content_type: 'article'`、`item_id`
-
-- 滚动深度
-  - 自定义: `TRACKING_EVENTS.SCROLL_DEPTH`
-  - GA4: `scroll`
-  - 参数: `percent_scrolled`、`max_depth`
-
-- 页面停留时长
-  - 自定义: `TRACKING_EVENTS.TIME_ON_PAGE`
-  - GA4: 自定义事件 `time_on_page`
-  - 参数: `duration_ms`、`max_scroll_depth`
-
-- 站内搜索
-  - 自定义: `TRACKING_EVENTS.SEARCH_EVENT`
-  - GA4: `search`
-  - 参数: `search_term`（从 `query/keyword/term/text` 推断）
-
-- 登录相关
-  - 自定义: `TRACKING_EVENTS.LOGIN_ATTEMPT` → GA4: 自定义事件 `login_attempt`（`method`）
-  - 自定义: `TRACKING_EVENTS.LOGIN_SUCCESS` → GA4: `login`（`method`）
-  - 自定义: `TRACKING_EVENTS.LOGIN_FAILURE` → GA4: 自定义事件 `login_failure`（`method`、`error_code`、`reason`）
-
-- Cloudflare Turnstile
-  - 自定义: `TRACKING_EVENTS.TURNSTILE_VERIFY` → GA4: 自定义事件 `turnstile_verify`（`status`、`error`）
-  - 自定义: `TRACKING_EVENTS.TURNSTILE_ERROR` → GA4: 自定义事件 `turnstile_error`（`code`、`message`）
-
-- 顶部用户按钮点击
-  - 自定义: `TRACKING_EVENTS.HEADER_USER_BUTTON_CLICK`
-  - GA4: `select_content`
-  - 参数: `content_type: 'button'`、`item_id: 'header_user_button'`、`has_token`、`locale`
-
-- 钱包按钮点击
-  - 自定义: `TRACKING_EVENTS.WALLET_BUTTON_CLICK`
-  - GA4: 分支规则
-    - 若 `intent === 'login'` → `login`（`method: 'wallet'`）
-    - 若 `intent === 'disconnect'` → `select_content`（`content_type: 'button'`、`item_id: 'wallet_disconnect_button'`）
-
-### 3) 参数与命名建议
-- 优先使用 GA4 推荐事件名（如 `page_view`、`view_item`、`search`、`login`、`share`、`select_content`），在报表中更易读且便于洞察聚合。
-- 对于不在 GA4 推荐列表内的场景，采用清晰的自定义事件名（如 `time_on_page`、`login_attempt`、`login_failure`、`turnstile_*`）。
-- 参数命名遵循小写+下划线风格（如 `has_token`、`percent_scrolled`），与 GA4 习惯一致。
-- 若开启了 GA4 增强型测量（Enhanced Measurement）的自动滚动追踪，可保留本系统更细颗粒度的滚动百分比作为补充；担心重复时可在报表端筛选或将自定义事件更名为 `custom_scroll`。
-
-### 4) 验证方法
-- 浏览器开发者工具
-  - 打开开发者工具 Network → `collect`/`g/collect` 请求，确认事件命中与参数。
-- GA4 DebugView / Realtime
-  - 在 GA4 管理后台打开 DebugView 或 Realtime，触发各交互，查看事件 `select_content`、`login`、`view_item`、`share`、`search`、`scroll`、`time_on_page`、`turnstile_*` 是否出现。
-- 环境依赖
-  - 确认 `PUBLIC_GA_MEASUREMENT_ID` 已正确配置并在前端生效。
-
-### 5) 如何新增一个 GA4 映射
-1. 在 `src/config/constants.ts` 补充或复用 `TRACKING_EVENTS` 常量。
-2. 在 `src/lib/analytics.ts` 的 `trackEvent` 方法中为该事件添加 GA4 分支逻辑与参数映射。
-3. 通过 DebugView 验证，必要时在 GA4 界面创建自定义维度/指标以支持新参数分析。
-4. 在本文档本章节补充该事件的映射说明与参数定义。
-
----
-
-## 📚 相关资源
+## 📖 参考资料
 
 - [Google Analytics 4 文档](https://developers.google.com/analytics/devguides/collection/ga4)
-- [Cloudflare Turnstile 文档](https://developers.cloudflare.com/turnstile/)
 - [Cloudflare Analytics API](https://developers.cloudflare.com/analytics/)
-- [Web Analytics 最佳实践](https://web.dev/vitals/)
-
-## 🤝 贡献指南
-
-如需扩展或修改分析系统：
-
-1. 遵循现有的代码结构和命名规范
-2. 添加适当的类型定义和注释
-3. 编写相应的测试用例
-4. 更新相关文档
-
----
-
-**注意**: 本系统收集的所有数据仅用于改善用户体验和产品优化，严格遵循隐私保护原则。
+- [Web Analytics 最佳实践](https://web.dev/analytics-best-practices/)

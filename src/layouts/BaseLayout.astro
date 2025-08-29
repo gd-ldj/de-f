@@ -1,7 +1,6 @@
 ---
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
 import { Analytics } from '@vercel/analytics/react';
-import { TurnstileVerification } from '../components/common/react/TurnstileVerification';
 
 import '../styles/global.css'
 
@@ -111,7 +110,6 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://www.googletagmanager.com" />
-    <link rel="preconnect" href="https://challenges.cloudflare.com" />
 
     <!-- Buffer polyfill for browser using ESM (real polyfill overrides the shim when loaded) -->
     <script is:inline type="module">
@@ -127,8 +125,6 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
     <div class="relative flex min-h-screen flex-col">
       <slot />
     </div>
-   <!-- Turnstile verification for all pages to filter bot traffic (except 404 page) -->
-    {Astro.url.pathname !== '/404' && <TurnstileVerification client:load />}
     
     <!-- SSR-to-client analytics bridge examples -->
     <script is:inline>
@@ -275,33 +271,5 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
         cachedPromoteCode = null
       })
     </script>
-    <!-- Cloudflare Web Analytics -->
-    <script is:inline>
-      // 只在生产环境加载 Cloudflare Analytics，避免本地开发跨域问题
-      (function() {
-        const isLocalhost = typeof window !== 'undefined' && (
-          window.location.hostname === 'localhost' ||
-          window.location.hostname === '127.0.0.1' ||
-          window.location.hostname.startsWith('192.168.')
-        );
-
-        if (!isLocalhost) {
-          const script = document.createElement('script');
-          script.defer = true;
-          script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
-          script.setAttribute('data-cf-beacon', '{"token": "4416db07a1a04e0590e7b5724bc452df"}');
-          
-          script.onerror = function() {
-            console.warn('[Cloudflare Analytics] Failed to load - this is normal in development');
-          };
-          
-          document.head.appendChild(script);
-          console.log('[Cloudflare Analytics] Loaded for production environment');
-        } else {
-          console.log('[Cloudflare Analytics] Skipped loading in development environment');
-        }
-      })();
-    </script>
-    <!-- End Cloudflare Web Analytics -->
   </body>
 </html>
