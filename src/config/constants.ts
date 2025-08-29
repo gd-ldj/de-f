@@ -71,4 +71,7 @@ export const TRACKING_EVENTS = {
   LOGIN_ATTEMPT: 'login_attempt',
   LOGIN_SUCCESS: 'login_success',
   LOGIN_FAILURE: 'login_failure',
+  // Custom UI click events
+  HEADER_USER_BUTTON_CLICK: 'header_user_button_click',
+  WALLET_BUTTON_CLICK: 'wallet_button_click',
 } as const

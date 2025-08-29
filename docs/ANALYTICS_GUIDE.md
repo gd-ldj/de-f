@@ -295,6 +295,90 @@ class CustomAnalytics extends AnalyticsManager {
 - API 响应时间
 - 系统错误率
 
+## 🧭 GA4 集成与事件映射
+
+本节说明 Google Analytics 4（GA4）在本项目中的启用方式、事件映射规则、参数规范以及验证与维护方法。以下内容与自定义分析系统并行工作：所有事件仍会通过批量机制发送到 `/api/analytics/events`，同时关键事件将按规则转发到 GA4。
+
+### 1) 启用与前置条件
+- 配置环境变量 `PUBLIC_GA_MEASUREMENT_ID`（形如 `G-XXXXXXXXXX`）。
+- 站点在全局模板已加载 GA 脚本（参见 `layouts/BaseLayout.astro`）。
+- 事件转发的核心逻辑集中于 `src/lib/analytics.ts` 的 `trackEvent` 方法中。
+
+### 2) 事件映射规则（自定义 → GA4）
+以下为已实现的事件映射及主要参数。若无特殊说明，均在 `trackEvent` 内根据事件类型分支发送。
+
+- 页面浏览
+  - 自定义: `TRACKING_EVENTS.PAGE_VIEW`
+  - GA4: `page_view`
+  - 参数: `page_title`、`page_location`
+
+- 文章浏览
+  - 自定义: `TRACKING_EVENTS.ARTICLE_VIEW`
+  - GA4: `view_item`
+  - 参数: `items: [{ item_id, item_name, item_category, content_type: 'article' }]`
+
+- 文章分享
+  - 自定义: `TRACKING_EVENTS.ARTICLE_SHARE`
+  - GA4: `share`
+  - 参数: `method`（平台名称，如 twitter）、`content_type: 'article'`、`item_id`
+
+- 滚动深度
+  - 自定义: `TRACKING_EVENTS.SCROLL_DEPTH`
+  - GA4: `scroll`
+  - 参数: `percent_scrolled`、`max_depth`
+
+- 页面停留时长
+  - 自定义: `TRACKING_EVENTS.TIME_ON_PAGE`
+  - GA4: 自定义事件 `time_on_page`
+  - 参数: `duration_ms`、`max_scroll_depth`
+
+- 站内搜索
+  - 自定义: `TRACKING_EVENTS.SEARCH_EVENT`
+  - GA4: `search`
+  - 参数: `search_term`（从 `query/keyword/term/text` 推断）
+
+- 登录相关
+  - 自定义: `TRACKING_EVENTS.LOGIN_ATTEMPT` → GA4: 自定义事件 `login_attempt`（`method`）
+  - 自定义: `TRACKING_EVENTS.LOGIN_SUCCESS` → GA4: `login`（`method`）
+  - 自定义: `TRACKING_EVENTS.LOGIN_FAILURE` → GA4: 自定义事件 `login_failure`（`method`、`error_code`、`reason`）
+
+- Cloudflare Turnstile
+  - 自定义: `TRACKING_EVENTS.TURNSTILE_VERIFY` → GA4: 自定义事件 `turnstile_verify`（`status`、`error`）
+  - 自定义: `TRACKING_EVENTS.TURNSTILE_ERROR` → GA4: 自定义事件 `turnstile_error`（`code`、`message`）
+
+- 顶部用户按钮点击
+  - 自定义: `TRACKING_EVENTS.HEADER_USER_BUTTON_CLICK`
+  - GA4: `select_content`
+  - 参数: `content_type: 'button'`、`item_id: 'header_user_button'`、`has_token`、`locale`
+
+- 钱包按钮点击
+  - 自定义: `TRACKING_EVENTS.WALLET_BUTTON_CLICK`
+  - GA4: 分支规则
+    - 若 `intent === 'login'` → `login`（`method: 'wallet'`）
+    - 若 `intent === 'disconnect'` → `select_content`（`content_type: 'button'`、`item_id: 'wallet_disconnect_button'`）
+
+### 3) 参数与命名建议
+- 优先使用 GA4 推荐事件名（如 `page_view`、`view_item`、`search`、`login`、`share`、`select_content`），在报表中更易读且便于洞察聚合。
+- 对于不在 GA4 推荐列表内的场景，采用清晰的自定义事件名（如 `time_on_page`、`login_attempt`、`login_failure`、`turnstile_*`）。
+- 参数命名遵循小写+下划线风格（如 `has_token`、`percent_scrolled`），与 GA4 习惯一致。
+- 若开启了 GA4 增强型测量（Enhanced Measurement）的自动滚动追踪，可保留本系统更细颗粒度的滚动百分比作为补充；担心重复时可在报表端筛选或将自定义事件更名为 `custom_scroll`。
+
+### 4) 验证方法
+- 浏览器开发者工具
+  - 打开开发者工具 Network → `collect`/`g/collect` 请求，确认事件命中与参数。
+- GA4 DebugView / Realtime
+  - 在 GA4 管理后台打开 DebugView 或 Realtime，触发各交互，查看事件 `select_content`、`login`、`view_item`、`share`、`search`、`scroll`、`time_on_page`、`turnstile_*` 是否出现。
+- 环境依赖
+  - 确认 `PUBLIC_GA_MEASUREMENT_ID` 已正确配置并在前端生效。
+
+### 5) 如何新增一个 GA4 映射
+1. 在 `src/config/constants.ts` 补充或复用 `TRACKING_EVENTS` 常量。
+2. 在 `src/lib/analytics.ts` 的 `trackEvent` 方法中为该事件添加 GA4 分支逻辑与参数映射。
+3. 通过 DebugView 验证，必要时在 GA4 界面创建自定义维度/指标以支持新参数分析。
+4. 在本文档本章节补充该事件的映射说明与参数定义。
+
+---
+
 ## 📚 相关资源
 
 - [Google Analytics 4 文档](https://developers.google.com/analytics/devguides/collection/ga4)

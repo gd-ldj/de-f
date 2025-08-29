@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { headerTexts } from './constants';
 import { STORAGE_KEYS } from '@/config/constants';
+import { TRACKING_EVENTS } from '@/config/constants';
 import { toast } from '@/components/common/react/Toast';
 
 // Import icons from local assets
@@ -331,11 +332,24 @@ export default function Header({ userComponent }: HeaderProps) {
               <button 
                 className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
                 onClick={() => {
-                  const storedAccessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-                  if (storedAccessToken) {
-                    window.open(`https://caaaeee.vercel.app/${locale}?t=${storedAccessToken}`, '_blank');
-                  } else {
-                    toast.error(texts.messages.pleaseLoginFirst);
+                  try {
+                    const storedAccessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+                    // Track click event with context
+                    if (typeof window !== 'undefined' && (window as any).detakeAnalytics) {
+                      (window as any).detakeAnalytics.trackEvent(TRACKING_EVENTS.HEADER_USER_BUTTON_CLICK, {
+                        hasToken: Boolean(storedAccessToken),
+                        locale,
+                        source: 'header_user_button',
+                      });
+                    }
+
+                    if (storedAccessToken) {
+                      window.open(`https://caaaeee.vercel.app/${locale}?t=${storedAccessToken}`, '_blank');
+                    } else {
+                      toast.error(texts.messages.pleaseLoginFirst);
+                    }
+                  } catch (err) {
+                    console.warn('[Analytics] Failed to track header user button click:', err);
                   }
                 }}
               >
