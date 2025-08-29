@@ -4,13 +4,8 @@ export default {
   locales: ['us', 'asia'],
   load: ['server', 'client'],
   i18nextServer: {
-    resources: {
-      us: {
-        translation: {},
-      },
-      asia: {
-        translation: {},
-      },
+    backend: {
+      loadPath: './public/locales/{{lng}}/{{ns}}.json',
     },
     fallbackLng: 'us',
     interpolation: {
@@ -18,13 +13,8 @@ export default {
     },
   },
   i18nextClient: {
-    resources: {
-      us: {
-        translation: {},
-      },
-      asia: {
-        translation: {},
-      },
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
     fallbackLng: 'us',
     interpolation: {
@@ -33,8 +23,10 @@ export default {
   },
   i18nextServerPlugins: {
     '{initReactI18next}': 'react-i18next',
+    'Backend': 'i18next-fs-backend',
   },
   i18nextClientPlugins: {
     '{initReactI18next}': 'react-i18next',
+    'Backend': 'i18next-http-backend',
   },
 };
