@@ -1,6 +1,6 @@
 ---
 import type { Locale, ApiArticle } from '@/types'
-import i18next, { t } from 'i18next'
+import { getTranslation } from '@/lib/translations'
 import Image from '@/components/common/astro/ImageSSR.astro'
 import {formatDate} from '@/utils/util'
 
@@ -15,8 +15,8 @@ interface Props {
 
 const { article, locale, category, categoryDisplayName } = Astro.props
 
-// Set the language for i18next
-i18next.changeLanguage(locale)
+// Use custom translation function for server-side rendering
+const t = (key: string) => getTranslation(locale, key)
 
 ---
  

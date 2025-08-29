@@ -1,6 +1,6 @@
 ---
 import type { Locale } from '@/types'
-import i18next, { t } from 'i18next'
+import { getTranslation } from '@/lib/translations'
 
 interface Props {
   currentPage: number
@@ -12,8 +12,8 @@ interface Props {
 
 const { currentPage, totalItems, itemsPerPage, locale, baseUrl } = Astro.props
 
-// Set the language for i18next
-i18next.changeLanguage(locale)
+// Use custom translation function for server-side rendering
+const t = (key: string) => getTranslation(locale, key)
 
 /**
  * Calculate pagination data based on current state

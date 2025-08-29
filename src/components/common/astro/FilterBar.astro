@@ -3,8 +3,8 @@ import type { Locale } from '@/types'
 import TopicMultiSelect from '@/components/common/react/TopicMultiSelect'
 import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect'
 import AuthorSearchInput from '@/components/common/react/AuthorSearchInput'
-import FilterBar from '@/components/common/react/FilterBar'
-import i18next, { t } from 'i18next'
+import FilterBarComponent from '@/components/common/react/FilterBar'
+import { getTranslation } from '@/lib/translations'
 
 export interface Props {
   locale: 'us' | 'asia'
@@ -18,8 +18,8 @@ const {
   viewMode = 'grid',
 } = Astro.props as Props
 
-// Set the language for i18next
-i18next.changeLanguage(locale)
+// Use custom translation function for server-side rendering
+const t = (key: string) => getTranslation(locale, key)
 
 const i18n = {
   filters: t('common.filters'),
