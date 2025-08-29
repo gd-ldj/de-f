@@ -2,7 +2,7 @@
 import { fetchHomePageData } from '@/api/articles'
 import type { Locale } from '@/types'
 import ResearchGrid from '@/components/home/react/ResearchGrid'
-import i18next, { t } from 'i18next'
+import { getTranslation } from '@/lib/translations'
 import { getLocaleFromPath } from '@/lib/utils'
 
 interface Props {
@@ -12,8 +12,8 @@ interface Props {
 const { locale: propsLocale } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
-// Set the language for i18next
-i18next.changeLanguage(locale)
+// Translation helper function
+const t = (key: string) => getTranslation(locale, key)
 
 /**
  * 获取首页数据用于 Research 组件

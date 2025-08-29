@@ -57,7 +57,7 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ locale }) => {
       <div className="">
         {/* Token Info Card */}
         <div className="px-6 p-5 border-b border-border">
-          <TokenInfoCard marketCap="$24.71M" liquidity="$1.8M" volume24h="$24.71M" holders="19,861" price="$0.0041" priceChange="+$0.0008" percentage="+60%" isPositive={true} />
+          <TokenInfoCard locale={locale} marketCap="$24.71M" liquidity="$1.8M" volume24h="$24.71M" holders="19,861" price="$0.0041" priceChange="+$0.0008" percentage="+60%" isPositive={true} />
         </div>
 
         {/* Bonus Distribution */}
