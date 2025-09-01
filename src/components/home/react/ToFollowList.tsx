@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import Image from '@/components/common/react/Image';
 import { fetchHomePageData } from '@/api/articles';
 import type { HomeWhoToFollow, Locale } from '@/types';
-import { useTranslation } from 'react-i18next';
+import { t } from '@/lib/i18n';
 import { getLocaleFromPath } from '@/lib/utils';
 import { useAuth } from '@/lib/useAuth';
 import { followAuthor } from '@/api/users';
@@ -28,7 +28,7 @@ function getLocale(propsLocale?: Locale): Locale {
 }
 
 export default function ToFollowList({ locale: propsLocale }: ToFollowListProps) {
-  const { t } = useTranslation();
+  console.log('🚀 ~ ToFollowList ~ locale:', propsLocale);
   const locale = useMemo(() => getLocale(propsLocale), [propsLocale]);
   const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +45,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
     try {
       setError(null);
       const homeData = await fetchHomePageData();
+      console.log('🚀 ~ ToFollowList ~ homeData:', homeData);
       setFollowUsers(homeData?.who_to_follow || []);
     } catch (error) {
       console.error('Failed to load follow users:', error);
@@ -104,7 +105,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
     return (
       <div className="space-y-6 px-6 border-t border-border pt-5">
         <div>
-          <h3 className="font-medium text-foreground mb-4">Who To Follow</h3>
+          <h3 className="font-medium text-foreground mb-4">{t(locale, 'common.whoToFollow')}</h3>
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">{error}</p>
             <button onClick={loadFollowUsers} className="text-primary hover:text-primary/80 text-sm">
@@ -120,7 +121,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
     return (
       <div className="space-y-6 px-6 border-t border-border pt-5">
         <div>
-          <h3 className="font-medium text-foreground mb-4">Who To Follow</h3>
+          <h3 className="font-medium text-foreground mb-4">{t(locale, 'common.whoToFollow')}</h3>
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i}>
@@ -144,7 +145,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
     <>
       <div className="space-y-6 px-6 border-t border-border pt-5">
         <div>
-          <h3 className="font-medium text-foreground mb-4">Who To Follow</h3>
+          <h3 className="font-medium text-foreground mb-4">{t(locale, 'common.whoToFollow')}</h3>
           <div className="space-y-4">
             {followUsers.map((user, index) => (
               <div key={index}>
@@ -162,7 +163,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
                     </button>
                     <button onClick={() => handleFollow(user.user_id)} disabled={!!followingMap[user.user_id]} className={`bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed text-primary-foreground px-4 py-1.5 rounded text-sm font-medium transition-all duration-300 ease-in-out items-center space-x-1 absolute right-0 top-0 flex ${hoveredUserId === user.user_id ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
                       <Plus className="w-4 h-4" />
-                      <span>{t('common.subscribe')}</span>
+                      <span>{t(locale, 'common.subscribe')}</span>
                     </button>
                   </div>
                 </div>

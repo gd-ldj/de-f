@@ -3,7 +3,7 @@ import type { Locale } from '@/types'
 import type { FilterSection } from './FilterDropdown'
 import MultiSelectBase from './MultiSelectBase'
 import { fetchArticleCategories } from '@/api/articles'
-import { useTranslation } from 'react-i18next'
+import { t } from '@/lib/i18n'
 
 export interface CategoryMultiSelectProps {
   locale: Locale
@@ -20,11 +20,10 @@ export default function CategoryMultiSelect({
   locale,
   initialValues,
 }: CategoryMultiSelectProps) {
-  const { t } = useTranslation();
   const [sections, setSections] = useState<FilterSection[]>([
     {
       id: 'category',
-      title: t('common.category'),
+      title: t(locale, 'common.category'),
       options: [],
     },
   ])
@@ -53,13 +52,13 @@ export default function CategoryMultiSelect({
         if (Array.isArray(cats) && cats.length > 0) {
           // Parse initial values into array format
           const selectedValues = initialValues 
-            ? (Array.isArray(initialValues) ? initialValues : initialValues.split(',').map(v => v.trim()))
+            ? (Array.isArray(initialValues) ? initialValues : initialValues.split(locale, ',').map(v => v.trim()))
             : [];
           
           setSections([
             {
               id: 'category',
-              title: t('common.category'),
+              title: t(locale, 'common.category'),
               options: mapCategoriesToOptions(cats, selectedValues),
             },
           ])
@@ -68,11 +67,11 @@ export default function CategoryMultiSelect({
           setSections([
             {
               id: 'category',
-              title: t('common.category'),
+              title: t(locale, 'common.category'),
               options: [
-                { id: 'markets', label: t('common.markets'), checked: false },
-                { id: 'news', label: t('common.news'), checked: false },
-                { id: 'research', label: t('common.research'), checked: false },
+                { id: 'markets', label: t(locale, 'common.markets'), checked: false },
+                { id: 'news', label: t(locale, 'common.news'), checked: false },
+                { id: 'research', label: t(locale, 'common.research'), checked: false },
               ],
             },
           ])
@@ -83,11 +82,11 @@ export default function CategoryMultiSelect({
         setSections([
           {
             id: 'category',
-            title: t('common.category'),
+            title: t(locale, 'common.category'),
             options: [
-              { id: 'markets', label: t('common.markets'), checked: false },
-              { id: 'news', label: t('common.news'), checked: false },
-              { id: 'research', label: t('common.research'), checked: false },
+              { id: 'markets', label: t(locale, 'common.markets'), checked: false },
+              { id: 'news', label: t(locale, 'common.news'), checked: false },
+              { id: 'research', label: t(locale, 'common.research'), checked: false },
             ],
           },
         ])

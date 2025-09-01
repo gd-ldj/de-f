@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { Locale } from '@/types'
-import { useTranslation } from 'react-i18next'
+import { t } from '@/lib/i18n'
 
 interface AuthorSearchInputProps {
   locale: Locale
@@ -24,7 +24,6 @@ export default function AuthorSearchInput({
   onSearch,
   className = ''
 }: AuthorSearchInputProps) {
-  const { t } = useTranslation();
   const [value, setValue] = useState<string>(defaultValue)
 
   // Store throttle metadata in refs to preserve values across renders without re-creating timers
@@ -114,7 +113,7 @@ export default function AuthorSearchInput({
     }
   }, [])
 
-  const placeholder = t('common.inputAuthor');
+  const placeholder = t(locale, 'common.inputAuthor');
 
   return (
     <div className={`relative ${className}`}>

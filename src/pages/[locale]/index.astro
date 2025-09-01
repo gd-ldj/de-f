@@ -11,7 +11,6 @@ import Footer from '@/components/common/react/footer/Index';
 import AuthMount from '@/components/common/react/AuthMount';
 import Header from '@/components/common/react/header/Index';
 import ToFollowList from '@/components/home/react/ToFollowList';
-import I18nProvider from '@/components/common/react/I18nProvider';
 
 import { changeLanguage } from "i18next";
 
@@ -53,10 +52,7 @@ const { title, description } = seoContent[locale] || seoContent.us
           <div class="grid grid-cols-12">
             <div class="col-span-3 space-y-6 py-5 border border-t-0 border-r-0 border-border">
               <Sidebar />
-              <!-- ToFollowList 组件使用 I18n 包装 -->
-              <I18nProvider client:load locale={locale}>
-                <ToFollowList />
-              </I18nProvider>
+                <ToFollowList locale={locale} client:load />
             </div>
             <div class="col-span-6 border border-t-0 border-border py-5 px-6">
               <MainContent locale={locale} />
@@ -71,9 +67,7 @@ const { title, description } = seoContent[locale] || seoContent.us
           <TrendingSection />
           <ResearchSection locale={locale} /> -->
         </div>
-        <I18nProvider client:load locale={locale}>
-          <Footer />
-        </I18nProvider>
+          <Footer  client:load />
       </div>
 
 </BaseLayout>

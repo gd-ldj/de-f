@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '@/types';
 import FilterDropdown, { type FilterSection } from './FilterDropdown';
-import { useTranslation } from 'react-i18next';
+import { t } from '@/lib/i18n';
 
 export interface MultiSelectBaseProps {
   locale: Locale;

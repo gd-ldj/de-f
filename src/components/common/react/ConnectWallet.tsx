@@ -3,13 +3,13 @@ import { useMemo } from 'react';
 import Image from './Image';
 import walletWhiteIcon from '@/assets/imgs/wallet-white.svg';
 import { TRACKING_EVENTS } from '@/config/constants';
+import { t } from '@/lib/i18n';
 
-const ButtonAuthentication = () => {
-  const { ready, authenticated, login, logout, user, isEffectivelyLoggedIn, walletAddress, storedWalletAddress } = useAuth();
+const ButtonAuthentication = ({ locale }: { locale: any }) => {
+  const { ready, login, walletAddress } = useAuth();
 
   // Memoize computed values to prevent unnecessary re-renders
   const disableInteractions = useMemo(() => !ready, [ready]);
-  const shouldShowLogin = useMemo(() => !storedWalletAddress, [storedWalletAddress]);
 
   // Early return with loading state when not ready
   if (!ready) {
@@ -36,19 +36,14 @@ const ButtonAuthentication = () => {
     }
   };
 
-  // Button text based on login state
-  const getButtonText = () => {
-    return shouldShowLogin ? 'Continue with Wallet' : 'Disconnect Wallet';
-  };
-
   return (
     <button disabled={disableInteractions} onClick={handleWalletAction} className={`w-full py-3 px-4 rounded flex items-center justify-center space-x-2 transition-all duration-200 ${disableInteractions ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}>
       <Image className="w-[1.25rem] mr-1" src={walletWhiteIcon.src} alt="Wallet" />
-      {getButtonText()}
+      {t(locale, 'wallet.continueWithWallet')}
     </button>
   );
 };
 
-export const Wallet = () => {
-  return <ButtonAuthentication />;
+export const Wallet = ({ locale }: { locale: any }) => {
+  return <ButtonAuthentication locale={locale} />;
 };
