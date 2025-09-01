@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import TopicMultiSelect from '@/components/common/react/TopicMultiSelect'
 import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect'
 import AuthorSearchInput from '@/components/common/react/AuthorSearchInput'
-import { t } from '@/lib/i18n'
+import { createTranslator } from '@/lib/i18n'
 import type { Locale } from '@/types'
 
 export interface FilterBarProps {
@@ -25,12 +25,15 @@ export default function FilterBar({
   const [topicActive, setTopicActive] = useState(false)
   const [authorActive, setAuthorActive] = useState(false)
 
+  // Create a translation function bound to the current locale
+  const t = createTranslator(locale);
+  
   const i18n = {
-    filters: t(locale, 'common.filters'),
-    clearAll: t(locale, 'common.clearAll'),
-    category: t(locale, 'common.category'),
-    author: t(locale, 'common.author'),
-    topic: t(locale, 'common.topic'),
+    filters: t('common.filters'),
+    clearAll: t('common.clearAll'),
+    category: t('common.category'),
+    author: t('common.author'),
+    topic: t('common.topic'),
   }
 
   // Update the CLEAR ALL button disabled state

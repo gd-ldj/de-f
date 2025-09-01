@@ -1,7 +1,7 @@
 ---
 import { fetchHomePageData } from '@/api/articles'
 import type { HomeTopic, HomeMostReadArticle, Locale } from '@/types'
-import { getTranslation } from '@/lib/translations'
+import { createTranslator } from '@/lib/i18n'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
 import {formatDate} from '@/utils/util'
@@ -15,7 +15,7 @@ const { locale: propsLocale } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
 // Use custom translation function for server-side rendering
-const t = (key: string) => getTranslation(locale, key)
+const t = createTranslator(locale)
 
 // Fetch home page data from API - 从API获取首页数据
 const homeData = await fetchHomePageData()

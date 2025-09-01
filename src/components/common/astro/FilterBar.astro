@@ -4,7 +4,7 @@ import TopicMultiSelect from '@/components/common/react/TopicMultiSelect'
 import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect'
 import AuthorSearchInput from '@/components/common/react/AuthorSearchInput'
 import FilterBarComponent from '@/components/common/react/FilterBar'
-import { getTranslation } from '@/lib/translations'
+import { createTranslator } from '@/lib/i18n'
 
 export interface Props {
   locale: 'us' | 'asia'
@@ -19,7 +19,7 @@ const {
 } = Astro.props as Props
 
 // Use custom translation function for server-side rendering
-const t = (key: string) => getTranslation(locale, key)
+const t = createTranslator(locale)
 
 const i18n = {
   filters: t('common.filters'),
@@ -140,20 +140,20 @@ const i18n = {
     }
 
     // Listen to filter changes from children and recompute the button state
-    document.addEventListener('category:changed', (e) => {
-      const detail = (e && e.detail !== undefined) ? e.detail : {}
+    document.addEventListener('category:changed', (e: Event) => {
+      const detail = (e as CustomEvent)?.detail || {}
       catActive = Boolean(detail.hasSelection)
       refreshButtonState()
     })
 
-    document.addEventListener('filter:changed', (e) => {
-      const detail = (e && e.detail !== undefined) ? e.detail : {}
+    document.addEventListener('filter:changed', (e: Event) => {
+      const detail = (e as CustomEvent)?.detail || {}
       topicActive = Boolean(detail.hasSelection)
       refreshButtonState()
     })
 
-    document.addEventListener('author:changed', (e) => {
-      const detail = (e && e.detail !== undefined) ? e.detail : {}
+    document.addEventListener('author:changed', (e: Event) => {
+      const detail = (e as CustomEvent)?.detail || {}
       authorActive = Boolean(detail.hasText)
       refreshButtonState()
     })

@@ -5,7 +5,7 @@ import type { Locale, HomeNewsArticle } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import {formatDate} from '@/utils/util'
-import { getTranslation } from '@/lib/translations'
+import { createTranslator } from '@/lib/i18n'
 
 // Get locale from props or default to 'us'
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 const { locale = 'us' as Locale } = Astro.props as Props
 
 // Translation helper function
-const t = (key: string) => getTranslation(locale, key)
+const t = createTranslator(locale)
 
 // Fetch home page data
 const homeData = await fetchHomePageData()

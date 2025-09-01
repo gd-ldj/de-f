@@ -75,3 +75,13 @@ export const useTranslation = (locale: Locale) => {
     t: (key: string, fallback?: string) => t(locale, key, fallback),
   };
 };
+
+/**
+ * Create a translation function bound to a specific locale
+ * This is useful for components that want to avoid passing locale repeatedly
+ * @param locale - Current locale
+ * @returns Translation function that only requires the key
+ */
+export const createTranslator = (locale: Locale) => {
+  return (key: string, fallback?: string) => t(locale, key, fallback);
+};

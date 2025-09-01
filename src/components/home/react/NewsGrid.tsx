@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { HomeNewsArticle, Locale } from '@/types';
 import { formatDate } from '@/utils/util';
-import { t } from '@/lib/i18n';
+import { createTranslator } from '@/lib/i18n';
 import { fetchArticles } from '@/api/articles';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
@@ -18,23 +18,24 @@ interface NewsCategory {
 }
 
 export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
+  const t = createTranslator(locale);
   const [articles, setArticles] = useState<any[]>(initialArticles);
   const [activeCategory, setActiveCategory] = useState('all');
   const [loading, setLoading] = useState(false);
 
   // 定义新闻分类
   const newsCategories: NewsCategory[] = [
-    { key: 'all', name: t(locale, 'common.all'), active: true },
-    { key: 'opinion', name: t(locale, 'common.opinion'), category_name: 'opinion' },
-    { key: 'markets', name: t(locale, 'common.markets'), category_name: 'markets' },
-    { key: 'decibels', name: t(locale, 'common.decibels'), category_name: 'decibels' },
-    { key: 'exchange', name: t(locale, 'common.exchange'), category_name: 'exchange' },
-    { key: 'feature', name: t(locale, 'common.feature'), category_name: 'feature' },
-    { key: 'announcement', name: t(locale, 'common.announcement'), category_name: 'announcement' },
-    { key: 'people', name: t(locale, 'common.people'), category_name: 'people' },
-    { key: 'event', name: t(locale, 'common.event'), category_name: 'event' },
-    { key: 'analysis', name: t(locale, 'common.analysis'), category_name: 'analysis' },
-    { key: 'newsletter', name: t(locale, 'common.lightspeedNewsletter'), category_name: 'newsletter' },
+    { key: 'all', name: t('common.all'), active: true },
+    { key: 'opinion', name: t('common.opinion'), category_name: 'opinion' },
+    { key: 'markets', name: t('common.markets'), category_name: 'markets' },
+    { key: 'decibels', name: t('common.decibels'), category_name: 'decibels' },
+    { key: 'exchange', name: t('common.exchange'), category_name: 'exchange' },
+    { key: 'feature', name: t('common.feature'), category_name: 'feature' },
+    { key: 'announcement', name: t('common.announcement'), category_name: 'announcement' },
+    { key: 'people', name: t('common.people'), category_name: 'people' },
+    { key: 'event', name: t('common.event'), category_name: 'event' },
+    { key: 'analysis', name: t('common.analysis'), category_name: 'analysis' },
+    { key: 'newsletter', name: t('common.lightspeedNewsletter'), category_name: 'newsletter' },
   ];
 
   // 处理分类切换
@@ -77,11 +78,11 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
       {/* 标题栏 */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
-          <h2 className="text font-medium text-foreground">{t(locale, 'common.news')}</h2>
-          <p className="text text-muted-foreground">{t(locale, 'common.breakingHeadlines')}</p>
+          <h2 className="text font-medium text-foreground">{t('common.news')}</h2>
+          <p className="text text-muted-foreground">{t('common.breakingHeadlines')}</p>
         </div>
         <a href={`/${locale}/news`} className="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
-          {t(locale, 'common.moreFromNews')}
+          {t('common.moreFromNews')}
         </a>
       </div>
 
@@ -160,7 +161,7 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
               {/* 文章元信息 */}
               <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
                 <span className="font-medium">
-                  {formatDate(article.created_at, locale)} / {t(locale, 'article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
+                  {formatDate(article.created_at, locale)} / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
                 </span>
               </div>
             </div>
@@ -171,7 +172,7 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
       {/* 无数据状态 */}
       {!loading && articles.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
-          <p>{t(locale, 'common.none')}</p>
+          <p>{t('common.none')}</p>
         </div>
       )}
     </div>
