@@ -1,5 +1,3 @@
-// @ts-ignore
-import astroI18next from 'astro-i18next';
 // @ts-check
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
@@ -7,17 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel/serverless';
 
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-// Custom plugin to fix astro-i18next dirname issue
-const fixAstroI18nextPlugin = () => {
-  return {
-    name: 'fix-astro-i18next',
-    transform(code: string, id: string) {
-      if (id.includes('astro-i18next/dist/index.js')) {
-        return code.replace('const __dirname = path2.dirname(__filename);', 'const __dirname = "/";');
-      }
-    },
-  };
-};
+
 
 const isDev = process.env.NODE_ENV === 'development';
 console.log('🚀 ~ isDev:', isDev);
@@ -30,7 +18,7 @@ const devDefineConfig = defineConfig({
       enabled: true,
     },
   }),
-  integrations: [react(), astroI18next()],
+  integrations: [react()],
   i18n: {
     defaultLocale: 'us',
     locales: ['us', 'asia'],
@@ -45,8 +33,8 @@ const devDefineConfig = defineConfig({
         globals: { Buffer: true, global: true, process: true },
         protocolImports: true,
         include: ['buffer', 'process', 'path', 'util', 'fs', 'os'],
-      }),
-      fixAstroI18nextPlugin(),
+      }) as any,
+
     ],
     define: {
       global: 'globalThis',
@@ -78,7 +66,7 @@ export default isDev
           enabled: true,
         },
       }),
-      integrations: [react(), astroI18next()],
+      integrations: [react()],
       i18n: {
         defaultLocale: 'us',
         locales: ['us', 'asia'],
@@ -87,7 +75,7 @@ export default isDev
         },
       },
       vite: {
-        plugins: [tailwindcss()],
+        plugins: [tailwindcss() as any],
         define: {
           global: 'globalThis',
         },

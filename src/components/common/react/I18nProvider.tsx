@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { I18nextProvider } from 'react-i18next';
-import { initI18n } from '@/lib/i18n';
+import React from 'react';
 import type { Locale } from '@/types';
 
 interface I18nProviderProps {
@@ -8,32 +6,12 @@ interface I18nProviderProps {
   children: React.ReactNode;
 }
 
+// Simple provider that passes locale to children via context
+// The actual translation is handled by the custom t() function in @/lib/i18n
 export default function I18nProvider({ locale, children }: I18nProviderProps) {
-  const [i18nInstance, setI18nInstance] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const initializeI18n = async () => {
-      try {
-        const instance = await initI18n(locale);
-        setI18nInstance(instance);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Failed to initialize i18n:', error);
-        setIsLoading(false);
-      }
-    };
-
-    initializeI18n();
-  }, [locale]);
-
-  if (isLoading || !i18nInstance) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <I18nextProvider i18n={i18nInstance}>
+    <div data-locale={locale}>
       {children}
-    </I18nextProvider>
+    </div>
   );
 }

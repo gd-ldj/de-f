@@ -6,7 +6,7 @@ import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
 import CategoryPage from '@/components/pages/CategoryPage';
 
-import { changeLanguage } from "i18next";
+
 
 export const prerender = false // Enable SSR for this page
 
@@ -14,8 +14,7 @@ export const prerender = false // Enable SSR for this page
 const { params, url, redirect } = Astro
 const { locale, category } = params as { locale: Locale; category: string }
 
-// Initialize i18n with the locale from params
-changeLanguage(locale);
+
 
 // Validate category against API data
 const validCategories = ['insights', 'news', 'research']

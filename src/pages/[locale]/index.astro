@@ -12,16 +12,13 @@ import AuthMount from '@/components/common/react/AuthMount';
 import Header from '@/components/common/react/header/Index';
 import ToFollowList from '@/components/home/react/ToFollowList';
 
-import { changeLanguage } from "i18next";
+
 
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
 
-// Initialize i18n with the locale from params
-if (typeof changeLanguage === 'function') {
-  changeLanguage(locale);
-}
+
 
 // SEO content based on locale
 const seoContent = {
