@@ -265,7 +265,7 @@ export default function Header({ userComponent }: HeaderProps) {
           {/* Logo - Center */}
           <div className="flex items-center justify-center flex-shrink-0">
             <a href={`/${locale}`} className="flex items-center">
-              <img src={DetakeLogo} alt="logo" className="w-38" />
+              <img src={DetakeLogo} alt="logo" className="w-32" />
             </a>
           </div>
 
