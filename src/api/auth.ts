@@ -20,50 +20,36 @@ export async function loginWithWallet(
   try {
     const requestBody: WalletLoginRequest = {
       wallet_address: walletAddress,
-      signature: signature
-    }
+      signature: signature,
+    };
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/auth/wallet`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      }
-    )
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/wallet`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
 
     if (!response.ok) {
       if (response.status === 401) {
-        throw new Error('Invalid wallet signature')
+        throw new Error('Invalid wallet signature');
       }
       if (response.status === 404) {
-        throw new Error('Wallet not found')
+        throw new Error('Wallet not found');
       }
-      throw new Error(`Failed to login with wallet: ${response.statusText}`)
+      throw new Error(`Failed to login with wallet: ${response.statusText}`);
     }
 
-    const result: WalletLoginResponse = await response.json()
-    
+    const result: WalletLoginResponse = await response.json();
+
     if (result.code === 2000) {
-      return result.data
+      return result.data;
     } else {
-      throw new Error(`API Error: ${result.msg.en}`)
+      throw new Error(`API Error: ${result.msg.en}`);
     }
   } catch (error) {
-    console.error('Error during wallet login:', error)
-    return null
+    console.error('Error during wallet login:', error);
+    return null;
   }
-}
-
-/**
- * Logout function to invalidate tokens
- * @param accessToken - Current access token
- * @returns Promise with logout success status
- */
-export async function logout(accessToken: string): Promise<boolean> {
-  // NOTE: Backend logout is optional for now; clear client state regardless.
-  // Keeping a stubbed true to avoid blocking UI while backend endpoint stabilizes.
-  return true
 }

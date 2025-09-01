@@ -11,7 +11,7 @@ import { STORAGE_KEYS, AUTH_CONFIG } from '../config/constants';
  * Uses Jotai for cross-component state synchronization
  */
 export const useAuth = () => {
-  const { ready, authenticated, login, logout, user } = usePrivy();
+  const { ready, authenticated, login, user } = usePrivy();
   const [privyTimeout, setPrivyTimeout] = useState(false);
   const [storedWalletAddress, setStoredWalletAddress] = useAtom(persistedWalletAddressAtom);
   const [isWalletAuthenticated] = useAtom(isAuthenticatedAtom);
@@ -56,7 +56,6 @@ export const useAuth = () => {
     } else if (!authenticated || !currentWalletAddress) {
       // User is not authenticated or lost wallet address - clear global state
       setStoredWalletAddress(null);
-      handleLogout();
     }
   }, [user?.wallet?.address]);
 
@@ -87,19 +86,6 @@ export const useAuth = () => {
     }
   };
 
-  // Enhanced logout function with error handling and global state cleanup
-  const handleLogout = async () => {
-    try {
-      await logout();
-      // Clear wallet auth state first
-      await walletAuth.logout();
-      // Clear global state before logout
-      setStoredWalletAddress(null);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
   // Handle wallet login with signature
   const handleWalletLogin = async (walletAddress: string, signature: string) => {
     try {
@@ -114,14 +100,6 @@ export const useAuth = () => {
     }
   };
 
-  // Force logout if wallet address is missing from global state
-  const handleForceLogout = () => {
-    setStoredWalletAddress(null);
-    if (authenticated) {
-      handleLogout();
-    }
-  };
-
   return {
     // Privy states
     ready,
@@ -130,8 +108,6 @@ export const useAuth = () => {
 
     // Enhanced functions
     login: handleLogin,
-    logout: handleLogout,
-    forceLogout: handleForceLogout,
 
     // Wallet authentication
     walletLogin: handleWalletLogin,

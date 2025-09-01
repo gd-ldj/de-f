@@ -21,7 +21,7 @@ export const WalletPopover: React.FC<WalletPopoverProps> = ({ className = '', ch
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
-  const { storedWalletAddress, walletAddress, login, logout, user } = useAuth();
+  const { storedWalletAddress, walletAddress, login, user } = useAuth();
   // Click outside to close popover
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -47,11 +47,6 @@ export const WalletPopover: React.FC<WalletPopoverProps> = ({ className = '', ch
     }
     // User is logged in, toggle popover
     setIsOpen(!isOpen);
-  };
-
-  const handleDisconnect = async () => {
-    setIsOpen(false);
-    await logout();
   };
 
   return (

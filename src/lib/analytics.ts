@@ -498,6 +498,9 @@ export class AnalyticsManager {
    * Send queued events to analytics endpoint
    */
   private async sendQueuedEvents(force: boolean = false): Promise<void> {
+    //TODO: 接口暂未提供，暂不发送
+    return;
+
     if (this.eventQueue.length === 0) return;
 
     if (!force && this.eventQueue.length < 10) return; // Wait for more events unless forced

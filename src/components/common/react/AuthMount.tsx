@@ -119,7 +119,6 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   const [locale, setLocale] = useState<Locale>('us');
 
   // Read global authentication state from jotai store
-  // When isAuthenticated changes (login/logout), this component re-renders
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
 
@@ -149,9 +148,6 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
 
     // Update locale from URL on mount
     setLocale(getLocaleFromURL());
-
-    // Handle logout from URL parameter (ac=q)
-    // handleLogoutFromURL();
 
     // Debug: verify hydration ran in the browser and mount points were found
     if (import.meta.env.DEV) {
