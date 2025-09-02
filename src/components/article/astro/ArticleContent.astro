@@ -66,7 +66,8 @@ const t = createTranslator(locale)
            <div class="flex flex-wrap gap-2">
              {article.tags.map((tag) => (
                <a
-                 href={`/${locale}/tag/${tag}`}
+                //  href={`/${locale}/tag/${tag}`}
+                 href="javascript:;"
                  class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
                >
                  {tag}
@@ -99,7 +100,8 @@ const t = createTranslator(locale)
             <div class="flex flex-wrap gap-2">
               {article.tags.map((tag) => (
                 <a
-                  href={`/${locale}/tag/${tag}`}
+                  // href={`/${locale}/tag/${tag}`}
+                  href="javascript:;"
                   class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
                 >
                   {tag}

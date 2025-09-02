@@ -79,11 +79,15 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
 
           {/* Navigation Items */}
           <div className="space-y-1 mb-8">
-            <button onClick={() => handleNavigation(`/${locale}/social`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button 
+            // onClick={() => handleNavigation(`/${locale}/social`)} 
+            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
               {texts.navigation.social}
             </button>
 
-            <button onClick={() => handleNavigation(`/${locale}/explore`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button 
+            // onClick={() => handleNavigation(`/${locale}/explore`)} 
+            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
               {texts.navigation.explore}
             </button>
 
@@ -97,18 +101,24 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
               </button>
             </div>
 
-            <button onClick={() => handleNavigation(`/${locale}/trending`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button 
+            // onClick={() => handleNavigation(`/${locale}/trending`)} 
+            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
               {texts.navigation.trending}
             </button>
 
             {/* Learn with expandable submenu */}
             <div>
-              <button onClick={() => handleNavigation(`/${locale}/learn`)} className="flex items-center justify-between w-full py-3 text-left">
+              <button 
+              // onClick={() => handleNavigation(`/${locale}/learn`)} 
+              className="flex items-center justify-between w-full py-3 text-left">
                 <span className="text-lg text-gray-900">{texts.navigation.learn}</span>
               </button>
             </div>
 
-            <button onClick={() => handleNavigation(`/${locale}/technology`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button 
+            // onClick={() => handleNavigation(`/${locale}/technology`)} 
+            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
               {texts.navigation.technology}
             </button>
           </div>
@@ -144,7 +154,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
             </div>
 
             {/* Dashboard with user icon */}
-            <button onClick={() => handleNavigation(`/${locale}/dashboard`)} className="flex items-center justify-between w-full py-3 text-left">
+            {/* <button onClick={() => handleNavigation(`/${locale}/dashboard`)} className="flex items-center justify-between w-full py-3 text-left">
               <span className="text-lg text-gray-900">{texts.user.dashboard}</span>
               <div className="flex items-center space-x-2">
                 <img src={MeIcon} alt="DeTake" className="h-5" />
@@ -152,7 +162,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
