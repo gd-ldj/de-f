@@ -14,6 +14,7 @@ export const useAuth = () => {
   const { ready, authenticated, login, user, signMessage } = usePrivy();
   const [privyTimeout, setPrivyTimeout] = useState(false);
   const [storedWalletAddress, setStoredWalletAddress] = useAtom(persistedWalletAddressAtom);
+  console.log('🚀 ~ useAuth ~ storedWalletAddress:', storedWalletAddress);
   const [isWalletAuthenticated] = useAtom(isAuthenticatedAtom);
   const walletAuth = useWalletAuth();
 
@@ -22,6 +23,7 @@ export const useAuth = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem(STORAGE_KEYS.WALLET_ADDRESS);
+      console.log('🚀 ~ useAuth ~ stored:', stored);
       if (stored && !storedWalletAddress) {
         setStoredWalletAddress(stored);
       }

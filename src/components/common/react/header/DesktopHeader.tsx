@@ -158,18 +158,9 @@ export default function DesktopHeader({
           <div className="flex items-center space-x-8 flex-1">
             {/* Categories Dropdown */}
             <div className="" ref={categoriesDropdownRef}>
-              <button 
-                onClick={toggleCategoriesDropdown} 
-                className={`flex items-center space-x-1 text-sm px-3 py-1.5 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`}
-                aria-label={texts.navigation.allCategories} 
-                aria-expanded={categoriesDropdownOpen}
-              >
-                <span className='text-gray-600'>{texts.navigation.allCategories}</span>
-                <img 
-                  src={DownIcon} 
-                  alt="dropdown" 
-                  className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} 
-                />
+              <button onClick={toggleCategoriesDropdown} className={`flex items-center space-x-1 text-sm px-3 py-1.5 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.allCategories} aria-expanded={categoriesDropdownOpen}>
+                <span className="text-gray-600">{texts.navigation.allCategories}</span>
+                <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Categories Dropdown Menu */}
@@ -180,20 +171,9 @@ export default function DesktopHeader({
                       <h3 className="text-lg font-medium text-foreground mb-2 mt-1">{texts.dropdown.article}</h3>
                       <div className="flex items-center gap-8">
                         {categoriesItems.map((item) => (
-                          <a 
-                            key={item.key} 
-                            href={item.href} 
-                            className={`text-sm py-2 relative transition-colors ${
-                              currentPath === item.href 
-                                ? 'text-primary font-medium' 
-                                : 'text-muted-foreground hover:text-foreground'
-                            }`} 
-                            onClick={() => setCategoriesDropdownOpen(false)}
-                          >
+                          <a key={item.key} href={item.href} className={`text-sm py-2 relative transition-colors ${currentPath === item.href ? 'text-primary font-medium' : 'text-muted-foreground hover:text-foreground'}`} onClick={() => setCategoriesDropdownOpen(false)}>
                             {item.name}
-                            {currentPath === item.href && (
-                              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
-                            )}
+                            {currentPath === item.href && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>}
                           </a>
                         ))}
                       </div>
@@ -205,7 +185,7 @@ export default function DesktopHeader({
 
             {/* Other Navigation Items */}
             {navigation.left.map((item) => (
-              <a key={item.key} href={item.href} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+              <a key={item.key} href="#" onClick={(e) => e.preventDefault()} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
                 {item.name}
               </a>
             ))}
@@ -223,7 +203,7 @@ export default function DesktopHeader({
             {/* Collections Dropdown */}
             <div className="relative" ref={collectionsDropdownRef}>
               <button onClick={toggleCollectionsDropdown} className={`flex items-center space-x-1 text-sm px-3 py-1.5 transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
-                <span className='text-gray-600'>{texts.navigation.collections}</span>
+                <span className="text-gray-600">{texts.navigation.collections}</span>
                 <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -232,7 +212,7 @@ export default function DesktopHeader({
                 <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                   <div className="py-1">
                     {collectionsItems.map((item) => (
-                      <a key={item.key} href={item.href} className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${currentPath === item.href ? 'bg-gray-50 text-gray-900' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
+                      <a key={item.key} href="javascript:;" className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${currentPath === item.href ? 'bg-gray-50 text-gray-900' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
                         {item.name}
                       </a>
                     ))}
@@ -243,20 +223,20 @@ export default function DesktopHeader({
 
             {/* Right Navigation Items */}
             {navigation.right.map((item) => (
-              <a key={item.key} href={item.href} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+              <a key={item.key} href="#" onClick={(e) => e.preventDefault()} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
                 {item.name}
               </a>
             ))}
 
             {/* Search Icon */}
             <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search}>
-              <img src={SearchIcon} alt="SearchIcon" className='w-4 h-4' />
+              <img src={SearchIcon} alt="SearchIcon" className="w-4 h-4" />
             </button>
 
             {/* Locale Switcher Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button onClick={toggleLocaleDropdown} className={`flex items-center space-x-2 px-2 py-1 hover:bg-gray-100 rounded transition-colors ${localeDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.actions.switchLanguage} aria-expanded={localeDropdownOpen}>
-                <img src={CountryIcon} alt="CountryIcon" className='w-4 h-4' />
+                <img src={CountryIcon} alt="CountryIcon" className="w-4 h-4" />
                 <span className="text-sm text-gray-600">{currentLocaleConfig.name}</span>
                 <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${localeDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -276,9 +256,9 @@ export default function DesktopHeader({
               )}
             </div>
 
-           {/* User Component - Can be customized for different projects */}
-            {userComponent || (
-              <button 
+            {/* User Component - Can be customized for different projects */}
+            {/* {userComponent || (
+              <button
                 className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
                 onClick={() => {
                   try {
@@ -304,7 +284,7 @@ export default function DesktopHeader({
               >
                 <img src="/me.svg" alt="logo" className="w-5 h-5" />
               </button>
-            )}
+            )} */}
           </div>
         </div>
       </div>

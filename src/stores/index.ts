@@ -56,7 +56,7 @@ export const persistedWalletAddressAtom = atom(
       if (newValue) {
         localStorage.setItem(STORAGE_KEYS.WALLET_ADDRESS, newValue)
       } else {
-        localStorage.removeItem(STORAGE_KEYS.WALLET_ADDRESS)
+        // localStorage.removeItem(STORAGE_KEYS.WALLET_ADDRESS)
       }
     }
   }

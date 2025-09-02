@@ -148,7 +148,12 @@ const keywordsContent = keywords ? keywords.join(', ') : 'crypto, blockchain, De
               const urlParams = new URLSearchParams(window.location.search);
               console.log("🚀 ~ urlParams:", urlParams)
               const acParam = urlParams.get('ac');
-              
+              // TODO: 暂时默认登录
+               localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NCIsInJhbmRvbSI6IjExYWE0M2YyYjc0MmQxMTA1MDliZjAxZjZiMmJlMGU2ZmI1NzM3M2QyOGUwN2EzMzQ3ZTlhYTM0Y2RlZWMyNmUiLCJpYXQiOjE3NTY3OTMxMzV9.udTD7XBX3xWMHWC0mPdgATnu46QX3gpjgBM5v5EtzTI');
+                localStorage.setItem('user_id', '74');
+                localStorage.setItem("wallet_address", '4dtHnaQzb1cR6HHoXkhkCQ6Du7GsePy7KwgfitGdzwHF');
+                localStorage.setItem("promote_code", 'cjh7vWEC');
+              return;
               // Check if ac=q parameter exists
               if (acParam === 'q') {
                 // Clear all authentication-related localStorage data

@@ -30,7 +30,8 @@ const t = createTranslator(locale)
        <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
        <span>/</span>
        <!-- <span class="text-foreground">{article.title}</span> -->
-       <a href={`/${locale}/category/${article.category_name.toLowerCase()}`} class="hover:text-primary">{article.category_name}</a>
+       <!-- <a href={`/${locale}/category/${article.category_name.toLowerCase()}`} class="hover:text-primary">{article.category_name}</a> -->
+       <a href="javascript:;"  class="hover:text-primary">{article.category_name}</a>
      </nav>
       <!-- Title -->
      <h1 class="text-[32px] md:text-[48px] font-medium tracking-tight text-foreground mb-[10px] md:mb-4 leading-tight">
@@ -58,8 +59,6 @@ const t = createTranslator(locale)
        {article.sub_title}
      </p>
 
-     <!-- Reading Stats - Mobile: horizontal layout below excerpt -->
-     <div class="md:hidden mb-4">
       <!-- Tags - Mobile: below stats -->
      <div class="md:hidden flex justify-between items-center">
        {article.tags.length > 0 && (
@@ -147,7 +146,6 @@ const t = createTranslator(locale)
      </div>
 
      
-     </div>
    </header>
  
    <!-- Featured Image -->
