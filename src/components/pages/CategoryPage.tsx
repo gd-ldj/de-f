@@ -240,7 +240,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   }, [filters, fetchArticlesData]);
 
   return (
-    <main className="max-w-[1440px] mx-auto px-4 py-8">
+    <main className="max-w-[1440px] mx-auto md:px-4 py-4 md:py-8">
       {/* Filter Bar */}
       <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialTag={filters.tag} />
 
@@ -256,7 +256,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
       {/* No Results */}
       {!loading && articles.length === 0 && (
-        <div className="text-center py-12">
+        <div className="text-center py-12 px-4 md:px-0">
           <p className="text-muted-foreground">{locale === 'us' ? 'No articles found' : '未找到文章'}</p>
         </div>
       )}

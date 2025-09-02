@@ -32,9 +32,25 @@ const topics = rawTopics.map(topic => ({
 ---
 
 <div class="space-y-6">
-  <div class="px-6">
+  <div class="px-4 md:px-6">
     <h4 class="font-medium text-foreground mb-4">{t('common.recommendedTopics')}</h4>
-    <div class="flex flex-wrap gap-3">
+    
+    <!-- Mobile: Horizontal scrollable container -->
+    <div class="md:hidden overflow-x-auto">
+      <div class="flex space-x-3 pb-2">
+        {topics.map((topic, index) => (
+          <a
+            href={topic.url}
+            class="flex-shrink-0 px-4 py-3 bg-secondary text-primary text-sm font-medium rounded hover:bg-primary/10 hover:text-primary/80 cursor-pointer transition-all duration-200 text-center border border-border hover:border-primary/20 whitespace-nowrap"
+          >
+            {topic.name}
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Desktop: Flex wrap layout -->
+    <div class="hidden md:flex flex-wrap gap-3">
       {topics.map((topic, index) => (
         <a
           href={topic.url}
@@ -59,7 +75,7 @@ const topics = rawTopics.map(topic => ({
           >
             <div class="flex-1 pr-4">
               <div class="flex items-start space-x-3">
-                <span class="text-primary font-medium text-[12px] leading-none mt-1">{index + 1}</span>
+                <span class="hidden md:inline-block text-primary font-medium text-[12px] leading-none mt-1">{index + 1}</span>
                 <div class="flex-1">
                   <h5 class="text-foreground font-medium text-[14px] leading-tight mb-2 group-hover:text-primary transition-colors">
                     {article.title}

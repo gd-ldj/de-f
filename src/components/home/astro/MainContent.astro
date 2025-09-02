@@ -72,7 +72,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           </a>
         </p>
 
-        <h2 class="text-2xl font-medium text-foreground mb-4">
+        <h2 class="text-xl md:text-2xl font-medium text-foreground mb-4">
           <ArticleLink 
             slug={featuredArticle.slug}
             locale={locale}
@@ -98,7 +98,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
             <img
               src={featuredArticle.img_url || '/placeholder.svg'}
               alt={featuredArticle.title}
-              class="w-full h-84 object-cover rounded hover:opacity-90 transition-opacity"
+              class="w-full h-48 md:h-84 object-cover rounded hover:opacity-90 transition-opacity"
             />
           </ArticleLink>
         </div>
@@ -118,7 +118,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
             {article.business_type_name}
           </a>
         </div>
-        <h3 class="text-lg font-medium text-foreground mb-2">
+        <h3 class="text-base md:text-lg font-medium text-foreground mb-2">
           <ArticleLink 
             slug={article.slug}
             locale={locale}

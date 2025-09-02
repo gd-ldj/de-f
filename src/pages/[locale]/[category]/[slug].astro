@@ -111,11 +111,11 @@ const author = article?.author?.name || article.author_name
     }}
   />
   
-  <main class="min-h-screen mt-[97px]">
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
     <div class="max-w-[1440px] mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-3">
         <!-- Left Column - Article Content (SSR/ISR for SEO) -->
-        <div class="lg:col-span-2 py-5 px-6 border border-t-0 border-border">
+        <div class="lg:col-span-2 py-5 px-4 md:px-6 border border-t-0 border-border">
           <ArticleContent 
             article={article} 
             locale={locale} 
@@ -126,10 +126,10 @@ const author = article?.author?.name || article.author_name
         
         <!-- Right Column - Data Display (React Components) -->
         <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
-          <div class="sticky top-8">
+          <div class="top-8">
             <!-- Share Section mount: rendered via AuthMount under PrivyProvider -->
             <div id="share-section-root" class=""></div>
-            <ArticleSidebar locale={locale} client:load />
+            <!-- <ArticleSidebar locale={locale} client:load /> -->
           </div>
         </div>
       </div>

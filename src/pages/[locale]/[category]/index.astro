@@ -62,9 +62,9 @@ const { title, description } = seoContent[locale] || seoContent.us
     <!-- AuthMount 只管理钱包相关按钮 -->
     <AuthMount client:load userButtonTargetId="user-button-root" />
     
-    <div class="min-h-screen bg-background mt-[97px]">
+    <div class="min-h-screen bg-background mt-[56px] md:mt-[97px]">
       <!-- Category Header: simplified to match visual design (breadcrumb + large title) -->
-      <div class="max-w-[1440px] mx-auto px-4 py-6">
+      <div class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block">
         <!-- Breadcrumb -->
         <nav class="text-sm text-muted-foreground mb-2">
           <a href={`/${locale}`} class="hover:text-foreground">

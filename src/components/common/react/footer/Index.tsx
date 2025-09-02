@@ -25,42 +25,44 @@ function getLocaleFromURL(): Locale {
   const pathname = window.location.pathname;
   const segments = pathname.split('/');
   const localeSegment = segments[1]; // First segment after domain
-  return (localeSegment === 'asia' || localeSegment === 'us') ? localeSegment : 'us';
+  return localeSegment === 'asia' || localeSegment === 'us' ? localeSegment : 'us';
 }
 
 export default function Footer({}: FooterProps) {
   const [locale, setLocale] = useState<Locale>('us');
-  
+
   // Extract locale from URL on mount
   useEffect(() => {
     setLocale(getLocaleFromURL());
   }, []);
-  
+
   const texts = footerTexts[locale] || footerTexts.us;
 
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-[1440px] mx-auto pb-12">
-        <div className="grid grid-cols-2 gap-12">
-          <div className="p-12 pl-12">
+        {/* Newsletter and Disclosure Section - Responsive Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          <div className="p-6 md:p-12 md:pl-12">
             <h3 className="text-xs font-medium mb-4">{texts.newsletter.title}</h3>
             <h4 className="text-xl font-medium mb-4">{texts.newsletter.subtitle}</h4>
             <p className="text-white/60 mb-6">{texts.newsletter.description}</p>
             <div className="flex">
-              <input type="email" placeholder={texts.newsletter.emailPlaceholder} className="flex-1 px-4 py-2 bg-white !text-[#909399] border border-gray-700 rounded-l focus:outline-none focus:border-teal-500" />
-              <button className="bg-teal-500 px-6 py-2 rounded-r hover:bg-[#06A17E] flex items-center">{texts.newsletter.subscribeButton}</button>
+              <input type="email" placeholder={texts.newsletter.emailPlaceholder} disabled className="flex-1 px-4 py-2 bg-gray-100 !text-gray-400 border border-gray-300 rounded-l cursor-not-allowed" />
+              <button disabled className="bg-gray-400 px-6 py-2 rounded-r cursor-not-allowed flex items-center">{texts.newsletter.subscribeButton}</button>
             </div>
           </div>
 
-          <div className="p-12 pl-12 border-l border-gray-800">
+          <div className="p-6 md:p-12 md:pl-12 border-t md:border-t-0 md:border-l border-gray-800">
             <h3 className="text-[20px] font-medium mb-4">{texts.disclosure.title}</h3>
             <p className="text-white/60 text-sm leading-relaxed">{texts.disclosure.content}</p>
           </div>
         </div>
 
+        {/* Navigation Links Section - Responsive Layout */}
         <div className="border-t border-gray-800 pt-8">
-          <div className="flex justify-between items-center border-b border-gray-800 pb-8 px-12">
-            <div className="flex flex-wrap space-x-8">
+          <div className="grid grid-cols-2 border-b border-gray-800 pb-8">
+            <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 px-6 md:px-12">
               <a href="#" className="text-gray-300 hover:text-white text-sm">
                 {texts.navigation.news}
               </a>
@@ -83,7 +85,7 @@ export default function Footer({}: FooterProps) {
                 {texts.navigation.sitemap}
               </a>
             </div>
-            <div className="flex flex-wrap space-x-8">
+            <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 px-6 md:px-12">
               <a href="#" className="text-gray-300 hover:text-white text-sm">
                 {texts.navigation.about}
               </a>
@@ -105,12 +107,13 @@ export default function Footer({}: FooterProps) {
             </div>
           </div>
 
-          <div className="flex justify-between items-center mt-8 px-12">
-            <div>
-              <img src={DetakeLogo} alt="Twitter" className="w-[90px]" />
-              <p className="text-white text-[12px] mt-5">{texts.company.copyright}</p>
+          {/* Logo and Social Media Section - Responsive Layout */}
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-8 px-6 md:px-12 space-y-6 md:space-y-0">
+            <div className="flex flex-col items-center md:items-center ">
+              <img src={DetakeLogo} alt="DeTake Logo" className="w-[90px] mb-2 md:mb-0" />
+              <p className="text-white text-[12px]">{texts.company.copyright}</p>
             </div>
-            <div className="flex mt-6 space-x-5">
+            <div className="flex justify-center md:justify-end space-x-5">
               <a href="https://twitter.com/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.twitter}>
                 <img src={TwitterIcon} alt="Twitter" className="w-6 h-6" />
               </a>

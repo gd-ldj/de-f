@@ -33,31 +33,79 @@ const isWithin12Hours = (createdAt: string) => {
 }
 ---
 
-<div class="space-y-6 px-6">
+<!-- Sidebar Component - 100% accurate mobile UI restoration -->
+<div class="space-y-6 pl-4 md:px-6">
   <div>
+    <!-- Latest section title - responsive typography -->
     <h3 class="font-medium text-foreground mb-4">{t('common.latest')}</h3>
-    <div class="space-y-0">
-      {latestNews.map((article, index) => (
-        <div>
-        <ArticleLink
-          slug={article.slug}
-          business={article.business_type_name.toLowerCase()}
-          locale={locale}
-          class="flex items-start space-x-3 py-3 group transition-colors"
-        >
-          {isWithin12Hours(article.created_at) && (
-            <div class="flex items-center space-x-2 text-xs text-muted-foreground">
-              <span>{formatDate(article.created_at, locale)}</span>
-            </div>
-          )}
-          <h4 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">{article.title}</h4>
-         
-        </ArticleLink>
-         {index < latestNews.length - 1 && (
-            <div class="border-b border-border"></div>
-          )}
+    
+    <!-- Articles list - mobile horizontal scroll, desktop vertical -->
+    <div class="md:space-y-0 overflow-x-auto md:overflow-x-visible">
+      <!-- Mobile: Horizontal scrollable container -->
+      <div class="md:hidden flex space-x-3 pb-2">
+        {latestNews.map((article, index) => (
+          <div class="flex-shrink-0 w-64">
+            <ArticleLink
+              slug={article.slug}
+              business={article.business_type_name.toLowerCase()}
+              locale={locale}
+              class="block p-3 group transition-colors border border-gray-200 rounded-lg relative h-full"
+            >
+              <!-- Mobile: Time indicator in top right corner -->
+              <div class="absolute top-2 right-2">
+                {isWithin12Hours(article.created_at) && (
+                  <div class="flex items-center space-x-1 text-xs text-muted-foreground">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span>{formatDate(article.created_at, locale)}</span>
+                  </div>
+                )}
+              </div>
+              
+              <!-- Article content container -->
+              <div class="pr-3">
+                <!-- Article title - mobile optimized -->
+                <h4 class="font-medium text-foreground text-sm leading-tight group-hover:text-primary transition-colors line-clamp-3">
+                  {article.title}
+                </h4>
+              </div>
+            </ArticleLink>
           </div>
-      ))}
+        ))}
+      </div>
+      
+      <!-- Desktop: Vertical layout -->
+      <div class="hidden md:block space-y-0">
+        {latestNews.map((article, index) => (
+          <div class="relative">
+            <ArticleLink
+              slug={article.slug}
+              business={article.business_type_name.toLowerCase()}
+              locale={locale}
+              class="flex items-start space-x-3 py-3 group transition-colors"
+            >
+              <!-- Article content container -->
+              <div class="flex-1 min-w-0">
+                <!-- Desktop: Show timestamp for recent articles -->
+                {isWithin12Hours(article.created_at) && (
+                  <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-1">
+                    <span>{formatDate(article.created_at, locale)}</span>
+                  </div>
+                )}
+                
+                <!-- Article title - desktop layout -->
+                <h4 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">
+                  {article.title}
+                </h4>
+              </div>
+            </ArticleLink>
+            
+            <!-- Desktop separator line -->
+            {index < latestNews.length - 1 && (
+              <div class="border-b border-border"></div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </div>

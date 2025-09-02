@@ -9,6 +9,9 @@ export interface CategoryMultiSelectProps {
   locale: Locale
   activeSubcategory?: string
   initialValues?: string | string[]
+  placeholder?: string
+  /** Callback to notify parent when dropdown open state changes */
+  onOpenChange?: (isOpen: boolean) => void
 }
 
 /**
@@ -19,6 +22,8 @@ export interface CategoryMultiSelectProps {
 export default function CategoryMultiSelect({
   locale,
   initialValues,
+  placeholder,
+  onOpenChange,
 }: CategoryMultiSelectProps) {
   const t = createTranslator(locale);
   const [sections, setSections] = useState<FilterSection[]>([
@@ -103,8 +108,10 @@ export default function CategoryMultiSelect({
       locale={locale}
       sections={sections}
       onSectionsChange={setSections}
+      placeholder={placeholder}
       changedEventName="category:changed"
       clearEventNames={["category:clear-all", "filter:clear-all"]}
+      onOpenChange={onOpenChange}
     />
   )
 }

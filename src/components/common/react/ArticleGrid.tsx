@@ -11,47 +11,55 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
 
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12 mt-6">
+    <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-12 mt-6 px-4 md:px-0">
       {articles.map((article) => (
-        <article key={article.slug} className="rounded overflow-hidden ">
-          {/* Article Image */}
-          <div className="relative">
-            <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="block group">
-              <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300" />
-            </ArticleLink>
-          </div>
-          {/* Category and Tags */}
-          <div className="flex flex-wrap gap-2 mt-5">
-            {/* Category Badge */}
-            <span className="text-primary text-xs font-medium uppercase">{article.category_name}</span>
-
-            {/* Tags */}
-            {article.tags && article.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {article.tags.slice(0, 2).map((tag, index) => (
-                  <span key={index} className="text-muted-foreground text-xs uppercase">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          {/* Article Content */}
-          <div className="pt-1">
-            <h3 className="text-2xl font-medium text-foreground mb-[10px] line-clamp-2">
-              <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="hover:text-primary transition-colors">
-                {article.title}
+        <article key={article.slug} className="rounded overflow-hidden">
+          {/* Mobile: Left image, right content layout */}
+          <div className="flex gap-3 md:block">
+            {/* Article Image */}
+            <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
+              <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="block group w-full h-full">
+                <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
               </ArticleLink>
-            </h3>
+            </div>
 
-            <p className="text-muted-foreground text-[16px] mb-4 line-clamp-3">{article.sub_title}</p>
+            {/* Content area */}
+            <div className="flex-1 md:mt-5">
+              {/* Category and Tags */}
+              <div className="flex flex-wrap gap-1 md:gap-2">
+                {/* Category Badge */}
+                <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{article.category_name}</span>
 
-            {/* Article Meta */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <span>{formatDate(article.created_at, locale)}</span>
-                <span>/ by </span>
-                <span className="text-foreground">{article.author_name}</span>
+                {/* Tags */}
+                {article.tags && article.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {article.tags.slice(0, 1).map((tag, index) => (
+                      <span key={index} className="text-muted-foreground text-[10px] md:text-xs uppercase">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Article Content */}
+              <div className="pt-1">
+                <h3 className="text-sm md:text-2xl font-medium text-foreground mb-1 md:mb-[10px] line-clamp-2">
+                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="hover:text-primary transition-colors">
+                    {article.title}
+                  </ArticleLink>
+                </h3>
+                <div className="hidden md:block">
+                  <p className=" text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 line-clamp-2 md:line-clamp-3">{article.sub_title}</p>
+                </div>
+                {/* Article Meta */}
+                <div className="flex items-center justify-between text-[10px] md:text-xs text-muted-foreground">
+                  <div className="flex items-center space-x-1">
+                    <span>{formatDate(article.created_at, locale)}</span>
+                    <span className="hidden md:inline">/ by </span>
+                    <span className="text-foreground hidden md:inline">{article.author_name}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

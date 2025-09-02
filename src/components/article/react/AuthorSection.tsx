@@ -83,7 +83,7 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
   };
 
   return (
-    <div className="mt-12">
+    <div className="my-12">
       {/* Section Title */}
       <h3 className="text-lg font-medium text-gray-900 mb-6">{locale === 'us' ? 'About the Author' : '关于作者'}</h3>
 
@@ -127,7 +127,7 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
           )}
 
           {/* Subscribe Button */}
-          <button onClick={handleSubscribeClick} disabled={subscribing || !author.id} className="px-4 py-2 bg-primary text-white text-sm font-medium rounded hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          <button onClick={handleSubscribeClick} disabled={true || subscribing || !author.id} className="px-4 py-2 bg-primary text-white text-sm font-medium rounded hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
             + {locale === 'us' ? 'Subscribe' : '订阅'}
           </button>
         </div>

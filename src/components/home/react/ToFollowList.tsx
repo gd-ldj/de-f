@@ -104,9 +104,9 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
   // Handle error state
   if (error) {
     return (
-      <div className="space-y-6 px-6 border-t border-border pt-5">
+      <div className="space-y-6 pl-4 md:px-6 border-t border-border pt-[18px]">
         <div>
-          <h3 className="font-medium text-foreground mb-4">{t('common.whoToFollow')}</h3>
+          <h3 className="font-medium text-foreground mb-[10px] md:mb-4">{t('common.whoToFollow')}</h3>
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">{error}</p>
             <button onClick={loadFollowUsers} className="text-primary hover:text-primary/80 text-sm">
@@ -120,10 +120,34 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
 
   if (loading) {
     return (
-      <div className="space-y-6 px-6 border-t border-border pt-5">
+      <div className="space-y-6 pl-4 md:px-6 border-t border-border pt-[18px]">
         <div>
-          <h3 className="font-medium text-foreground mb-4">{t('common.whoToFollow')}</h3>
-          <div className="space-y-4">
+          <h3 className="font-medium text-foreground mb-[10px] md:mb-4">{t('common.whoToFollow')}</h3>
+
+          {/* Mobile: Horizontal scrollable skeleton */}
+          <div className="md:hidden overflow-x-auto">
+            <div className="flex space-x-3 pb-2">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="flex-shrink-0 w-64">
+                  <div className="border border-gray-200 rounded-lg p-3 h-full">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3 flex-1 min-w-0">
+                        <AvatarSkeleton size={48} />
+                        <div className="flex-1 min-w-0">
+                          <TextSkeleton className="mb-1 h-4" />
+                          <TextSkeleton className="w-2/3 h-3" />
+                        </div>
+                      </div>
+                      <div className="w-6 h-6 bg-gray-200 rounded animate-pulse flex-shrink-0 ml-2"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop: Vertical skeleton layout */}
+          <div className="hidden md:block space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i}>
                 <div className="flex items-start space-x-3 py-3">
@@ -144,10 +168,38 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
   }
   return (
     <>
-      <div className="space-y-6 px-6 border-t border-border pt-5">
+      <div className="space-y-6 pl-4 md:px-6 border-t border-border pt-[18px]">
         <div>
-          <h3 className="font-medium text-foreground mb-4">{t('common.whoToFollow')}</h3>
-          <div className="space-y-4">
+          <h3 className="font-medium text-foreground mb-[10px] md:mb-4">{t('common.whoToFollow')}</h3>
+
+          {/* Mobile: Horizontal scrollable container */}
+          <div className="md:hidden overflow-x-auto">
+            <div className="flex space-x-3 pb-2">
+              {followUsers.map((user, index) => (
+                <div key={index} className="flex-shrink-0 w-64">
+                  <div className="border border-gray-200 rounded-lg p-3 h-full" onMouseEnter={() => setHoveredUserId(user.user_id)} onMouseLeave={() => setHoveredUserId(null)}>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-3 flex-1 min-w-0">
+                        <Image src={user.avatar_url} alt={user.name} className="w-12 h-12 rounded-full flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground text-sm leading-tight truncate">{user.name}</p>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{user.profile_bio}</p>
+                        </div>
+                      </div>
+                      <div className="relative flex-shrink-0 ml-2">
+                        {/* <button onClick={() => handleFollow(user.user_id)} disabled={!!followingMap[user.user_id]} className="p-1.5 hover:bg-accent rounded transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                          <Plus className="w-5 h-5 text-muted-foreground" />
+                        </button> */}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop: Vertical layout */}
+          <div className="hidden md:block space-y-4">
             {followUsers.map((user, index) => (
               <div key={index}>
                 <div className="flex items-start justify-between py-3" onMouseEnter={() => setHoveredUserId(user.user_id)} onMouseLeave={() => setHoveredUserId(null)}>
@@ -158,7 +210,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
                       <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{user.profile_bio}</p>
                     </div>
                   </div>
-                  <div className="relative flex-shrink-0">
+                  {/* <div className="relative flex-shrink-0">
                     <button className={`p-1.5 hover:bg-accent rounded transition-all duration-300 ease-in-out ${hoveredUserId === user.user_id ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
                       <Plus className="w-5 h-5 text-muted-foreground" />
                     </button>
@@ -166,7 +218,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
                       <Plus className="w-4 h-4" />
                       <span>{t('common.subscribe')}</span>
                     </button>
-                  </div>
+                  </div> */}
                 </div>
                 {index < followUsers.length - 1 && <div className="border-b border-border"></div>}
               </div>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import type { Locale } from '@/types'
+import MobileLayout from '@/components/home/astro/MobileLayout.astro'
 import Sidebar from '@/components/home/astro/Sidebar.astro';
 import MainContent from '@/components/home/astro/MainContent.astro';
 import RightSidebar from '@/components/home/astro/RightSidebar.astro';
@@ -43,7 +44,11 @@ const { title, description } = seoContent[locale] || seoContent.us
        client:load 
        userButtonTargetId="user-button-root"
      />
-     <div class="min-h-screen bg-white mt-[97px]">
+     <!-- 移动端布局 -->
+     <div class="md:hidden mt-[56px]">
+        <MobileLayout locale={locale} />
+     </div>
+     <div class="min-h-screen bg-white mt-[97px] md:block hidden">
         
         <div class="max-w-[1440px] mx-auto">
           <div class="grid grid-cols-12">
@@ -64,7 +69,7 @@ const { title, description } = seoContent[locale] || seoContent.us
           <TrendingSection />
           <ResearchSection locale={locale} /> -->
         </div>
-          <Footer  client:load />
       </div>
+      <Footer  client:load />
 
 </BaseLayout>

@@ -9,10 +9,14 @@ export interface MultiSelectBaseProps {
   onSectionsChange: (sections: FilterSection[]) => void;
   /** Optional label shown before the trigger button (e.g., "Category") */
   leadingLabel?: string;
+  /** Placeholder text shown when no options are selected */
+  placeholder?: string;
   /** Custom DOM event name to dispatch on selection changes (e.g., 'filter:changed', 'category:changed') */
   changedEventName?: string;
   /** List of DOM event names to listen for clearing (e.g., ['filter:clear-all']) */
   clearEventNames?: string[];
+  /** Callback to notify parent when dropdown open state changes */
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 /**
@@ -28,7 +32,7 @@ export interface MultiSelectBaseProps {
  * - Listens to one or more global clear-all events and resets selections accordingly
  * - Handles click-outside to close the dropdown
  */
-export default function MultiSelectBase({ locale, sections, onSectionsChange, leadingLabel, changedEventName = 'filter:changed', clearEventNames = ['filter:clear-all'] }: MultiSelectBaseProps) {
+export default function MultiSelectBase({ locale, sections, onSectionsChange, leadingLabel, placeholder, changedEventName = 'filter:changed', clearEventNames = ['filter:clear-all'], onOpenChange }: MultiSelectBaseProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -83,6 +87,13 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
   }, [sections]);
 
   /**
+   * Notify parent when dropdown open state changes
+   */
+  useEffect(() => {
+    onOpenChange?.(open);
+  }, [open, onOpenChange]);
+
+  /**
    * Handle click outside to close the dropdown
    */
   useEffect(() => {
@@ -102,13 +113,13 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
   }, [open]);
 
   return (
-    <div className="relative flex items-center space-x-3 pr-4" ref={rootRef}>
+    <div className="relative flex items-center space-x-3 pr-4 border border-border md:border-0 rounded md:rounded-none px-3 py-2 md:px-0 md:py-0" ref={rootRef}>
       {leadingLabel ? <span className="text-sm text-muted-foreground">{leadingLabel}</span> : null}
 
-      {/* Trigger as plain text list, no border, no chips */}
-      <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-2 px-0 py-1 text-foreground hover:text-primary transition-colors focus:outline-none" aria-expanded={open} aria-haspopup="dialog">
-        {/* Selected labels inline */}
-        {selectedOptions.length > 0 && (
+      {/* Trigger as plain text list, mobile has border, desktop no border */}
+      <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-2 px-0 py-1 text-foreground hover:text-primary transition-colors focus:outline-none flex-1" aria-expanded={open} aria-haspopup="dialog">
+        {/* Selected labels inline or placeholder */}
+        {selectedOptions.length > 0 ? (
           <div className="flex items-center gap-4">
             {selectedOptions.map((o) => (
               <span key={o.id} className="text-sm text-primary font-medium">
@@ -116,6 +127,8 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
               </span>
             ))}
           </div>
+        ) : (
+          placeholder && <span className="text-sm text-muted-foreground">{placeholder}</span>
         )}
 
         {/* Chevron */}

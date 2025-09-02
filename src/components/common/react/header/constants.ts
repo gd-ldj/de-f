@@ -18,12 +18,16 @@ export const headerTexts = {
     locale: {
       northAmerica: 'North America',
       asia: 'Asia',
+      region: 'Region',
       switchToAsia: 'Switch to Asia'
     },
     actions: {
       search: 'Search',
       switchLanguage: 'Switch Language',
       openMenu: 'Open menu'
+    },
+    user: {
+      dashboard: 'Dashboard'
     },
     messages: {
       pleaseLoginFirst: 'Please login first to access'
@@ -51,11 +55,15 @@ export const headerTexts = {
     locale: {
       northAmerica: '北美',
       asia: '亚洲',
+      region: '地区',
     },
     actions: {
       search: '搜索',
       switchLanguage: '切换语言',
       openMenu: '打开菜单'
+    },
+    user: {
+      dashboard: '仪表板'
     },
     messages: {
       pleaseLoginFirst: '请先登录后再访问'
