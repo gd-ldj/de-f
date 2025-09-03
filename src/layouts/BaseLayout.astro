@@ -1,6 +1,7 @@
 ---
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
 import { Analytics } from '@vercel/analytics/react';
+import webShareImg from '../assets/imgs/web-share-img.png';
 
 import '../styles/global.css'
 
@@ -40,7 +41,7 @@ const {
 const currentUrl = canonicalUrl || Astro.url.href
 
 // 默认的 OG 图片
-const defaultOgImage = `${Astro.site}og-default.png`
+const defaultOgImage = webShareImg.src
 const finalOgImage = ogImage || defaultOgImage
 
 // 生成关键词元标签
