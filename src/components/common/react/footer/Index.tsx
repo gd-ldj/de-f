@@ -8,7 +8,6 @@ import GithubIcon from './assets/github.svg?url';
 import DiscordIcon from './assets/discord.svg?url';
 import YoutubeIcon from './assets/youtube.svg?url';
 import RSSIcon from './assets/RSS.svg?url';
-import DetakeLogo from './assets/detake.svg?url';
 
 type Locale = 'us' | 'asia';
 
@@ -49,7 +48,9 @@ export default function Footer({}: FooterProps) {
             <p className="text-white/60 mb-6">{texts.newsletter.description}</p>
             <div className="flex">
               <input type="email" placeholder={texts.newsletter.emailPlaceholder} disabled className="flex-1 px-4 py-2 bg-gray-100 !text-gray-400 border border-gray-300 rounded-l cursor-not-allowed" />
-              <button disabled className="bg-gray-400 px-6 py-2 rounded-r cursor-not-allowed flex items-center">{texts.newsletter.subscribeButton}</button>
+              <button disabled className="bg-gray-400 px-6 py-2 rounded-r cursor-not-allowed flex items-center">
+                {texts.newsletter.subscribeButton}
+              </button>
             </div>
           </div>
 
@@ -110,7 +111,7 @@ export default function Footer({}: FooterProps) {
           {/* Logo and Social Media Section - Responsive Layout */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-8 px-6 md:px-12 space-y-6 md:space-y-0">
             <div className="flex flex-col items-center md:items-center ">
-              <img src={DetakeLogo} alt="DeTake Logo" className="w-[90px] mb-2 md:mb-0" />
+              <img src="https://cdn.detake.com/images/logo-white.svg" alt="DeTake Logo" className="w-[90px] mb-2 md:mb-0" />
               <p className="text-white text-[12px]">{texts.company.copyright}</p>
             </div>
             <div className="flex justify-center md:justify-end space-x-5">

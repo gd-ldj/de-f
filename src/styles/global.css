@@ -4,14 +4,14 @@
    We map Roman to weight 400 and Medium to weight 500 so we can switch by font-weight. */
 @font-face {
   font-family: "Sequel Sans";
-  src: url('/fonts/Sequel-Sans-Roman-Disp.ttf') format('truetype');
+  src: url('https://cdn.detake.com/fonts/Sequel-Sans-Roman-Disp.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Sequel Sans";
-  src: url('/fonts/Sequel-Sans-Medium-Disp.ttf') format('truetype');
+  src: url('https://cdn.detake.com/fonts/Sequel-Sans-Medium-Disp.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;

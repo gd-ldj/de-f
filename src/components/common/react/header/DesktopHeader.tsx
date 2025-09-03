@@ -6,7 +6,6 @@ import { toast } from '@/components/common/react/Toast';
 
 // Import icons from local assets
 import DownIcon from './assets/down.svg?url';
-import DetakeLogo from './assets/detake.svg?url';
 import CountryIcon from './assets/country.svg?url';
 import SearchIcon from './assets/search.svg?url';
 
@@ -194,7 +193,7 @@ export default function DesktopHeader({
           {/* Logo - Center */}
           <div className="flex items-center justify-center flex-shrink-0">
             <a href={`/${locale}`} className="flex items-center">
-              <img src={DetakeLogo} alt="logo" className="w-32" />
+              <img src="https://cdn.detake.com/images/logo-black.svg" alt="logo" className="w-32" />
             </a>
           </div>
 

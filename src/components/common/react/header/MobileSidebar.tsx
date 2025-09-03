@@ -3,7 +3,6 @@ import { headerTexts } from './constants';
 import type { Locale } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 
-import DetakeLogo from './assets/detake.svg?url';
 import CountryIcon from './assets/country.svg?url';
 import MeIcon from './assets/me.svg?url';
 
@@ -57,7 +56,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           <div className="w-5"></div>
-          <img src={DetakeLogo} alt="DeTake" className="h-6" />
+          <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close menu">
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -79,15 +78,17 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
 
           {/* Navigation Items */}
           <div className="space-y-1 mb-8">
-            <button 
-            // onClick={() => handleNavigation(`/${locale}/social`)} 
-            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button
+              // onClick={() => handleNavigation(`/${locale}/social`)}
+              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+            >
               {texts.navigation.social}
             </button>
 
-            <button 
-            // onClick={() => handleNavigation(`/${locale}/explore`)} 
-            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button
+              // onClick={() => handleNavigation(`/${locale}/explore`)}
+              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+            >
               {texts.navigation.explore}
             </button>
 
@@ -101,24 +102,27 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
               </button>
             </div>
 
-            <button 
-            // onClick={() => handleNavigation(`/${locale}/trending`)} 
-            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button
+              // onClick={() => handleNavigation(`/${locale}/trending`)}
+              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+            >
               {texts.navigation.trending}
             </button>
 
             {/* Learn with expandable submenu */}
             <div>
-              <button 
-              // onClick={() => handleNavigation(`/${locale}/learn`)} 
-              className="flex items-center justify-between w-full py-3 text-left">
+              <button
+                // onClick={() => handleNavigation(`/${locale}/learn`)}
+                className="flex items-center justify-between w-full py-3 text-left"
+              >
                 <span className="text-lg text-gray-900">{texts.navigation.learn}</span>
               </button>
             </div>
 
-            <button 
-            // onClick={() => handleNavigation(`/${locale}/technology`)} 
-            className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button
+              // onClick={() => handleNavigation(`/${locale}/technology`)}
+              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+            >
               {texts.navigation.technology}
             </button>
           </div>

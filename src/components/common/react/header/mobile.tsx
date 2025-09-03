@@ -5,8 +5,6 @@ import MobileSidebar from './MobileSidebar';
 import MobileCategoryPage from './MobileCategoryPage';
 
 // Import icons from local assets
-import DownIcon from './assets/down.svg?url';
-import DetakeLogo from './assets/detake.svg?url';
 import SearchIcon from './assets/search.svg?url';
 import MenuIcon from './assets/menu.svg?url';
 import BackIcon from './assets/back.svg?url';
@@ -121,7 +119,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
           {/* Center - Logo */}
           <div className="flex-1 flex justify-center">
             <a href={`/${locale}`} className="flex items-center">
-              <img src={DetakeLogo} alt="deTake" className="h-6 w-auto" />
+              <img src="https://cdn.detake.com/images/logo-black.svg" alt="deTake" className="h-6 w-auto" />
             </a>
           </div>
 

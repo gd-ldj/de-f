@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import type { Locale } from '@/types';
 import { createTranslator } from '@/lib/i18n';
-import DetakeLogo from './assets/detake.svg?url';
 import BackIcon from './assets/back.svg?url';
 
 interface MobileCategoryPageProps {
@@ -54,7 +53,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
           <button onClick={onBack} className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label="Back">
             <img src={BackIcon} alt="DeTake" className="h-6" />
           </button>
-          <img src={DetakeLogo} alt="DeTake" className="h-6" />
+          <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close menu">
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
