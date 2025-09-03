@@ -1,25 +1,24 @@
 ---
 // Astro component script (runs at build time)
-import { fetchHomePageData } from '@/api/articles'
 import type { Locale, HomeNewsArticle } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import {formatDate} from '@/utils/util'
 import { createTranslator } from '@/lib/i18n'
 
-// Get locale from props or default to 'us'
+// Get locale and newsAll from props
 interface Props {
   locale?: Locale;
+  newsAll?: HomeNewsArticle[];
 }
 
-const { locale = 'us' as Locale } = Astro.props as Props
+const { locale = 'us' as Locale, newsAll = [] } = Astro.props as Props
 
 // Translation helper function
 const t = createTranslator(locale)
 
-// Fetch home page data
-const homeData = await fetchHomePageData()
-const news_all: HomeNewsArticle[] = homeData?.news_all || []
+// Use news data passed from parent component
+const news_all: HomeNewsArticle[] = newsAll
 
 // Get the main featured article (first one)
 const featuredArticle = news_all[0]

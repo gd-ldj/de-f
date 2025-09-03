@@ -12,12 +12,16 @@ import Footer from '@/components/common/react/footer/Index';
 import AuthMount from '@/components/common/react/AuthMount';
 import Header from '@/components/common/react/header/Index';
 import ToFollowList from '@/components/home/react/ToFollowList';
+import { fetchHomePageData } from '@/api/articles';
 
 
 
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
+
+// Fetch home page data once at the page level to avoid multiple API calls
+const homeData = await fetchHomePageData()
 
 
 
@@ -46,28 +50,35 @@ const { title, description } = seoContent[locale] || seoContent.us
      />
      <!-- 移动端布局 -->
      <div class="md:hidden mt-[56px]">
-        <MobileLayout locale={locale} />
+        <MobileLayout 
+          locale={locale} 
+          latestNews={homeData?.lastest || []}
+          newsAll={homeData?.news_all || []}
+          whoToFollow={homeData?.who_to_follow || []}
+          topics={homeData?.topics || []}
+          mostRead={homeData?.mostread || []}
+        />
      </div>
      <div class="min-h-screen bg-white mt-[97px] md:block hidden">
         
         <div class="max-w-[1440px] mx-auto">
           <div class="grid grid-cols-12">
             <div class="col-span-3 space-y-6 py-5 border border-t-0 border-r-0 border-border">
-              <Sidebar />
-                <ToFollowList locale={locale} client:load />
+              <Sidebar latestNews={homeData?.lastest || []} />
+                <ToFollowList locale={locale} whoToFollow={homeData?.who_to_follow || []} client:load />
             </div>
             <div class="col-span-6 border border-t-0 border-border py-5 px-6">
-              <MainContent locale={locale} />
+              <MainContent locale={locale} newsAll={homeData?.news_all || []} />
             </div>
             <div class="col-span-3 space-y-6 py-5 border border-t-0 border-l-0 border-border">
               <!-- React mount point for Login -->
               <div id="login-root" ></div>
-              <RightSidebar />
+              <RightSidebar topics={homeData?.topics || []} mostRead={homeData?.mostread || []} />
             </div>
           </div>
-          <NewsSection locale={locale} />
-          <TrendingSection />
-          <ResearchSection locale={locale} />
+          <NewsSection locale={locale} articles={homeData?.news_all || []} />
+          <TrendingSection articles={homeData?.mostread || []} />
+          <ResearchSection locale={locale} articles={homeData?.mostread || []} />
         </div>
       </div>
       <Footer  client:load />

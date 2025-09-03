@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import Image from '@/components/common/react/Image';
-import { fetchHomePageData } from '@/api/articles';
 import type { HomeWhoToFollow, Locale } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import { getLocaleFromPath } from '@/lib/utils';
@@ -12,6 +11,7 @@ import { AvatarSkeleton, TextSkeleton } from '@/components/common/react/Skeleton
 
 interface ToFollowListProps {
   locale?: Locale;
+  whoToFollow?: HomeWhoToFollow[];
 }
 
 /**
@@ -27,12 +27,12 @@ function getLocale(propsLocale?: Locale): Locale {
   return 'us'; // fallback
 }
 
-export default function ToFollowList({ locale: propsLocale }: ToFollowListProps) {
+export default function ToFollowList({ locale: propsLocale, whoToFollow = [] }: ToFollowListProps) {
   console.log('🚀 ~ ToFollowList ~ locale:', propsLocale);
   const locale = useMemo(() => getLocale(propsLocale), [propsLocale]);
   const t = createTranslator(locale);
   const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Set to false since data is passed from parent
   const [error, setError] = useState<string | null>(null);
   // Authentication utilities
   const { isEffectivelyLoggedIn, login, getValidAccessToken } = useAuth();
@@ -41,29 +41,19 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
   // Track hover state for each user item
   const [hoveredUserId, setHoveredUserId] = useState<string | null>(null);
 
-  // Memoize the data fetching function
-  const loadFollowUsers = useCallback(async () => {
-    try {
-      setError(null);
-      const homeData = await fetchHomePageData();
-      console.log('🚀 ~ ToFollowList ~ homeData:', homeData);
-      setFollowUsers(homeData?.who_to_follow || []);
-    } catch (error) {
-      console.error('Failed to load follow users:', error);
-      setError('Failed to load recommendations');
-    } finally {
+  // Initialize follow users from whoToFollow prop
+  useEffect(() => {
+    if (whoToFollow.length > 0) {
+      console.log('🚀 ~ ToFollowList ~ whoToFollow:', whoToFollow);
+      setFollowUsers(whoToFollow);
+      setLoading(false);
+    } else {
+      setError('No data available');
       setLoading(false);
     }
-  }, []);
+  }, [whoToFollow]);
 
-  useEffect(() => {
-    // Add a small delay to prevent blocking initial render
-    const timer = setTimeout(() => {
-      loadFollowUsers();
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [loadFollowUsers]);
+  // Data is now passed from parent component, no need for separate data fetching
 
   /**
    * Handle follow (subscribe) action for a specific user
@@ -109,9 +99,7 @@ export default function ToFollowList({ locale: propsLocale }: ToFollowListProps)
           <h3 className="font-medium text-foreground mb-[10px] md:mb-4">{t('common.whoToFollow')}</h3>
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">{error}</p>
-            <button onClick={loadFollowUsers} className="text-primary hover:text-primary/80 text-sm">
-              Try Again
-            </button>
+            <p className="text-xs text-muted-foreground">Please refresh the page to try again</p>
           </div>
         </div>
       </div>

@@ -1,22 +1,21 @@
 ---
-import { fetchHomePageData } from '@/api/articles'
-import type { Locale } from '@/types'
+import type { Locale, HomeMostReadArticle } from '@/types'
 import TrendingGrid from '@/components/home/react/TrendingGrid'
 import { getLocaleFromPath } from '@/lib/utils'
 
 interface Props {
   locale?: Locale
+  articles?: HomeMostReadArticle[]
 }
 
-const { locale: propsLocale } = Astro.props as Props
+const { locale: propsLocale, articles = [] } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
 /**
- * Fetch home page data for the trending grid
+ * Use articles data passed from parent component
  * Uses mostread articles from the API
  */
-const homeData = await fetchHomePageData()
-const trendingArticles = homeData?.mostread || []
+const trendingArticles = articles
 ---
 
 <TrendingGrid 

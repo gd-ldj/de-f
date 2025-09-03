@@ -1,5 +1,5 @@
 ---
-import type { Locale } from '@/types'
+import type { Locale, HomeLatestArticle, HomeNewsArticle, HomeWhoToFollow, HomeTopic, HomeMostReadArticle } from '@/types'
 import MainContent from '@/components/home/astro/MainContent.astro'
 import RightSidebar from '@/components/home/astro/RightSidebar.astro'
 import Sidebar from '@/components/home/astro/Sidebar.astro'
@@ -9,38 +9,43 @@ import TrendingSection from '@/components/home/astro/TrendingSection.astro';
 import ResearchSection from '@/components/home/astro/ResearchSection.astro';
 interface Props {
   locale: Locale
+  latestNews?: HomeLatestArticle[]
+  newsAll?: HomeNewsArticle[]
+  whoToFollow?: HomeWhoToFollow[]
+  topics?: HomeTopic[]
+  mostRead?: HomeMostReadArticle[]
 }
 
-const { locale } = Astro.props as Props
+const { locale, latestNews = [], newsAll = [], whoToFollow = [], topics = [], mostRead = [] } = Astro.props as Props
 ---
 
 <!-- Mobile Layout - 100% accurate restoration for mobile UI -->
 <div class="md:hidden">
   <!-- Mobile Main Content -->
   <div class="px-4 py-4">
-    <MainContent locale={locale} />
+    <MainContent locale={locale} newsAll={newsAll} />
   </div>
   
   <!-- Mobile Sidebar Content -->
   <div class="py-4 border-t border-gray-200">
-    <Sidebar />
+    <Sidebar latestNews={latestNews} />
   </div>
 
    <!-- Mobile To Follow List -->
   <div class="py-4 border-t border-gray-200 bg-[#FAFAFA]">
-    <ToFollowList locale={locale} client:load />
+    <ToFollowList locale={locale} whoToFollow={whoToFollow} client:load />
   </div>
   
   <!-- Mobile Right Sidebar Content -->
   <div class="py-4 border-t border-gray-200">
     <!-- React mount point for Login -->
     <!-- <div id="login-root-mobile"></div> -->
-    <RightSidebar />
+    <RightSidebar topics={topics} mostRead={mostRead} />
   </div>
   <div class="pb-4 border-t border-gray-200">
-    <NewsSection locale={locale} />
-    <TrendingSection />
-    <ResearchSection locale={locale} />
+    <NewsSection locale={locale} articles={newsAll} />
+    <TrendingSection articles={mostRead} />
+    <ResearchSection locale={locale} articles={mostRead} />
   </div>
 </div>
 
@@ -49,16 +54,16 @@ const { locale } = Astro.props as Props
   <div class="max-w-[1440px] mx-auto">
     <div class="grid grid-cols-12">
       <div class="col-span-3 space-y-6 py-5 border border-t-0 border-r-0 border-border">
-        <Sidebar />
-        <ToFollowList locale={locale} client:load />
+        <Sidebar latestNews={latestNews} />
+        <ToFollowList locale={locale} whoToFollow={whoToFollow} client:load />
       </div>
       <div class="col-span-6 border border-t-0 border-border py-5 px-6">
-        <MainContent locale={locale} />
+        <MainContent locale={locale} newsAll={newsAll} />
       </div>
       <div class="col-span-3 space-y-6 py-5 border border-t-0 border-l-0 border-border">
         <!-- React mount point for Login -->
         <div id="login-root"></div>
-        <RightSidebar />
+        <RightSidebar topics={topics} mostRead={mostRead} />
       </div>
     </div>
   </div>

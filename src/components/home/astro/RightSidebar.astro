@@ -1,5 +1,4 @@
 ---
-import { fetchHomePageData } from '@/api/articles'
 import type { HomeTopic, HomeMostReadArticle, Locale } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
@@ -8,21 +7,22 @@ import {formatDate} from '@/utils/util'
 
 interface Props {
   locale?: Locale
+  topics?: HomeTopic[]
+  mostRead?: HomeMostReadArticle[]
 }
 
-// Get locale from props or extract from URL - 从props获取locale或从URL中提取
-const { locale: propsLocale } = Astro.props as Props
+// Get locale, topics and mostRead from props or extract from URL - 从props获取locale、topics和mostRead或从URL中提取
+const { locale: propsLocale, topics: propsTopics = [], mostRead = [] } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
 // Use custom translation function for server-side rendering
 const t = createTranslator(locale)
 
-// Fetch home page data from API - 从API获取首页数据
-const homeData = await fetchHomePageData()
+// Use topics and mostRead data passed from parent component - 使用从父组件传递的主题和热门文章数据
 
-// Extract topics and most read articles from API response - 从API响应中提取主题和热门文章
-const rawTopics: HomeTopic[] = homeData?.topics || []
-const mostReadArticles: HomeMostReadArticle[] = homeData?.mostread || []
+// Use topics and most read articles from props - 使用从props传递的主题和热门文章
+const rawTopics: HomeTopic[] = propsTopics
+const mostReadArticles: HomeMostReadArticle[] = mostRead
 
 // Transform topics to include URL - 转换主题数据以包含URL
 const topics = rawTopics.map(topic => ({

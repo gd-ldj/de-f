@@ -1,26 +1,25 @@
 ---
-import { fetchHomePageData } from '@/api/articles'
-import type { Locale } from '@/types'
+import type { Locale, HomeMostReadArticle } from '@/types'
 import ResearchGrid from '@/components/home/react/ResearchGrid'
 import { createTranslator } from '@/lib/i18n'
 import { getLocaleFromPath } from '@/lib/utils'
 
 interface Props {
   locale?: Locale
+  articles?: HomeMostReadArticle[]
 }
 
-const { locale: propsLocale } = Astro.props as Props
+const { locale: propsLocale, articles = [] } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
 // Translation helper function
 const t = createTranslator(locale)
 
 /**
- * 获取首页数据用于 Research 组件
+ * 使用从父组件传递的文章数据用于 Research 组件
  * 使用 mostread 文章数据
  */
-const homeData = await fetchHomePageData()
-const researchArticles = homeData?.mostread || []
+const researchArticles = articles
 ---
 
 <section class="py-5 px-4 md:px-6 border border-y-0 border-border space-y-6" aria-labelledby="research-heading">
