@@ -23,15 +23,15 @@ const homeData = await fetchHomePageData()
 const researchArticles = homeData?.mostread || []
 ---
 
-<section class="py-5 px-6 border border-y-0 border-border space-y-6" aria-labelledby="research-heading">
+<section class="py-5 px-4 md:px-6 border border-y-0 border-border space-y-6" aria-labelledby="research-heading">
   <div>
     <!-- 顶部标题栏 -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-2 md:mb-6">
       <div class="flex items-center justify-center gap-2">
         <h2 id="research-heading" class="font-medium text-foreground">
           {t('research.title')}
         </h2>
-        <span class="text-muted-foreground">
+        <span class="hidden md:block text-muted-foreground">
           {t('research.subtitle')}
         </span>
       </div>

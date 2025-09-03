@@ -74,22 +74,22 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
   };
 
   return (
-    <div className="py-5 px-6 border border-y-0 border-border">
+    <div className="py-5 px-4 md:px-6 border border-y-0 border-border">
       {/* 标题栏 */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
           <h2 className="text font-medium text-foreground">{t('common.news')}</h2>
-          <p className="text text-muted-foreground">{t('common.breakingHeadlines')}</p>
+          <p className="hidden md:block text text-muted-foreground">{t('common.breakingHeadlines')}</p>
         </div>
-        <a href={`/${locale}/news`} className="text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
+        <a href={`/${locale}/news`} className="hidden text-primary text-sm font-medium mt-6 hover:text-primary/80 md:inline-block transition-colors">
           {t('common.moreFromNews')}
         </a>
       </div>
 
       {/* 分类导航 */}
-      <div className="flex space-x-6 mb-8 overflow-x-auto">
+      <div className="flex space-x-6 mb-5 md:mb-8 overflow-x-auto scrollbar-hide">
         {newsCategories.map((category) => (
-          <button key={category.key} onClick={() => handleCategoryChange(category.key)} disabled={loading} className={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors disabled:opacity-50 ${activeCategory === category.key ? 'bg-[#F5F6F7] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} aria-pressed={activeCategory === category.key}>
+          <button key={category.key} onClick={() => handleCategoryChange(category.key)} disabled={loading} className={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors disabled:opacity-50 flex-shrink-0 ${activeCategory === category.key ? 'bg-[#F5F6F7] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} aria-pressed={activeCategory === category.key}>
             {category.name}
           </button>
         ))}
@@ -103,66 +103,46 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
       )}
 
       {/* 新闻文章网格 */}
-      <div className={`grid grid-cols-6 gap-4 ${loading ? 'opacity-50' : ''}`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 ${loading ? 'opacity-50' : ''}`}>
         {articles.map((article) => (
           <article key={article.entry_id} className="bg-white rounded overflow-hidden group">
-            {/* 文章图片 */}
-            <div className="relative">
-              <ArticleLink 
-                slug={article.slug} 
-                locale={locale} 
-                business={article.business_type_name || 'news'} 
-                className="block"
-              >
-                <img 
-                  src={article.img_url || '/placeholder.svg'} 
-                  alt={article.title} 
-                  className="w-full h-32 object-cover hover:scale-105 transition-transform duration-300" 
-                  loading="lazy" 
-                />
-              </ArticleLink>
-            </div>
-            
-            <div className="p-4">
-              {/* 分类标签 - 可点击进入分类页面 */}
-              <div className="flex flex-wrap gap-2 mb-2">
-                <a 
-                  href={`/${locale}/news/${article.category_name?.toLowerCase() || 'all'}`}
-                  className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors"
-                >
-                  {article.business_type_name?.toUpperCase() || 'NEWS'}
-                </a>
-                {article.category_name && (
-                  <a 
-                    href={`/${locale}/news/${article.category_name.toLowerCase()}`}
-                    className="text-xs text-muted-foreground uppercase hover:text-foreground transition-colors"
-                  >
-                    {article.category_name}
-                  </a>
-                )}
-              </div>
-              
-              {/* 文章标题 - 可点击进入详情 */}
-              <h3 className="font-medium text-foreground text-sm mt-1 mb-2 leading-tight">
-                <ArticleLink 
-                  slug={article.slug} 
-                  locale={locale} 
-                  business={article.business_type_name || 'news'}
-                  className="hover:text-primary transition-colors"
-                >
-                  {article.title}
+            {/* Mobile: Left image, right content layout */}
+            <div className="flex sm:block">
+              {/* 文章图片 */}
+              <div className="relative flex-shrink-0 sm:w-full">
+                <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
+                  <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-22 h-22 sm:w-full sm:h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                 </ArticleLink>
-              </h3>
-              
-              <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
-                {article.sub_title || article.title}
-              </p>
-              
-              {/* 文章元信息 */}
-              <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
-                <span className="font-medium">
-                  {formatDate(article.created_at, locale)} / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
-                </span>
+              </div>
+
+              <div className="flex-1 pl-3 sm:p-4">
+                {/* 分类标签 - 可点击进入分类页面 */}
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <a href={`/${locale}/news/${article.category_name?.toLowerCase() || 'all'}`} className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">
+                    {article.business_type_name?.toUpperCase() || 'NEWS'}
+                  </a>
+                  {article.category_name && (
+                    <a href={`/${locale}/news/${article.category_name.toLowerCase()}`} className="text-xs text-muted-foreground uppercase hover:text-foreground transition-colors">
+                      {article.category_name}
+                    </a>
+                  )}
+                </div>
+
+                {/* 文章标题 - 可点击进入详情 */}
+                <h3 className="text-foreground mt-1 mb-2 leading-tight">
+                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
+                    {article.title}
+                  </ArticleLink>
+                </h3>
+
+                <p className="hidden md:block text-sm text-muted-foreground mb-3 md:line-clamp-2">{article.sub_title || article.title}</p>
+
+                {/* 文章元信息 */}
+                <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
+                  <span className="font-medium">
+                    {formatDate(article.created_at, locale)} / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
+                  </span>
+                </div>
               </div>
             </div>
           </article>
