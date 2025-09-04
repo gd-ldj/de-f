@@ -45,7 +45,7 @@ const isWithin12Hours = (createdAt: string) => {
           <div class="flex-shrink-0 w-64">
             <ArticleLink
               slug={article.slug}
-              business={article.business_type_name.toLowerCase()}
+              business={article.business_type_name}
               locale={locale}
               class="block p-3 group transition-colors border border-gray-200 rounded-lg relative h-full"
             >
@@ -77,7 +77,7 @@ const isWithin12Hours = (createdAt: string) => {
           <div class="relative">
             <ArticleLink
               slug={article.slug}
-              business={article.business_type_name.toLowerCase()}
+              business={article.business_type_name}
               locale={locale}
               class="flex items-start space-x-3 py-3 group transition-colors"
             >

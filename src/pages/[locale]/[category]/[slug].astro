@@ -8,6 +8,7 @@ import ArticleSidebar from '@/components/article/react/ArticleSidebar'
 import { fetchArticle } from '@/api/articles'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
+import RecentResearch from '@/components/article/react/RecentResearch';
 
 
 export const prerender = false // Enable SSR for this page
@@ -130,6 +131,10 @@ const author = article?.author?.name || article.author_name
             <!-- Share Section mount: rendered via AuthMount under PrivyProvider -->
             <div id="share-section-root" class=""></div>
             <!-- <ArticleSidebar locale={locale} client:load /> -->
+            {/* Recent Research */}
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} client:load />
+            </div>
           </div>
         </div>
       </div>

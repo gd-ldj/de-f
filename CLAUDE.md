@@ -210,7 +210,6 @@ pnpm type-check          # 运行 Astro 类型检查
 - `PUBLIC_SITE_ENV`: 站点环境标识 (`beta` | `production`)
 - `PUBLIC_PRIVY_APP_ID`: Privy 身份验证应用 ID
 - `PUBLIC_GA_MEASUREMENT_ID`: Google Analytics 测量 ID
-- `PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY`: Cloudflare Turnstile 站点密钥
 - `PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`: Cloudflare 分析令牌
 
 ### 环境文件

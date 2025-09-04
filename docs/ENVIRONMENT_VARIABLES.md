@@ -44,15 +44,6 @@ PUBLIC_PRIVY_APP_ID=your_privy_app_id
   2. 创建或选择应用
   3. 在应用设置中找到 App ID
 
-### 4. API 配置
-```bash
-PUBLIC_API_BASE_URL=https://your-api-domain.com
-PUBLIC_SITE_URL=https://your-site-domain.com
-```
-- **用途**: 
-  - `PUBLIC_API_BASE_URL`: 后端 API 基础地址
-  - `PUBLIC_SITE_URL`: 前端网站基础地址
-- **配置说明**: 根据部署环境设置相应的域名
 
 ## 在代码中使用环境变量
 
@@ -150,11 +141,9 @@ export function validateEnvironmentVariables() {
 
 ```bash
 # .env.local (本地开发)
-PUBLIC_API_BASE_URL=http://localhost:3000
 PUBLIC_GA_MEASUREMENT_ID=G-DEV123456789
 
 # .env.production (生产环境)
-PUBLIC_API_BASE_URL=https://api.yoursite.com
 PUBLIC_GA_MEASUREMENT_ID=G-PROD123456789
 ```
 
@@ -170,7 +159,6 @@ export const ConfigStatus: React.FC = () => {
   const config = {
     hasGA: !!ANALYTICS_CONFIG.GA_MEASUREMENT_ID,
     hasPrivy: !!import.meta.env.PUBLIC_PRIVY_APP_ID,
-    hasAPI: !!import.meta.env.PUBLIC_API_BASE_URL,
   }
   
   return (
@@ -202,7 +190,6 @@ export const ConfigStatus: React.FC = () => {
 interface ImportMetaEnv {
   readonly PUBLIC_GA_MEASUREMENT_ID: string
   readonly PUBLIC_PRIVY_APP_ID: string
-  readonly PUBLIC_API_BASE_URL: string
   readonly PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN: string
 }
 

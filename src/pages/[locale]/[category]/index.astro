@@ -29,25 +29,17 @@ const initialAuthorName = url.searchParams.get('author_name') || ''
 const initialTag = url.searchParams.get('tag') || ''
 const initialOrderBy = (url.searchParams.get('order_by') as 'Latest' | 'Popular' | 'Trending') || 'Latest'
 
-// Category display names
-const categoryNames = {
-  insights: { en: 'Insights', zh: '洞察' },
-  news: { en: 'News', zh: '新闻' },
-  research: { en: 'Research', zh: '研究' }
-}
-
-const currentCategory = categoryNames[category.toLowerCase() as keyof typeof categoryNames]
-const categoryDisplayName = locale === 'us' ? currentCategory.en : currentCategory.zh
+const categoryDisplayName = category.charAt(0).toUpperCase() + category.slice(1)
 
 // SEO content based on locale and category
 const seoContent = {
   us: {
-    title: `${currentCategory.en} - DeTake Crypto Analysis & Insights | detake`,
+    title: `${categoryDisplayName} - DeTake Crypto Analysis & Insights | detake`,
     description: `Stay updated with the latest ${category} in cryptocurrency and blockchain. Expert analysis and insights from DeTake.`
   },
   asia: {
-    title: `${currentCategory.zh} - DeTake 加密货币分析与洞察 | detake`,
-    description: `获取最新的加密货币${currentCategory.zh}和区块链洞察。来自DeTake的专业分析。`
+    title: `${category} - DeTake 加密货币分析与洞察 | detake`,
+    description: `获取最新的加密货币${categoryDisplayName}和区块链洞察。来自DeTake的专业分析。`
   }
 }
 
@@ -68,7 +60,7 @@ const { title, description } = seoContent[locale] || seoContent.us
         <!-- Breadcrumb -->
         <nav class="text-sm text-muted-foreground mb-2">
           <a href={`/${locale}`} class="hover:text-foreground">
-            {locale === 'us' ? 'Articles' : '文章'}
+            Articles
           </a>
           <span class="mx-1">/</span>
           <span class="text-primary">{categoryDisplayName}</span>
@@ -82,7 +74,7 @@ const { title, description } = seoContent[locale] || seoContent.us
       <CategoryPage 
         client:load
         locale={locale}
-        category={category}
+        category={categoryDisplayName}
         initialPage={initialPage}
         initialCategoryName={initialCategoryName}
         initialAuthorName={initialAuthorName}

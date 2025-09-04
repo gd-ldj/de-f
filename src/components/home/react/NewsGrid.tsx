@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import type { HomeNewsArticle, Locale } from '@/types';
 import { formatDate } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
-import { fetchArticles } from '@/api/articles';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
 interface NewsGridProps {

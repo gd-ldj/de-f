@@ -61,14 +61,10 @@ cp .env.example .env
 编辑 `.env` 文件：
 
 ```env
-# API Configuration
-PUBLIC_API_BASE_URL=https://preview-api.detake.com
 
 # Privy Authentication
 PUBLIC_PRIVY_APP_ID=your-privy-app-id-here
 
-# Site Configuration
-PUBLIC_SITE_URL=https://detake.com
 ```
 
 ### 开发模式

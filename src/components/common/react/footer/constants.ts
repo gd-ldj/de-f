@@ -5,11 +5,11 @@ export const footerTexts = {
       subtitle: 'Stay up to crypto with DeTake',
       description: 'Get the daily newsletter that helps thousands of investors understand the markets.',
       emailPlaceholder: 'Email address',
-      subscribeButton: 'SUBSCRIBE'
+      subscribeButton: 'SUBSCRIBE',
     },
     disclosure: {
       title: 'DISCLOSURE & POLICIES',
-      content: 'CoinDesk is an award-winning media outlet that covers the cryptocurrency industry. Its journalists abide by a strict set of editorial policies. CoinDesk has adopted a set of principles aimed at ensuring the integrity, editorial independence and freedom from bias of its publications. CoinDesk is part of the Bullish group, which owns and invests in digital asset businesses and digital assets. CoinDesk employees, including journalists, may receive Bullish group equity-based compensation. Bullish was incubated by technology investor Block.one.'
+      content: 'DeTake is NATO’s #1 decentralized media network, delivering must-see Takes and operating as a leading vendor of advertising and influence. While active in media and commercial partnerships, our editorial work remains fully independent. Any potential conflicts of interest are disclosed to ensure transparency and trust with our readers.',
     },
     navigation: {
       news: 'News',
@@ -24,11 +24,11 @@ export const footerTexts = {
       careers: 'Careers',
       termsOfService: 'Terms of Service',
       privacyPolicy: 'Privacy Policy',
-      contactUs: 'Contact Us'
+      contactUs: 'Contact Us',
     },
     company: {
       logo: 'LOGO',
-      copyright: '© DETAKE LLC'
+      copyright: '© DETAKE LLC',
     },
     social: {
       twitter: 'Follow us on Twitter',
@@ -36,8 +36,8 @@ export const footerTexts = {
       github: 'Visit our GitHub',
       discord: 'Join our Discord',
       youtube: 'Subscribe to our YouTube',
-      rss: 'Subscribe to our RSS feed'
-    }
+      rss: 'Subscribe to our RSS feed',
+    },
   },
   asia: {
     newsletter: {
@@ -45,11 +45,11 @@ export const footerTexts = {
       subtitle: '与 DeTake 一起了解加密货币',
       description: '获取帮助数千投资者了解市场的每日新闻通讯。',
       emailPlaceholder: '邮箱地址',
-      subscribeButton: '订阅'
+      subscribeButton: '订阅',
     },
     disclosure: {
       title: '披露与政策',
-      content: 'CoinDesk 是一家屡获殊荣的媒体机构，专门报道加密货币行业。其记者遵守严格的编辑政策。CoinDesk 采用了一套旨在确保其出版物完整性、编辑独立性和无偏见的原则。CoinDesk 是 Bullish 集团的一部分，该集团拥有并投资数字资产业务和数字资产。CoinDesk 员工，包括记者，可能会获得 Bullish 集团基于股权的补偿。Bullish 由技术投资者 Block.one 孵化。'
+      content: 'DeTake 是 NATO 的 #1 去中心化媒体网络，提供必须看到的 Takes，并作为广告和影响力的领先供应商运营。虽然在媒体和商业合作中活跃，但我们的编辑工作保持完全独立。任何潜在的冲突利益都已披露，以确保与读者的透明度和信任。',
     },
     navigation: {
       news: '新闻',
@@ -64,11 +64,11 @@ export const footerTexts = {
       careers: '职业机会',
       termsOfService: '服务条款',
       privacyPolicy: '隐私政策',
-      contactUs: '联系我们'
+      contactUs: '联系我们',
     },
     company: {
       logo: 'LOGO',
-      copyright: '© DETAKE LLC'
+      copyright: '© DETAKE LLC',
     },
     social: {
       twitter: '在 Twitter 上关注我们',
@@ -76,9 +76,9 @@ export const footerTexts = {
       github: '访问我们的 GitHub',
       discord: '加入我们的 Discord',
       youtube: '订阅我们的 YouTube',
-      rss: '订阅我们的 RSS 源'
-    }
-  }
+      rss: '订阅我们的 RSS 源',
+    },
+  },
 };
 
 export type FooterTexts = typeof footerTexts.us;

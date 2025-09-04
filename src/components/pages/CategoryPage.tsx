@@ -106,7 +106,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       setLoading(true);
       try {
         const options = {
-          business_type_name: category.toLowerCase(),
+          business_type_name: category,
           category_name: Array.isArray(currentFilters.categoryName) ? currentFilters.categoryName.join(',') : currentFilters.categoryName || undefined,
           author_name: currentFilters.authorName || undefined,
           tag: Array.isArray(currentFilters.tag) ? currentFilters.tag.join(',') : currentFilters.tag || undefined,
