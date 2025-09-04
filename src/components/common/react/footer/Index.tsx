@@ -111,7 +111,7 @@ export default function Footer({}: FooterProps) {
           {/* Logo and Social Media Section - Responsive Layout */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-8 px-6 md:px-12 space-y-6 md:space-y-0">
             <div className="flex flex-col items-center md:items-center ">
-              <img src="https://cdn.detake.com/images/logo-white.svg" alt="DeTake Logo" className="w-[90px] mb-2 md:mb-0" />
+              <img src="https://cdn.detake.com/images/logo-white.svg" alt="DeTake Logo" className="w-[124px] mb-2  md:pl-4" />
               <p className="text-white text-[12px]">{texts.company.copyright}</p>
             </div>
             <div className="flex justify-center md:justify-end space-x-5">

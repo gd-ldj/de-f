@@ -90,7 +90,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           >
             {formatDate(featuredArticle.created_at, locale)}
           </span>
-          <span> / by</span>
+         <span class="text-muted-foreground">/ {t('article.by')} </span>
           <span class='text-foreground uppercase'>{featuredArticle.author.name}</span>
         </div>
 
@@ -140,7 +140,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           >
             {formatDate(article.created_at, locale)}
           </span>
-          <span> / by</span>
+          <span class="text-muted-foreground">/ {t('article.by')}</span>
           <span class='text-foreground uppercase'>{article.author.name}</span>
         </div>
       </div>
