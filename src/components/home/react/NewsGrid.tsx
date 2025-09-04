@@ -21,13 +21,10 @@ interface NewsCategory {
 }
 
 export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
-  console.log('🚀 ~ NewsGrid ~ newsData:', newsData);
   const t = createTranslator(locale);
 
   const [articles, setArticles] = useState<any[]>(newsData[0]?.data || []);
-  console.log('🚀 ~ NewsGrid ~ articles:', articles);
   const [activeCategory, setActiveCategory] = useState(newsData[0]?.tag.toLowerCase() || '');
-  console.log('🚀 ~ NewsGrid ~ activeCategory:', activeCategory);
 
   // Generate news categories dynamically from newsData or use default categories
   const newsCategories: NewsCategory[] = useMemo(() => {

@@ -9,7 +9,6 @@ interface Props {
 }
 
 const { locale: propsLocale, articles = [] } = Astro.props as Props
-console.log("🚀 ~ articles:", articles)
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
 /**

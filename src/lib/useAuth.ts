@@ -14,7 +14,6 @@ export const useAuth = () => {
   const { ready, authenticated, login, user, signMessage } = usePrivy();
   const [privyTimeout, setPrivyTimeout] = useState(false);
   const [storedWalletAddress, setStoredWalletAddress] = useAtom(persistedWalletAddressAtom);
-  console.log('🚀 ~ useAuth ~ storedWalletAddress:', storedWalletAddress);
   const [isWalletAuthenticated] = useAtom(isAuthenticatedAtom);
   const walletAuth = useWalletAuth();
 

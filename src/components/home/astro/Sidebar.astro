@@ -47,14 +47,13 @@ const isWithin12Hours = (createdAt: string) => {
               slug={article.slug}
               business={article.business_type_name}
               locale={locale}
-              class="block p-3 group transition-colors border border-gray-200 rounded-lg relative h-full"
+              class="block p-4 pr-6 group transition-colors border border-gray-200 rounded relative h-full"
             >
               <!-- Mobile: Time indicator in top right corner -->
-              <div class="absolute top-2 right-2">
+              <div class="absolute top-0 right-0">
                 {isWithin12Hours(article.created_at) && (
-                  <div class="flex items-center space-x-1 text-xs text-muted-foreground">
-                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>{formatRelativeTime(article.created_at, locale)}</span>
+                  <div class="flex items-center space-x-1 text-xs bg-primary p-1 rounded">
+                    <span class="text-white" >{formatRelativeTime(article.created_at, locale)}</span>
                   </div>
                 )}
               </div>
@@ -79,7 +78,7 @@ const isWithin12Hours = (createdAt: string) => {
               slug={article.slug}
               business={article.business_type_name}
               locale={locale}
-              class="flex items-start space-x-3 py-3 group transition-colors"
+              class="flex items-start space-x-3 py-5 group transition-colors"
             >
               <!-- Article content container -->
               <div class="flex-1 min-w-0 flex">

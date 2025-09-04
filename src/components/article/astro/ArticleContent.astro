@@ -129,8 +129,8 @@ const t = createTranslator(locale)
             </time>
             
             <p class="text-sm font-medium text-foreground">
-              <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
-              {article.author?.name || article.author_name}
+              <span class="text-muted-foreground mr-[2px] ">/ {t('article.by')}</span>
+              <span class="text-foreground uppercase">{article.author?.name || article.author_name}</span>
             </p>
           </div>
         </div>

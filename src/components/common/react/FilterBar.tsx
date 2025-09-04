@@ -108,7 +108,7 @@ export default function FilterBar({
   }, []);
 
   return (
-    <div className="bg-white pl-4 md:pl-0 pb-2 md:pb-0 border-b md:border border-border rounded-md">
+    <div className="bg-white pl-4 md:pl-0 pb-2 md:pb-0 border-b md:border border-border">
       {/* Mobile Layout */}
       <div className="md:hidden">
         {/* Mobile Filter Header */}

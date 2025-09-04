@@ -28,7 +28,6 @@ function getLocale(propsLocale?: Locale): Locale {
 }
 
 export default function ToFollowList({ locale: propsLocale, whoToFollow = [] }: ToFollowListProps) {
-  console.log('🚀 ~ ToFollowList ~ locale:', propsLocale);
   const locale = useMemo(() => getLocale(propsLocale), [propsLocale]);
   const t = createTranslator(locale);
   const [followUsers, setFollowUsers] = useState<HomeWhoToFollow[]>([]);

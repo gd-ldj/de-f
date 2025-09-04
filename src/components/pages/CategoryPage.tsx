@@ -240,7 +240,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   }, [filters, fetchArticlesData]);
 
   return (
-    <main className="max-w-[1440px] mx-auto md:px-4 py-4 md:py-8">
+    <main className="max-w-[1440px] mx-auto py-4">
       {/* Filter Bar */}
       <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialTag={filters.tag} />
 

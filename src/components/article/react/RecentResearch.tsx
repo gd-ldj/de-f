@@ -3,6 +3,7 @@ import { formatDateSSR } from '../../../utils/timezone';
 import { fetchArticles } from '../../../api/articles';
 import type { ApiArticle, Locale } from '../../../types';
 import { DEFAULT_PROMOTE_CODE } from '@/config/constants';
+import { createTranslator } from '@/lib/i18n';
 
 interface ResearchArticle {
   id: string;
@@ -28,7 +29,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({ locale }) => {
   const [articles, setArticles] = useState<ResearchArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const t = createTranslator(locale);
   /**
    * Transform API response to component data structure
    */
@@ -145,7 +146,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({ locale }) => {
         {articles.map((article) => {
           const articleUrl = article.slug ? getArticleUrl(article.slug) : '#';
           return (
-            <div key={article.id} className="space-y-4">
+            <div key={article.id} className="space-y-2">
               {/* Article Image */}
               <a href={articleUrl} className="block relative w-full h-48 rounded overflow-hidden group">
                 <img
@@ -166,7 +167,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({ locale }) => {
               </a>
 
               {/* Categories */}
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mt-4">
                 {article.categories.map((category: string, index: number) => (
                   <span key={index} className="text-xs font-medium text-primary uppercase tracking-wide">
                     {category}
@@ -185,12 +186,12 @@ const RecentResearch: React.FC<RecentResearchProps> = ({ locale }) => {
               <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{article.description}</p>
 
               {/* Author and Date */}
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center justify-start text-xs text-muted-foreground space-x-1">
                 <span>{article.date}</span>
-                <div className="flex items-center space-x-1">
-                  <span>{locale === 'us' ? 'By' : '作者'}</span>
-                  <span className="font-medium text-foreground">{article.author}</span>
-                </div>
+                <p class="font-medium text-foreground space-x-1">
+                  <span class="text-muted-foreground mr-[2px] ">/ {t('article.by')} </span>
+                  <span class="text-foreground uppercase">{article.author}</span>
+                </p>
               </div>
             </div>
           );

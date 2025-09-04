@@ -1,17 +1,18 @@
 import type { ApiArticle, Locale } from '@/types'
 import ArticleLink from './ArticleLink'
 import { formatDate } from '@/utils/util';
+import { createTranslator } from '@/lib/i18n';
 
 interface ArticleGridProps {
-  articles: ApiArticle[]
-  locale: Locale
+  articles: ApiArticle[];
+  locale: Locale;
 }
 
 export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
-
+  const t = createTranslator(locale);
 
   return (
-    <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-12 mt-6 px-4 md:px-0">
+    <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-12 mt-6 px-4 md:px-6">
       {articles.map((article) => (
         <article key={article.slug} className="rounded overflow-hidden">
           {/* Mobile: Left image, right content layout */}
@@ -56,8 +57,8 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                 <div className="flex items-center justify-between text-[10px] md:text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <span>{formatDate(article.created_at, locale)}</span>
-                    <span className="hidden md:inline">/ by </span>
-                    <span className="text-foreground hidden md:inline">{article.author_name}</span>
+                    <span className="">/ {t('article.by')} </span>
+                    <span className="text-foreground uppercase">{article.author_name}</span>
                   </div>
                 </div>
               </div>

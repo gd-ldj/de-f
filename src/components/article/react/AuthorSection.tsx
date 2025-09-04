@@ -83,7 +83,7 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
   };
 
   return (
-    <div className="my-12">
+    <div className="my-6 md:my-12">
       {/* Section Title */}
       <h3 className="text-lg font-medium text-gray-900 mb-6">{locale === 'us' ? 'About the Author' : '关于作者'}</h3>
 
