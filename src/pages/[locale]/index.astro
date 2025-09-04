@@ -57,6 +57,9 @@ const { title, description } = seoContent[locale] || seoContent.us
           whoToFollow={homeData?.who_to_follow || []}
           topics={homeData?.topics || []}
           mostRead={homeData?.mostread || []}
+          news={homeData?.news || []}
+          insights={homeData?.insights || []}
+          research={homeData?.research || []}
         />
      </div>
      <div class="min-h-screen bg-white mt-[97px] md:block hidden">
@@ -76,9 +79,9 @@ const { title, description } = seoContent[locale] || seoContent.us
               <RightSidebar topics={homeData?.topics || []} mostRead={homeData?.mostread || []} />
             </div>
           </div>
-          <NewsSection locale={locale} articles={homeData?.news_all || []} />
-          <TrendingSection articles={homeData?.mostread || []} />
-          <ResearchSection locale={locale} articles={homeData?.mostread || []} />
+          <NewsSection locale={locale} articles={homeData?.news || []} />
+          <TrendingSection articles={homeData?.insights || []} />
+          <ResearchSection locale={locale} articles={homeData?.research || []} />
         </div>
       </div>
       <Footer  client:load />

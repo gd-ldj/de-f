@@ -145,7 +145,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
   };
 
   return (
-    <motion.div initial={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} animate={{ opacity: 1, maxHeight: '500px', overflow: 'visible' }} transition={{ duration: 0.8, ease: 'easeInOut' }} className="bg-white px-6 pt-5 pb-8 max-w-md mx-auto border-b border-border">
+    <motion.div initial={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} animate={{ opacity: 1, maxHeight: '500px', overflow: 'visible' }} transition={{ duration: 0.8, ease: 'easeInOut' }} className="w-full bg-white px-6 pt-5 pb-8 mx-auto border-b border-border">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-medium text-foreground">{t('article.shareToEarn')}</h3>

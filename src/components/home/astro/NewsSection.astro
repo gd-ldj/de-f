@@ -4,19 +4,22 @@ import NewsGrid from '@/components/home/react/NewsGrid'
 
 interface Props {
   locale: Locale
-  articles?: HomeNewsArticle[]
+  articles?: Array<{
+    tag: string;
+    data: HomeNewsArticle[];
+  }>
 }
 
-const { locale, articles = [] } = Astro.props as Props
+const { locale, articles = []} = Astro.props as Props
 
 /**
- * Use articles data passed from parent component
- * Provides initial data for the React component
+ * Use articles data or newsData passed from parent component
+ * Supports both legacy articles array and new newsData structure
  */
 ---
 
 <NewsGrid 
-  initialArticles={articles} 
+  newsData={articles}
   locale={locale}
   client:load
 />

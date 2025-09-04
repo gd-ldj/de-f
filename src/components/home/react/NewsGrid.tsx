@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { HomeNewsArticle, Locale } from '@/types';
 import { formatDate } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
@@ -6,7 +6,11 @@ import { fetchArticles } from '@/api/articles';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
 interface NewsGridProps {
-  initialArticles: HomeNewsArticle[];
+  initialArticles?: HomeNewsArticle[];
+  newsData?: Array<{
+    tag: string;
+    data: HomeNewsArticle[];
+  }>;
   locale: Locale;
 }
 
@@ -17,60 +21,35 @@ interface NewsCategory {
   active?: boolean;
 }
 
-export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
+export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
+  console.log('🚀 ~ NewsGrid ~ newsData:', newsData);
   const t = createTranslator(locale);
-  const [articles, setArticles] = useState<any[]>(initialArticles);
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [loading, setLoading] = useState(false);
 
-  // 定义新闻分类
-  const newsCategories: NewsCategory[] = [
-    { key: 'all', name: t('common.all'), active: true },
-    { key: 'opinion', name: t('common.opinion'), category_name: 'opinion' },
-    { key: 'markets', name: t('common.markets'), category_name: 'markets' },
-    { key: 'decibels', name: t('common.decibels'), category_name: 'decibels' },
-    { key: 'exchange', name: t('common.exchange'), category_name: 'exchange' },
-    { key: 'feature', name: t('common.feature'), category_name: 'feature' },
-    { key: 'announcement', name: t('common.announcement'), category_name: 'announcement' },
-    { key: 'people', name: t('common.people'), category_name: 'people' },
-    { key: 'event', name: t('common.event'), category_name: 'event' },
-    { key: 'analysis', name: t('common.analysis'), category_name: 'analysis' },
-    { key: 'newsletter', name: t('common.lightspeedNewsletter'), category_name: 'newsletter' },
-  ];
+  const [articles, setArticles] = useState<any[]>(newsData[0]?.data || []);
+  console.log('🚀 ~ NewsGrid ~ articles:', articles);
+  const [activeCategory, setActiveCategory] = useState(newsData[0]?.tag.toLowerCase() || '');
+  console.log('🚀 ~ NewsGrid ~ activeCategory:', activeCategory);
 
-  // 处理分类切换
+  // Generate news categories dynamically from newsData or use default categories
+  const newsCategories: NewsCategory[] = useMemo(() => {
+    const categories = newsData.map((item) => ({
+      key: item.tag.toLowerCase(),
+      name: item.tag,
+      category_name: item.tag.toLowerCase(),
+    }));
+    return categories;
+  }, [newsData]);
+
+  // Handle category switching with new data structure
   const handleCategoryChange = async (categoryKey: string) => {
-    if (categoryKey === activeCategory || loading) return;
+    console.log('🚀 ~ handleCategoryChange ~ categoryKey:', categoryKey, activeCategory);
+    if (categoryKey === activeCategory) return;
 
-    setLoading(true);
     setActiveCategory(categoryKey);
 
-    try {
-      if (categoryKey === 'all') {
-        // 显示所有文章，使用初始数据
-        setArticles(initialArticles);
-      } else {
-        // 根据 category_name 获取特定分类的文章
-        const category = newsCategories.find((cat) => cat.key === categoryKey);
-        if (category?.category_name) {
-          // const response = await fetchArticles(locale, 1, 6, {
-          //   business_type_name: 'news',
-          //   category_name: category.category_name,
-          //   order_by: 'Latest',
-          // });
-
-          // if (response?.articles) {
-          //   setArticles(response.articles as any);
-          // }
-          setArticles(initialArticles);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching articles for category:', error);
-      // 出错时保持当前数据
-    } finally {
-      setLoading(false);
-    }
+    const categoryData = newsData.find((item) => item.tag.toLowerCase() === categoryKey);
+    console.log('🚀 ~ handleCategoryChange ~ categoryData:', categoryData);
+    setArticles(categoryData?.data || []);
   };
 
   return (
@@ -88,22 +67,15 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
 
       {/* 分类导航 */}
       <div className="flex space-x-6 mb-5 md:mb-8 overflow-x-auto scrollbar-hide">
-        {newsCategories.map((category) => (
-          <button key={category.key} onClick={() => handleCategoryChange(category.key)} disabled={loading} className={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors disabled:opacity-50 flex-shrink-0 ${activeCategory === category.key ? 'bg-[#F5F6F7] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} aria-pressed={activeCategory === category.key}>
+        {newsCategories?.map((category: any) => (
+          <button key={category.key} onClick={() => handleCategoryChange(category.key)} className={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0 ${activeCategory === category.key ? 'bg-[#F5F6F7] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} aria-pressed={activeCategory === category.key}>
             {category.name}
           </button>
         ))}
       </div>
 
-      {/* 加载状态 */}
-      {loading && (
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
-
       {/* 新闻文章网格 */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 ${loading ? 'opacity-50' : ''}`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 `}>
         {articles.map((article) => (
           <article key={article.entry_id} className="bg-white rounded overflow-hidden group">
             {/* Mobile: Left image, right content layout */}
@@ -129,7 +101,7 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
                 </div>
 
                 {/* 文章标题 - 可点击进入详情 */}
-                <h3 className="text-foreground mt-1 mb-2 leading-tight">
+                <h3 className="text-foreground mt-1 mb-2 leading-tight line-clamp-2">
                   <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
@@ -151,13 +123,6 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
           </article>
         ))}
       </div>
-
-      {/* 无数据状态 */}
-      {!loading && articles.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
-          <p>{t('common.none')}</p>
-        </div>
-      )}
     </div>
   );
 }

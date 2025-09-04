@@ -249,6 +249,12 @@ export interface HomePageData {
   news_all: HomeNewsArticle[];
   topics: HomeTopic[];
   mostread: HomeMostReadArticle[];
+  news: Array<{
+    tag: string;
+    data: HomeNewsArticle[];
+  }>;
+  insights: HomeNewsArticle[];
+  research: HomeNewsArticle[];
 }
 
 export interface HomePageResponse {
