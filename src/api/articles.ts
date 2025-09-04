@@ -1,10 +1,11 @@
 import type { ApiArticle, ArticlesResponse, Locale, ArticleCategory, ArticleBusinessType, ArticleTag, HomePageResponse, HomePageData } from '../types';
+import { SITE_CONFIG } from '../config/constants';
 
 /**
  * API configuration
+ * Uses environment-based configuration from SITE_CONFIG
  */
-// Use import.meta.env for browser-safe environment variables in Vite/Astro
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com';
+const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
 
 /**
  * Fetch articles list with advanced filtering and pagination support

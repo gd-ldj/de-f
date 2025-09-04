@@ -3,7 +3,7 @@ import type { Locale, HomeLatestArticle } from '@/types'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
 import { createTranslator } from '@/lib/i18n'
-import {formatDate} from '@/utils/util'
+import {formatDate, formatRelativeTime} from '@/utils/util'
 
 interface Props {
   locale?: Locale
@@ -32,7 +32,7 @@ const isWithin12Hours = (createdAt: string) => {
 ---
 
 <!-- Sidebar Component - 100% accurate mobile UI restoration -->
-<div class="space-y-6 pl-4 md:px-6">
+<div class="pl-4 md:px-6">
   <div>
     <!-- Latest section title - responsive typography -->
     <h3 class="font-medium text-foreground mb-4">{t('common.latest')}</h3>
@@ -54,7 +54,7 @@ const isWithin12Hours = (createdAt: string) => {
                 {isWithin12Hours(article.created_at) && (
                   <div class="flex items-center space-x-1 text-xs text-muted-foreground">
                     <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>{formatDate(article.created_at, locale)}</span>
+                    <span>{formatRelativeTime(article.created_at, locale)}</span>
                   </div>
                 )}
               </div>
@@ -62,7 +62,7 @@ const isWithin12Hours = (createdAt: string) => {
               <!-- Article content container -->
               <div class="pr-3">
                 <!-- Article title - mobile optimized -->
-                <h4 class="font-medium text-foreground text-sm leading-tight group-hover:text-primary transition-colors line-clamp-3">
+                <h4 class="font-medium text-foreground text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
                   {article.title}
                 </h4>
               </div>
@@ -82,16 +82,16 @@ const isWithin12Hours = (createdAt: string) => {
               class="flex items-start space-x-3 py-3 group transition-colors"
             >
               <!-- Article content container -->
-              <div class="flex-1 min-w-0">
+              <div class="flex-1 min-w-0 flex">
                 <!-- Desktop: Show timestamp for recent articles -->
                 {isWithin12Hours(article.created_at) && (
-                  <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-1">
-                    <span>{formatDate(article.created_at, locale)}</span>
+                  <div class="flex-none text-[12px] mr-[10px] text-primary">
+                    <span>{formatRelativeTime(article.created_at, locale)}</span>
                   </div>
                 )}
                 
                 <!-- Article title - desktop layout -->
-                <h4 class="font-medium text-foreground text-sm mt-1 mb-2 leading-tight group-hover:text-primary transition-colors">
+                <h4 class="font-medium text-foreground text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
                   {article.title}
                 </h4>
               </div>

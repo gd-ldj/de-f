@@ -198,12 +198,32 @@ pnpm type-check          # 运行 Astro 类型检查
 
 ## 环境变量
 
-需要配置的关键环境变量:
+### 站点环境配置
 
-- `VERCEL_ANALYTICS_ID`: 用于 Vercel 分析
-- Privy 配置密钥
-- API 端点
-- 功能标志
+项目支持多环境部署，通过 `PUBLIC_SITE_ENV` 环境变量区分不同站点：
+
+- **beta**: beta.detake.com → beta-api.detake.com
+- **web3**: detake.com → api.detake.com
+
+### 核心环境变量
+
+- `PUBLIC_SITE_ENV`: 站点环境标识 (`beta` | `production`)
+- `PUBLIC_PRIVY_APP_ID`: Privy 身份验证应用 ID
+- `PUBLIC_GA_MEASUREMENT_ID`: Google Analytics 测量 ID
+- `PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY`: Cloudflare Turnstile 站点密钥
+- `PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`: Cloudflare 分析令牌
+
+### 环境文件
+
+- `.env` - 开发环境配置
+- `.env.beta` - Beta 站点配置
+- `.env.production` - 生产站点配置
+
+### 自动配置
+
+API 端点和站点 URL 根据 `PUBLIC_SITE_ENV` 自动配置：
+- API 端点通过 `SITE_CONFIG.API_BASE_URL` 获取
+- 站点 URL 通过 `SITE_CONFIG.SITE_URL` 获取
 
 ## 故障排除
 

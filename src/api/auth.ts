@@ -1,11 +1,11 @@
 import type { WalletLoginRequest, WalletLoginResponse, WalletLoginData } from '../types'
+import { SITE_CONFIG } from '../config/constants'
 
 /**
  * API configuration
+ * Uses environment-based configuration from SITE_CONFIG
  */
-// Use import.meta.env for browser-safe environment variables in Vite/Astro
-// Note: Using process.env in the browser bundle causes "process is not defined"; import.meta.env is the correct approach
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'https://preview-api.detake.com';
+const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
 
 /**
  * Wallet login function

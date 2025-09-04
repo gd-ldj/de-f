@@ -40,7 +40,7 @@ const topics = rawTopics.map(topic => ({
       <div class="flex space-x-3 pb-2">
         {topics.map((topic, index) => (
           <a
-            href={topic.url}
+            href="javascript:;"
             class="flex-shrink-0 px-4 py-3 bg-secondary text-primary text-sm font-medium rounded hover:bg-primary/10 hover:text-primary/80 cursor-pointer transition-all duration-200 text-center border border-border hover:border-primary/20 whitespace-nowrap"
           >
             {topic.name}
@@ -53,7 +53,7 @@ const topics = rawTopics.map(topic => ({
     <div class="hidden md:flex flex-wrap gap-3">
       {topics.map((topic, index) => (
         <a
-          href={topic.url}
+          href="javascript:;"
           class="px-4 py-3 bg-secondary text-primary text-sm font-medium rounded hover:bg-primary/10 hover:text-primary/80 cursor-pointer transition-all duration-200 text-center border border-border hover:border-primary/20"
         >
           {topic.name}
