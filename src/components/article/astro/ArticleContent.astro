@@ -41,7 +41,12 @@ const t = createTranslator(locale)
      <!-- Author and Date - Mobile: above title, Desktop: below tags -->
      <div class="md:hidden mb-[10px] md:mb-4">
        <div class="flex items-center space-x-1">
-         <time class="text-[12px] text-muted-foreground" datetime={article.created_at}>
+         <time 
+           class="text-[12px] text-muted-foreground" 
+           datetime={article.created_at}
+           data-date={article.created_at}
+           data-locale={locale}
+         >
            {formatDate(article.created_at, locale)}
          </time>
          
@@ -114,7 +119,12 @@ const t = createTranslator(locale)
         <!-- Author and Date - Desktop -->
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-1">
-            <time class="text-sm text-muted-foreground" datetime={article.created_at}>
+            <time 
+              class="text-sm text-muted-foreground" 
+              datetime={article.created_at}
+              data-date={article.created_at}
+              data-locale={locale}
+            >
               {formatDate(article.created_at, locale)}
             </time>
             

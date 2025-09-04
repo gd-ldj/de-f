@@ -47,9 +47,11 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
 
               {/* Article meta info */}
               <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                <span>{formatDate(article.created_at, locale)}</span>
+                <span data-date={article.created_at} data-locale={locale}>
+                  {formatDate(article.created_at, locale)}
+                </span>
                 <span>/ {t('article.by')} </span>
-                <span className="text-foreground">{t('research.authorJack')}</span>
+                <span className="text-foreground">JACK KUBINEC</span>
               </div>
             </div>
           </article>
@@ -90,7 +92,9 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                 {/* 文章元信息 */}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1">
-                    <span>{formatDate(article.created_at, locale)}</span>
+                    <span data-date={article.created_at} data-locale={locale}>
+                      {formatDate(article.created_at, locale)}
+                    </span>
                     <span>/ {t('article.by')} </span>
                     <span className="text-foreground">{t('research.authorJack')}</span>
                   </div>

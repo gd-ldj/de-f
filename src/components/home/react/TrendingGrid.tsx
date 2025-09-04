@@ -42,7 +42,9 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                 </h4>
                 <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{article.title}</p>
                 <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                  <span>{formatDate(article.created_at, locale)}</span>
+                  <span data-date={articles[2].created_at} data-locale={locale}>
+                    {formatDate(article.created_at, locale)}
+                  </span>
                   <span>/ {t('article.by')} </span>
                   <span className="text-foreground">JACK KUBINEC</span>
                 </div>
@@ -68,7 +70,9 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   </ArticleLink>
                 </h4>
                 <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                  <span>{formatDate(articles[2].created_at, locale)}</span>
+                  <span data-date={articles[2].created_at} data-locale={locale}>
+                    {formatDate(articles[2].created_at, locale)}
+                  </span>
                   <span>/ {t('article.by')} </span>
                   <span className="text-foreground">JACK KUBINEC</span>
                 </div>
@@ -86,7 +90,9 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
               </h4>
               <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{article.title}</p>
               <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                <span>{formatDate(article.created_at, locale)}</span>
+                <span data-date={article.created_at} data-locale={locale}>
+                  {formatDate(article.created_at, locale)}
+                </span>
                 <span>/ {t('article.by')} </span>
                 <span className="text-foreground">JACK KUBINEC</span>
               </div>
@@ -121,7 +127,9 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
 
                   {/* Date */}
                   <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                    <span>{formatDate(article.created_at, locale)}</span>
+                    <span data-date={article.created_at} data-locale={locale}>
+                      {formatDate(article.created_at, locale)}
+                    </span>
                     <span>/ {t('article.by')} </span>
                     <span className="text-foreground">JACK KUBINEC</span>
                   </div>
@@ -157,7 +165,9 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
 
                     {/* Date */}
                     <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                      <span>{formatDate(articles[2].created_at, locale)}</span>
+                      <span data-date={articles[2].created_at} data-locale={locale}>
+                        {formatDate(articles[2].created_at, locale)}
+                      </span>
                       <span>/ {t('article.by')} </span>
                       <span className="text-foreground">JACK KUBINEC</span>
                     </div>
@@ -181,7 +191,9 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
 
                     {/* Date */}
                     <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                      <span>{formatDate(article.created_at, locale)}</span>
+                      <span data-date={article.created_at} data-locale={locale}>
+                        {formatDate(article.created_at, locale)}
+                      </span>
                       <span>/ {t('article.by')} </span>
                       <span className="text-foreground">JACK KUBINEC</span>
                     </div>

@@ -140,7 +140,10 @@ export default function NewsGrid({ initialArticles, locale }: NewsGridProps) {
                 {/* 文章元信息 */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
                   <span className="font-medium">
-                    {formatDate(article.created_at, locale)} / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
+                    <span data-date={article.created_at} data-locale={locale}>
+                      {formatDate(article.created_at, locale)}
+                    </span>{' '}
+                    / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
                   </span>
                 </div>
               </div>
