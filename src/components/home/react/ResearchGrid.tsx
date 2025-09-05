@@ -12,6 +12,7 @@ interface ResearchGridProps {
 export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
   const t = createTranslator(locale);
   const researchArticles = articles.slice(0, 4); // 只显示前4篇文章
+  console.log('🚀 ~ ResearchGrid ~ researchArticles:', researchArticles);
 
   return (
     <div>

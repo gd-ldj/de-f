@@ -149,12 +149,14 @@ export default function FilterBar({
       <div className="hidden md:flex items-center px-4 py-3">
         <div className="flex items-center flex-1 min-w-0">
           {/* Static Filters label */}
-          <div className="flex items-center justify-center space-x-2 pr-4">
-            <svg className="w-4 h-4 text-foreground/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"></path>
-            </svg>
-            <span className="text-sm font-medium">{i18n.filters}</span>
-            <button className={`text-[11px] uppercase tracking-wide font-medium transition-colors ${anyActive ? 'text-primary hover:text-primary/80' : 'text-muted-foreground cursor-not-allowed'}`} aria-label={i18n.clearAll} disabled={!anyActive} onClick={handleClearAllFilters}>
+          <div className="flex items-center justify-center space-x-3 ">
+            <div className="flex items-center justify-center space-x-1">
+              <svg className="w-4 h-4 text-foreground/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"></path>
+              </svg>
+              <span className="text-sm font-medium">{i18n.filters}</span>
+            </div>
+            <button className={`text-[12px] uppercase tracking-wide font-medium transition-colors ${anyActive ? 'text-primary hover:text-primary/80' : 'text-muted-foreground cursor-not-allowed'}`} aria-label={i18n.clearAll} disabled={!anyActive} onClick={handleClearAllFilters}>
               {i18n.clearAll}
             </button>
           </div>

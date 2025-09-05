@@ -71,7 +71,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
       </div>
 
       {/* 新闻文章网格 */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 `}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6  gap-4 `}>
         {articles.map((article) => (
           <article key={article.entry_id} className="bg-white rounded overflow-hidden group">
             {/* Mobile: Left image, right content layout */}
@@ -96,11 +96,11 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                   </ArticleLink>
                 </h3>
 
-                <p className="hidden md:block text-sm text-muted-foreground mb-3 md:line-clamp-2">{article.sub_title || article.title}</p>
+                <p className="hidden text-sm text-muted-foreground mb-3 md:line-clamp-2">{article.sub_title || article.title}</p>
 
                 {/* 文章元信息 */}
                 <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
-                  <span className="font-medium">
+                  <span className="font-medium line-clamp-1">
                     <span data-date={article.created_at} data-locale={locale}>
                       {formatDate(article.created_at, locale)}
                     </span>{' '}

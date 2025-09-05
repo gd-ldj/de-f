@@ -118,7 +118,7 @@ export default function AuthorSearchInput({
 
   return (
     <div className={`relative ${className}`}>
-      <input type="text" value={value} onChange={handleChange} className="text-sm text-foreground bg-transparent border border-border md:border-0 md:border-b placeholder:text-muted-foreground/70 focus:outline-none focus:border-2 focus:border-primary md:focus:border-b-2 md:focus:border-primary p-3" placeholder={placeholder} aria-label={placeholder} />
+      <input type="text" value={value} onChange={handleChange} className="text-sm text-foreground bg-transparent border border-border md:border-t-transparent md:border-l-transparent md:border-r-transparent placeholder:text-muted-foreground/70 focus:outline-none focus:border-1 focus:border-primary md:focus:border-t-transparent md:focus:border-l-transparent md:focus:border-r-transparent md:focus:border-b-1 md:focus:border-primary p-3" placeholder={placeholder} aria-label={placeholder} />
     </div>
   );
 }
