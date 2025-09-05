@@ -2,7 +2,7 @@ export const footerTexts = {
   us: {
     newsletter: {
       title: 'NEWSLETTER',
-      subtitle: 'Stay up to crypto with DeTake',
+      subtitle: 'Stay up to news with DeTake',
       description: 'Get the daily newsletter that helps thousands of investors understand the markets.',
       emailPlaceholder: 'Email address',
       subscribeButton: 'SUBSCRIBE',
@@ -42,7 +42,7 @@ export const footerTexts = {
   asia: {
     newsletter: {
       title: '新闻通讯',
-      subtitle: '与 DeTake 一起了解加密货币',
+      subtitle: '与 DeTake 一起了解新闻',
       description: '获取帮助数千投资者了解市场的每日新闻通讯。',
       emailPlaceholder: '邮箱地址',
       subscribeButton: '订阅',

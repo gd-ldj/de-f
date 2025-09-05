@@ -24,11 +24,11 @@ const t = createTranslator(locale)
 const rawTopics: HomeTopic[] = propsTopics
 const mostReadArticles: HomeMostReadArticle[] = mostRead
 
-// Transform topics to include URL - 转换主题数据以包含URL
+// Transform topics to include URL and limit to 10 items - 转换主题数据以包含URL并限制为10个
 const topics = rawTopics.map(topic => ({
   ...topic,
   url: `${locale}/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`
-}))
+})).slice(0, 10)
 ---
 
 <div class="space-y-6">

@@ -64,47 +64,47 @@ export default function Footer({}: FooterProps) {
         <div className="border-t border-gray-800 pt-8">
           <div className="grid grid-cols-2 border-b border-gray-800 pb-8">
             <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 px-6 md:px-12">
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              <a href={`/${locale}/news`} className="text-gray-300 hover:text-white text-sm">
                 {texts.navigation.news}
               </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.podcasts}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.newsletters}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.events}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.roundtables}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.analytics}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.sitemap}
-              </a>
+              </button>
             </div>
             <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 px-6 md:px-12">
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.about}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.manageCookies}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.careers}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.termsOfService}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.privacyPolicy}
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white text-sm">
+              </button>
+              <button type="button" className="text-gray-300 hover:text-white text-sm text-left">
                 {texts.navigation.contactUs}
-              </a>
+              </button>
             </div>
           </div>
 

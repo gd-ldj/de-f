@@ -54,7 +54,7 @@ const RecentResearch: React.FC<RecentResearchProps> = ({ locale }) => {
       setLoading(true);
       setError(null);
 
-      const data = await fetchArticles(locale, 1, 6, {
+      const data = await fetchArticles(locale, 1, 2, {
         business_type_name: 'Research',
         order_by: 'Latest',
       });

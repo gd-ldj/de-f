@@ -18,14 +18,9 @@ interface DesktopHeaderProps {
   userComponent?: React.ReactNode;
 }
 
-export default function DesktopHeader({ 
-  locale, 
-  currentPath, 
-  onLocaleSwitch,
-  userComponent 
-}: DesktopHeaderProps) {
+export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, userComponent }: DesktopHeaderProps) {
   const texts = headerTexts[locale] || headerTexts.us;
-  
+
   const [localeDropdownOpen, setLocaleDropdownOpen] = useState(false);
   const [collectionsDropdownOpen, setCollectionsDropdownOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
@@ -127,7 +122,7 @@ export default function DesktopHeader({
       name: texts.navigation.myCollections,
       href: `/${locale}/collections/my`,
       key: 'my-collections',
-    }
+    },
   ];
 
   // Categories dropdown items
@@ -184,9 +179,9 @@ export default function DesktopHeader({
 
             {/* Other Navigation Items */}
             {navigation.left.map((item) => (
-              <a key={item.key} href="#" onClick={(e) => e.preventDefault()} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+              <button key={item.key} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
                 {item.name}
-              </a>
+              </button>
             ))}
           </div>
 
@@ -211,9 +206,9 @@ export default function DesktopHeader({
                 <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                   <div className="py-1">
                     {collectionsItems.map((item) => (
-                      <a key={item.key} href="javascript:;" className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${currentPath === item.href ? 'bg-gray-50 text-gray-900' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
+                      <button key={item.key} className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${currentPath === item.href ? 'bg-gray-50 text-gray-900' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
                         {item.name}
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -222,9 +217,9 @@ export default function DesktopHeader({
 
             {/* Right Navigation Items */}
             {navigation.right.map((item) => (
-              <a key={item.key} href="#" onClick={(e) => e.preventDefault()} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+              <button key={item.key} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
                 {item.name}
-              </a>
+              </button>
             ))}
 
             {/* Search Icon */}

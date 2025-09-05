@@ -86,14 +86,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
               <div className="flex-1 pl-3 sm:p-4">
                 {/* 分类标签 - 可点击进入分类页面 */}
                 <div className="flex flex-wrap gap-2 mb-2">
-                  <a href={`/${locale}/news/${article.category_name?.toLowerCase() || 'all'}`} className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">
-                    {article.business_type_name?.toUpperCase() || 'NEWS'}
-                  </a>
-                  {article.category_name && (
-                    <a href={`/${locale}/news/${article.category_name.toLowerCase()}`} className="text-xs text-muted-foreground uppercase hover:text-foreground transition-colors">
-                      {article.category_name}
-                    </a>
-                  )}
+                  <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
                 </div>
 
                 {/* 文章标题 - 可点击进入详情 */}
