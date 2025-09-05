@@ -46,7 +46,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {formatDate(article.created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground">JACK KUBINEC</span>
+                  <span className="text-foreground uppercase">{article.author.name}</span>
                 </div>
               </div>
             </article>
@@ -74,7 +74,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {formatDate(articles[2].created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground">JACK KUBINEC</span>
+                  <span className="text-foreground uppercase">{articles[2].author.name}</span>
                 </div>
               </div>
             </article>
@@ -95,7 +95,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {formatDate(article.created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground">JACK KUBINEC</span>
+                  <span className="text-foreground uppercase">{article.author.name}</span>
                 </div>
               </article>
             ))}
@@ -133,7 +133,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         {formatDate(article.created_at, locale)}
                       </span>
                       <span>/ {t('article.by')} </span>
-                      <span className="text-foreground">JACK KUBINEC</span>
+                      <span className="text-foreground uppercase">{article.author.name}</span>
                     </div>
                   </div>
                 </article>
@@ -172,7 +172,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         {formatDate(articles[2].created_at, locale)}
                       </span>
                       <span>/ {t('article.by')} </span>
-                      <span className="text-foreground">JACK KUBINEC</span>
+                      <span className="text-foreground uppercase">{articles[2].author.name}</span>
                     </div>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                           {formatDate(article.created_at, locale)}
                         </span>
                         <span>/ {t('article.by')} </span>
-                        <span className="text-foreground">JACK KUBINEC</span>
+                        <span className="text-foreground uppercase">{article.author.name}</span>
                       </div>
                     </div>
                   </article>
