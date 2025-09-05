@@ -6,6 +6,7 @@ import { toast } from '@/components/common/react/Toast';
 
 // Import icons from local assets
 import DownIcon from './assets/down.svg?url';
+import DownWhiteIcon from './assets/down_white.svg?url';
 import CountryIcon from './assets/country.svg?url';
 import SearchIcon from './assets/search.svg?url';
 
@@ -152,9 +153,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
           <div className="flex items-center space-x-8 flex-1">
             {/* Categories Dropdown */}
             <div className="" ref={categoriesDropdownRef}>
-              <button onClick={toggleCategoriesDropdown} className={`flex items-center space-x-1 text-sm px-3 py-1.5 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.allCategories} aria-expanded={categoriesDropdownOpen}>
-                <span className="text-gray-600">{texts.navigation.allCategories}</span>
-                <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} />
+              <button onClick={toggleCategoriesDropdown} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.allCategories} aria-expanded={categoriesDropdownOpen}>
+                <span className={`${categoriesDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{texts.navigation.allCategories}</span>
+                <img src={categoriesDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Categories Dropdown Menu */}
@@ -165,7 +166,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                       <h3 className="text-lg font-medium text-foreground mb-2 mt-1">{texts.dropdown.article}</h3>
                       <div className="flex items-center gap-8">
                         {categoriesItems.map((item) => (
-                          <a key={item.key} href={item.href} className={`text-sm py-2 relative transition-colors ${currentPath === item.href ? 'text-primary font-medium' : 'text-muted-foreground hover:text-foreground'}`} onClick={() => setCategoriesDropdownOpen(false)}>
+                          <a key={item.key} href={item.href} className={`text-sm py-2 relative transition-colors ${currentPath === item.href ? 'text-primary font-medium' : 'text-muted-foreground hover:text-primary'}`} onClick={() => setCategoriesDropdownOpen(false)}>
                             {item.name}
                             {currentPath === item.href && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>}
                           </a>
@@ -196,9 +197,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
           <div className="flex items-center space-x-6 flex-1 justify-end">
             {/* Collections Dropdown */}
             <div className="relative" ref={collectionsDropdownRef}>
-              <button onClick={toggleCollectionsDropdown} className={`flex items-center space-x-1 text-sm px-3 py-1.5 transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
-                <span className="text-gray-600">{texts.navigation.collections}</span>
-                <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
+              <button onClick={toggleCollectionsDropdown} className={`flex items-center space-x-1 text-sm px-3 h-12  transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
+                <span className={`${collectionsDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{texts.navigation.collections}</span>
+                <img src={collectionsDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Collections Dropdown Menu */}
@@ -229,10 +230,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
             {/* Locale Switcher Dropdown */}
             <div className="relative" ref={dropdownRef}>
-              <button onClick={toggleLocaleDropdown} className={`flex items-center space-x-2 px-2 py-1 hover:bg-gray-100 rounded transition-colors ${localeDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.actions.switchLanguage} aria-expanded={localeDropdownOpen}>
+              <button onClick={toggleLocaleDropdown} className={`flex items-center space-x-2 px-2 h-12 hover:bg-gray-100 rounded transition-colors ${localeDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.actions.switchLanguage} aria-expanded={localeDropdownOpen}>
                 <img src={CountryIcon} alt="CountryIcon" className="w-4 h-4" />
-                <span className="text-sm text-gray-600">{currentLocaleConfig.name}</span>
-                <img src={DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${localeDropdownOpen ? 'rotate-180' : ''}`} />
+                <span className={`text-sm ${localeDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{currentLocaleConfig.name}</span>
+                <img src={localeDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${localeDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Dropdown Menu */}

@@ -241,6 +241,11 @@ export interface HomeMostReadArticle {
   title: string;
   img_url: string;
   created_at: string;
+  author: {
+    name: string;
+    avatar_url: string;
+    bio: string;
+  };
 }
 
 export interface HomePageData {

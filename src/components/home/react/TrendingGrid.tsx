@@ -35,7 +35,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
 
               {/* Bottom: Content */}
               <div className="space-y-2">
-                <h4 className="">
+                <h4 className="line-clamp-2">
                   <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
@@ -84,7 +84,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
           {articles.length > 3 &&
             articles.slice(3, 5).map((article, index) => (
               <article key={article.entry_id} className={`space-y-2 py-3 ${index < articles.slice(3, 5).length - 1 ? 'border-b border-border' : ''}`}>
-                <h4 className="">
+                <h4 className="line-clamp-2">
                   <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
@@ -109,14 +109,14 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
               {articles.slice(0, 2).map((article, index) => (
                 <article key={article.entry_id} className="h-[186px] relative overflow-hidden bg-white text-white flex group">
                   {/* Left side: Image */}
-                  <div className="w-1/3 h-full relative overflow-hidden">
-                    <ArticleLink slug={article.slug} business="news" locale={locale} className="block h-full">
-                      <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  <div className="w-[330px] flex-none h-full relative overflow-hidden">
+                    <ArticleLink slug={article.slug} business="news" locale={locale} className="block w-full h-full">
+                      <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </ArticleLink>
                   </div>
 
                   {/* Right side: Content */}
-                  <div className="w-2/3 pl-5 bg-white text-foreground flex flex-col justify-between pb-2">
+                  <div className="pl-5 bg-white text-foreground flex flex-col justify-between pb-2">
                     <div>
                       <h4 className="font-medium text-[20px] leading-tight mb-3 line-clamp-2">
                         <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
@@ -148,7 +148,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
               <article className="h-[186px] block group hover:scale-[1.02] transition-transform duration-300 p-4 border border-border rounded">
                 <div className="relative overflow-hidden rounded text-white flex">
                   {/* Left side: Image */}
-                  <div className="w-1/3 h-full relative overflow-hidden">
+                  <div className="w-[274px] flex-none h-full relative overflow-hidden">
                     <ArticleLink slug={articles[2].slug} business="news" locale={locale} className="block h-full">
                       <img src={articles[2].img_url || '/placeholder.svg'} alt={articles[2].title} className="w-full h-[154px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </ArticleLink>
@@ -157,7 +157,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   {/* Right side: Content */}
                   <div className="w-2/3 pl-5 bg-white text-foreground flex flex-col justify-between pb-1">
                     <div>
-                      <h4 className="font-medium text-xl leading-tight mb-4 line-clamp-2">
+                      <h4 className="font-medium text-xl leading-tight mb-2 line-clamp-2">
                         <ArticleLink slug={articles[2].slug} business="news" locale={locale} className="hover:text-primary transition-colors">
                           {articles[2].title}
                         </ArticleLink>

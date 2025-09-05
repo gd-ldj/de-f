@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type { HomeNewsArticle, Locale } from '@/types';
 import { formatDate } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
@@ -25,6 +25,8 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
   const [articles, setArticles] = useState<any[]>(newsData[0]?.data || []);
   const [activeCategory, setActiveCategory] = useState(newsData[0]?.tag.toLowerCase() || '');
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Generate news categories dynamically from newsData or use default categories
   const newsCategories: NewsCategory[] = useMemo(() => {
@@ -36,6 +38,16 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
     return categories;
   }, [newsData]);
 
+  // Handle scroll progress calculation for mobile horizontal scroll
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      const maxScroll = scrollWidth - clientWidth;
+      const progress = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
+      setScrollProgress(progress);
+    }
+  };
+
   // Handle category switching with new data structure
   const handleCategoryChange = async (categoryKey: string) => {
     console.log('🚀 ~ handleCategoryChange ~ categoryKey:', categoryKey, activeCategory);
@@ -46,7 +58,22 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
     const categoryData = newsData.find((item) => item.tag.toLowerCase() === categoryKey);
     console.log('🚀 ~ handleCategoryChange ~ categoryData:', categoryData);
     setArticles(categoryData?.data || []);
+    
+    // Reset scroll progress when category changes
+    setScrollProgress(0);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = 0;
+    }
   };
+
+  // Add scroll event listener for mobile progress tracking
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll, { passive: true });
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   return (
     <div className="py-5 px-4 md:px-6 border border-y-0 border-border">
@@ -56,7 +83,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
           <h2 className="text font-medium text-foreground">{t('common.news')}</h2>
           <p className="hidden md:block text text-muted-foreground">{t('common.breakingHeadlines')}</p>
         </div>
-        <a href={`/${locale}/news`} className="hidden text-primary text-sm font-medium mt-6 hover:text-primary/80 md:inline-block transition-colors">
+        <a href={`/${locale}/news`} className="hidden text-primary text-sm font-medium hover:text-primary/80 md:inline-block transition-colors">
           {t('common.moreFromNews')}
         </a>
       </div>
@@ -64,53 +91,115 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
       {/* 分类导航 */}
       <div className="flex space-x-6 mb-5 md:mb-8 overflow-x-auto scrollbar-hide">
         {newsCategories?.map((category: any) => (
-          <button key={category.key} onClick={() => handleCategoryChange(category.key)} className={`text-sm whitespace-nowrap px-3 py-1 rounded transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0 ${activeCategory === category.key ? 'bg-[#F5F6F7] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} aria-pressed={activeCategory === category.key}>
+          <button key={category.key} onClick={() => handleCategoryChange(category.key)} className={`h-[40px] text-sm whitespace-nowrap px-[20px] rounded transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0 ${activeCategory === category.key ? 'bg-[#F5F6F7] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} aria-pressed={activeCategory === category.key}>
             {category.name}
           </button>
         ))}
       </div>
 
       {/* 新闻文章网格 */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6  gap-4 `}>
-        {articles.map((article) => (
-          <article key={article.entry_id} className="bg-white rounded overflow-hidden group">
-            {/* Mobile: Left image, right content layout */}
-            <div className="flex sm:block">
-              {/* 文章图片 */}
-              <div className="relative flex-shrink-0 sm:w-full">
-                <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
-                  <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-22 h-22 sm:w-full sm:h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
-                </ArticleLink>
-              </div>
+      {/* Mobile: 3 items per group with horizontal scroll */}
+      <div className="md:hidden">
+        <div 
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide"
+          onScroll={handleScroll}
+        >
+          {Array.from({ length: Math.ceil(articles.length / 3) }, (_, groupIndex) => (
+            <div key={groupIndex} className="flex flex-col gap-3 flex-shrink-0" style={{ width: 'calc(100vw - 32px)' }}>
+              {articles.slice(groupIndex * 3, (groupIndex + 1) * 3).map((article) => (
+                <article key={article.entry_id} className="bg-white rounded overflow-hidden group">
+                  <div className="flex">
+                    {/* 文章图片 */}
+                    <div className="relative flex-shrink-0">
+                      <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
+                        <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-20 h-20 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                      </ArticleLink>
+                    </div>
 
-              <div className="flex-1 pl-3 sm:p-4">
-                {/* 分类标签 - 可点击进入分类页面 */}
-                <div className="flex flex-wrap gap-2 mb-2">
-                  <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
-                </div>
+                    <div className="flex-1 pl-3 py-1">
+                      {/* 分类标签 */}
+                      <div className="flex flex-wrap gap-2 mb-1">
+                        <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
+                      </div>
 
-                {/* 文章标题 - 可点击进入详情 */}
-                <h3 className="text-foreground mt-1 mb-2 leading-tight line-clamp-2">
-                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
-                    {article.title}
-                  </ArticleLink>
-                </h3>
+                      {/* 文章标题 */}
+                      <h3 className="text-foreground text-sm leading-tight line-clamp-2 mb-2">
+                        <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
+                          {article.title}
+                        </ArticleLink>
+                      </h3>
 
-                <p className="hidden text-sm text-muted-foreground mb-3 md:line-clamp-2">{article.sub_title || article.title}</p>
-
-                {/* 文章元信息 */}
-                <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
-                  <span className="font-medium line-clamp-1">
-                    <span data-date={article.created_at} data-locale={locale}>
-                      {formatDate(article.created_at, locale)}
-                    </span>{' '}
-                    / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
-                  </span>
-                </div>
-              </div>
+                      {/* 文章元信息 */}
+                      <div className="text-xs text-gray-500">
+                        <span className="font-medium line-clamp-1">
+                          <span data-date={article.created_at} data-locale={locale}>
+                            {formatDate(article.created_at, locale)}
+                          </span>{' '}
+                          / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
-          </article>
-        ))}
+          ))}
+        </div>
+        
+        {/* Mobile scroll progress indicator */}
+        {articles.length > 3 && (
+          <div className="mt-4 w-full bg-gray-200 rounded-full h-1">
+            <div 
+              className="bg-primary h-1 rounded-full transition-all duration-300 ease-out"
+              style={{ width: `${scrollProgress}%` }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Desktop: Original horizontal scroll layout */}
+      <div className="hidden md:block">
+        <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide">
+          {articles.map((article) => (
+            <article key={article.entry_id} className="bg-white rounded overflow-hidden group flex-shrink-0" style={{ width: '212px' }}>
+              <div className="block">
+                {/* 文章图片 */}
+                <div className="relative w-full">
+                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
+                    <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  </ArticleLink>
+                </div>
+
+                <div className="py-4">
+                  {/* 分类标签 - 可点击进入分类页面 */}
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
+                  </div>
+
+                  {/* 文章标题 - 可点击进入详情 */}
+                  <h3 className="text-foreground mt-1 mb-2 leading-tight line-clamp-2">
+                    <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
+                      {article.title}
+                    </ArticleLink>
+                  </h3>
+
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{article.sub_title || article.title}</p>
+
+                  {/* 文章元信息 */}
+                  <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
+                    <span className="font-medium line-clamp-1">
+                      <span data-date={article.created_at} data-locale={locale}>
+                        {formatDate(article.created_at, locale)}
+                      </span>{' '}
+                      / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </div>
   );

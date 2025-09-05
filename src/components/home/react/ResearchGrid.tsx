@@ -32,7 +32,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               {/* Category tag */}
               <div className="flex flex-wrap gap-2">
                 <a href={`/${locale}/research`} className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">
-                  {t('research.blockworksResearch').toUpperCase()}
+                  {article.author.name}
                 </a>
               </div>
 
@@ -66,7 +66,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
             {/* 研究卡片图片区域 */}
             <div className="relative">
               <ArticleLink slug={article.slug} locale={locale} business="research" className="block">
-                <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-[186px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
               </ArticleLink>
             </div>
 
