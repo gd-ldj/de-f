@@ -100,11 +100,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
       {/* 新闻文章网格 */}
       {/* Mobile: 3 items per group with horizontal scroll */}
       <div className="md:hidden">
-        <div 
-          ref={scrollContainerRef}
-          className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide"
-          onScroll={handleScroll}
-        >
+        <div ref={scrollContainerRef} className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide" onScroll={handleScroll}>
           {Array.from({ length: Math.ceil(articles.length / 3) }, (_, groupIndex) => (
             <div key={groupIndex} className="flex flex-col gap-3 flex-shrink-0" style={{ width: 'calc(100vw - 32px)' }}>
               {articles.slice(groupIndex * 3, (groupIndex + 1) * 3).map((article) => (
@@ -146,14 +142,11 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
             </div>
           ))}
         </div>
-        
+
         {/* Mobile scroll progress indicator */}
         {articles.length > 3 && (
           <div className="mt-4 w-full bg-gray-200 rounded-full h-1">
-            <div 
-              className="bg-primary h-1 rounded-full transition-all duration-300 ease-out"
-              style={{ width: `${scrollProgress}%` }}
-            />
+            <div className="bg-primary h-1 rounded-full transition-all duration-300 ease-out" style={{ width: `${scrollProgress}%` }} />
           </div>
         )}
       </div>
@@ -184,7 +177,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                     </ArticleLink>
                   </h3>
 
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{article.sub_title || article.title}</p>
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-4">{article.sub_title || article.title}</p>
 
                   {/* 文章元信息 */}
                   <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">

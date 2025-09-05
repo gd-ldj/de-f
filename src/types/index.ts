@@ -43,6 +43,7 @@ export interface ApiArticle {
 export interface Article {
   id: string;
   title: string;
+  sub_title: string;
   content: string;
   excerpt: string;
   slug: string;
@@ -202,6 +203,7 @@ export interface HomeLatestArticle {
   business_type_name: string;
   slug: string;
   title: string;
+  sub_title: string;
   img_url: string;
   created_at: string;
 }
@@ -218,6 +220,7 @@ export interface HomeNewsArticle {
   entry_id: string;
   slug: string;
   title: string;
+  sub_title: string;
   img_url: string;
   created_at: string;
   business_type_name: string;
@@ -239,6 +242,7 @@ export interface HomeMostReadArticle {
   slug: string;
   business_type_name: string;
   title: string;
+  sub_title: string;
   img_url: string;
   created_at: string;
   author: {
