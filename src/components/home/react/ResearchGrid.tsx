@@ -75,9 +75,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               {/* 分类和标签 */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {/* 分类标签 - 可点击进入分类页面 */}
-                <a href={`/${locale}/research`} className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">
-                  {t('research.blockworksResearch').toUpperCase()}
-                </a>
+                <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
               </div>
 
               {/* 文章内容 */}

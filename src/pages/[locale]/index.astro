@@ -11,7 +11,7 @@ import ResearchSection from '@/components/home/astro/ResearchSection.astro';
 import Footer from '@/components/common/react/footer/Index';
 import AuthMount from '@/components/common/react/AuthMount';
 import Header from '@/components/common/react/header/Index';
-import ToFollowList from '@/components/home/react/ToFollowList';
+import ToFollowList from '@/components/home/astro/ToFollowList.astro';
 import { fetchHomePageData } from '@/api/articles';
 
 
@@ -68,7 +68,7 @@ const { title, description } = seoContent[locale] || seoContent.us
           <div class="grid grid-cols-12">
             <div class="col-span-3 py-5 border border-t-0 border-r-0 border-border">
               <Sidebar latestNews={homeData?.lastest || []} />
-                <ToFollowList locale={locale} whoToFollow={homeData?.who_to_follow || []} client:load />
+                <ToFollowList locale={locale} whoToFollow={homeData?.who_to_follow || []} />
             </div>
             <div class="col-span-6 border border-t-0 border-border py-5 px-6">
               <MainContent locale={locale} newsAll={homeData?.news_all || []} />

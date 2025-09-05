@@ -118,13 +118,13 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   {/* Right side: Content */}
                   <div className="w-2/3 pl-5 bg-white text-foreground flex flex-col justify-between pb-2">
                     <div>
-                      <h4 className="font-medium text-[20px] leading-tight mb-3">
+                      <h4 className="font-medium text-[20px] leading-tight mb-3 line-clamp-2">
                         <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
                           {article.title}
                         </ArticleLink>
                       </h4>
 
-                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm">{article.title}</p>
+                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-2">{article.title}</p>
                     </div>
 
                     {/* Date */}
@@ -157,13 +157,13 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   {/* Right side: Content */}
                   <div className="w-2/3 pl-5 bg-white text-foreground flex flex-col justify-between pb-1">
                     <div>
-                      <h4 className="font-medium text-xl leading-tight mb-4">
+                      <h4 className="font-medium text-xl leading-tight mb-4 line-clamp-2">
                         <ArticleLink slug={articles[2].slug} business="news" locale={locale} className="hover:text-primary transition-colors">
                           {articles[2].title}
                         </ArticleLink>
                       </h4>
 
-                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm">{articles[2].title}</p>
+                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-2">{articles[2].title}</p>
                     </div>
 
                     {/* Date */}
@@ -185,7 +185,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                 {articles.slice(3, 5).map((article, index) => (
                   <article key={article.entry_id} className="transition-colors duration-300">
                     <div className="space-y-2">
-                      <h4 className="font-medium text-foreground text-sm leading-tight">
+                      <h4 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
                         <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
                           {article.title}
                         </ArticleLink>
