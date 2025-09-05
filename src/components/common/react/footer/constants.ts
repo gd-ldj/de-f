@@ -2,7 +2,7 @@ export const footerTexts = {
   us: {
     newsletter: {
       title: 'NEWSLETTER',
-      subtitle: 'Stay up to news with DeTake',
+      subtitle: 'Stay up to News with DeTake',
       description: 'Get the daily newsletter that helps thousands of investors understand the markets.',
       emailPlaceholder: 'Email address',
       subscribeButton: 'SUBSCRIBE',
