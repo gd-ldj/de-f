@@ -90,15 +90,37 @@ export default isDev
           include: ['buffer', 'process'],
         },
         build: {
-          // Remove all comments in production build
+          // Enhanced minification and obfuscation for production
           minify: 'terser',
           terserOptions: {
+            compress: {
+              drop_console: true, // Remove console.log statements
+              drop_debugger: true, // Remove debugger statements
+              pure_funcs: ['console.log', 'console.info', 'console.debug'], // Remove specific console methods
+              passes: 2, // Multiple compression passes for better optimization
+            },
+            mangle: {
+              toplevel: true, // Mangle top-level variable names
+              properties: {
+                regex: /^_/, // Mangle properties starting with underscore
+              },
+            },
             format: {
               comments: false, // Remove all comments
+              beautify: false, // Minimize whitespace
             },
           },
           cssCodeSplit: true,
           cssMinify: true,
+          rollupOptions: {
+            output: {
+              manualChunks: {
+                // Split vendor libraries for better caching
+                vendor: ['react', 'react-dom'],
+                utils: ['date-fns', 'lodash'],
+              },
+            },
+          },
         },
       },
     });
