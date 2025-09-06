@@ -67,6 +67,7 @@ export default isDev
         },
       }),
       integrations: [react()],
+      compressHTML: true, // Remove HTML comments and whitespace
       i18n: {
         defaultLocale: 'us',
         locales: ['us', 'asia'],
@@ -87,6 +88,17 @@ export default isDev
         },
         optimizeDeps: {
           include: ['buffer', 'process'],
+        },
+        build: {
+          // Remove all comments in production build
+          minify: 'terser',
+          terserOptions: {
+            format: {
+              comments: false, // Remove all comments
+            },
+          },
+          cssCodeSplit: true,
+          cssMinify: true,
         },
       },
     });
