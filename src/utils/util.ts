@@ -36,12 +36,12 @@ export function formatRelativeTime(isoString: string, locale = 'us'): string {
 
   // if (locale === 'asia') {
   //   if (diffInHours < 1) {
-  //     return diffInMinutes <= 0 ? '刚刚' : `${diffInMinutes}分钟前`;
+  //     return diffInMinutes <= 0 ? 'Just now' : `${diffInMinutes} minutes ago`;
   //   } else if (diffInHours < 24) {
-  //     return `${diffInHours}小时前`;
+  //     return `${diffInHours} hours ago`;
   //   } else {
   //     const diffInDays = Math.floor(diffInHours / 24);
-  //     return `${diffInDays}天前`;
+  //     return `${diffInDays} days ago`;
   //   }
   // } else {
   if (diffInHours < 1) {

@@ -15,7 +15,7 @@ import { ToastContainer } from '@/components/common/react/Toast';
 import { usePrivy } from '@privy-io/react-auth';
 
 interface AuthMountProps {
-  // 用户按钮挂载点 (Header 中的用户头像按钮)
+  // User button mount point (User avatar button in Header)
   userButtonTargetId?: string;
   loginTargetId?: string;
   // The DOM id where ShareSection should be mounted, optional

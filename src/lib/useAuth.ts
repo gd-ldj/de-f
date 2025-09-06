@@ -59,7 +59,7 @@ export const useAuth = () => {
     }
   }, [user?.wallet?.address]);
 
-  // 处理带真实签名的钱包登录
+  // Handle wallet login with real signature
   const handleWalletLoginWithSignature = async (walletAddress: string) => {
     const randomCode = btoa(Date.now().toString());
     await handleWalletLogin(walletAddress, btoa(randomCode));

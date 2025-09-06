@@ -77,7 +77,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
   return (
     <div className="py-5 px-4 md:px-6 border border-y-0 border-border">
-      {/* 标题栏 */}
+      {/* Title bar */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
           <h2 className="text font-medium text-foreground">{t('common.news')}</h2>
@@ -88,7 +88,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
         </a>
       </div>
 
-      {/* 分类导航 */}
+      {/* Category navigation */}
       <div className="flex space-x-6 mb-5 md:mb-8 overflow-x-auto scrollbar-hide">
         {newsCategories?.map((category: any) => (
           <button key={category.key} onClick={() => handleCategoryChange(category.key)} className={`h-[40px] text-sm whitespace-nowrap px-[20px] rounded transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0 ${activeCategory === category.key ? 'bg-[#F5F6F7] text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} aria-pressed={activeCategory === category.key}>
@@ -97,7 +97,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
         ))}
       </div>
 
-      {/* 新闻文章网格 */}
+      {/* News articles grid */}
       {/* Mobile: 3 items per group with horizontal scroll */}
       <div className="md:hidden">
         <div ref={scrollContainerRef} className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide" onScroll={handleScroll}>
@@ -106,7 +106,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
               {articles.slice(groupIndex * 3, (groupIndex + 1) * 3).map((article) => (
                 <article key={article.entry_id} className="bg-white rounded overflow-hidden group">
                   <div className="flex">
-                    {/* 文章图片 */}
+                    {/* Article image */}
                     <div className="relative flex-shrink-0">
                       <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
                         <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-20 h-20 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
@@ -114,19 +114,19 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                     </div>
 
                     <div className="flex-1 pl-3 py-1">
-                      {/* 分类标签 */}
+                      {/* Category label */}
                       <div className="flex flex-wrap gap-2 mb-1">
                         <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
                       </div>
 
-                      {/* 文章标题 */}
+                      {/* Article title */}
                       <h3 className="text-foreground text-sm leading-tight line-clamp-2 mb-2">
                         <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
                           {article.title}
                         </ArticleLink>
                       </h3>
 
-                      {/* 文章元信息 */}
+                      {/* Article meta info */}
                       <div className="text-xs text-gray-500">
                         <span className="font-medium line-clamp-1">
                           <span data-date={article.created_at} data-locale={locale}>
@@ -157,7 +157,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
           {articles.map((article) => (
             <article key={article.entry_id} className="bg-white rounded overflow-hidden group flex-shrink-0" style={{ width: '212px' }}>
               <div className="block">
-                {/* 文章图片 */}
+                {/* Article image */}
                 <div className="relative w-full">
                   <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
                     <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
@@ -165,12 +165,12 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                 </div>
 
                 <div className="py-4">
-                  {/* 分类标签 - 可点击进入分类页面 */}
+                  {/* Category label - clickable to enter category page */}
                   <div className="flex flex-wrap gap-2 mb-2">
                     <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
                   </div>
 
-                  {/* 文章标题 - 可点击进入详情 */}
+                  {/* Article title - clickable to enter details */}
                   <h3 className="text-foreground mt-1 mb-2 leading-tight line-clamp-2">
                     <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
                       {article.title}
@@ -179,7 +179,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-4">{article.sub_title || article.title}</p>
 
-                  {/* 文章元信息 */}
+                  {/* Article meta info */}
                   <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">
                     <span className="font-medium line-clamp-1">
                       <span data-date={article.created_at} data-locale={locale}>

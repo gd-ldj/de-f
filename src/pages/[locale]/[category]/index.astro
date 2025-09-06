@@ -49,9 +49,9 @@ const { title, description } = seoContent[locale] || seoContent.us
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
-    <!-- React Header - 独立加载 -->
+    <!-- React Header - Independent loading -->
     <Header client:load />
-    <!-- AuthMount 只管理钱包相关按钮 -->
+    <!-- AuthMount only manages wallet-related buttons -->
     <AuthMount client:load userButtonTargetId="user-button-root" />
     
     <div class="min-h-screen bg-background mt-[56px] md:mt-[97px]">

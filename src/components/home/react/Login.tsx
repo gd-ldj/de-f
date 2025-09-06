@@ -27,7 +27,7 @@ export default function Login({ locale }: LoginProps) {
         </p>
 
         <div className="space-y-4">
-          {/* 钱包连接按钮 */}
+          {/* Wallet connection button */}
           <div>
             <Wallet locale={locale} />
           </div>

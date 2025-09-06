@@ -11,7 +11,7 @@ interface ResearchGridProps {
 
 export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
   const t = createTranslator(locale);
-  const researchArticles = articles.slice(0, 4); // 只显示前4篇文章
+  const researchArticles = articles.slice(0, 4); // Only show first 4 articles
   console.log('🚀 ~ ResearchGrid ~ researchArticles:', researchArticles);
 
   return (
@@ -63,22 +63,22 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
       <div className="hidden sm:grid grid-cols-2 lg:grid-cols-4 gap-6">
         {researchArticles.map((article, index) => (
           <article key={article.entry_id} className="rounded overflow-hidden group bg-white border border-gray-100 hover:shadow-md transition-shadow">
-            {/* 研究卡片图片区域 */}
+            {/* Research card image area */}
             <div className="relative">
               <ArticleLink slug={article.slug} locale={locale} business="research" className="block">
                 <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-[186px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
               </ArticleLink>
             </div>
 
-            {/* 卡片内容区域 */}
+            {/* Card content area */}
             <div className="p-4">
-              {/* 分类和标签 */}
+              {/* Category and tags */}
               <div className="flex flex-wrap gap-2 mb-3">
-                {/* 分类标签 - 可点击进入分类页面 */}
-                <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
+                {/* Category label - clickable to enter category page */}
+                 <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.business_type_name}</button>
               </div>
 
-              {/* 文章内容 */}
+              {/* Article content */}
               <div>
                 <h3 className="text-lg font-medium text-foreground mb-2 line-clamp-2 leading-tight">
                   <ArticleLink slug={article.slug} locale={locale} business="research" className="hover:text-primary transition-colors">
@@ -88,7 +88,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
 
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-4 leading-relaxed">{article.sub_title}</p>
 
-                {/* 文章元信息 */}
+                {/* Article meta info */}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <span data-date={article.created_at} data-locale={locale}>

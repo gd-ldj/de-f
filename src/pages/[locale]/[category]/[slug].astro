@@ -60,7 +60,7 @@ const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
 const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
 
-// 动态生成 OG 图片
+// Dynamically generate OG image
 const ogImageParams = new URLSearchParams({
   title: article.title,
   description: article.sub_title,
@@ -69,7 +69,7 @@ const ogImageParams = new URLSearchParams({
 });
 const ogImageUrl = article.img_url || `https://detake.com/api/og/article.svg?${ogImageParams.toString()}`
 
-// 提取关键词和标签
+// Extract keywords and tags
 const keywords = article.tags || []
 const publishedTime = article.created_at
 const modifiedTime = article.updated_at
@@ -91,10 +91,10 @@ const author = article?.author?.name || article.author_name
   keywords={keywords}
   articleSection={categoryDisplayName}
 >
-  <!-- React mount point for Header - 移到最外层确保 sticky 生效 -->
-  <!-- React Header - 独立加载 -->
+  <!-- React mount point for Header - Move to outermost layer to ensure sticky effect -->
+  <!-- React Header - Independent loading -->
   <Header client:load />
-  <!-- AuthMount 管理钱包相关按钮和分享、作者组件 -->
+  <!-- AuthMount manages wallet-related buttons and share, author components -->
   <AuthMount 
     client:load 
     userButtonTargetId="user-button-root"

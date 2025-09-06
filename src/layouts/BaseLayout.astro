@@ -9,7 +9,7 @@ export interface Props {
   description?: string
   locale: 'us' | 'asia'
   canonicalUrl?: string
-  // SEO 和社交分享优化
+  // SEO and social sharing optimization
   ogImage?: string
   ogImageAlt?: string
   ogType?: 'website' | 'article'
@@ -39,11 +39,11 @@ const {
 
 const currentUrl = canonicalUrl || Astro.url.href
 
-// 默认的 OG 图片
+// Default OG image
 const defaultOgImage = 'https://cdn.detake.com/images/social-card.png'
 const finalOgImage = ogImage || defaultOgImage
 
-// 生成关键词元标签
+// Generate keywords meta tag
 const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis'
 ---
 
@@ -74,7 +74,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
     <meta property="og:image:height" content="800" />
     <meta property="og:locale" content={locale === 'us' ? 'en_US' : 'zh_CN'} />
     
-    {/* 文章特定的 Open Graph 标签 */}
+    {/* Article-specific Open Graph tags */}
     {ogType === 'article' && (
       <>
         {author && <meta property="article:author" content={author} />}
@@ -95,7 +95,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
     <meta name="twitter:image" content={finalOgImage} />
     {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
     
-    <!-- 其他 SEO 优化 -->
+    <!-- Other SEO optimizations -->
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="image_src" href={finalOgImage} />
     
@@ -147,7 +147,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
           setTimeout(() => {
               const urlParams = new URLSearchParams(window.location.search);
               const acParam = urlParams.get('ac');
-              // TODO: 暂时默认登录
+              // TODO: Default login for now
                localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NCIsInJhbmRvbSI6IjExYWE0M2YyYjc0MmQxMTA1MDliZjAxZjZiMmJlMGU2ZmI1NzM3M2QyOGUwN2EzMzQ3ZTlhYTM0Y2RlZWMyNmUiLCJpYXQiOjE3NTY3OTMxMzV9.udTD7XBX3xWMHWC0mPdgATnu46QX3gpjgBM5v5EtzTI');
                 localStorage.setItem('user_id', '74');
                 localStorage.setItem("wallet_address", '4dtHnaQzb1cR6HHoXkhkCQ6Du7GsePy7KwgfitGdzwHF');

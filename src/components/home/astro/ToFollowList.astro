@@ -12,7 +12,7 @@ interface Props {
 const { locale, whoToFollow = [] } = Astro.props as Props;
 const t = createTranslator(locale);
 
-// Server-side rendering optimization - 服务端渲染优化
+// Server-side rendering optimization
 // No client-side state management needed for initial render
 const followUsers = whoToFollow;
 const hasUsers = followUsers.length > 0;

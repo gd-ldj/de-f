@@ -11,21 +11,21 @@ interface Props {
   mostRead?: HomeMostReadArticle[]
 }
 
-// Get locale, topics and mostRead from props or extract from URL - 从props获取locale、topics和mostRead或从URL中提取
+// Get locale, topics and mostRead from props or extract from URL
 const { locale: propsLocale, topics: propsTopics = [], mostRead = [] } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
 // Use custom translation function for server-side rendering
 const t = createTranslator(locale)
 
-// Use topics and mostRead data passed from parent component - 使用从父组件传递的主题和热门文章数据
+// Use topics and mostRead data passed from parent component
 
-// Use topics and most read articles from props - 使用从props传递的主题和热门文章
+// Use topics and most read articles from props
 const rawTopics: HomeTopic[] = propsTopics
 const mostReadArticles: HomeMostReadArticle[] = mostRead
 console.log("🚀 ~ mostReadArticles:", mostReadArticles)
 
-// Transform topics to include URL and limit to 10 items - 转换主题数据以包含URL并限制为10个
+// Transform topics to include URL and limit to 10 items
 const topics = rawTopics.map(topic => ({
   ...topic,
   url: `${locale}/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`

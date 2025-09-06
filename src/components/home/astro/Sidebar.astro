@@ -10,7 +10,7 @@ interface Props {
   latestNews?: HomeLatestArticle[]
 }
 
-// Get locale and latestNews from props or extract from URL - 从props获取locale和latestNews或从URL中提取
+// Get locale and latestNews from props or extract from URL
 const { locale: propsLocale, latestNews = [] } = Astro.props as Props
 const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
 
