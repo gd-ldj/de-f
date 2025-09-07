@@ -12,7 +12,6 @@ interface ResearchGridProps {
 export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
   const t = createTranslator(locale);
   const researchArticles = articles.slice(0, 4); // Only show first 4 articles
-  console.log('🚀 ~ ResearchGrid ~ researchArticles:', researchArticles);
 
   return (
     <div>
@@ -75,7 +74,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               {/* Category and tags */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {/* Category label - clickable to enter category page */}
-                 <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.business_type_name}</button>
+                <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.business_type_name}</button>
               </div>
 
               {/* Article content */}

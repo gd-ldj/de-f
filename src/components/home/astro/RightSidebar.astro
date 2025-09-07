@@ -23,7 +23,6 @@ const t = createTranslator(locale)
 // Use topics and most read articles from props
 const rawTopics: HomeTopic[] = propsTopics
 const mostReadArticles: HomeMostReadArticle[] = mostRead
-console.log("🚀 ~ mostReadArticles:", mostReadArticles)
 
 // Transform topics to include URL and limit to 10 items
 const topics = rawTopics.map(topic => ({

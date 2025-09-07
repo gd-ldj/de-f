@@ -100,10 +100,9 @@ export default isDev
               passes: 2, // Multiple compression passes for better optimization
             },
             mangle: {
-              toplevel: true, // Mangle top-level variable names
-              properties: {
-                regex: /^_/, // Mangle properties starting with underscore
-              },
+              toplevel: false, // Disable top-level mangling to avoid breaking imports
+              properties: false, // Disable property mangling to avoid breaking object access
+              reserved: ['React', 'ReactDOM', 'astro', 'window', 'document'], // Preserve important globals
             },
             format: {
               comments: false, // Remove all comments
