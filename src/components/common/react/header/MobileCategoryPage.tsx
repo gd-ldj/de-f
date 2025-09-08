@@ -17,6 +17,7 @@ interface MobileCategoryPageProps {
  */
 export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, category }: MobileCategoryPageProps) {
   const [isLearnExpanded, setIsLearnExpanded] = useState(false);
+  const [isCategoryExpanded, setIsCategoryExpanded] = useState(true); // State for category section expand/collapse
   const t = createTranslator(locale);
 
   if (!isOpen) return null;
@@ -75,27 +76,44 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
           {/* Category Title */}
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-medium text-gray-900">{categoryTranslations[category as keyof typeof categoryTranslations] || category}</h1>
-            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
+            <button 
+              onClick={() => setIsCategoryExpanded(!isCategoryExpanded)}
+              className="p-1 hover:bg-gray-100 rounded-md transition-all duration-200"
+              aria-label={isCategoryExpanded ? 'Collapse category' : 'Expand category'}
+            >
+              <svg 
+                className={`w-6 h-6 text-gray-400 transition-transform duration-200 ${
+                  isCategoryExpanded ? 'rotate-180' : 'rotate-0'
+                }`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
           </div>
 
           {/* Category Items */}
-          <div className="space-y-6">
-            {/* News */}
-            <button onClick={() => handleNavigation(`/${locale}/news`)} className="block w-full text-left">
-              <div className="text-xl text-muted-foreground">{locale === 'us' ? 'News' : '新闻'}</div>
-            </button>
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            isCategoryExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}>
+            <div className="space-y-6">
+              {/* News */}
+              <button onClick={() => handleNavigation(`/${locale}/news`)} className="block w-full text-left">
+                <div className="text-xl text-muted-foreground">{locale === 'us' ? 'News' : '新闻'}</div>
+              </button>
 
-            {/* Insight */}
-            <button onClick={() => handleNavigation(`/${locale}/insights`)} className="block w-full text-left">
-              <div className="text-xl text-muted-foreground">{locale === 'us' ? 'Insight' : '洞察'}</div>
-            </button>
+              {/* Insight */}
+              <button onClick={() => handleNavigation(`/${locale}/insights`)} className="block w-full text-left">
+                <div className="text-xl text-muted-foreground">{locale === 'us' ? 'Insight' : '洞察'}</div>
+              </button>
 
-            {/* Research */}
-            <button onClick={() => handleNavigation(`/${locale}/research`)} className="block w-full text-left">
-              <div className="text-xl text-muted-foreground">{locale === 'us' ? 'Research' : '研究'}</div>
-            </button>
+              {/* Research */}
+              <button onClick={() => handleNavigation(`/${locale}/research`)} className="block w-full text-left">
+                <div className="text-xl text-muted-foreground">{locale === 'us' ? 'Research' : '研究'}</div>
+              </button>
+            </div>
           </div>
 
           {/* Divider */}
