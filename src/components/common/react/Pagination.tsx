@@ -71,30 +71,30 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
   const pageNumbers = getPageNumbers();
 
   return (
-    <nav className="flex items-center justify-center space-x-1 mt-8" aria-label="Pagination">
+    <nav className="flex items-center justify-center space-x-2 mt-8" aria-label="Pagination">
       {/* Previous Button */}
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className={`
-          flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md
-          ${currentPage === 1 ? 'text-muted-foreground cursor-not-allowed' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
+          flex items-center justify-center px-3 py-2 text-sm font-medium rounded border cursor-pointer min-w-[80px] md:min-w-[92px]
+          ${currentPage === 1 ? 'text-[#909399] border-[#D3D3D5] cursor-not-allowed' : 'text-primary border-[#D3D3D5] hover:border-primary'}
         `}
         aria-label={locale === 'us' ? 'Previous page' : '上一页'}
       >
         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        {locale === 'us' ? 'Previous' : '上一页'}
+        {locale === 'us' ? 'Prev' : '上一页'}
       </button>
 
       {/* Page Numbers - only show in full pagination mode */}
       {!onlyNext && (
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-2">
           {pageNumbers.map((pageNumber, index) => {
             if (pageNumber === '...') {
               return (
-                <span key={`dots-${index}`} className="px-3 py-2 text-muted-foreground">
+                <span key={`dots-${index}`} className="px-3 py-2 text-muted-foreground cursor-pointer">
                   ...
                 </span>
               );
@@ -107,7 +107,7 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
                 key={pageNumber}
                 onClick={() => handlePageChange(pageNumber as number)}
                 className={`
-                  flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md min-w-[40px]
+                  flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md min-w-[40px] cursor-pointer
                   ${isCurrentPage ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
                 `}
                 aria-label={`${locale === 'us' ? 'Page' : '第'} ${pageNumber} ${locale === 'us' ? '' : '页'}`}
@@ -125,10 +125,10 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={onlyNext ? !hasMore : currentPage === totalPages}
         className={`
-          flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md
-          ${(onlyNext ? !hasMore : currentPage === totalPages) ? 'text-muted-foreground cursor-not-allowed' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
+          flex items-center justify-center px-3 py-2 text-sm font-medium rounded border cursor-pointer min-w-[80px] md:min-w-[92px]
+          ${(onlyNext ? !hasMore : currentPage === totalPages) ? 'text-[#909399] border-[#D3D3D5] cursor-not-allowed' : 'text-primary border-[#D3D3D5] hover:border-primary'}
         `}
-        aria-label={locale === 'us' ? 'Next page' : '下一页'}
+        aria-label={locale === 'us' ? 'Next' : '下一页'}
       >
         {locale === 'us' ? 'Next' : '下一页'}
         <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

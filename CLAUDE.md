@@ -296,3 +296,4 @@ API 端点和站点 URL 根据 `PUBLIC_SITE_ENV` 自动配置：
 - Tailwind CSS 强制使用 Tailwind CSS v4。不要再用 v3 或以下版本
 - 尽可能使用 TypeScript。只有在构建工具完全不支持 TypeScript 的时候，才使用 JavaScript（如微信小程序的主工程）
 - 数据结构尽可能全部定义成强类型。如果个别场景不得不使用 any 或未经结构化定义的 json，需要先停下来征求用户的同意
+- 注释都需要英文，不能用中文
