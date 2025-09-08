@@ -1,0 +1,155 @@
+---
+import { formatDateSSR } from '../../../utils/timezone';
+import { fetchArticles } from '../../../api/articles';
+import type { ApiArticle, Locale } from '../../../types';
+import { DEFAULT_PROMOTE_CODE } from '@/config/constants';
+import { createTranslator } from '@/lib/i18n';
+
+interface ResearchArticle {
+  id: string;
+  slug?: string; // Article slug for URL generation
+  title: string;
+  description: string;
+  author: string;
+  date: string;
+  image: string;
+  categories: string[];
+}
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = createTranslator(locale);
+
+/**
+ * Transform API response to component data structure
+ */
+const transformApiData = (apiArticle: ApiArticle): ResearchArticle => {
+  return {
+    id: apiArticle.entry_id,
+    slug: apiArticle.slug,
+    title: apiArticle.title,
+    description: apiArticle.sub_title,
+    author: apiArticle.author_name,
+    date: formatDateSSR(apiArticle.created_at, locale),
+    image: apiArticle.img_url || '',
+    categories: [apiArticle.category_name, ...apiArticle.tags],
+  };
+};
+
+/**
+ * Fetch research articles from API with fallback
+ */
+let articles: ResearchArticle[] = [];
+
+try {
+  const data = await fetchArticles(locale, 1, 2, {
+    business_type_name: 'Research',
+    order_by: 'Latest',
+  });
+
+  if (data && data.articles && data.articles.length > 0) {
+    articles = data.articles.map(transformApiData);
+  } else {
+    throw new Error('No research articles found');
+  }
+} catch (err) {
+  console.error('Failed to fetch research data:', err);
+  // Fallback to default articles
+  articles = [
+    {
+      id: '1',
+      slug: 'fusaka-fork-takes-shape-as-pectra-enters-final-stretch',
+      title: 'Fusaka fork takes shape as Pectra enters final stretch',
+      description: "Ethereum core developers finalize Pectra's May 7 launch and wrap scoping of the next upgrade",
+      author: 'JACK KUBINEC',
+      date: 'Apr 11, 2025',
+      image: '/detake.svg',
+      categories: ['MARKETS POLICY', 'DEFI'],
+    },
+  ];
+}
+
+/**
+ * Generate article URL with promote code
+ * Follows the same pattern as ArticleLink.astro component
+ */
+const getArticleUrl = (slug: string) => {
+  return `/${locale}/research/${slug}-${DEFAULT_PROMOTE_CODE}`;
+};
+---
+
+<div class="">
+  <!-- Title -->
+  <h3 class="text-lg font-medium text-foreground mb-6">
+    {locale === 'us' ? 'Recent Research' : '最新研究'}
+  </h3>
+
+  <!-- Articles Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+    {articles.map((article) => {
+      const articleUrl = article.slug ? getArticleUrl(article.slug) : '#';
+      return (
+        <div class="space-y-2">
+          <!-- Article Image -->
+          <a href={articleUrl} class="block relative w-full h-48 rounded overflow-hidden group">
+            <img
+              src={article.image}
+              alt={article.title}
+              class="w-full h-full object-cover group-hover:opacity-90 transition-opacity cursor-pointer"
+              loading="lazy"
+            />
+          </a>
+
+          <!-- Categories -->
+          <div class="flex flex-wrap gap-2 mt-4">
+            {article.categories.map((category, index) => (
+              <span class="text-xs font-medium text-primary uppercase tracking-wide">
+                {category}
+              </span>
+            ))}
+          </div>
+
+          <!-- Article Title -->
+          <h4 class="text-lg font-medium text-foreground leading-tight">
+            <a href={articleUrl} class="hover:text-primary transition-colors cursor-pointer line-clamp-2">
+              {article.title}
+            </a>
+          </h4>
+
+          <!-- Article Description -->
+          <p class="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+            {article.description}
+          </p>
+
+          <!-- Author and Date -->
+          <div class="flex items-center justify-start text-xs text-muted-foreground space-x-1">
+            <span>{article.date}</span>
+            <p class="font-medium text-foreground space-x-1">
+              <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
+              <span class="text-foreground uppercase">{article.author}</span>
+            </p>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
