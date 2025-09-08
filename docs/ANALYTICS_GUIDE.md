@@ -60,7 +60,7 @@ PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN=your_token_here
 ### 2. 基础集成
 
 ```typescript
-// 在 layout 中添加 Analytics Provider
+// Add Analytics Provider in layout
 import AnalyticsProvider from '@/components/common/AnalyticsProvider'
 
 export default function Layout({ children }) {
@@ -78,14 +78,14 @@ export default function Layout({ children }) {
 ```typescript
 import { getAnalytics } from '@/lib/analytics'
 
-// 追踪页面浏览
+// Track page views
 const analytics = getAnalytics()
 analytics.trackEvent('page_view', {
   page: window.location.pathname,
   title: document.title
 })
 
-// 追踪文章查看
+// Track article views
 analytics.trackEvent('article_view', {
   articleId: 'article-123',
   category: 'news',
@@ -207,10 +207,10 @@ export const ANALYTICS_CONFIG = {
 
 ### 开发环境测试
 ```typescript
-// 启用调试模式
+// Enable debug mode
 window.__ANALYTICS_DEBUG = true
 
-// 检查事件发送
+// Check event sending
 console.log(window.__ANALYTICS_EVENTS)
 ```
 

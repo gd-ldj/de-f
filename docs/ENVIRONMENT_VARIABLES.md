@@ -71,9 +71,9 @@ export const ANALYTICS_CONFIG = {
 // src/layouts/BaseLayout.astro
 const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID
 
-// 使用环境变量
+// Use environment variable
 if (gaId) {
-  // 初始化 Google Analytics
+  // Initialize Google Analytics
 }
 ---
 ```
@@ -92,7 +92,7 @@ export const Analytics: React.FC = () => {
     return null
   }
   
-  // 使用 GA_MEASUREMENT_ID 初始化 Analytics
+  // Initialize Analytics using GA_MEASUREMENT_ID
   return <></>
 }
 ```
@@ -116,7 +116,7 @@ export function validateEnvironmentVariables() {
   
   if (errors.length > 0) {
     console.error('Environment variable validation failed:', errors)
-    // 在开发环境可以抛出错误，生产环境记录警告
+    // Can throw error in development environment, log warning in production
     if (import.meta.env.DEV) {
       throw new Error(`Missing environment variables: ${errors.join(', ')}`)
     }
@@ -152,7 +152,7 @@ PUBLIC_GA_MEASUREMENT_ID=G-PROD123456789
 可以创建一个简单的状态检查组件来确认配置：
 
 ```typescript
-// src/components/ConfigStatus.tsx (仅开发环境使用)
+// src/components/ConfigStatus.tsx (development environment only)
 export const ConfigStatus: React.FC = () => {
   if (import.meta.env.PROD) return null
   
@@ -186,7 +186,7 @@ export const ConfigStatus: React.FC = () => {
 
 **3. 类型检查**
 ```typescript
-// 为环境变量添加类型声明
+// Add type declarations for environment variables
 interface ImportMetaEnv {
   readonly PUBLIC_GA_MEASUREMENT_ID: string
   readonly PUBLIC_PRIVY_APP_ID: string

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import AuthMount from '@/components/common/react/AuthMount'
-import Header from '@/components/common/react/header/Index'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import ArticleSidebar from '@/components/article/react/ArticleSidebar'
 // Removed: ShareSection direct import; it will be portaled by AuthMount
@@ -93,7 +93,7 @@ const author = article?.author?.name || article.author_name
 >
   <!-- React mount point for Header - Move to outermost layer to ensure sticky effect -->
   <!-- React Header - Independent loading -->
-  <Header client:load />
+  <HeaderWithFallback locale={locale} />
   <!-- AuthMount manages wallet-related buttons and share, author components -->
   <AuthMount 
     client:load 

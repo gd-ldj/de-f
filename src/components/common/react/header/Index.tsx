@@ -72,7 +72,7 @@ export default function Header({ userComponent }: HeaderProps) {
   }
 
   return (
-    <>
+    <div data-header-loaded>
       {isMobile ? (
         <MobileHeader 
           locale={locale}
@@ -87,6 +87,6 @@ export default function Header({ userComponent }: HeaderProps) {
           userComponent={userComponent}
         />
       )}
-    </>
+    </div>
   );
 }

@@ -10,8 +10,8 @@ NewsGrid 组件已更新，现在支持两种数据传递方式：
 ### newsData 格式
 ```typescript
 interface NewsData {
-  tag: string;        // 分类标签名称
-  data: HomeNewsArticle[];  // 该分类下的文章数组
+  tag: string;        // Category tag name
+  data: HomeNewsArticle[];  // Array of articles under this category
 }
 ```
 
@@ -41,13 +41,13 @@ const newsData = [
   {
     "tag": "Markets",
     "data": [
-      // Markets 分类的文章数据
+      // Markets category article data
     ]
   },
   {
     "tag": "Opinion",
     "data": [
-      // Opinion 分类的文章数据
+      // Opinion category article data
     ]
   }
 ];
@@ -75,7 +75,7 @@ const newsData = [
 
 #### 3. 向后兼容的使用方式
 ```astro
-<!-- 仍然支持传统的 initialArticles 方式 -->
+<!-- Still supports traditional initialArticles approach -->
 <NewsGrid 
   initialArticles={articles}
   locale={locale}

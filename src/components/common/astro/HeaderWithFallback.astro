@@ -1,0 +1,121 @@
+---
+// Optimized Header component wrapper - Provides instant display placeholder
+import HeaderSkeleton from './HeaderSkeleton.astro'
+import Header from '../react/header/Index'
+import type { Locale } from '@/types'
+
+interface Props {
+  locale?: Locale
+  userComponent?: any
+}
+
+const { locale = 'us', userComponent } = Astro.props
+---
+
+<div class="header-wrapper">
+  <!-- SSR skeleton - Display immediately -->
+  <HeaderSkeleton locale={locale} />
+  
+  <!-- Real Header - Use client:idle for delayed hydration -->
+  <div class="real-header">
+    <Header client:idle userComponent={userComponent} />
+  </div>
+</div>
+
+<style>
+  .header-wrapper {
+    position: absolute;
+  }
+  
+  /* Skeleton displayed by default */
+  [data-header-skeleton] {
+    display: block;
+  }
+  
+  /* Real Header initially hidden */
+  .real-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 52;
+  }
+  
+  /* Show real Header when hydration is complete */
+  .real-header:has([data-header-loaded]) {
+    opacity: 1;
+  }
+  
+  /* Use CSS animation for more reliable switching */
+  .header-wrapper:has(.real-header [data-header-loaded]) [data-header-skeleton] {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+  }
+  
+  /* JavaScript fallback for browsers that don't support :has() */
+  @supports not selector(:has(*)) {
+    .real-header {
+      opacity: 1;
+    }
+    
+    [data-header-skeleton] {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // JavaScript fallback and optimization
+  document.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.querySelector('.header-wrapper');
+    const skeleton = wrapper?.querySelector('[data-header-skeleton]');
+    const realHeaderContainer = wrapper?.querySelector('.real-header');
+    
+    if (!wrapper || !skeleton || !realHeaderContainer) return;
+    
+    // Function to check if Header is loaded
+    const checkHeaderLoaded = () => {
+      const headerLoaded = realHeaderContainer.querySelector('[data-header-loaded]');
+      if (headerLoaded) {
+        // Smooth transition
+        (realHeaderContainer as HTMLElement).style.opacity = '1';
+        (skeleton as HTMLElement).style.opacity = '0';
+        (skeleton as HTMLElement).style.pointerEvents = 'none';
+        
+        // Remove skeleton completely after 300ms
+        setTimeout(() => {
+          (skeleton as HTMLElement).style.display = 'none';
+        }, 300);
+        
+        return true;
+      }
+      return false;
+    };
+    
+    // Check immediately once
+    if (checkHeaderLoaded()) return;
+    
+    // Use MutationObserver to listen for Header loading
+    const observer = new MutationObserver(() => {
+      if (checkHeaderLoaded()) {
+        observer.disconnect();
+      }
+    });
+    
+    observer.observe(realHeaderContainer, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-header-loaded']
+    });
+    
+    // Timeout protection
+    setTimeout(() => {
+      checkHeaderLoaded();
+      observer.disconnect();
+    }, 3000);
+  });
+</script>
