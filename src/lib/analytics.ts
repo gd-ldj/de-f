@@ -191,6 +191,11 @@ export class AnalyticsManager {
         window.gtag('js', new Date());
         window.gtag('config', ANALYTICS_CONFIG.GA_MEASUREMENT_ID, {
           send_page_view: false, // We'll handle page views manually
+          ...(this.visitorData?.cfVisitorId && {
+            custom_map: {
+              custom_dimension_1: 'cfVisitorId',
+            },
+          }),
         });
 
         resolve();
@@ -292,11 +297,17 @@ export class AnalyticsManager {
 
     // Forward to Google Analytics if available
     if (window.gtag) {
+      // Common custom dimensions for all events
+      const commonParams = {
+        ...(this.visitorData.cfVisitorId && { cf_id: this.visitorData.cfVisitorId }),
+      };
+
       // Page view (already supported)
       if (type === TRACKING_EVENTS.PAGE_VIEW) {
         window.gtag('event', 'page_view', {
           page_title: data.title,
           page_location: data.url,
+          ...commonParams,
         });
       }
 
@@ -309,17 +320,20 @@ export class AnalyticsManager {
           item_id: 'header_user_button',
           has_token: Boolean((data as any).hasToken),
           locale: (data as any).locale || undefined,
+          ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.WALLET_BUTTON_CLICK) {
         const intent = (data as any).intent;
         if (intent === 'login') {
           window.gtag('event', 'login', {
             method: 'wallet',
+            ...commonParams,
           });
         } else {
           window.gtag('event', 'select_content', {
             content_type: 'button',
             item_id: 'wallet_disconnect_button',
+            ...commonParams,
           });
         }
       }
@@ -338,6 +352,7 @@ export class AnalyticsManager {
               content_type: 'article',
             },
           ],
+          ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.ARTICLE_SHARE) {
         // Map share action to GA4 share event
@@ -345,18 +360,21 @@ export class AnalyticsManager {
           method: (data as any).platform || 'unknown',
           content_type: 'article',
           item_id: (data as any).articleId,
+          ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.SCROLL_DEPTH) {
         // GA4 has auto 'scroll' (90%) via enhanced measurement; here we send granular percent
         window.gtag('event', 'scroll', {
           percent_scrolled: (data as any).depth,
           max_depth: (data as any).maxDepth,
+          ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.TIME_ON_PAGE) {
         // Custom event to capture time on page in ms
         window.gtag('event', 'time_on_page', {
           duration_ms: (data as any).duration,
           max_scroll_depth: (data as any).scrollDepth,
+          ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.SEARCH_EVENT) {
         // Map search to GA4 'search' with search_term
@@ -365,17 +383,20 @@ export class AnalyticsManager {
         if (term) {
           window.gtag('event', 'search', {
             search_term: term,
+            ...commonParams,
           });
         }
       } else if (type === TRACKING_EVENTS.LOGIN_ATTEMPT) {
         // Use a custom event for attempt to avoid duplication with successful 'login'
         window.gtag('event', 'login_attempt', {
           method: (data as any).method || type || 'wallet',
+          ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.LOGIN_SUCCESS) {
         // Map success to GA4 'login' (recommended)
         window.gtag('event', 'login', {
           method: (data as any).method || type || 'wallet',
+          ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.LOGIN_FAILURE) {
         // Use a custom event for failure (GA4 doesn't have a dedicated failure event)
@@ -383,6 +404,7 @@ export class AnalyticsManager {
           method: (data as any).method || type || 'wallet',
           error_code: (data as any).errorCode || undefined,
           reason: (data as any).reason || undefined,
+          ...commonParams,
         });
       }
     }
