@@ -172,7 +172,7 @@ const t = createTranslator(locale)
  
    <!-- Article Content -->
    <div class="mb-5 md:mb-8">
-     <div class="prose" set:html={article.body} />
+     <div class="prose" set:html={article.body?.replace(/\n/g, '<br>')} />
    </div>
 
    <div class="w-full border-t border-border"></div>

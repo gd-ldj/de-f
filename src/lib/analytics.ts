@@ -356,10 +356,9 @@ export class AnalyticsManager {
         });
       } else if (type === TRACKING_EVENTS.ARTICLE_SHARE) {
         // Map share action to GA4 share event
-        window.gtag('event', 'share', {
-          method: (data as any).platform || 'unknown',
-          content_type: 'article',
-          item_id: (data as any).articleId,
+        window.gtag('event', TRACKING_EVENTS.ARTICLE_SHARE, {
+          event_category: 'social_share',
+          value: 1,
           ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.SCROLL_DEPTH) {
