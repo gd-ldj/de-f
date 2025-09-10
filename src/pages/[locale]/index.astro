@@ -15,7 +15,6 @@ import ToFollowList from '@/components/home/astro/ToFollowList.astro';
 import { fetchHomePageData } from '@/api/articles';
 
 
-
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
@@ -43,11 +42,7 @@ const { title, description } = seoContent[locale] || seoContent.us
 <BaseLayout title={title} description={description} locale={locale}>
      <!-- React Header - Independent loading -->
      <HeaderWithFallback locale={locale} />
-     <!-- AuthMount only manages wallet-related buttons -->
-     <AuthMount 
-       client:load 
-       userButtonTargetId="user-button-root"
-     />
+     
      <!-- Mobile layout -->
      <div class="md:hidden mt-[56px]">
         <MobileLayout 
@@ -76,6 +71,10 @@ const { title, description } = seoContent[locale] || seoContent.us
             <div class="col-span-3 space-y-6 py-5 border border-t-0 border-l-0 border-border">
               <!-- React mount point for Login -->
               <div id="login-root" ></div>
+              <AuthMount 
+                client:load 
+                loginTargetId="login-root"
+              />
               <RightSidebar topics={homeData?.topics || []} mostRead={homeData?.mostread || []} />
             </div>
           </div>

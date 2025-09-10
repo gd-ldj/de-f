@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/useAuth';
 import { useWalletAuth } from '@/lib/useWalletAuth';
 import { createTranslator } from '@/lib/i18n';
 import { motion } from 'framer-motion';
+import { TRACKING_EVENTS } from '@/config/constants';
 
 interface ShareSectionProps {
   locale: Locale;
@@ -183,8 +184,23 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
           {/* Share to X Platform Button */}
           <svg
             onClick={() => {
-              const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
-              window.open(shareUrl, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
+              const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+
+              // Track Twitter share event
+              try {
+                if (typeof window !== 'undefined' && (window as any).detakeAnalytics) {
+                  (window as any).detakeAnalytics.trackEvent(TRACKING_EVENTS.ARTICLE_SHARE, {
+                    platform: 'twitter',
+                    articleTitle: title,
+                    articleUrl: url,
+                    shareUrl: twitterShareUrl,
+                  });
+                }
+              } catch (err) {
+                console.warn('[Analytics] Failed to track Twitter share:', err);
+              }
+
+              window.open(twitterShareUrl, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
             }}
             className="w-5 h-5 ml-4 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
             fill="currentColor"

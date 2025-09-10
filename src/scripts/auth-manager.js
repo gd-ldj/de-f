@@ -107,6 +107,22 @@ function handleLogoutFromURL() {
 }
 
 /**
+ * Check if current environment is beta site
+ * @returns {boolean} True if running on beta environment
+ */
+function isBetaEnvironment() {
+  try {
+    // Use environment variable to determine if this is beta/development environment
+    // const siteEnv = import.meta.env.PUBLIC_SITE_ENV;
+    // return siteEnv === 'beta';
+    const hostname = window.location.hostname;
+      return hostname.includes('beta')
+  } catch (error) {
+    console.error('[AuthManager] Failed to detect environment:', error);
+  }
+}
+
+/**
  * Initialize authentication manager
  */
 function initializeAuthManager() {
@@ -115,8 +131,8 @@ function initializeAuthManager() {
   // Handle logout from URL parameter first
   const loggedOut = handleLogoutFromURL();
   
-  if (!loggedOut) {
-    // Set default auth data for development (remove in production)
+  if (!loggedOut && isBetaEnvironment()) {
+    // Set default auth data only for beta/development environments
     setDefaultAuthData();
   }
 }
@@ -166,7 +182,8 @@ window.AuthManager = {
   handleLogoutFromURL,
   isAuthenticated,
   getCurrentUser,
-  AUTH_CONFIG
+  isBetaEnvironment,
+  AUTH_CONFIG,
 };
 
 // Auto-initialize when script loads
