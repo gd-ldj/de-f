@@ -1,0 +1,100 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import AuthMount from '@/components/common/react/AuthMount'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import RecommendedAccounts from '@/components/social/astro/RecommendedAccounts.astro'
+import { fetchWhoToFollow } from '@/api/users'
+import type { Locale, HomeWhoToFollow } from '@/types'
+import Footer from '@/components/common/react/footer/Index'
+import { createTranslator } from '@/lib/i18n'
+import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import TwitterPost from '@/components/social/astro/TwitterPost.astro'
+export const prerender = false // Enable SSR for this page
+
+const { locale } = Astro.params as { locale: Locale }
+
+// Validate locale
+const validLocales = ['us', 'asia']
+if (!validLocales.includes(locale)) {
+  return Astro.redirect('/404')
+}
+
+const t = createTranslator(locale)
+
+// Fetch recommended accounts to follow
+let whoToFollow: HomeWhoToFollow[] = []
+try {
+  const response = await fetchWhoToFollow(locale)
+  whoToFollow = response || []
+} catch (error) {
+  console.error('Failed to fetch who to follow:', error)
+  whoToFollow = []
+}
+
+// SEO optimization
+const title = locale === 'us' ? 'Social Media | deTake' : '社交媒体 | deTake'
+const description = locale === 'us' 
+  ? 'Discover and follow cryptocurrency experts, analysts, and thought leaders on deTake'
+  : '在deTake上发现并关注加密货币专家、分析师和意见领袖'
+const canonicalUrl = `https://detake.com/${locale}/social`
+
+// Generate OG image
+const ogImageParams = new URLSearchParams({
+  title: title,
+  description: description,
+  type: 'website'
+})
+const ogImageUrl = `https://detake.com/api/og/social.svg?${ogImageParams.toString()}`
+
+// Extract keywords
+const keywords = ['social media', 'follow', 'cryptocurrency', 'blockchain', 'experts', 'analysts']
+---
+
+<BaseLayout 
+  title={title} 
+  description={description} 
+  locale={locale} 
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt="Social Media - Follow cryptocurrency experts on DeTake"
+  ogType="website"
+  twitterCard="summary_large_image"
+  keywords={keywords}
+>
+  <!-- React Header - Independent loading -->
+  <HeaderWithFallback locale={locale} />
+  
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+      <!-- Breadcrumb -->
+        <div class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block">
+          <h2>Social Media</h2>
+          <RecommendedAccounts 
+              locale={locale} 
+              whoToFollow={whoToFollow}
+            />
+        </div>
+    <div class="max-w-[1440px] mx-auto">
+     
+      <div class="grid grid-cols-1 lg:grid-cols-3">
+        <!-- Left Column - Author Profile & Articles (SSR/ISR for SEO) -->
+        <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-6 border border-t-0 border-border">
+          <TwitterPost />
+          <TwitterPost />
+          
+        </div>
+        
+        <!-- Right Column - Sidebar Content -->
+        <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
+          <div class="top-8">
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Footer -->
+  <Footer client:load />
+</BaseLayout>

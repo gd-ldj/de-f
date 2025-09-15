@@ -1,0 +1,208 @@
+---
+import type { HomeWhoToFollow, Locale } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+import Image from '@/components/common/react/Image'
+import FollowButton from '@/components/home/FollowButton'
+
+interface Props {
+  locale: Locale
+  whoToFollow?: HomeWhoToFollow[]
+}
+
+const { locale, whoToFollow = [] } = Astro.props as Props
+const t = createTranslator(locale)
+
+// Server-side rendering optimization - Horizontal card layout
+const followUsers = whoToFollow
+const hasUsers = followUsers.length > 0
+---
+
+<div class="relative">
+  {hasUsers ? (
+    <>
+      <!-- Horizontal scrollable cards container -->
+      <div class="relative overflow-hidden">
+        <!-- Navigation buttons -->
+        <button 
+          id="scroll-left-btn"
+          class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center opacity-50 hover:opacity-100 disabled:opacity-25"
+          aria-label="Previous"
+        >
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        
+        <button 
+          id="scroll-right-btn"
+          class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center opacity-50 hover:opacity-100 disabled:opacity-25"
+          aria-label="Next"
+        >
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+
+        <!-- Horizontal scrollable container -->
+        <div 
+          id="cards-container"
+          class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-12 py-4"
+          style="scroll-behavior: smooth;"
+        >
+          {followUsers.map((user, index) => (
+            <div class="flex-shrink-0 w-[280px] bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <!-- User avatar and basic info -->
+              <div class="flex flex-col items-center text-center mb-4">
+                <Image 
+                  src={user.avatar_url} 
+                  alt={user.name} 
+                  className="w-16 h-16 rounded-full mb-3 border-2 border-gray-100" 
+                  client:load
+                />
+                <h3 class="font-semibold text-gray-900 text-lg mb-1">{user.name}</h3>
+                {user.nick && (
+                  <p class="text-sm text-gray-500 mb-3">@{user.nick}</p>
+                )}
+              </div>
+              
+              <!-- Follow button -->
+              <div class="flex justify-center">
+                <FollowButton 
+                  userId={user.user_id}
+                  locale={locale}
+                  className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
+                  text={locale === 'us' ? '+ Subscribe' : '+ 订阅'}
+                  client:load
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  ) : (
+    <!-- Empty state -->
+    <div class="text-center py-12">
+      <div class="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
+        <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-foreground mb-2">
+        {locale === 'us' ? 'No Recommendations Available' : '暂无推荐'}
+      </h3>
+      <p class="text-muted-foreground mb-4">
+        {locale === 'us' 
+          ? 'We\'re working on finding great accounts for you to follow.'
+          : '我们正在为您寻找值得关注的优质账户。'
+        }
+      </p>
+      <button 
+        class="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-colors"
+        onclick="window.location.reload()"
+      >
+        {locale === 'us' ? 'Refresh' : '刷新'}
+      </button>
+    </div>
+  )}
+</div>
+
+<script>
+  // Horizontal scroll functionality for recommended accounts
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('cards-container');
+    const leftBtn = document.getElementById('scroll-left-btn');
+    const rightBtn = document.getElementById('scroll-right-btn');
+    
+    if (!container || !leftBtn || !rightBtn) return;
+    
+    const cardWidth = 280 + 16; // card width + gap
+    const scrollAmount = cardWidth * 2; // scroll 2 cards at a time
+    
+    // Update button states based on scroll position
+    function updateButtonStates() {
+      if (!container || !leftBtn || !rightBtn) return;
+      
+      const isAtStart = container.scrollLeft <= 0;
+      const isAtEnd = container.scrollLeft >= container.scrollWidth - container.clientWidth - 1;
+      
+      if (leftBtn.tagName === 'BUTTON') {
+         if (isAtStart) {
+           leftBtn.setAttribute('disabled', '');
+         } else {
+           leftBtn.removeAttribute('disabled');
+         }
+       }
+       if (rightBtn.tagName === 'BUTTON') {
+         if (isAtEnd) {
+           rightBtn.setAttribute('disabled', '');
+         } else {
+           rightBtn.removeAttribute('disabled');
+         }
+       }
+      
+      leftBtn.style.opacity = isAtStart ? '0.25' : '0.5';
+      rightBtn.style.opacity = isAtEnd ? '0.25' : '0.5';
+    }
+    
+    // Scroll left
+    leftBtn.addEventListener('click', function() {
+      if (!container) return;
+      container.scrollBy({
+        left: -scrollAmount,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Scroll right
+    rightBtn.addEventListener('click', function() {
+      if (!container) return;
+      container.scrollBy({
+        left: scrollAmount,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Update button states on scroll
+    container.addEventListener('scroll', updateButtonStates);
+    
+    // Initial button state
+    updateButtonStates();
+    
+    // Update on window resize
+    window.addEventListener('resize', updateButtonStates);
+  });
+</script>
+
+<style>
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .hover-card {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .hover-card:hover {
+    transform: translateY(-1px);
+  }
+</style>

@@ -1,0 +1,142 @@
+---
+import type { Locale, ApiArticle } from '@/types';
+import { createTranslator } from '@/lib/i18n';
+import ArticleCard from '../../common/astro/ArticleCard.astro';
+
+interface Props {
+  articles: ApiArticle[];
+  authorName: string;
+  locale: Locale;
+  hasMore: boolean;
+  nextCursor?: string | null;
+}
+
+const { articles, authorName, locale, hasMore, nextCursor } = Astro.props;
+const t = createTranslator(locale);
+
+/**
+ * Format date for display based on locale
+ */
+function formatDate(dateString: string, locale: Locale): string {
+  try {
+    const date = new Date(dateString);
+    if (locale === 'us') {
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    } else {
+      return date.toLocaleDateString('zh-CN', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+  } catch (error) {
+    return dateString;
+  }
+}
+
+/**
+ * Get article URL based on category and slug
+ */
+function getArticleUrl(article: ApiArticle, locale: Locale): string {
+  const category = article.business_type_name.toLowerCase();
+  return `/${locale}/${category}/${article.slug}`;
+}
+---
+
+<div>
+
+  <!-- Articles List -->
+  {articles.length > 0 ? (
+    <div class="space-x-4 md:grid md:grid-cols-1 lg:grid-cols-3 mb-12 mt-6 px-4 md:px-0">
+      {articles.map((article) => (
+        <ArticleCard
+          article={article}
+          locale={locale}
+          showDescription={true}
+          showTags={true}
+          showAuthor={true}
+          imageSize="small"
+        />
+      ))}
+    </div>
+  ) : (
+    <div class="text-center py-12">
+      <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </div>
+      <p class="text-muted-foreground">
+        {locale === 'us' ? 'No articles found' : '暂无文章'}
+      </p>
+    </div>
+  )}
+
+  <!-- Load More Button -->
+  {hasMore && articles.length > 0 && (
+    <div class="text-center mt-8">
+      <button
+        id="load-more-btn"
+        data-author-name={authorName}
+        data-locale={locale}
+        data-next-cursor={nextCursor}
+        data-current-page="1"
+        class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+      >
+        <span class="load-more-text">{locale === 'us' ? 'Load More' : '加载更多'}</span>
+        <div class="loading-spinner hidden flex items-center space-x-2">
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>{locale === 'us' ? 'Loading...' : '加载中...'}</span>
+        </div>
+      </button>
+    </div>
+  )}
+</div>
+
+<script>
+  // Handle load more button click
+  const loadMoreBtn = document.getElementById('load-more-btn');
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', async () => {
+      const authorName = loadMoreBtn.getAttribute('data-author-name');
+      const locale = loadMoreBtn.getAttribute('data-locale');
+      const nextCursor = loadMoreBtn.getAttribute('data-next-cursor');
+      const currentPage = parseInt(loadMoreBtn.getAttribute('data-current-page') || '1');
+      
+      // Show loading state
+      const loadMoreText = loadMoreBtn.querySelector('.load-more-text');
+      const loadingSpinner = loadMoreBtn.querySelector('.loading-spinner');
+      
+      if (loadMoreText && loadingSpinner) {
+        loadMoreText.classList.add('hidden');
+        loadingSpinner.classList.remove('hidden');
+        (loadMoreBtn as HTMLButtonElement).disabled = true;
+      }
+      
+      try {
+        // This would need to integrate with the fetchArticles API
+        // For now, just show a placeholder message
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate loading
+        
+        const message = locale === 'us' ? 'Load more functionality will be implemented with API integration' : '加载更多功能将与API集成实现';
+        alert(message);
+      } catch (error) {
+        console.error('Error loading more articles:', error);
+      } finally {
+        // Reset loading state
+        if (loadMoreText && loadingSpinner) {
+          loadMoreText.classList.remove('hidden');
+          loadingSpinner.classList.add('hidden');
+          (loadMoreBtn as HTMLButtonElement).disabled = false;
+        }
+      }
+    });
+  }
+</script>

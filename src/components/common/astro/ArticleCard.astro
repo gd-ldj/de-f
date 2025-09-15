@@ -1,0 +1,237 @@
+---
+import type { Locale } from '../../../types/index.ts';
+
+export interface Props {
+  article: any;
+  locale: Locale;
+  layout?: 'vertical' | 'horizontal';
+  showAuthor?: boolean;
+  showDescription?: boolean;
+  showTags?: boolean;
+  imageSize?: 'small' | 'medium' | 'large';
+  className?: string;
+}
+
+const { 
+  article, 
+  locale, 
+  layout = 'vertical',
+  showAuthor = true,
+  showDescription = true,
+  showTags = true,
+  imageSize = 'medium',
+  className = ''
+} = Astro.props;
+
+/**
+ * Format date based on locale
+ * @param {string} dateString - ISO date string or formatted date
+ * @param {Locale} locale - Current locale
+ * @returns {string} Formatted date string
+ */
+function formatDate(dateString: string, locale: Locale): string {
+  if (!dateString) return '';
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return dateString; // Return original if not a valid date
+    }
+    
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    };
+    
+    return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', options);
+  } catch {
+    return dateString;
+  }
+}
+
+/**
+ * Generate article URL based on article data and locale
+ * @param {any} article - Article object
+ * @param {Locale} locale - Current locale
+ * @returns {string} Article URL
+ */
+function getArticleUrl(article: any, locale: Locale): string {
+  if (article.url) return article.url;
+  if (article.slug) {
+    return `/${locale}/${article.business_type || 'article'}/${article.slug}`;
+  }
+  return '#';
+}
+
+// Determine image source and alt text
+const imageUrl = article.image || article.img_url || '/api/placeholder/400/240';
+const imageAlt = article.title || 'Article image';
+
+// Determine article URL
+const articleUrl = getArticleUrl(article, locale);
+
+// Determine description
+const description = article.description || article.sub_title;
+
+// Determine author
+const author = article.author || article.author_name;
+
+// Determine tags
+const tags = article.tags || [];
+
+// Image size classes
+const imageSizeClasses = {
+  small: layout === 'horizontal' ? 'w-20 h-16' : 'w-full h-32',
+  medium: layout === 'horizontal' ? 'w-30 h-20' : 'w-full h-48',
+  large: layout === 'horizontal' ? 'w-40 h-28' : 'w-full h-64'
+};
+
+const imageClasses = imageSizeClasses[imageSize];
+---
+
+{layout === 'vertical' ? (
+  <!-- Vertical Card Layout -->
+  <div class={`article-card-vertical space-y-2 ${className}`}>
+    <!-- Article Image -->
+    <a href={articleUrl} class="block relative w-full rounded overflow-hidden group">
+      <img
+        src={imageUrl}
+        alt={imageAlt}
+        class={`${imageClasses} object-cover group-hover:opacity-90 transition-opacity cursor-pointer`}
+        loading="lazy"
+      />
+    </a>
+
+    <!-- Categories -->
+    {article.category_name && (
+      <div class="space-x-2 mt-4 line-clamp-1">
+         <span class="text-xs font-medium text-primary uppercase tracking-wide">
+            {article.category_name}
+          </span>
+        <!-- Tags -->
+          {showTags && tags.length > 0 && 
+            tags.map((tag: string) => (
+              <span class="text-muted-foreground text-[10px] md:text-xs uppercase">
+                {tag}
+              </span>
+            ))
+          }
+      </div>
+    )}
+
+    <!-- Article Title -->
+    <h4 class="text-lg font-medium text-foreground leading-tight">
+      <a href={articleUrl} class="hover:text-primary transition-colors cursor-pointer line-clamp-2">
+        {article.title}
+      </a>
+    </h4>
+
+    <!-- Article Description -->
+    {showDescription && description && (
+      <p class="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+        {description}
+      </p>
+    )}
+
+    <!-- Author and Date -->
+    <div class="flex items-center justify-start text-xs text-muted-foreground space-x-1">
+      {article.created_at && (
+        <span>{formatDate(article.created_at, locale)}</span>
+      )}
+      {showAuthor && author && (
+        <p class="font-medium text-foreground space-x-1">
+          <span class="text-muted-foreground ">/ {locale === 'us' ? 'By' : '作者'}</span>
+          <span class="text-foreground uppercase">{author}</span>
+        </p>
+      )}
+    </div>
+
+    
+  </div>
+) : (
+  <!-- Horizontal List Layout -->
+  <article class={`article-card-horizontal flex space-x-4 py-6 border-b border-border last:border-b-0 ${className}`}>
+    <!-- Article Image -->
+    <div class="flex-shrink-0">
+      <a href={articleUrl}>
+        <img
+          src={imageUrl}
+          alt={imageAlt}
+          class={`${imageClasses} object-cover rounded-lg border border-gray-200`}
+          loading="lazy"
+        />
+      </a>
+    </div>
+
+    <!-- Article Content -->
+    <div class="flex-1 min-w-0">
+      <!-- Category and Date -->
+      <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
+        {article.category_name && (
+          <span class="px-2 py-1 bg-secondary/50 rounded-full text-xs font-medium">
+            {article.category_name}
+          </span>
+        )}
+        {article.created_at && (
+          <>
+            <span>•</span>
+            <time>{formatDate(article.created_at, locale)}</time>
+          </>
+        )}
+      </div>
+
+      <!-- Title -->
+      <h3 class="text-lg font-semibold text-foreground mb-2 line-clamp-2 hover:text-primary transition-colors">
+        <a href={articleUrl}>
+          {article.title}
+        </a>
+      </h3>
+
+      <!-- Description/Subtitle -->
+      {showDescription && description && (
+        <p class="text-sm text-muted-foreground line-clamp-2 mb-3">
+          {description}
+        </p>
+      )}
+
+      <!-- Author -->
+      {showAuthor && author && (
+        <div class="text-xs text-muted-foreground mb-2">
+          <span class="text-muted-foreground">{locale === 'us' ? 'by' : '作者'}</span>
+          <span class="text-foreground uppercase ml-1">{author}</span>
+        </div>
+      )}
+
+      <!-- Tags -->
+      {showTags && tags.length > 0 && (
+        <div class="flex flex-wrap gap-1">
+          {tags.slice(0, 3).map((tag: string) => (
+            <span class="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md">
+              {tag}
+            </span>
+          ))}
+          {tags.length > 3 && (
+            <span class="text-xs text-muted-foreground">+{tags.length - 3} {locale === 'us' ? 'more' : '个'}</span>
+          )}
+        </div>
+      )}
+    </div>
+  </article>
+)}
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

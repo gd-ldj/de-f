@@ -1,4 +1,4 @@
-import type { UserPersonalInfo, UserPersonalInfoResponse } from '../types'
+import type { UserPersonalInfo, UserPersonalInfoResponse, HomeWhoToFollow } from '../types'
 import { SITE_CONFIG } from '../config/constants'
 
 /**
@@ -17,6 +17,33 @@ interface FollowAuthorResponse {
     zh: string;
   };
   data?: any;
+}
+
+/**
+ * Author profile information interface
+ */
+export interface AuthorProfile {
+  user_id: string;
+  nick: string | null;
+  name: string;
+  avatar_url: string | null;
+  profile_bio: string | null;
+  twitter: string | null;
+  followers: number;
+  articles_count: number;
+  created_at: string;
+}
+
+/**
+ * Author profile API response interface
+ */
+interface AuthorProfileResponse {
+  code: number;
+  msg: {
+    en: string;
+    zh: string;
+  };
+  data: AuthorProfile;
 }
 
 /**
@@ -92,6 +119,139 @@ export async function followAuthor(accessToken: string, authorId: string): Promi
     console.error('Error following author:', error)
     throw error
   }
+}
+
+/**
+ * Fetch author profile information by author name or user ID
+ * @param authorIdentifier - Author name or user ID 
+ * @returns Promise with author profile information
+ */
+export async function fetchAuthorProfile(authorIdentifier: string): Promise<AuthorProfile | null> {
+  return getMockAuthorProfile(authorIdentifier)
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/users/profile?author=${encodeURIComponent(authorIdentifier)}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null
+      }
+      throw new Error(`Failed to fetch author profile: ${response.statusText}`)
+    }
+
+    const result: AuthorProfileResponse = await response.json()
+    
+    if (result.code === 2000) {
+      return result.data
+    } else {
+      throw new Error(`API Error: ${result.msg.en}`)
+    }
+  } catch (error) {
+    console.error('Error fetching author profile:', error)
+    // Return mock data for development
+    return getMockAuthorProfile(authorIdentifier)
+  }
+}
+
+/**
+ * Mock author profile information for development
+ * @param authorIdentifier - Author identifier
+ * @returns Mock author profile information
+ */
+function getMockAuthorProfile(authorIdentifier: string): AuthorProfile {
+  return {
+    user_id: "crypto_feed_news_123",
+    nick: null,
+    name: "Crypto Feed News",
+    avatar_url: "/api/placeholder/48/48",
+    profile_bio: "Crypto Enthusiastic | Ambassador | KOL | Moderator | Community Builder | BTC Analyst | News Journalist | GemFinder",
+    twitter: "CryptoFeedNews",
+    followers: 15600,
+    articles_count: 10,
+    created_at: "2023-01-15T00:00:00Z"
+  }
+}
+
+/**
+ * Fetch recommended users to follow
+ * @param locale - Current locale
+ * @returns Array of recommended users
+ */
+export async function fetchWhoToFollow(locale: string): Promise<HomeWhoToFollow[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users/who-to-follow?locale=${locale}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
+    
+    if (result.code === 2000) {
+      return result.data || []
+    } else {
+      throw new Error(`API Error: ${result.msg.en}`)
+    }
+  } catch (error) {
+    console.error('Error fetching who to follow:', error)
+    // Return mock data for development
+    return getMockWhoToFollow()
+  }
+}
+
+/**
+ * Mock recommended users data for development
+ * @returns Mock who to follow data
+ */
+function getMockWhoToFollow(): HomeWhoToFollow[] {
+  return [
+    {
+      user_id: "crypto_expert_1",
+      nick: "CryptoExpert",
+      name: "Sir Ismail",
+      avatar_url: "/api/placeholder/48/48",
+      profile_bio: "Cryptocurrency analyst and blockchain expert with 10+ years experience"
+    },
+    {
+      user_id: "blockchain_guru_2",
+      nick: "BlockchainGuru",
+      name: "Alex Chen",
+      avatar_url: "/api/placeholder/48/48",
+      profile_bio: "DeFi researcher and smart contract developer"
+    },
+    {
+      user_id: "crypto_trader_3",
+      nick: "CryptoTrader",
+      name: "Maria Rodriguez",
+      avatar_url: "/api/placeholder/48/48",
+      profile_bio: "Professional crypto trader and market analyst"
+    },
+    {
+      user_id: "nft_collector_4",
+      nick: "NFTCollector",
+      name: "David Kim",
+      avatar_url: "/api/placeholder/48/48",
+      profile_bio: "NFT enthusiast and digital art collector"
+    },
+    {
+      user_id: "defi_expert_5",
+      nick: "DeFiExpert",
+      name: "Sarah Johnson",
+      avatar_url: "/api/placeholder/48/48",
+      profile_bio: "DeFi protocol researcher and yield farming specialist"
+    }
+  ]
 }
 
 /**

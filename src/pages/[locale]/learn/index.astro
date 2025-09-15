@@ -1,0 +1,179 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import { fetchLearnItemsByLetter, getAvailableLetters } from '@/api/learn'
+import type { Locale } from '@/types'
+import Footer from '@/components/common/react/footer/Index'
+import { createTranslator } from '@/lib/i18n'
+import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+export const prerender = false // Enable SSR for this page
+
+const { locale } = Astro.params as { locale: Locale }
+
+// Validate locale
+const validLocales = ['us', 'asia']
+if (!validLocales.includes(locale)) {
+  return Astro.redirect('/404')
+}
+
+const t = createTranslator(locale)
+
+// Fetch learn items grouped by letter
+let learnItemsByLetter: { [letter: string]: any[] } = {}
+let availableLetters: string[] = []
+try {
+  [learnItemsByLetter, availableLetters] = await Promise.all([
+    fetchLearnItemsByLetter(locale),
+    getAvailableLetters(locale)
+  ])
+} catch (error) {
+  console.error('Failed to fetch learn items:', error)
+  learnItemsByLetter = {}
+  availableLetters = []
+}
+
+// SEO optimization
+const title = locale === 'us' ? 'Learn | Paragons | deTake' : '学习 | Paragons | deTake'
+const description = locale === 'us' 
+  ? 'Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms'
+  : '通过我们全面的术语词典学习加密货币和区块链术语'
+const canonicalUrl = `https://detake.com/${locale}/learn`
+
+// Generate OG image
+const ogImageParams = new URLSearchParams({
+  title: title,
+  description: description,
+  type: 'website'
+})
+const ogImageUrl = `https://detake.com/api/og/learn.svg?${ogImageParams.toString()}`
+
+// Extract keywords
+const keywords = ['learn', 'paragons', 'cryptocurrency', 'blockchain', 'dictionary', 'terminology']
+
+// All alphabet letters for navigation
+const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+---
+
+<BaseLayout 
+  title={title} 
+  description={description} 
+  locale={locale} 
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt="Learn cryptocurrency and blockchain terminology on DeTake"
+  ogType="website"
+  twitterCard="summary_large_image"
+  keywords={keywords}
+>
+  <!-- React Header - Independent loading -->
+  <HeaderWithFallback locale={locale} />
+  
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <!-- Breadcrumb -->
+    <div class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block">
+      <nav class="text-sm text-gray-500">
+        <a href={`/${locale}`} class="hover:text-gray-700">Learn</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900">Paragons</span>
+      </nav>
+    </div>
+
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-3">
+        <!-- Left Column - Learn Content -->
+        <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-6 border border-t-0 border-border">
+          <!-- Page Title -->
+          <h1 class="text-3xl font-bold text-gray-900 mb-6">Paragons</h1>
+          
+          <!-- Search Box -->
+          <div class="mb-8">
+            <div class="relative">
+              <input 
+                type="text" 
+                placeholder="Search terms here..." 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              />
+              <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Alphabet Navigation -->
+          <div class="mb-8">
+            <div class="flex flex-wrap gap-2">
+              {allLetters.map((letter) => (
+                <a 
+                  href={`#letter-${letter}`}
+                  class={`px-3 py-2 text-sm font-medium rounded transition-colors
+                    ${availableLetters.includes(letter) 
+                      ? 'text-blue-600 hover:bg-blue-50 hover:text-blue-700' 
+                      : 'text-gray-400 cursor-not-allowed'}`}
+                >
+                  {letter}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <!-- Learn Items by Letter -->
+          <div class="space-y-8">
+            {allLetters.map((letter) => {
+              const items = learnItemsByLetter[letter] || []
+              if (items.length === 0) return null
+              
+              return (
+                <div id={`letter-${letter}`} class="scroll-mt-4">
+                  {/* Letter Header */}
+                  <div class="flex items-center gap-4 mb-4">
+                    <div class="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
+                      <span class="text-lg font-bold text-gray-600">{letter}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Items List */}
+                  <div class="space-y-4">
+                    {items.map((item: any) => (
+                      <div class="border-b border-gray-100 pb-4 last:border-b-0">
+                        <a 
+                          href={`/${locale}/learn/${item.slug}`}
+                          class="block hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
+                        >
+                          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                            {item.title}
+                          </h3>
+                          <p class="text-gray-600 text-sm leading-relaxed">
+                            {item.description}
+                          </p>
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Load More Button */}
+          <div class="mt-12 text-center">
+            <button class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+              Load More
+            </button>
+          </div>
+        </div>
+        
+        <!-- Right Column - Sidebar Content -->
+        <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
+          <div class="sticky top-8">
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Footer -->
+  <Footer client:load />
+</BaseLayout>
