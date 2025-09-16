@@ -51,7 +51,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                   </ArticleLink>
                 </h3>
                 <div className="hidden md:block">
-                  <p className=" text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 line-clamp-2 md:line-clamp-3">{article.sub_title}</p>
+                  <p className=" text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title}</p>
                 </div>
                 {/* Article Meta */}
                 <div className="flex items-center justify-between text-[10px] md:text-xs text-muted-foreground">

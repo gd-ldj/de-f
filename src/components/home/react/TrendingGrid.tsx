@@ -19,7 +19,12 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
   return (
     <div className="py-5 px-4 md:px-6 border border-border space-y-6">
       <div>
-        <h3 className="font-medium text-foreground mb-4 md:mb-6">{t('common.trending')}</h3>
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h3 className="font-medium text-foreground">{t('common.trending')}</h3>
+          <a href={`/${locale}/insights`} className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors px-2 py-1" aria-label={t('common.moreTrending')}>
+            {t('common.moreTrending')}
+          </a>
+        </div>
 
         {/* Mobile layout: Simple vertical list */}
         <div className="block md:hidden space-y-4">

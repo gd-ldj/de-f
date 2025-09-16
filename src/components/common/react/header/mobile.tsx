@@ -105,15 +105,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
         <div className="flex items-center justify-between px-4 py-3 h-14">
           {/* Left - Menu Icon (only on homepage) or Empty Space */}
           <div className="w-8 h-8 flex items-center justify-center">
-            {isHome ? (
-              <button onClick={handleMobileSidebarOpen} className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900 transition-colors" aria-label="Open menu">
-                <img src={MenuIcon} alt="deTake" className="h-6 w-auto" />
-              </button>
-            ) : (
-              <button onClick={handleBack} className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900 transition-colors" aria-label="Go back">
-                <img src={BackIcon} alt="deTake" className="h-6 w-auto" />
-              </button>
-            )}
+            <button onClick={handleMobileSidebarOpen} className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900 transition-colors" aria-label="Open menu">
+              <img src={MenuIcon} alt="deTake" className="h-6 w-auto" />
+            </button>
           </div>
 
           {/* Center - Logo */}

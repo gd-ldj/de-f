@@ -83,7 +83,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
           <h2 className="text font-medium text-foreground">{t('common.news')}</h2>
           <p className="hidden md:block text text-muted-foreground">{t('common.breakingHeadlines')}</p>
         </div>
-        <a href={`/${locale}/news`} className="hidden text-primary text-sm font-medium hover:text-primary/80 md:inline-block transition-colors">
+        <a href={`/${locale}/news`} className="text-primary text-sm font-medium hover:text-primary/80 md:inline-block transition-colors">
           {t('common.moreFromNews')}
         </a>
       </div>
