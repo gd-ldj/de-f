@@ -5,6 +5,7 @@ import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.ast
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
 import TopicPage from '@/components/pages/TopicPage';
+import DraggableFloatingButton from '@/components/common/react/DraggableFloatingButton';
 
 export const prerender = false // Enable SSR for this page
 
@@ -80,9 +81,14 @@ const { title, description } = seoContent[locale] || seoContent.us
         topicSlug={topic}
         initialPage={initialPage}
       />
+
+      <DraggableFloatingButton client:load>
+  <div>你的内容</div>
+</DraggableFloatingButton>
       
       <!-- Footer -->
       <Footer client:load />
+
     </div>
 </BaseLayout>
 
