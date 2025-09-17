@@ -12,7 +12,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
   const t = createTranslator(locale);
 
   return (
-    <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-12 mt-6 px-4 md:px-6">
+    <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-1 md:mb-12 mt-1 md:mt-6 px-4 md:px-6">
       {articles.map((article) => (
         <article key={article.slug} className="rounded overflow-hidden">
           {/* Mobile: Left image, right content layout */}
@@ -45,7 +45,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
 
               {/* Article Content */}
               <div className="pt-1">
-                <h3 className="text-sm md:text-2xl font-medium text-foreground mb-1 md:mb-[10px] line-clamp-2">
+                <h3 className="text-[16px] md:text-2xl font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
                   <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
@@ -54,7 +54,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                   <p className=" text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title}</p>
                 </div>
                 {/* Article Meta */}
-                <div className="flex items-center justify-between text-[10px] md:text-xs text-muted-foreground">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <span>{formatDate(article.created_at, locale)}</span>
                     <span className="">/ {t('article.by')} </span>
