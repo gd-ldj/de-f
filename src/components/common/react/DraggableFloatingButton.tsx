@@ -17,13 +17,14 @@ const DraggableFloatingButton: React.FC<DraggableFloatingButtonProps> = ({ icon,
   const dragRef = useRef<HTMLDivElement>(null);
   const dragStartPosition = useRef({ x: 0, y: 0 });
 
-  // Initialize position to bottom right
+  // Initialize position to top right with 120px from top
   useEffect(() => {
     const updateInitialPosition = () => {
       const margin = 20;
+      const topOffset = 120; // Distance from top
       const newPosition = {
         x: window.innerWidth - buttonSize - margin,
-        y: window.innerHeight - buttonSize - margin,
+        y: topOffset,
       };
       setPosition(newPosition);
       setIsInitialized(true);
@@ -33,6 +34,29 @@ const DraggableFloatingButton: React.FC<DraggableFloatingButtonProps> = ({ icon,
     window.addEventListener('resize', updateInitialPosition);
     return () => window.removeEventListener('resize', updateInitialPosition);
   }, [buttonSize]);
+
+  // Disable/enable page scrolling when modal is open/closed
+  useEffect(() => {
+    if (isOpen) {
+      // Store current scroll position
+      const scrollY = window.scrollY;
+
+      // Disable scrolling by setting body overflow to hidden
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+
+      return () => {
+        // Re-enable scrolling and restore scroll position
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
 
   // Snap to edge function
   const snapToEdge = useCallback(
@@ -191,7 +215,7 @@ const DraggableFloatingButton: React.FC<DraggableFloatingButtonProps> = ({ icon,
           width: buttonSize,
           height: buttonSize,
           touchAction: 'none', // Disable browser touch actions
-          userSelect: 'none',  // Prevent text selection
+          userSelect: 'none', // Prevent text selection
           WebkitUserSelect: 'none',
           WebkitTouchCallout: 'none', // Disable iOS callout
         }}
@@ -208,7 +232,7 @@ const DraggableFloatingButton: React.FC<DraggableFloatingButtonProps> = ({ icon,
         whileTap={{ scale: 0.95 }}
       >
         <motion.div
-          className="w-full h-full bg-blue-500 rounded-full shadow-lg flex items-center justify-center text-white"
+          className="w-full h-full bg-primary rounded-full shadow-lg flex items-center justify-center text-white"
           animate={{
             boxShadow: ['0 4px 20px rgba(59, 130, 246, 0.4)', '0 8px 30px rgba(59, 130, 246, 0.6)', '0 4px 20px rgba(59, 130, 246, 0.4)'],
           }}
@@ -246,9 +270,9 @@ const DraggableFloatingButton: React.FC<DraggableFloatingButtonProps> = ({ icon,
       {/* Fullscreen Modal */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div className="fixed inset-0 z-[100] bg-black bg-opacity-50 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} onClick={closeModal}>
+          <motion.div className="fixed inset-0 z-[100] w-full h-full " initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} onClick={closeModal}>
             <motion.div
-              className="fixed inset-4 bg-white rounded-lg shadow-2xl overflow-hidden"
+              className="fixed bg-white overflow-hidden  w-full h-full"
               initial={{
                 scale: 0.8,
                 opacity: 0,
@@ -280,7 +304,7 @@ const DraggableFloatingButton: React.FC<DraggableFloatingButtonProps> = ({ icon,
               </button>
 
               {/* Modal Content */}
-              <div className="h-full overflow-auto p-6">
+              <div className="h-full overflow-auto">
                 {children || (
                   <div className="h-full flex items-center justify-center text-gray-500">
                     <div className="text-center">

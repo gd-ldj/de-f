@@ -20,6 +20,7 @@ interface AuthMountProps {
   loginTargetId?: string;
   // The DOM id where ShareSection should be mounted, optional
   shareTargetId?: string;
+  shareMobileTargetId?: string;
   // Props used to render ShareSection under PrivyProvider
   shareSection?: {
     locale: Locale;
@@ -110,10 +111,11 @@ const PlaceholderAuthorSection: React.FC<{ author: any; locale: Locale }> = ({ a
  * AuthMountContent - Inner component that uses Privy hooks
  * This component is rendered inside IdentityProvider to access Privy context
  */
-const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareSection, authorTargetId = 'author-section-root', authorSection }) => {
+const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareMobileTargetId, shareSection, authorTargetId = 'author-section-root', authorSection }) => {
   const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
   const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
+  const [shareMobileEl, setShareMobileEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
   // Track locale for children that require it (Login, WalletPopover)
   const [locale, setLocale] = useState<Locale>('us');
@@ -133,6 +135,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       userButton: document.getElementById(userButtonTargetId),
       login: document.getElementById(loginTargetId),
       share: document.getElementById(shareTargetId),
+      shareMobile: document.getElementById(shareMobileTargetId || ''),
       author: document.getElementById(authorTargetId),
     };
   }, [userButtonTargetId, loginTargetId, shareTargetId, authorTargetId]);
@@ -144,6 +147,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     setUserButtonEl(domElements.userButton);
     setLoginEl(domElements.login);
     setShareEl(domElements.share);
+    setShareMobileEl(domElements.shareMobile);
     setAuthorEl(domElements.author);
 
     // Update locale from URL on mount
@@ -154,6 +158,51 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       console.log('[AuthMount] hydrated. Elements found:', domElements);
     }
   }, [domElements]);
+
+  // Monitor for mobile share container appearance and disappearance using MutationObserver
+  useEffect(() => {
+    if (!shareMobileTargetId || typeof window === 'undefined') return;
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          const mobileContainer = document.getElementById(shareMobileTargetId);
+          
+          if (mobileContainer && !shareMobileEl) {
+            // Container appeared - set it
+            setShareMobileEl(mobileContainer);
+            if (import.meta.env.DEV) {
+              console.log('[AuthMount] Mobile share container found via MutationObserver');
+            }
+          } else if (!mobileContainer && shareMobileEl) {
+            // Container disappeared - reset it
+            setShareMobileEl(null);
+            if (import.meta.env.DEV) {
+              console.log('[AuthMount] Mobile share container removed');
+            }
+          }
+        }
+      });
+    });
+
+    // Start observing the document body for changes
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Initial check in case container already exists
+    const existingContainer = document.getElementById(shareMobileTargetId);
+    if (existingContainer && !shareMobileEl) {
+      setShareMobileEl(existingContainer);
+      if (import.meta.env.DEV) {
+        console.log('[AuthMount] Mobile share container found on initial check');
+      }
+    }
+
+    // Cleanup observer on unmount
+    return () => observer.disconnect();
+  }, [shareMobileTargetId, shareMobileEl]);
 
   // Memoize portals to prevent unnecessary re-renders
   // Only show real components when Privy is ready
@@ -179,6 +228,13 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} />, shareEl);
   }, [shareEl, shareSection, ready]);
 
+  // Mobile share portal - renders ShareSection to mobile container
+  const shareMobilePortal = useMemo(() => {
+    
+    if (!shareMobileEl || !shareSection || !ready) return null;
+    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} />, shareMobileEl);
+  }, [shareMobileEl, shareSection, ready]);
+
   const authorPortal = useMemo(() => {
     if (!authorEl || !authorSection || !ready) return null;
     return createPortal(<AuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
@@ -193,6 +249,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       {userButtonPortal}
       {loginPortal}
       {sharePortal}
+      {shareMobilePortal}
       {authorPortal}
 
       {/* Global Toasts */}
