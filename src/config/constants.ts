@@ -15,13 +15,14 @@ export const SITE_CONFIG = {
   API_ENDPOINTS: {
     beta: 'https://beta-api.detake.com',
     web3: 'https://api.detake.com',
-    beta_dev: 'https://preview-api.detake.com'
+    beta_dev: 'https://preview-api.detake.com',
   },
 
   // Site URLs based on environment
   SITE_URLS: {
     beta: 'https://beta.detake.com',
-    web3: 'https://detake.com',
+    web2: 'https://detake.com',
+    web3: 'https://web3.detake.com',
     beta_dev: 'https://detake.news',
   },
 

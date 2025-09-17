@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '@/types'
 import { generateArticleStructuredData, generateArticleMetaTags } from '@/utils/seo'
+import { SITE_CONFIG } from '@/config/constants'
 
 interface Props {
   article: {
@@ -15,7 +16,7 @@ interface Props {
   baseUrl?: string
 }
 
-const { article, locale, baseUrl = 'https://detake.com' } = Astro.props as Props
+const { article, locale, baseUrl = SITE_CONFIG.SITE_URL } = Astro.props as Props
 
 // Normalize author to string for SEO utilities
 const authorName = typeof article.author === 'string' ? article.author : article.author?.name

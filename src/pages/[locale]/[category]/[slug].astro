@@ -9,7 +9,7 @@ import { fetchArticle } from '@/api/articles'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
 import RecentResearch from '@/components/article/astro/RecentResearch.astro';
-
+import { SITE_CONFIG } from '@/config/constants'
 
 export const prerender = false // Enable SSR for this page
 
@@ -58,7 +58,7 @@ const categoryDisplayName = locale === 'us' ? currentCategory.en : currentCatego
 // SEO optimization
 const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
-const canonicalUrl = `https://detake.com/${locale}/${category}/${slug}`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/${category}/${slug}`
 
 // Dynamically generate OG image
 const ogImageParams = new URLSearchParams({
@@ -67,7 +67,7 @@ const ogImageParams = new URLSearchParams({
   category: categoryDisplayName,
   author: article?.author?.name || article.author_name || 'DeTake'
 });
-const ogImageUrl = article.img_url || `https://detake.com/api/og/article.svg?${ogImageParams.toString()}`
+const ogImageUrl = article.img_url || ``
 
 // Extract keywords and tags
 const keywords = article.tags || []

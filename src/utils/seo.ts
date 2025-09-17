@@ -1,5 +1,6 @@
 import type { Locale } from '@/types'
 import { DEFAULT_PROMOTE_CODE } from '@/config/constants'
+import { SITE_CONFIG } from '@/config/constants';
 
 /**
  * SEO utilities for article links and structured data
@@ -31,18 +32,18 @@ export function getCanonicalArticleUrl(
  */
 export function generateArticleStructuredData(
   article: {
-    title: string
-    sub_title: string
-    slug: string
-    created_at: string
-    img_url?: string
-    author?: string
+    title: string;
+    sub_title: string;
+    slug: string;
+    created_at: string;
+    img_url?: string;
+    author?: string;
   },
   locale: Locale,
-  baseUrl: string = 'https://detake.com'
+  baseUrl: string = SITE_CONFIG.SITE_URL
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale)}`
-  
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale)}`;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -52,22 +53,22 @@ export function generateArticleStructuredData(
     datePublished: article.created_at,
     author: {
       '@type': 'Organization',
-      name: article.author || 'Detake'
+      name: article.author || 'Detake',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Detake',
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/logo.png`
-      }
+        url: `${baseUrl}/logo.png`,
+      },
     },
     image: article.img_url ? `${baseUrl}${article.img_url}` : undefined,
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': canonicalUrl
-    }
-  }
+      '@id': canonicalUrl,
+    },
+  };
 }
 
 /**
@@ -80,17 +81,17 @@ export function generateArticleStructuredData(
  */
 export function generateArticleMetaTags(
   article: {
-    title: string
-    sub_title: string
-    slug: string
-    img_url?: string
+    title: string;
+    sub_title: string;
+    slug: string;
+    img_url?: string;
   },
   locale: Locale,
-  baseUrl: string = 'https://detake.com'
+  baseUrl: string = SITE_CONFIG.SITE_URL
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale)}`
-  const imageUrl = article.img_url ? `${baseUrl}${article.img_url}` : `${baseUrl}/og-default.png`
-  
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale)}`;
+  const imageUrl = article.img_url ? `${baseUrl}${article.img_url}` : `${baseUrl}/og-default.png`;
+
   return {
     title: article.title,
     description: article.sub_title,
@@ -100,15 +101,15 @@ export function generateArticleMetaTags(
       description: article.sub_title,
       url: canonicalUrl,
       type: 'article',
-      image: imageUrl
+      image: imageUrl,
     },
     twitter: {
       card: 'summary_large_image',
       title: article.title,
       description: article.sub_title,
-      image: imageUrl
-    }
-  }
+      image: imageUrl,
+    },
+  };
 }
 
 /**
@@ -121,18 +122,18 @@ export function generateArticleMetaTags(
  */
 export function generateSitemapEntry(
   article: {
-    slug: string
-    created_at: string
+    slug: string;
+    created_at: string;
   },
   locale: Locale,
-  baseUrl: string = 'https://detake.com'
+  baseUrl: string = SITE_CONFIG.SITE_URL
 ) {
   return {
     url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale)}`,
     lastmod: article.created_at,
     changefreq: 'weekly' as const,
-    priority: 0.8
-  }
+    priority: 0.8,
+  };
 }
 
 /**
@@ -142,13 +143,9 @@ export function generateSitemapEntry(
  * @param baseUrl Site base URL
  * @returns Alternate language links
  */
-export function generateAlternateLinks(
-  slug: string,
-  locales: Locale[],
-  baseUrl: string = 'https://detake.com'
-) {
-  return locales.map(locale => ({
+export function generateAlternateLinks(slug: string, locales: Locale[], baseUrl: string = SITE_CONFIG.SITE_URL) {
+  return locales.map((locale) => ({
     hreflang: locale,
-    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale)}`
-  }))
+    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale)}`,
+  }));
 }

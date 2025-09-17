@@ -9,6 +9,7 @@ import { fetchArticles } from '@/api/articles'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import { SITE_CONFIG } from '@/config/constants'
 
 export const prerender = false // Enable SSR for this page
 
@@ -42,7 +43,7 @@ const articles = articlesResponse?.articles || []
 // SEO optimization
 const title = `${authorProfile.name} | Author Profile | deTake`
 const description = authorProfile.profile_bio || `Articles and insights by ${authorProfile.name} on deTake`
-const canonicalUrl = `https://detake.com/${locale}/authors/${encodeURIComponent(authorName)}`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/authors/${encodeURIComponent(authorName)}`
 
 // Generate OG image for author
 const ogImageParams = new URLSearchParams({
@@ -50,7 +51,7 @@ const ogImageParams = new URLSearchParams({
   description: description,
   type: 'website'
 });
-const ogImageUrl = authorProfile.avatar_url || `https://detake.com/api/og/author.svg?${ogImageParams.toString()}`
+const ogImageUrl = authorProfile.avatar_url || `${SITE_CONFIG.SITE_URL}/api/og/author.svg?${ogImageParams.toString()}`
 
 // Extract keywords
 const keywords = ['author', 'profile', authorProfile.name, 'cryptocurrency', 'blockchain', 'analysis']

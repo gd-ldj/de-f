@@ -6,6 +6,7 @@ import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import { SITE_CONFIG } from '@/config/constants'
 export const prerender = false // Enable SSR for this page
 
 const { locale, slug } = Astro.params as { locale: Locale; slug: string }
@@ -33,7 +34,7 @@ try {
 // SEO optimization
 const title = `${learnItem.title} | Learn | deTake`
 const description = learnItem.description
-const canonicalUrl = `https://detake.com/${locale}/learn/${slug}`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn/${slug}`
 
 // Generate OG image
 const ogImageParams = new URLSearchParams({
@@ -41,7 +42,7 @@ const ogImageParams = new URLSearchParams({
   description: description,
   type: 'article'
 })
-const ogImageUrl = `https://detake.com/api/og/learn.svg?${ogImageParams.toString()}`
+const ogImageUrl = `${SITE_CONFIG.SITE_URL}/api/og/learn.svg?${ogImageParams.toString()}`
 
 // Extract keywords
 const keywords = ['learn', 'paragons', 'cryptocurrency', 'blockchain', learnItem.title.toLowerCase()]

@@ -6,6 +6,7 @@ import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import { SITE_CONFIG } from '@/config/constants'
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
@@ -37,7 +38,7 @@ const title = locale === 'us' ? 'Learn | Paragons | deTake' : '学习 | Paragons
 const description = locale === 'us' 
   ? 'Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms'
   : '通过我们全面的术语词典学习加密货币和区块链术语'
-const canonicalUrl = `https://detake.com/${locale}/learn`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn`
 
 // Generate OG image
 const ogImageParams = new URLSearchParams({
@@ -45,7 +46,7 @@ const ogImageParams = new URLSearchParams({
   description: description,
   type: 'website'
 })
-const ogImageUrl = `https://detake.com/api/og/learn.svg?${ogImageParams.toString()}`
+const ogImageUrl = `${SITE_CONFIG.SITE_URL}/api/og/learn.svg?${ogImageParams.toString()}`
 
 // Extract keywords
 const keywords = ['learn', 'paragons', 'cryptocurrency', 'blockchain', 'dictionary', 'terminology']

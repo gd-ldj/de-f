@@ -7,6 +7,7 @@ import Footer from '@/components/common/react/footer/Index';
 import TopicPage from '@/components/pages/TopicPage';
 import DraggableFloatingButton from '@/components/common/react/DraggableFloatingButton';
 import RecentResearch from '@/components/article/astro/RecentResearch.astro';
+import { SITE_CONFIG } from '@/config/constants';
 
 export const prerender = false // Enable SSR for this page
 
@@ -48,7 +49,7 @@ const seoContent = {
 
 const { title, description } = seoContent[locale] || seoContent.us
 
-const canonicalUrl = `https://detake.com/${locale}/topics/${topic}`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/topics/${topic}`
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>

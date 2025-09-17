@@ -9,6 +9,7 @@ import Footer from '@/components/common/react/footer/Index'
 import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import TwitterPost from '@/components/social/astro/TwitterPost.astro'
+import { SITE_CONFIG } from '@/config/constants'
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
@@ -36,7 +37,7 @@ const title = locale === 'us' ? 'Social Media | deTake' : '社交媒体 | deTake
 const description = locale === 'us' 
   ? 'Discover and follow cryptocurrency experts, analysts, and thought leaders on deTake'
   : '在deTake上发现并关注加密货币专家、分析师和意见领袖'
-const canonicalUrl = `https://detake.com/${locale}/social`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/social`
 
 // Generate OG image
 const ogImageParams = new URLSearchParams({
@@ -44,7 +45,7 @@ const ogImageParams = new URLSearchParams({
   description: description,
   type: 'website'
 })
-const ogImageUrl = `https://detake.com/api/og/social.svg?${ogImageParams.toString()}`
+const ogImageUrl = `${SITE_CONFIG.SITE_URL}/api/og/social.svg?${ogImageParams.toString()}`
 
 // Extract keywords
 const keywords = ['social media', 'follow', 'cryptocurrency', 'blockchain', 'experts', 'analysts']
