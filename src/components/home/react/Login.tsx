@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Wallet } from '@/components/common/react/ConnectWallet';
+import { EmailLogin } from '@/components/common/react/EmailLogin';
 import { getAnalytics } from '@/lib/analytics';
 import { TRACKING_EVENTS } from '@/config/constants';
 import type { Locale } from '@/types';
@@ -13,7 +14,7 @@ interface LoginProps {
 export default function Login({ locale }: LoginProps) {
   // Create a translation function bound to the current locale
   const t = createTranslator(locale);
-  
+
   return (
     <motion.div className="space-y-6 px-6 border-b border-border mb-5" initial={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} animate={{ opacity: 1, maxHeight: '500px', overflow: 'visible' }} exit={{ opacity: 0, maxHeight: 0, overflow: 'hidden' }} transition={{ duration: 0.8, ease: 'easeInOut' }}>
       <div className="bg-white mb-6">
@@ -32,15 +33,10 @@ export default function Login({ locale }: LoginProps) {
             <Wallet locale={locale} />
           </div>
 
-          {/*
-           * You can re-enable the email option when it's ready
-           * <button
-           *   className="w-full border border-border text-foreground py-2 px-4 rounded flex items-center justify-center space-x-2 hover:bg-accent"
-           * >
-           *   <Mail className="w-4 h-4" />
-           *   <span>Continue with Email</span>
-           * </button>
-           */}
+          {/* Email login button */}
+          <div>
+            <EmailLogin locale={locale} />
+          </div>
         </div>
       </div>
     </motion.div>

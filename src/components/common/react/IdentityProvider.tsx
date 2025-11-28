@@ -1,8 +1,9 @@
-import { PrivyProvider } from '@privy-io/react-auth'
+import { PrivyProvider } from '@privy-io/react-auth';
 import { toSolanaWalletConnectors } from '@privy-io/react-auth/solana';
 import { useMemo } from 'react';
+import type { PrivyClientConfig } from '@privy-io/react-auth';
 
-export const IdentityProvider = (props: {children: React.ReactNode}) => {
+export const IdentityProvider = (props: { children: React.ReactNode }) => {
   // Memoize Solana connectors to prevent recreation on every render
   const solanaConnectors = useMemo(
     () =>
@@ -13,7 +14,7 @@ export const IdentityProvider = (props: {children: React.ReactNode}) => {
   );
 
   // Memoize PrivyProvider config to prevent recreation
-  const privyConfig = useMemo(
+  const privyConfig: PrivyClientConfig = useMemo(
     () => ({
       externalWallets: {
         solana: {
@@ -21,10 +22,10 @@ export const IdentityProvider = (props: {children: React.ReactNode}) => {
         },
       },
       embeddedWallets: {
-        createOnLogin: 'users-without-wallets',
+        createOnLogin: 'users-without-wallets' as const,
         requireUserPasswordOnCreate: false,
       },
-      loginMethods: ['wallet'],
+      loginMethods: ['email', 'wallet'] as const,
     }),
     [solanaConnectors]
   );
@@ -34,4 +35,4 @@ export const IdentityProvider = (props: {children: React.ReactNode}) => {
       {props.children}
     </PrivyProvider>
   );
-}
+};

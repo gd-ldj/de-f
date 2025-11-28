@@ -129,6 +129,10 @@
     "copied": "Copied",
     "disconnect": "Disconnect"
   },
+  "auth": {
+    "continueWithEmail": "Continue with Email",
+    "signedInWithEmail": "Signed in with Email"
+  },
   "research": {
     "title": "Research",
     "subtitle": "Insights you can't invest without.",

@@ -46,9 +46,9 @@ const { locale, latestNews = [], newsAll = [], whoToFollow = [], topics = [], mo
   <!-- Mobile Right Sidebar Content -->
   <div class="py-4 border-t border-gray-200">
     <!-- React mount point for Login (Mobile) -->
-    <div id="mobile-login-root"></div>
+    <div id="login-root"></div>
     <!-- AuthMount for mobile login -->
-    <AuthMount client:load loginTargetId="mobile-login-root" />
+    <AuthMount client:load />
     <RightSidebar topics={topics} mostRead={mostRead} />
   </div>
   <div class="pb-4 border-t border-gray-200">

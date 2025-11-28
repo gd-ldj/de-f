@@ -129,6 +129,10 @@
     "copied": "已复制",
     "disconnect": "断开连接"
   },
+  "auth": {
+    "continueWithEmail": "使用邮箱登录",
+    "signedInWithEmail": "已通过邮箱登录"
+  },
   "research": {
     "title": "研究报告",
     "subtitle": "不可错过的投资洞察。",

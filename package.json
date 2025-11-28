@@ -17,6 +17,8 @@
     "@astrojs/node": "^9.4.2",
     "@astrojs/react": "^4.3.0",
     "@astrojs/vercel": "^8.2.6",
+    "@clerk/clerk-react": "^5.47.0",
+    "@fingerprintjs/fingerprintjs": "^5.0.1",
     "@privy-io/react-auth": "^2.18.1",
     "@radix-ui/react-dialog": "^1.0.0",
     "@radix-ui/react-dropdown-menu": "^2.0.0",
@@ -34,6 +36,7 @@
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "crypto-js": "^4.2.0",
     "framer-motion": "^12.23.12",
     "i18next": "^25.3.2",
     "i18next-browser-languagedetector": "^8.2.0",
@@ -58,6 +61,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-inject": "^5.0.5",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.0.0",
     "terser": "^5.44.0"
   },

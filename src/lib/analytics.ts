@@ -4,6 +4,10 @@
  */
 
 import { STORAGE_KEYS, ANALYTICS_CONFIG, TRACKING_EVENTS } from '../config/constants';
+import { getCloudflareData } from '../../docs/utils/cloudflare-cache';
+import { getComprehensiveIPInfo } from '../../docs/utils/ip-detector';
+import { generateDeviceSignature } from '../../docs/utils/device-signature';
+import { getCloudflareVisitorInfo } from '../../docs/utils/cloudflare-visitor';
 
 /**
  * Interface for user behavior event data
@@ -24,6 +28,10 @@ export interface VisitorData {
   visitorId: string;
   gaClientId?: string;
   cfVisitorId?: string;
+  cloudflareVisitorId?: string;
+  realIp?: string;
+  vpnIp?: string;
+  userFingerprint?: string;
   sessionId: string;
   firstVisit: number;
   lastVisit: number;
@@ -100,7 +108,7 @@ export class AnalyticsManager {
           lastVisit: Date.now(),
         };
       }
-
+       await this.getAdditionalVisitorInfo()
       // Try to get Cloudflare Visitor ID if available
       await this.getCloudflareVisitorId();
 
@@ -119,34 +127,156 @@ export class AnalyticsManager {
   }
 
   /**
-   * Get Cloudflare Visitor ID using CF-Connecting-IP or CF-Ray headers
+   * Get Cloudflare Visitor ID using cf-headers API
    */
   private async getCloudflareVisitorId(): Promise<void> {
     try {
-      // Method 1: Try to get from Cloudflare Analytics API
-      if (ANALYTICS_CONFIG.CLOUDFLARE_ANALYTICS_TOKEN) {
-        const response = await fetch('/api/cf-visitor-id', {
-          headers: {
-            Authorization: `Bearer ${ANALYTICS_CONFIG.CLOUDFLARE_ANALYTICS_TOKEN}`,
-          },
-        });
+      // Get visitor ID from cf-headers API which includes all Cloudflare data
+      const response = await fetch('/api/cf-headers');
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.visitorId) {
-            this.visitorData!.cfVisitorId = data.visitorId;
-            return;
-          }
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.visitorId) {
+          this.visitorData!.cfVisitorId = data.visitorId;
+          return;
         }
       }
 
-      // Method 2: Generate from available Cloudflare headers (client-side approximation)
+      // Fallback: Generate from available Cloudflare headers (client-side approximation)
       const cfRay = this.getCfRayFromHeaders();
       if (cfRay) {
         this.visitorData!.cfVisitorId = this.hashString(cfRay);
       }
     } catch (error) {
       console.warn('[Analytics] Could not get Cloudflare Visitor ID:', error);
+    }
+  }
+
+  /**
+   * Get additional visitor information including Cloudflare visitor ID, real IP, VPN IP, and user fingerprint
+   */
+  private async getAdditionalVisitorInfo(): Promise<void> {
+    try {
+      // Get Cloudflare visitor ID (enhanced version)
+      await this.getEnhancedCloudflareInfo();
+
+      // Generate user fingerprint
+      this.visitorData!.userFingerprint = await this.generateUserFingerprint();
+
+    } catch (error) {
+      console.warn('[Analytics] Could not get additional visitor info:', error);
+    }
+  }
+
+  /**
+   * Get enhanced Cloudflare information including visitor ID, real IP, and VPN detection
+   */
+  private async getEnhancedCloudflareInfo(): Promise<void> {
+    try {
+      // Get Cloudflare visitor information
+      const cloudflareInfo = await getCloudflareVisitorInfo();
+      if (cloudflareInfo.visitorId) {
+        this.visitorData!.cloudflareVisitorId = cloudflareInfo.visitorId;
+      }
+
+      // Get comprehensive IP information including VPN detection
+      const ipInfo = await getComprehensiveIPInfo();
+      
+      // Set real IP and VPN IP based on VPN detection results
+      if (ipInfo.vpnDetection.isVPN) {
+        this.visitorData!.vpnIp = ipInfo.vpnDetection.vpnIP || ipInfo.publicIP;
+        this.visitorData!.realIp = ipInfo.vpnDetection.realIP;
+      } else {
+        this.visitorData!.realIp = ipInfo.publicIP;
+        this.visitorData!.vpnIp = undefined;
+      }
+
+      // Also try to get Cloudflare data for additional information
+      const cloudflareData = await getCloudflareData();
+      if (cloudflareData.realIP) {
+        this.visitorData!.realIp = cloudflareData.realIP;
+      }
+      if (cloudflareData.clientIP && ipInfo.vpnDetection.isVPN) {
+        this.visitorData!.vpnIp = cloudflareData.clientIP;
+      }
+
+    } catch (error) {
+      console.warn('[Analytics] Could not get enhanced Cloudflare info:', error);
+    }
+  }
+
+  /**
+   * Generate user fingerprint based on browser characteristics
+   */
+  private async generateUserFingerprint(): Promise<string> {
+    try {
+      // Use the advanced device signature generator from docs/utils
+      const deviceSignature = await generateDeviceSignature();
+      return deviceSignature;
+    } catch (error) {
+      console.warn('[Analytics] Could not generate device signature, falling back to simple fingerprint:', error);
+      
+      // Fallback to simple fingerprint if device signature fails
+      try {
+        const fingerprint = {
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          platform: navigator.platform,
+          screenResolution: `${screen.width}x${screen.height}`,
+          colorDepth: screen.colorDepth,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          cookieEnabled: navigator.cookieEnabled,
+          doNotTrack: navigator.doNotTrack,
+          hardwareConcurrency: navigator.hardwareConcurrency || 0,
+          deviceMemory: (navigator as any).deviceMemory || 0,
+          webglVendor: this.getWebGLVendor(),
+          webglRenderer: this.getWebGLRenderer(),
+        };
+
+        const fingerprintString = JSON.stringify(fingerprint);
+        return this.hashString(fingerprintString);
+      } catch (fallbackError) {
+        console.warn('[Analytics] Fallback fingerprint also failed:', fallbackError);
+        return this.hashString(navigator.userAgent + Date.now());
+      }
+    }
+  }
+
+  /**
+   * Get WebGL vendor information for fingerprinting
+   */
+  private getWebGLVendor(): string {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') as WebGLRenderingContext | null;
+      if (gl) {
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          return gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'unknown';
+        }
+      }
+      return 'unknown';
+    } catch (error) {
+      return 'unknown';
+    }
+  }
+
+  /**
+   * Get WebGL renderer information for fingerprinting
+   */
+  private getWebGLRenderer(): string {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') as WebGLRenderingContext | null;
+      if (gl) {
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'unknown';
+        }
+      }
+      return 'unknown';
+    } catch (error) {
+      return 'unknown';
     }
   }
 
@@ -300,6 +430,10 @@ export class AnalyticsManager {
       // Common custom dimensions for all events
       const commonParams = {
         ...(this.visitorData.cfVisitorId && { cf_id: this.visitorData.cfVisitorId }),
+        ...(this.visitorData.cloudflareVisitorId && { cloudflare_visitor_id: this.visitorData.cloudflareVisitorId }),
+        ...(this.visitorData.realIp && { real_ip: this.visitorData.realIp }),
+        ...(this.visitorData.vpnIp && { vpn_ip: this.visitorData.vpnIp }),
+        ...(this.visitorData.userFingerprint && { user_fingerprint: this.visitorData.userFingerprint }),
       };
 
       // Page view (already supported)
