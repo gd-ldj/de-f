@@ -28,8 +28,8 @@
     "@solana/spl-token": "^0.4.13",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.0.0",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "@vercel/analytics": "^1.5.0",
     "astro": "^5.13.2",
     "astro-i18next": "^1.0.0-beta.21",
@@ -48,10 +48,10 @@
     "lucide-react": "^0.400.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "react-i18next": "^15.6.0",
-    "react-is": "^19.1.1",
+    "react-is": "^19.2.1",
     "recharts": "^3.1.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss": "^4.1.11",
@@ -67,5 +67,6 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
 }
