@@ -1,0 +1,92 @@
+---
+import type { Locale } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+import { formatDate } from '@/utils/util'
+import type { LearnItem } from '@/api/learn'
+
+interface Props {
+  learnItem: LearnItem
+  locale: Locale
+}
+
+const { learnItem, locale } = Astro.props as Props
+
+const t = createTranslator(locale)
+
+function getContent(item: LearnItem): string {
+  if (item.content && item.content.trim().length > 0) {
+    return item.content
+  }
+
+  const title = item.title
+
+  return `
+## What Is the ${title}
+
+The ${title} is a non-profit organization dedicated to the development, improvement, and promotion of Ethereum and related technologies. Established in 2014 with the vision of fostering a decentralized and open-source ecosystem, the foundation plays an important role in supporting the growth of Ethereum and empowering the broader blockchain community.
+
+## Mission and Goals
+
+The primary mission of the ${title} is to support Ethereum's evolution and the technologies surrounding it. The foundation strives to support a thriving ecosystem of decentralized applications, enabling a new era of trustless and transparent systems. Additionally, it seeks to educate the public and foster collaboration within the blockchain space.
+
+Unlike a conventional non-profit or a controlling entity, the ${title} operates as one component within a larger ecosystem. Its purpose is not to dictate the trajectory of Ethereum but to facilitate its organic growth and development.
+
+## ${title} Initiatives
+
+As of February 2024, the ${title} website presents three main initiatives: Ecosystem Support Program, Devcon, and the Fellowship Program.
+
+1. Ecosystem Support Program
+
+The Ecosystem Support Program is a flagship initiative designed to provide both financial and non-financial support to projects and entities within the broader Ethereum community. This program aims to accelerate the growth of the ecosystem and acts as a catalyst for innovative projects by offering resources and assistance beyond mere financial aid.
+
+2. Devcon
+
+Devcon is the Ethereum Foundation's annual developer conference. It brings together developers, researchers, and community members from around the world to share progress, discuss new ideas, and collaborate on the future of Ethereum.
+`
+}
+
+function formatLearnContent(raw: string): string {
+  return raw
+    .replace(/## (.*)/g, '<h2 class="text-[32px] md:text-[32px] font-both text-[#052019] mt-10 mb-4">$1</h2>')
+    .replace(/### (.*)/g, '<h3 class="text-[32px] md:text-[24px] font-both text-[#052019] mt-8 mb-3">$1</h3>')
+    .replace(/\n\n/g, '</p><p class="text-[16px] text-[#909399] leading-relaxed mb-4">')
+    .replace(/^\s*/, '<p class="text-[16px] text-[#909399] leading-relaxed mb-4">')
+    .replace(/\s*$/, '</p>')
+}
+
+const renderedContent = formatLearnContent(getContent(learnItem))
+const displayDate = formatDate(learnItem.updatedAt || learnItem.createdAt, locale)
+
+---
+
+<article class="bg-white">
+  <header class="mb-8">
+    <nav class="flex items-center space-x-2 text-sm text-[#909399] mb-4">
+      <a href={`/${locale}/learn`} class="hover:text-[#052019]">
+        Learn
+      </a>
+      <span>/</span>
+      <a href={`/${locale}/learn`} class="hover:text-[#052019]">
+        Paragons
+      </a>
+    </nav>
+
+    <h1 class="text-[32px] md:text-[48px] font-medium tracking-tight text-[#052019] mb-2 leading-tight">
+      {learnItem.title}
+    </h1>
+
+    <div class="flex items-center text-[12px] md:text-[14px] text-[#909399] mt-2">
+      <span>{displayDate}</span>
+      <span class="mx-2">/</span>
+      <span class="uppercase font-medium text-[#052019]">By JACK KUBINEC</span>
+      <button class="ml-auto inline-flex items-center gap-1 px-2 py-1 text-[#909399] hover:text-[#052019]">
+        <span class="text-xs border px-1 py-[1px] rounded">A</span>
+        <span class="text-xs">A</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="mb-10">
+    <div class="max-w-none" set:html={renderedContent} />
+  </section>
+</article>

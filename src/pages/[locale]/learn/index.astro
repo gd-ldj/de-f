@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
 import { fetchLearnItemsByLetter, getAvailableLetters } from '@/api/learn'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
@@ -68,104 +69,94 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
 >
   <!-- React Header - Independent loading -->
   <HeaderWithFallback locale={locale} />
+  <AuthMount client:load shareSection={{ locale, title, url: canonicalUrl }} />
   
   <main class="min-h-screen mt-[56px] md:mt-[97px]">
-    <!-- Breadcrumb -->
-    <div class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block">
-      <nav class="text-sm text-gray-500">
-        <a href={`/${locale}`} class="hover:text-gray-700">Learn</a>
-        <span class="mx-2">/</span>
-        <span class="text-gray-900">Paragons</span>
-      </nav>
-    </div>
+
 
     <div class="max-w-[1440px] mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-3">
         <!-- Left Column - Learn Content -->
-        <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-6 border border-t-0 border-border">
+            
+        <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-0 border border-t-0 border-border">
+           <!-- Breadcrumb -->
+          <nav class="text-sm text-muted-foreground mb-2 md:px-6">
+            <a href={`/${locale}`} class="hover:text-foreground">
+              Learn
+            </a>
+            <span class="mx-1">/</span>
+            <span class="text-primary">Jargon</span>
+          </nav>
           <!-- Page Title -->
-          <h1 class="text-3xl font-bold text-gray-900 mb-6">Paragons</h1>
+          <h1 class="text-[48px] font-medium text-gray-900 mb-6 md:px-6">Jargon</h1>
           
-          <!-- Search Box -->
-          <div class="mb-8">
-            <div class="relative">
-              <input 
-                type="text" 
-                placeholder="Search terms here..." 
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-              />
-              <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
-            </div>
-          </div>
-
-          <!-- Alphabet Navigation -->
-          <div class="mb-8">
-            <div class="flex flex-wrap gap-2">
-              {allLetters.map((letter) => (
-                <a 
-                  href={`#letter-${letter}`}
-                  class={`px-3 py-2 text-sm font-medium rounded transition-colors
-                    ${availableLetters.includes(letter) 
-                      ? 'text-blue-600 hover:bg-blue-50 hover:text-blue-700' 
-                      : 'text-gray-400 cursor-not-allowed'}`}
-                >
-                  {letter}
-                </a>
-              ))}
+          <div class="border-y border-gray-200 py-4 mb-5 md:px-6">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center">
+              <div class="w-full md:w-[180px] relative">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input 
+                  type="text" 
+                  placeholder="Search terms here..." 
+                  class="w-full md:w-[180px] pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+                />
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-nowrap gap-2 md:justify-start text-sm overflow-x-auto whitespace-nowrap" data-letter-nav>
+                  {allLetters.filter((letter) => availableLetters.includes(letter)).map((letter) => (
+                    <a 
+                      href={`#letter-${letter}`}
+                      data-letter-target={letter}
+                      class="px-1 font-medium tracking-wide text-gray-800 hover:text-blue-700"
+                    >
+                      {letter}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Learn Items by Letter -->
-          <div class="space-y-8">
+          <div class="divide-y divide-gray-200  md:px-6">
             {allLetters.map((letter) => {
               const items = learnItemsByLetter[letter] || []
               if (items.length === 0) return null
-              
+
               return (
-                <div id={`letter-${letter}`} class="scroll-mt-4">
-                  {/* Letter Header */}
-                  <div class="flex items-center gap-4 mb-4">
-                    <div class="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
-                      <span class="text-lg font-bold text-gray-600">{letter}</span>
-                    </div>
+                <section id={`letter-${letter}`} class="flex scroll-mt-32">
+                  <div class="h-[90px] w-[160px] flex items-center justify-start">
+                    <span class="text-[64px] font-medium text-[#052019] opacity-20">{letter}</span>
                   </div>
-                  
-                  {/* Items List */}
-                  <div class="space-y-4">
-                    {items.map((item: any) => (
-                      <div class="border-b border-gray-100 pb-4 last:border-b-0">
-                        <a 
+                  <div class="flex-1">
+                    {items.map((item: any, index: number) => (
+                      <div class={`py-4 ${index < items.length - 1 ? 'border-b border-gray-200' : ''}`}>
+                        <a
                           href={`/${locale}/learn/${item.slug}`}
-                          class="block hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors"
+                          class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
                         >
-                          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                          <h3 class="text-[32px] font-medium text-[#052019] mb-2">
                             {item.title}
                           </h3>
-                          <p class="text-gray-600 text-sm leading-relaxed">
+                          <p class="text-[#909399] text-[16px] leading-relaxed">
                             {item.description}
                           </p>
                         </a>
                       </div>
                     ))}
                   </div>
-                </div>
+                </section>
               )
             })}
           </div>
 
-          {/* Load More Button */}
-          <div class="mt-12 text-center">
-            <button class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
-              Load More
-            </button>
-          </div>
         </div>
         
         <!-- Right Column - Sidebar Content -->
         <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
           <div class="sticky top-8">
+            <div id="share-section-root" class=""></div>
             <div class="px-6 p-5">
               <RecentResearch locale={locale} />
             </div>
@@ -177,4 +168,29 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
   
   <!-- Footer -->
   <Footer client:load />
+
+  <script>
+    if (typeof window !== 'undefined') {
+      document.addEventListener('DOMContentLoaded', function () {
+        var nav = document.querySelector('[data-letter-nav]');
+        if (!nav) return;
+        nav.addEventListener('click', function (event) {
+          var target = event.target;
+          if (!(target instanceof Element)) return;
+          var link = target.closest('a[data-letter-target]');
+          if (!link) return;
+          event.preventDefault();
+          var href = link.getAttribute('href') || '';
+          if (!href || href.charAt(0) !== '#') return;
+          var id = href.slice(1);
+          var section = document.getElementById(id);
+          if (!section) return;
+          var rect = section.getBoundingClientRect();
+          var offset = 100;
+          var top = window.pageYOffset + rect.top - offset;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        });
+      });
+    }
+  </script>
 </BaseLayout>
