@@ -1,0 +1,242 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
+import type { Locale, ApiArticle } from '@/types'
+import Footer from '@/components/common/react/footer/Index'
+import { createTranslator } from '@/lib/i18n'
+import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import { SITE_CONFIG } from '@/config/constants'
+import { fetchCollectionArticles } from '@/api/collections'
+import { formatDate } from '@/utils/util'
+
+const { locale, slug } = Astro.params as { locale: Locale; slug: string }
+
+const validLocales = ['us', 'asia']
+if (!validLocales.includes(locale)) {
+  return Astro.redirect('/404')
+}
+
+const t = createTranslator(locale)
+
+const collectionItem = {
+  title: 'ZKCandy Ecosystem',
+  description: 'Dive into the ZKCandy Ecosystem & grow your onchain presence.'
+}
+
+let collectionArticles: ApiArticle[] = []
+try {
+  const data = await fetchCollectionArticles(locale, slug)
+  collectionArticles = data.articles || []
+} catch (error) {
+  console.error('Failed to fetch collection articles:', error)
+}
+
+const title = `${collectionItem.title} | Collections | deTake`
+const description = collectionItem.description
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/collections/${slug}`
+
+const ogImageParams = new URLSearchParams({
+  title: collectionItem.title,
+  description,
+  type: 'collection'
+})
+const ogImageUrl = `${SITE_CONFIG.SITE_URL}/api/og/collections.svg?${ogImageParams.toString()}`
+
+const keywords = ['collections', 'favorites', 'crypto', 'blockchain', collectionItem.title.toLowerCase()]
+
+export const prerender = false
+
+---
+
+<BaseLayout 
+  title={title} 
+  description={description} 
+  locale={locale} 
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt={`Learn about ${collectionItem.title} on DeTake`}
+  ogType="article"
+  twitterCard="summary_large_image"
+  keywords={keywords}
+>
+  <!-- React Header - Independent loading -->
+  <HeaderWithFallback locale={locale} />
+  <AuthMount client:load shareSection={{ locale, title: collectionItem.title, url: canonicalUrl }} />
+  
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-3">
+        <!-- Left Column - Learn Content (SSR/ISR for SEO) -->
+        <div class="lg:col-span-2 pt-5 md:py-5 border border-t-0 border-border">
+          <div class="mb-6 pb-4 px-4 md:px-6 border-b border-border">
+            <div class="mb-3 text-sm text-muted-foreground">
+              <a href={`/${locale}/collections`} class="hover:text-primary">
+                Collections
+              </a>
+              <span class="mx-1">/</span>
+              <span class="text-foreground">
+                {collectionItem.title}
+              </span>
+            </div>
+            <h1 class="text-[32px] md:text-[40px] font-medium tracking-tight text-foreground mb-2 leading-tight">
+              {collectionItem.title}
+            </h1>
+            {collectionItem.description && (
+              <p class="text-sm md:text-base text-muted-foreground max-w-3xl">
+                {collectionItem.description}
+              </p>
+            )}
+          </div>
+
+          <section class="px-4 md:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              {collectionArticles.map((article, index) => (
+                index === 0 ? (
+                  <article class="md:col-span-2 lg:col-span-2 overflow-hidden bg-white transition-shadow">
+                    <div class="relative">
+                      {article.img_url && (
+                        <a href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`} class="block">
+                          <img
+                            src={article.img_url}
+                            alt={article.title}
+                            class="w-full h-[224px] md:h-[260px] object-cover hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                        </a>
+                      )}
+                      <div
+                        class="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur"
+                        style="backdrop-filter: blur(10px);"
+                      >
+                        <div class="flex items-center justify-between gap-3">
+                          <div class="flex flex-wrap gap-3 items-center text-[11px] font-semibold tracking-wide">
+                            <span class="uppercase text-emerald-400">
+                              {article.category_name}
+                            </span>
+                            {article.tags &&
+                              article.tags.slice(0, 2).map((tag) => (
+                                <span class="uppercase text-emerald-400">
+                                  {tag}
+                                </span>
+                              ))}
+                          </div>
+                          <div class="text-[11px] text-white/80 whitespace-nowrap">
+                            {new Date(article.created_at).toLocaleDateString(
+                              locale === 'us' ? 'en-US' : 'zh-CN',
+                              { year: 'numeric', month: 'short', day: 'numeric' }
+                            )}{' '}
+                            / <span class="uppercase text-white">{article.author?.name || article.author_name}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="py-4 md:py-5">
+                      <h2 class="text-lg md:text-xl font-semibold text-foreground mb-2 leading-tight">
+                        <a
+                          href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`}
+                          class="hover:text-primary transition-colors line-clamp-1"
+                        >
+                          {article.title}
+                        </a>
+                      </h2>
+                      <p class="text-sm md:text-base text-muted-foreground leading-relaxed line-clamp-1 md:line-clamp-1">
+                        {article.sub_title}
+                      </p>
+                    </div>
+                  </article>
+                ) : (
+                  <article class="overflow-hidden bg-white transition-shadow">
+                    <div class="flex gap-3 md:block">
+                      <div class="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
+                        {article.img_url && (
+                          <a
+                            href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`}
+                            class="block group w-full h-full hover:text-primary transition-colors"
+                            data-article-link="true"
+                            data-slug={article.slug}
+                            data-locale={locale}
+                          >
+                            <img
+                              src={article.img_url}
+                              alt={article.title}
+                              class="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                          </a>
+                        )}
+                      </div>
+                      <div class="flex-1 md:mt-5">
+                        <div class="flex flex-wrap gap-1 md:gap-2">
+                          <span class="text-primary text-[10px] md:text-xs font-medium uppercase">
+                            {article.category_name}
+                          </span>
+                          {article.tags && article.tags.length > 0 && (
+                            <div class="flex flex-wrap gap-1">
+                              {article.tags.slice(0, 1).map((tag) => (
+                                <span class="text-muted-foreground text-[10px] md:text-xs uppercase">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div class="pt-1">
+                          <h3 class="text-[16px] md:text-[18px] font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
+                            <a
+                              href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`}
+                              class="hover:text-primary transition-colors"
+                              data-article-link="true"
+                              data-slug={article.slug}
+                              data-locale={locale}
+                            >
+                              {article.title}
+                            </a>
+                          </h3>
+                          <div class="hidden md:block">
+                            <p class=" text-muted-foreground text-[12px] md:text-[14px] mb-2 md:mb-4 md:line-clamp-3">
+                              {article.sub_title}
+                            </p>
+                          </div>
+                          <div class="flex items-center justify-between text-xs text-muted-foreground">
+                            <div class="flex items-center space-x-1">
+                              <span>{formatDate(article.created_at, locale)}</span>
+                              <span class="">/ {t('article.by')} </span>
+                              <span class="text-foreground uppercase">
+                                {article.author?.name || article.author_name}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                )
+              ))}
+            </div>
+            <div class="flex justify-center mt-6 mb-2">
+              <button class="px-6 py-2 border border-gray-300 rounded-full text-sm font-medium hover:bg-gray-50">
+                {locale === 'us' ? 'Load More' : '加载更多'}
+              </button>
+            </div>
+          </section>
+        </div>
+        
+        <!-- Right Column - Data Display (React Components) -->
+        <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
+          <div class="top-8">
+            <!-- Share Section mount: rendered via AuthMount under PrivyProvider -->
+            <div id="share-section-root" class=""></div>
+            <!-- <ArticleSidebar locale={locale} client:load /> -->
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Footer -->
+  <Footer client:load />
+</BaseLayout>
