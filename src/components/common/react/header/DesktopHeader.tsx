@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
 import { headerTexts } from './constants';
 import { STORAGE_KEYS } from '@/config/constants';
 import { TRACKING_EVENTS } from '@/config/constants';
@@ -22,15 +22,15 @@ interface DesktopHeaderProps {
 export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, userComponent }: DesktopHeaderProps) {
   const texts = headerTexts[locale] || headerTexts.us;
 
-  const [localeDropdownOpen, setLocaleDropdownOpen] = useState(false);
-  const [collectionsDropdownOpen, setCollectionsDropdownOpen] = useState(false);
-  const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const collectionsDropdownRef = useRef<HTMLDivElement>(null);
-  const categoriesDropdownRef = useRef<HTMLDivElement>(null);
+  const [localeDropdownOpen, setLocaleDropdownOpen] = React.useState(false);
+  const [collectionsDropdownOpen, setCollectionsDropdownOpen] = React.useState(false);
+  const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const collectionsDropdownRef = React.useRef<HTMLDivElement>(null);
+  const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Handle click outside to close dropdowns
-  useEffect(() => {
+  React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setLocaleDropdownOpen(false);
@@ -117,14 +117,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     setCategoriesDropdownOpen(!categoriesDropdownOpen);
   };
 
-  // Collections dropdown items
-  const collectionsItems = [
-    {
-      name: texts.navigation.myCollections,
-      href: `/${locale}/collections/my`,
-      key: 'my-collections',
-    },
-  ];
+
 
   // Categories dropdown items
   const categoriesItems = [
@@ -144,6 +137,32 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       key: 'research',
     },
   ];
+
+  const headerCollectionItems = [
+    {
+      id: 'zkcandy-ecosystem-1',
+      title: 'ZKCandy Ecosystem',
+    },
+    {
+      id: 'zkcandy-ecosystem-2',
+      title: 'ZKCandy Ecosystem',
+    },
+    {
+      id: 'zkcandy-ecosystem-3',
+      title: 'ZKCandy Ecosystem',
+    },
+    {
+      id: 'zkcandy-ecosystem-4',
+      title: 'ZKCandy Ecosystem',
+    },
+  ];
+
+  const handleCollectionsClick = () => {
+    setCollectionsDropdownOpen(false);
+    if (typeof window !== 'undefined') {
+      window.location.href = `/${locale}/collections`;
+    }
+  };
 
   return (
     <header className="border-b border-gray-200 fixed w-screen top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95 bg-white/95">
@@ -196,8 +215,8 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
           {/* Right Navigation & Actions */}
           <div className="flex items-center space-x-6 flex-1 justify-end">
             {/* Collections Dropdown */}
-            <div className="relative" ref={collectionsDropdownRef}>
-              <button onClick={toggleCollectionsDropdown} className={`flex items-center space-x-1 text-sm px-3 h-12  transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
+            <div className="relative" ref={collectionsDropdownRef} onMouseEnter={() => setCollectionsDropdownOpen(true)}>
+              <button onClick={handleCollectionsClick} className={`flex items-center cursor-pointer space-x-1  text-sm px-3 h-12  transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
                 <span className={`${collectionsDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{texts.navigation.collections}</span>
                 <img src={collectionsDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -206,10 +225,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
               {collectionsDropdownOpen && (
                 <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                   <div className="py-1">
-                    {collectionsItems.map((item) => (
-                      <button key={item.key} className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${currentPath === item.href ? 'bg-gray-50 text-gray-900' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
-                        {item.name}
-                      </button>
+                    {headerCollectionItems.map((item) => (
+                      <a key={item.id} href={`/${locale}/collections/${item.id}`} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors" onClick={() => setCollectionsDropdownOpen(false)}>
+                        {item.title}
+                      </a>
                     ))}
                   </div>
                 </div>
