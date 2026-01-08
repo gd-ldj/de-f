@@ -58,7 +58,7 @@
   html, body {
     /* Apply global font and default to Medium weight (500) so most text uses Medium */
     font-family: var(--font-sans);
-    font-weight: 500; /* Medium uses 500 */
+    font-weight: 400; /* Medium uses 500 */
     background-color: var(--color-background);
     color: var(--color-foreground);
   }

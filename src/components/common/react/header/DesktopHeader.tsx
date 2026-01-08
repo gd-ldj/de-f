@@ -251,7 +251,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
           {/* Right Navigation & Actions */}
           <div className="flex items-center space-x-6 flex-1 justify-end">
             {/* Collections Dropdown */}
-            <div className="relative" ref={collectionsDropdownRef} onMouseEnter={() => setCollectionsDropdownOpen(true)}>
+            <div className="relative" ref={collectionsDropdownRef} onMouseEnter={() => setCollectionsDropdownOpen(true)} onMouseLeave={() => setCollectionsDropdownOpen(false)}>
               <button onClick={handleCollectionsClick} className={`flex items-center cursor-pointer space-x-1  text-sm px-3 h-12  transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
                 <span className={`${collectionsDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{texts.navigation.collections}</span>
                 <img src={collectionsDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
@@ -272,11 +272,17 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             </div>
 
             {/* Right Navigation Items */}
-            {navigation.right.map((item) => (
-              <button key={item.key} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
-                {item.name}
-              </button>
-            ))}
+            {navigation.right.map((item) =>
+              item.key === 'learn' ? (
+                <a key={item.key} href={item.href} className={`text-sm transition-colors hover:text-primary ${currentPath === item.href ? 'text-primary' : 'text-gray-600'}`}>
+                  {item.name}
+                </a>
+              ) : (
+                <button key={item.key} className={`text-sm transition-colors hover:text-primary ${currentPath === item.href ? 'text-primary' : 'text-gray-600'}`}>
+                  {item.name}
+                </button>
+              )
+            )}
 
             {/* Search Icon */}
             <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search}>
