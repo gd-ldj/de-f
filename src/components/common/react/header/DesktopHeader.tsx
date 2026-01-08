@@ -25,6 +25,8 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const [localeDropdownOpen, setLocaleDropdownOpen] = React.useState(false);
   const [collectionsDropdownOpen, setCollectionsDropdownOpen] = React.useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
+  const [activeCategoryType, setActiveCategoryType] = React.useState<string | null>(null);
+  const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const collectionsDropdownRef = React.useRef<HTMLDivElement>(null);
   const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -40,6 +42,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       }
       if (categoriesDropdownRef.current && !categoriesDropdownRef.current.contains(event.target as Node)) {
         setCategoriesDropdownOpen(false);
+        setActiveCategoryType(null);
       }
     };
 
@@ -48,6 +51,22 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const categoryName = params.get('category_name');
+    setSelectedCategoryName(categoryName);
+  }, [currentPath]);
+
+  const toggleCategoriesDropdown = () => {
+    if (categoriesDropdownOpen) {
+      setCategoriesDropdownOpen(false);
+      setActiveCategoryType(null);
+    } else {
+      setCategoriesDropdownOpen(true);
+    }
+  };
 
   // Internationalized navigation items
   const navigation = {
@@ -110,15 +129,6 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     setCollectionsDropdownOpen(!collectionsDropdownOpen);
   };
 
-  /**
-   * Toggle categories dropdown
-   */
-  const toggleCategoriesDropdown = () => {
-    setCategoriesDropdownOpen(!categoriesDropdownOpen);
-  };
-
-
-
   // Categories dropdown items
   const categoriesItems = [
     {
@@ -137,6 +147,8 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       key: 'research',
     },
   ];
+
+  const currentCategoryTypeKey = categoriesItems.find((item) => item.href === currentPath)?.key || null;
 
   const headerCollectionItems = [
     {
@@ -164,6 +176,13 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     }
   };
 
+  const getCategoryFilterUrl = (typeKey: string, categoryLabel: string) => {
+    const typeItem = categoriesItems.find((item) => item.key === typeKey);
+    const baseHref = typeItem?.href || `/${locale}/${typeKey}`;
+    const encodedCategory = encodeURIComponent(categoryLabel);
+    return `${baseHref}?category_name=${encodedCategory}`;
+  };
+
   return (
     <header className="border-b border-gray-200 fixed w-screen top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95 bg-white/95">
       <div className="max-w-[1440px] mx-auto pl-4 pr-6">
@@ -181,16 +200,33 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
               {categoriesDropdownOpen && (
                 <div className="absolute left-0 right-0 top-[96px] w-screen bg-white z-50 border border-border">
                   <div className="max-w-[1440px] mx-auto px-4">
-                    <div className="pt-4 pb-3">
+                    <div className="pt-4 pb-4" onMouseLeave={() => setActiveCategoryType(null)}>
                       <h3 className="text-lg font-medium text-foreground mb-2 mt-1">{texts.dropdown.article}</h3>
                       <div className="flex items-center gap-8">
                         {categoriesItems.map((item) => (
-                          <a key={item.key} href={item.href} className={`text-sm py-2 relative transition-colors ${currentPath === item.href ? 'text-primary font-medium' : 'text-muted-foreground hover:text-primary'}`} onClick={() => setCategoriesDropdownOpen(false)}>
+                          <a key={item.key} href={item.href} className={`text-sm py-2 relative transition-colors ${currentPath === item.href ? 'text-primary font-medium' : 'text-muted-foreground hover:text-primary'}`} onClick={() => setCategoriesDropdownOpen(false)} onMouseEnter={() => setActiveCategoryType(item.key)}>
                             {item.name}
-                            {currentPath === item.href && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>}
+                            {currentPath === item.href && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
                           </a>
                         ))}
                       </div>
+                      {activeCategoryType && (
+                        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+                          {['Politics', 'Economy', 'Society', 'Climate', 'Technology', 'Markets'].map((category) => (
+                            <a
+                              key={category}
+                              href={getCategoryFilterUrl(activeCategoryType, category)}
+                              className={`whitespace-nowrap hover:text-primary ${selectedCategoryName === category && activeCategoryType === currentCategoryTypeKey ? 'text-primary font-medium' : ''}`}
+                              onClick={() => {
+                                setCategoriesDropdownOpen(false);
+                                setActiveCategoryType(null);
+                              }}
+                            >
+                              {category}
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
