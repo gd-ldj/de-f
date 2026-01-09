@@ -259,13 +259,15 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
               {/* Collections Dropdown Menu */}
               {collectionsDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                  <div className="py-1">
-                    {headerCollectionItems.map((item) => (
-                      <a key={item.id} href={`/${locale}/collections/${item.id}`} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors" onClick={() => setCollectionsDropdownOpen(false)}>
-                        {item.title}
-                      </a>
-                    ))}
+                <div className="absolute -right-1 w-50 z-50 px-1">
+                  <div className="mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+                    <div className="py-1">
+                      {headerCollectionItems.map((item) => (
+                        <a key={item.id} href={`/${locale}/collections/${item.id}`} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors" onClick={() => setCollectionsDropdownOpen(false)}>
+                          {item.title}
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
