@@ -7,7 +7,7 @@ import ToFollowList from '@/components/home/astro/ToFollowList.astro'
 import NewsSection from '@/components/home/astro/NewsSection.astro';
 import TrendingSection from '@/components/home/astro/TrendingSection.astro';
 import ResearchSection from '@/components/home/astro/ResearchSection.astro';
-import AuthMount from '@/components/common/react/AuthMount';
+// import AuthMount from '@/components/common/react/AuthMount';
 interface Props {
   locale: Locale
   latestNews?: HomeLatestArticle[]
@@ -46,9 +46,9 @@ const { locale, latestNews = [], newsAll = [], whoToFollow = [], topics = [], mo
   <!-- Mobile Right Sidebar Content -->
   <div class="py-4 border-t border-gray-200">
     <!-- React mount point for Login (Mobile) -->
-    <div id="login-root"></div>
+    <!-- <div id="login-root"></div> -->
     <!-- AuthMount for mobile login -->
-    <AuthMount client:load />
+    <!-- <AuthMount client:load /> -->
     <RightSidebar topics={topics} mostRead={mostRead} />
   </div>
   <div class="pb-4 border-t border-gray-200">
