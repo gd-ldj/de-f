@@ -37,6 +37,9 @@ if (slugParts.length > 1) {
   }
 }
 
+// 组合包含推广码的 slug，用于在多语言切换时保留推广码
+const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug
+
 // Fetch article data using the actual slug
 const article = await fetchArticle(actualSlug, locale, category)
 
@@ -121,7 +124,8 @@ const author = article?.author?.name || article.author_name
             article={article} 
             locale={locale} 
             category={category} 
-            categoryDisplayName={categoryDisplayName} 
+            categoryDisplayName={categoryDisplayName}
+            slugWithPromote={slugWithPromote}
           />
         </div>
         
