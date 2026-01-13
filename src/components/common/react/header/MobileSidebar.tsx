@@ -14,6 +14,11 @@ interface MobileSidebarProps {
   onCategoryPageOpen?: (category: string) => void;
 }
 
+interface HeaderCollectionItem {
+  id: string;
+  title: string;
+}
+
 /**
  * Mobile sidebar navigation component
  * 100% pixel-perfect restoration based on UI design
@@ -24,6 +29,25 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
   const [isLocaleExpanded, setIsLocaleExpanded] = useState(false);
   const t = createTranslator(locale);
   const texts = headerTexts[locale] || headerTexts.us;
+
+  const headerCollectionItems: HeaderCollectionItem[] = [
+    {
+      id: 'zkcandy-ecosystem-1',
+      title: 'ZKCandy Ecosystem',
+    },
+    {
+      id: 'zkcandy-ecosystem-2',
+      title: 'ZKCandy Ecosystem',
+    },
+    {
+      id: 'zkcandy-ecosystem-3',
+      title: 'ZKCandy Ecosystem',
+    },
+    {
+      id: 'zkcandy-ecosystem-4',
+      title: 'ZKCandy Ecosystem',
+    },
+  ];
 
   if (!isOpen) return null;
 
@@ -94,12 +118,29 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
 
             {/* Collections with arrow */}
             <div>
-              <button onClick={() => setIsCollectionsExpanded(!isCollectionsExpanded)} className="flex items-center justify-between w-full py-3 text-left">
-                <span className="text-lg text-gray-900">{texts.navigation.collections}</span>
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <div className="flex items-center justify-between w-full py-3">
+                <button onClick={() => handleNavigation(`/${locale}/collections`)} className="text-lg text-gray-900 text-left flex-1">
+                  {texts.navigation.collections}
+                </button>
+                <button onClick={() => setIsCollectionsExpanded(!isCollectionsExpanded)} className="p-1 ml-2" aria-label={isCollectionsExpanded ? 'Collapse collections' : 'Expand collections'}>
+                  <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isCollectionsExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {isCollectionsExpanded && (
+                <div className="mt-2 space-y-1 pl-2">
+                  {headerCollectionItems.map((item) => (
+                    <button key={item.id} onClick={() => handleNavigation(`/${locale}/collections/${item.id}`)} className="flex items-center justify-between w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                      <span className="truncate">{item.title}</span>
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <button

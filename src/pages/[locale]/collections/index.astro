@@ -125,7 +125,7 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
         <!-- Left Column - Collections Content -->
         <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-0 border border-t-0 border-border">
           <!-- Page Title -->
-          <header class="md:px-6 mb-4">
+          <header class="md:px-6 mb-4 hidden md:block">
             <h1 class="text-[32px] md:text-[64px] font-both text-[#052019]">
               Collections
             </h1>
@@ -136,9 +136,77 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
             {mockCollections.map((item, index) => (
               <a
                 href={`/${locale}/collections/${item.id}`}
-                class="block rounded-xl border border-gray-200 overflow-hidden bg-white hover:shadow-md transition-shadow"
+                class="block rounded-[2px] border border-gray-200 overflow-hidden bg-transparent md:bg-white hover:shadow-md transition-shadow"
               >
-                <div class="flex flex-col md:flex-row">
+                {/* Mobile layout */}
+                <div
+                  class="md:hidden"
+                  style={`background-color: ${cardBackgrounds[index % cardBackgrounds.length]};`}
+                >
+                    <div class="rounded-[2px] overflow-hidden">
+                      <div class="relative">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          class="w-full h-[186px] object-cover"
+                        />
+                        <div class="absolute left-4 top-4 w-12 h-12 rounded-[2px] overflow-hidden bg-black/10 flex items-center justify-center">
+                          <img
+                            src={item.logoUrl}
+                            alt={item.title}
+                            loading="lazy"
+                            class="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div class="absolute right-4 top-4 h-6 px-2 rounded-[2px] bg-white/40 flex items-center gap-1">
+                          <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#C0C4CC]"></span>
+                          <span class="text-[10px] font-medium text-white">{item.followers}</span>
+                        </div>
+                      </div>
+                      <div class="px-4 pt-3 pb-4">
+                        <h2 class="text-[15px] font-semibold leading-snug text-[#052019]">
+                          {item.title}
+                        </h2>
+                        <p class="mt-2 text-[12px] leading-[18px] text-[#909399]">
+                          {item.description}
+                        </p>
+                        <div class="mt-4 rounded-[2px] bg-white px-3 py-5 flex items-center gap-20">
+                          <div class="flex items-center gap-3">
+                            <div class="w-7 h-7 rounded-[2px] bg-[#121721] flex items-center justify-center overflow-hidden">
+                              <img
+                                src={item.logoUrl}
+                                alt={item.title}
+                                loading="lazy"
+                                class="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div>
+                              <div class="text-[13px] font-semibold text-[#121721]">
+                                {item.hunters}
+                              </div>
+                              <div class="mt-0.5 text-[11px] text-[#6E6F79]">
+                                {locale === 'us' ? 'Hunters' : 'Hunters'}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="flex items-center gap-3">
+                            <div>
+                              <div class="text-[13px] font-semibold text-[#121721]">
+                                {item.bonus}
+                              </div>
+                              <div class="mt-0.5 text-[11px] text-[#6E6F79]">
+                                {locale === 'us' ? 'Bonus' : 'Bonus'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+                {/* Desktop layout */}
+                <div class="hidden md:flex md:flex-row">
                   <div class="flex-1 flex flex-col" style={`background-color: ${cardBackgrounds[index % cardBackgrounds.length]};`}>
                     <div class="px-4 md:px-6 pt-4 md:pt-5 pb-4 flex items-start justify-between">
                       <div class="flex flex-col gap-3">

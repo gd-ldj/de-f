@@ -134,11 +134,20 @@ const MOCK_COLLECTION_ARTICLES: ApiArticle[] = [
   }
 ]
 
-export async function fetchCollectionArticles(locale: Locale, collectionId: string): Promise<CollectionArticlesResponse> {
+export async function fetchCollectionArticles(
+  locale: Locale,
+  collectionId: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<CollectionArticlesResponse> {
+  const start = (page - 1) * limit
+  const end = start + limit
+  const pagedArticles = MOCK_COLLECTION_ARTICLES.slice(start, end)
+
   return {
     collectionId,
-    articles: MOCK_COLLECTION_ARTICLES,
-    total: MOCK_COLLECTION_ARTICLES.length
+    articles: pagedArticles,
+    total: MOCK_COLLECTION_ARTICLES.length,
   }
 }
 
