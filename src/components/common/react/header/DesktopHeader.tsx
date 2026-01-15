@@ -3,6 +3,8 @@ import { headerTexts } from './constants';
 import { STORAGE_KEYS } from '@/config/constants';
 import { TRACKING_EVENTS } from '@/config/constants';
 import { toast } from '@/components/common/react/Toast';
+import type { CollectionItem } from '@/types';
+import { fetchCollections } from '@/api/collections';
 
 // Import icons from local assets
 import DownIcon from './assets/down.svg?url';
@@ -27,6 +29,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
   const [activeCategoryType, setActiveCategoryType] = React.useState<string | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
+  const [headerCollectionItems, setHeaderCollectionItems] = React.useState<CollectionItem[]>([]);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const collectionsDropdownRef = React.useRef<HTMLDivElement>(null);
   const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -58,6 +61,27 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     const categoryName = params.get('category_name');
     setSelectedCategoryName(categoryName);
   }, [currentPath]);
+
+  // 从后端加载 header 中使用的合集列表
+  React.useEffect(() => {
+    let isMounted = true;
+
+    const loadHeaderCollections = async () => {
+      try {
+        const { items } = await fetchCollections(1, 10);
+        if (!isMounted) return;
+        setHeaderCollectionItems(items);
+      } catch (error) {
+        console.error('Failed to fetch header collections:', error);
+      }
+    };
+
+    loadHeaderCollections();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const toggleCategoriesDropdown = () => {
     if (categoriesDropdownOpen) {
@@ -149,25 +173,6 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   ];
 
   const currentCategoryTypeKey = categoriesItems.find((item) => item.href === currentPath)?.key || null;
-
-  const headerCollectionItems = [
-    {
-      id: 'zkcandy-ecosystem-1',
-      title: 'ZKCandy Ecosystem',
-    },
-    {
-      id: 'zkcandy-ecosystem-2',
-      title: 'ZKCandy Ecosystem',
-    },
-    {
-      id: 'zkcandy-ecosystem-3',
-      title: 'ZKCandy Ecosystem',
-    },
-    {
-      id: 'zkcandy-ecosystem-4',
-      title: 'ZKCandy Ecosystem',
-    },
-  ];
 
   const handleCollectionsClick = () => {
     setCollectionsDropdownOpen(false);
@@ -264,7 +269,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                     <div className="py-1">
                       {headerCollectionItems.map((item) => (
                         <a key={item.id} href={`/${locale}/collections/${item.id}`} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors" onClick={() => setCollectionsDropdownOpen(false)}>
-                          {item.title}
+                          {item.name}
                         </a>
                       ))}
                     </div>
