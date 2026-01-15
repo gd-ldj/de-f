@@ -97,6 +97,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                   type="text"
                   placeholder="Search terms here..."
                   class="flex-1 bg-transparent text-sm outline-none"
+                  data-learn-search="mobile"
                 />
               </div>
             </div>
@@ -116,15 +117,21 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                       </div>
                       <div class="space-y-3">
                         {items.map((item: any, index: number) => (
-                          <div class={`pt-2 pb-3 ${index < items.length - 1 ? 'border-b border-gray-200' : ''}`}>
+                          <div
+                            class={`pt-2 pb-3 ${index < items.length - 1 ? 'border-b border-gray-200' : ''}`}
+                            data-learn-item="mobile"
+                            data-letter={letter}
+                            data-title={item.title}
+                            data-description={item.description}
+                          >
                             <a
                               href={`/${locale}/learn/${item.slug}`}
                               class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
                             >
-                              <h3 class="text-[20px] font-medium text-[#052019] mb-1">
+                              <h3 class="text-[20px] font-medium text-[#052019] mb-1" data-learn-title>
                                 {item.title}
                               </h3>
-                              <p class="text-[#909399] text-[14px] leading-relaxed">
+                              <p class="text-[#909399] text-[14px] leading-relaxed" data-learn-description>
                                 {item.description}
                               </p>
                             </a>
@@ -175,6 +182,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                     type="text"
                     placeholder="Search terms here..."
                     class="w-full md:w-[180px] pl-9 pr-3 py-2.5 border border-gray-300 rounded-[2px] focus:ring-2 focus:text-primary focus:border-transparent outline-none text-sm"
+                    data-learn-search="desktop"
                   />
                 </div>
                 <div class="flex-1">
@@ -206,15 +214,21 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                     </div>
                     <div class="flex-1">
                       {items.map((item: any, index: number) => (
-                        <div class={`py-4 ${index < items.length - 1 ? 'border-b border-gray-200' : ''}`}>
+                        <div
+                          class={`py-4 ${index < items.length - 1 ? 'border-b border-gray-200' : ''}`}
+                          data-learn-item="desktop"
+                          data-letter={letter}
+                          data-title={item.title}
+                          data-description={item.description}
+                        >
                           <a
                             href={`/${locale}/learn/${item.slug}`}
                             class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
                           >
-                            <h3 class="text-[32px] font-medium text-[#052019] mb-2">
+                            <h3 class="text-[32px] font-medium text-[#052019] mb-2" data-learn-title>
                               {item.title}
                             </h3>
-                            <p class="text-[#909399] text-[16px] leading-relaxed">
+                            <p class="text-[#909399] text-[16px] leading-relaxed" data-learn-description>
                               {item.description}
                             </p>
                           </a>
@@ -244,33 +258,140 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
   <!-- Footer -->
   <Footer client:load />
 
-  <script>
-    if (typeof window !== 'undefined') {
-      document.addEventListener('DOMContentLoaded', function () {
-        var links = document.querySelectorAll('a[data-letter-target]');
-        if (!links.length) return;
+      <script>
+        if (typeof window !== 'undefined') {
+          document.addEventListener('DOMContentLoaded', function () {
+            var links = document.querySelectorAll<HTMLAnchorElement>('a[data-letter-target]');
+            if (!links.length) return;
 
-        /**
-         * 设置当前高亮的字母导航
-         * @param {string} activeId
-         */
-        // @ts-ignore - 使用 JSDoc 提示类型，避免在内联脚本中写 TS 语法
-        function setActiveLetter(activeId) {
-          links.forEach(function (link) {
-            var href = link.getAttribute('href') || '';
-            if (!href || href.charAt(0) !== '#') return;
-            var id = href.slice(1);
-            if (id === activeId) {
-              link.classList.add('text-primary');
-              link.classList.add('font-semibold');
-            } else {
-              link.classList.remove('text-primary');
-              link.classList.remove('font-semibold');
+            function setActiveLetter(activeId: string | null) {
+              links.forEach(function (link) {
+                var href = link.getAttribute('href') || '';
+                if (!href || href.charAt(0) !== '#') return;
+                var id = href.slice(1);
+                if (id === activeId) {
+                  link.classList.add('text-primary');
+                  link.classList.add('font-semibold');
+                } else {
+                  link.classList.remove('text-primary');
+                  link.classList.remove('font-semibold');
+                }
+              });
             }
-          });
-        }
 
-        var desktopBarElement = document.querySelector('[data-desktop-letter-bar]');
+            var desktopBarElement = document.querySelector('[data-desktop-letter-bar]');
+
+            var searchInputs = document.querySelectorAll<HTMLInputElement>('input[data-learn-search]');
+            var allItems = document.querySelectorAll<HTMLElement>('[data-learn-item]');
+
+            function escapeHtml(str: string) {
+              return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+            }
+
+            function highlightTitle(itemElement: HTMLElement, query: string) {
+              var titleElement = itemElement.querySelector<HTMLElement>('[data-learn-title]');
+              if (!titleElement) return;
+              var rawTitle = itemElement.getAttribute('data-title') || '';
+              if (!query) {
+                titleElement.textContent = rawTitle;
+                return;
+              }
+              var lowerTitle = rawTitle.toLowerCase();
+              var lowerQuery = query.toLowerCase();
+              var index = lowerTitle.indexOf(lowerQuery);
+              if (index === -1) {
+                titleElement.textContent = rawTitle;
+                return;
+              }
+              var before = rawTitle.slice(0, index);
+              var match = rawTitle.slice(index, index + query.length);
+              var after = rawTitle.slice(index + query.length);
+              titleElement.innerHTML =
+                escapeHtml(before) +
+                '<span class="bg-yellow-300 px-0.5">' +
+                escapeHtml(match) +
+                '</span>' +
+                escapeHtml(after);
+            }
+
+            function applyLearnSearch(rawQuery: string) {
+              var query = (rawQuery || '').trim().toLowerCase();
+
+              allItems.forEach(function (itemElement) {
+                var titleText = (itemElement.getAttribute('data-title') || '').toLowerCase();
+                var descriptionText = (itemElement.getAttribute('data-description') || '').toLowerCase();
+                var matches = !query || titleText.indexOf(query) !== -1 || descriptionText.indexOf(query) !== -1;
+
+                itemElement.style.display = matches ? '' : 'none';
+                highlightTitle(itemElement, query);
+              });
+
+              var sections = document.querySelectorAll<HTMLElement>('section[id^="letter-"]');
+              sections.forEach(function (section) {
+                var context = section.getAttribute('data-letter-section') || '';
+                var hasVisibleItem = false;
+                var contextItems = section.querySelectorAll<HTMLElement>('[data-learn-item="' + context + '"]');
+                contextItems.forEach(function (itemElement) {
+                  if (itemElement.style.display !== 'none') {
+                    hasVisibleItem = true;
+                  }
+                });
+                if (!query) {
+                  section.style.display = '';
+                } else {
+                  section.style.display = hasVisibleItem ? '' : 'none';
+                }
+              });
+
+              links.forEach(function (link) {
+                var letter = link.getAttribute('data-letter-target');
+                if (!letter) return;
+                var letterId = 'letter-' + letter;
+                var relatedSections = document.querySelectorAll<HTMLElement>('#' + letterId);
+                var hasVisibleSection = false;
+                relatedSections.forEach(function (section) {
+                  if (section.style.display !== 'none') {
+                    hasVisibleSection = true;
+                  }
+                });
+                if (!query) {
+                  link.style.opacity = '';
+                  link.classList.remove('cursor-default', 'pointer-events-none', 'text-gray-300');
+                  link.setAttribute('aria-disabled', 'false');
+                } else {
+                  if (hasVisibleSection) {
+                    link.style.opacity = '';
+                    link.classList.remove('cursor-default', 'pointer-events-none', 'text-gray-300');
+                    link.setAttribute('aria-disabled', 'false');
+                  } else {
+                    link.style.opacity = '0.4';
+                    link.classList.add('cursor-default', 'pointer-events-none', 'text-gray-300');
+                    link.setAttribute('aria-disabled', 'true');
+                    link.classList.remove('text-primary', 'font-semibold');
+                  }
+                }
+              });
+            }
+
+            searchInputs.forEach(function (input) {
+              input.addEventListener('input', function (event: Event) {
+                var target = event.target as HTMLInputElement | null;
+                var value = target && target.value ? target.value : '';
+                searchInputs.forEach(function (other) {
+                  if (other !== input) {
+                    other.value = value;
+                  }
+                });
+                applyLearnSearch(value);
+              });
+            });
+
+            applyLearnSearch('');
 
         /**
          * 处理字母导航点击事件，区分移动端容器滚动与桌面端窗口滚动
