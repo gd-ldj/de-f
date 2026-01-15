@@ -2,10 +2,11 @@
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import AuthMount from '@/components/common/react/AuthMount'
-import type { Locale } from '@/types'
+import type { Locale, CollectionItem } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { SITE_CONFIG } from '@/config/constants'
+import { fetchCollections } from '@/api/collections'
 
 export const prerender = false // Enable SSR for this page
 
@@ -36,69 +37,16 @@ const ogImageUrl = `${SITE_CONFIG.SITE_URL}/api/og/collections.svg?${ogImagePara
 // Extract keywords
 const keywords = ['collections', 'favorites', 'crypto', 'blockchain', 'research', 'insights']
 
-interface CollectionItem {
-  id: string
-  title: string
-  description: string
-  imageUrl: string
-  logoUrl: string
-  hunters: string
-  bonus: string
-  followers: string
-}
-
-const mockCollections: CollectionItem[] = [
-  {
-    id: 'zkcandy-ecosystem-1',
-    title: 'ZKCandy Ecosystem',
-    description: 'Dive into the ZKCandy Ecosystem & grow your onchain presence.',
-    imageUrl:
-      'https://images.pexels.com/photos/8370757/pexels-photo-8370757.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    logoUrl:
-      'https://images.pexels.com/photos/164734/pexels-photo-164734.jpeg?auto=compress&cs=tinysrgb&w=400',
-    hunters: '1.4K',
-    bonus: '1.4K',
-    followers: '5,297'
-  },
-  {
-    id: 'zkcandy-ecosystem-2',
-    title: 'ZKCandy Ecosystem',
-    description: 'Dive into the ZKCandy Ecosystem & grow your onchain presence.',
-    imageUrl:
-      'https://images.pexels.com/photos/8608322/pexels-photo-8608322.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    logoUrl:
-      'https://images.pexels.com/photos/1181319/pexels-photo-1181319.jpeg?auto=compress&cs=tinysrgb&w=400',
-    hunters: '1.4K',
-    bonus: '1.4K',
-    followers: '5,297'
-  },
-  {
-    id: 'zkcandy-ecosystem-3',
-    title: 'ZKCandy Ecosystem',
-    description: 'Dive into the ZKCandy Ecosystem & grow your onchain presence.',
-    imageUrl:
-      'https://images.pexels.com/photos/8608318/pexels-photo-8608318.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    logoUrl:
-      'https://images.pexels.com/photos/2760855/pexels-photo-2760855.jpeg?auto=compress&cs=tinysrgb&w=400',
-    hunters: '1.4K',
-    bonus: '1.4K',
-    followers: '5,297'
-  },
-  {
-    id: 'zkcandy-ecosystem-4',
-    title: 'ZKCandy Ecosystem',
-    description: 'Dive into the ZKCandy Ecosystem & grow your onchain presence.',
-    imageUrl:
-      'https://images.pexels.com/photos/8608312/pexels-photo-8608312.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    logoUrl:
-      'https://images.pexels.com/photos/164876/pexels-photo-164876.jpeg?auto=compress&cs=tinysrgb&w=400',
-    hunters: '1.4K',
-    bonus: '1.4K',
-    followers: '5,297'
-  }
-]
-
 const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
+
+let collections: CollectionItem[] = []
+
+try {
+  const { items } = await fetchCollections(1, 10)
+  collections = items
+} catch (error) {
+  console.error('Failed to fetch collections:', error)
+}
 
 ---
 
@@ -133,7 +81,7 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
 
           <!-- Collections List -->
           <section class="md:px-6 space-y-5 pb-6">
-            {mockCollections.map((item, index) => (
+            {collections.map((item, index) => (
               <a
                 href={`/${locale}/collections/${item.id}`}
                 class="block rounded-[2px] border border-gray-200 overflow-hidden bg-transparent md:bg-white hover:shadow-md transition-shadow"
@@ -146,27 +94,27 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
                     <div class="rounded-[2px] overflow-hidden">
                       <div class="relative">
                         <img
-                          src={item.imageUrl}
-                          alt={item.title}
+                          src={item.image_url}
+                          alt={item.name}
                           loading="lazy"
                           class="w-full h-[186px] object-cover"
                         />
                         <div class="absolute left-4 top-4 w-12 h-12 rounded-[2px] overflow-hidden bg-black/10 flex items-center justify-center">
                           <img
-                            src={item.logoUrl}
-                            alt={item.title}
+                            src={item.logo_url}
+                            alt={item.name}
                             loading="lazy"
                             class="w-full h-full object-cover"
                           />
                         </div>
                         <div class="absolute right-4 top-4 h-6 px-2 rounded-[2px] bg-white/40 flex items-center gap-1">
                           <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#C0C4CC]"></span>
-                          <span class="text-[10px] font-medium text-white">{item.followers}</span>
+                          <span class="text-[10px] font-medium text-white">{item.views_count}</span>
                         </div>
                       </div>
                       <div class="px-4 pt-3 pb-4">
                         <h2 class="text-[15px] font-semibold leading-snug text-[#052019]">
-                          {item.title}
+                          {item.name}
                         </h2>
                         <p class="mt-2 text-[12px] leading-[18px] text-[#909399]">
                           {item.description}
@@ -175,15 +123,15 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
                           <div class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-[2px] bg-[#121721] flex items-center justify-center overflow-hidden">
                               <img
-                                src={item.logoUrl}
-                                alt={item.title}
+                                src={item.logo_url}
+                                alt={item.name}
                                 loading="lazy"
                                 class="w-full h-full object-cover"
                               />
                             </div>
                             <div>
                               <div class="text-[13px] font-semibold text-[#121721]">
-                                {item.hunters}
+                                {item.hunters_count}
                               </div>
                               <div class="mt-0.5 text-[11px] text-[#6E6F79]">
                                 {locale === 'us' ? 'Hunters' : 'Hunters'}
@@ -193,7 +141,7 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
                           <div class="flex items-center gap-3">
                             <div>
                               <div class="text-[13px] font-semibold text-[#121721]">
-                                {item.bonus}
+                                {item.bonus_amt}
                               </div>
                               <div class="mt-0.5 text-[11px] text-[#6E6F79]">
                                 {locale === 'us' ? 'Bonus' : 'Bonus'}
@@ -210,34 +158,48 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
                   <div class="flex-1 flex flex-col" style={`background-color: ${cardBackgrounds[index % cardBackgrounds.length]};`}>
                     <div class="px-4 md:px-6 pt-4 md:pt-5 pb-4 flex items-start justify-between">
                       <div class="flex flex-col gap-3">
-                        <div class="w-10 h-10 rounded-md overflow-hidden bg-black flex items-center justify-center">
+                        <div class="w-10 h-10 rounded-[2px] overflow-hidden bg-black flex items-center justify-center">
                           <img
-                            src={item.logoUrl}
-                            alt={item.title}
+                            src={item.logo_url}
+                            alt={item.name}
                             loading="lazy"
                             class="w-full h-full object-cover"
                           />
                         </div>
                         <div class="max-w-full">
                           <h2 class="text-base md:text-[24px] font-both text-[#052019]">
-                            {item.title}
+                            {item.name}
                           </h2>
                           <p class="text-xs md:text-sm text-gray-600 mt-[10px] whitespace-nowrap overflow-hidden text-ellipsis">
                             {item.description}
                           </p>
                         </div>
                       </div>
-                      <div class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/70  text-gray-600">
-                        <span class="inline-block w-3.5 h-3.5 rounded-full bg-gray-300"></span>
-                        <span>{item.followers}</span>
+                      <div class="inline-flex items-center gap-1 px-2 py-1 rounded-[2px] bg-white/70  text-gray-600">
+                        <span class="inline-block w-[18px] h-[18px] overflow-hidden">
+                          <img
+                            src="/avatar_3.svg"
+                            alt="avatar"
+                            loading="lazy"
+                            class="w-full h-full object-cover"
+                          />
+                        </span>
+                        <span>{item.views_count}</span>
                       </div>
                     </div>
                     <div class="px-4 md:px-6 py-4">
                       <div class="bg-white rounded-md px-4 py-3 flex items-center gap-10 text-xs text-gray-700">
                         <div class="flex items-center gap-3">
-                          <div class="w-8 h-8 rounded-md bg-[#121721]"></div>
+                          <div class="w-8 h-8 rounded-[2px] overflow-hidden">
+                            <img
+                              src="/collection-image.svg"
+                              alt="collection"
+                              loading="lazy"
+                              class="w-full h-full object-cover"
+                            />
+                          </div>
                           <div>
-                            <div class="text-sm font-semibold">{item.hunters}</div>
+                            <div class="text-sm font-semibold">{item.hunters_count}</div>
                             <div class="text-[11px] text-gray-500 mt-0.5">
                               {locale === 'us' ? 'Hunters' : 'Hunters'}
                             </div>
@@ -245,7 +207,7 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
                         </div>
                         <div class="flex items-center gap-3">
                           <div>
-                            <div class="text-sm font-semibold">{item.bonus}</div>
+                            <div class="text-sm font-semibold">{item.bonus_amt}</div>
                             <div class="text-[11px] text-gray-500 mt-0.5">
                               {locale === 'us' ? 'Bonus' : 'Bonus'}
                             </div>
@@ -256,8 +218,8 @@ const cardBackgrounds = ['#F3F4F6', '#E7F7F2', '#FFEFE5', '#F0FFE5']
                   </div>
                   <div class="flex-1 w-full md:w-[476px] h-[260px] bg-black relative">
                     <img
-                      src={item.imageUrl}
-                      alt={item.title}
+                      src={item.image_url}
+                      alt={item.name}
                       loading="lazy"
                       class="w-full h-full object-cover"
                     />

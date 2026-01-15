@@ -275,6 +275,33 @@ export interface HomePageResponse {
   data: HomePageData;
 }
 
+// Collections 列表项类型
+export interface CollectionItem {
+  id: string;
+  name: string;
+  description: string;
+  logo_url?: string;
+  image_url?: string;
+  hunters_count: number;
+  bonus_amt: string;
+  views_count: number;
+  user_id: string;
+  is_public: boolean;
+}
+
+// Collections 列表接口返回类型
+export interface CollectionsListResponse {
+  code: number;
+  msg: {
+    en: string;
+    zh: string;
+  };
+  data: {
+    list: CollectionItem[];
+    next: boolean;
+  };
+}
+
 /**
  * API endpoints configuration
  */

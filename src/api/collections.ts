@@ -1,153 +1,103 @@
-import type { ApiArticle, ArticlesResponse, Locale } from '../types'
+import type { ApiArticle, Locale, CollectionItem } from '../types';
+import { SITE_CONFIG } from '../config/constants';
 
 interface CollectionArticlesResponse {
-  collectionId: string
-  articles: ApiArticle[]
-  total: number
+  collectionId: string;
+  articles: ApiArticle[];
+  total: number;
 }
 
-const MOCK_COLLECTION_ARTICLES: ApiArticle[] = [
-  {
-    entry_id: 'collection-article-1',
-    title: 'Fusaka fork takes shape as Pectra enters final stretch',
-    sub_title:
-      "Ethereum core developers finalize Pectra's May 7 launch and wrap scoping of the next upgrade",
-    slug: 'fusaka-fork-takes-shape-as-pectra-enters-final-stretch-1',
-    body: '',
-    author_name: 'JACK KUBINEC',
-    author_avatar: '',
-    created_at: '2025-04-11T00:00:00.000Z',
-    updated_at: '2025-04-11T00:00:00.000Z',
-    category_name: 'Markets Policy',
-    business_type_name: 'News',
-    tags: ['DEFI'],
-    img_url: 'https://images.pexels.com/photos/6801643/pexels-photo-6801643.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    language: 'en',
-    page_view: '1200',
-    unique_vistor: '800',
-    contact: {
-      email: 'editor@example.com',
-      phone: '',
-      title: '',
-      company: '',
-      full_name: ''
-    },
-    author: {
-      id: 'author-1',
-      name: 'JACK KUBINEC',
-      avatar_url: '',
-      bio: ''
-    }
-  },
-  {
-    entry_id: 'collection-article-2',
-    title: 'Monad ecosystem gains traction among DeFi builders',
-    sub_title: 'New protocols and liquidity incentives drive early adoption across the Monad ecosystem',
-    slug: 'monad-ecosystem-gains-traction-among-defi-builders-2',
-    body: '',
-    author_name: 'JACK KUBINEC',
-    author_avatar: '',
-    created_at: '2025-04-10T00:00:00.000Z',
-    updated_at: '2025-04-10T00:00:00.000Z',
-    category_name: 'Markets Policy',
-    business_type_name: 'News',
-    tags: ['DEFI'],
-    img_url: 'https://images.pexels.com/photos/6801644/pexels-photo-6801644.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    language: 'en',
-    page_view: '980',
-    unique_vistor: '640',
-    contact: {
-      email: 'editor@example.com',
-      phone: '',
-      title: '',
-      company: '',
-      full_name: ''
-    },
-    author: {
-      id: 'author-1',
-      name: 'JACK KUBINEC',
-      avatar_url: '',
-      bio: ''
-    }
-  },
-  {
-    entry_id: 'collection-article-3',
-    title: 'L2 activity spikes as onchain incentives roll out',
-    sub_title: 'Rollup ecosystems compete for liquidity with aggressive airdrop and points programs',
-    slug: 'l2-activity-spikes-as-onchain-incentives-roll-out-3',
-    body: '',
-    author_name: 'JACK KUBINEC',
-    author_avatar: '',
-    created_at: '2025-04-09T00:00:00.000Z',
-    updated_at: '2025-04-09T00:00:00.000Z',
-    category_name: 'Markets Policy',
-    business_type_name: 'News',
-    tags: ['DEFI'],
-    img_url: 'https://images.pexels.com/photos/6801645/pexels-photo-6801645.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    language: 'en',
-    page_view: '860',
-    unique_vistor: '590',
-    contact: {
-      email: 'editor@example.com',
-      phone: '',
-      title: '',
-      company: '',
-      full_name: ''
-    },
-    author: {
-      id: 'author-1',
-      name: 'JACK KUBINEC',
-      avatar_url: '',
-      bio: ''
-    }
-  },
-  {
-    entry_id: 'collection-article-4',
-    title: 'Stablecoin flows signal renewed risk appetite',
-    sub_title: 'Onchain metrics show stablecoin rotation into higher beta assets across majors',
-    slug: 'stablecoin-flows-signal-renewed-risk-appetite-4',
-    body: '',
-    author_name: 'JACK KUBINEC',
-    author_avatar: '',
-    created_at: '2025-04-08T00:00:00.000Z',
-    updated_at: '2025-04-08T00:00:00.000Z',
-    category_name: 'Markets Policy',
-    business_type_name: 'News',
-    tags: ['DEFI'],
-    img_url: 'https://images.pexels.com/photos/6801646/pexels-photo-6801646.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    language: 'en',
-    page_view: '740',
-    unique_vistor: '520',
-    contact: {
-      email: 'editor@example.com',
-      phone: '',
-      title: '',
-      company: '',
-      full_name: ''
-    },
-    author: {
-      id: 'author-1',
-      name: 'JACK KUBINEC',
-      avatar_url: '',
-      bio: ''
-    }
-  }
-]
+interface CollectionsApiResponse {
+  code: number;
+  msg: {
+    en: string;
+    zh: string;
+  };
+  data?: {
+    list?: CollectionItem[];
+    next?: boolean;
+  };
+}
 
-export async function fetchCollectionArticles(
-  locale: Locale,
-  collectionId: string,
-  page: number = 1,
-  limit: number = 10,
-): Promise<CollectionArticlesResponse> {
-  const start = (page - 1) * limit
-  const end = start + limit
-  const pagedArticles = MOCK_COLLECTION_ARTICLES.slice(start, end)
+const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
+
+export async function fetchCollectionArticles(locale: Locale, collectionId: string, page: number = 1, limit: number = 10): Promise<CollectionArticlesResponse> {
+  try {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('limit', String(limit));
+    params.set('collection_id', collectionId);
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/collections/detail?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch collection articles: ${response.statusText}`);
+    }
+
+    const result: {
+      code: number;
+      msg?: { en?: string; zh?: string } | string;
+      data?: {
+        list?: ApiArticle[];
+        next?: boolean;
+      };
+    } = await response.json();
+
+    if (result.code === 2000 && result.data) {
+      const list = result.data.list || [];
+      return {
+        collectionId,
+        articles: list,
+        total: list.length,
+      };
+    }
+
+    const msg = typeof result.msg === 'string' ? result.msg : result.msg?.en || result.msg?.zh || 'Unknown error';
+    throw new Error(`Collection detail API Error: ${msg}`);
+  } catch (error) {
+    console.error('Error fetching collection articles:', error);
+    return {
+      collectionId,
+      articles: [],
+      total: 0,
+    };
+  }
+}
+
+// 获取 Collections 列表数据
+export async function fetchCollections(page: number = 1, limit: number = 10): Promise<{ items: CollectionItem[]; hasNext: boolean }> {
+  const params = new URLSearchParams();
+  params.set('page', String(page));
+  params.set('limit', String(limit));
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/collections?${params.toString()}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch collections: ${response.statusText}`);
+  }
+
+  const result: CollectionsApiResponse = await response.json();
+
+  if (result.code !== 2000 || !result.data) {
+    const msg = typeof result.msg === 'object' ? result.msg.en || result.msg.zh : 'Unknown error';
+    throw new Error(`Collections API Error: ${msg}`);
+  }
+
+  const list = result.data.list || [];
+  const next = !!result.data.next;
 
   return {
-    collectionId,
-    articles: pagedArticles,
-    total: MOCK_COLLECTION_ARTICLES.length,
-  }
+    items: list,
+    hasNext: next,
+  };
 }
-
