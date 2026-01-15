@@ -143,6 +143,14 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 })}
               </div>
 
+              <div
+                class="flex items-center justify-center py-6 min-h-[120px] text-center text-sm text-gray-500"
+                data-mobile-empty-message
+                style="display: none"
+              >
+                No results found. Try another term.
+              </div>
+
               <div class="absolute right-1 top-0 flex flex-col items-center gap-1 text-xs text-gray-800" data-letter-nav>
                 {allLetters.filter((letter) => availableLetters.includes(letter)).map((letter) => (
                   <a
@@ -202,7 +210,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
               </div>
             </div>
 
-            <div class="divide-y divide-gray-200 md:px-6">
+            <div class="divide-y divide-gray-200 md:px-6" data-desktop-sections>
               {allLetters.map((letter) => {
                 const items = learnItemsByLetter[letter] || []
                 if (items.length === 0) return null
@@ -283,6 +291,18 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
 
             var searchInputs = document.querySelectorAll<HTMLInputElement>('input[data-learn-search]');
             var allItems = document.querySelectorAll<HTMLElement>('[data-learn-item]');
+            var desktopSectionsContainer = document.querySelector<HTMLElement>('[data-desktop-sections]');
+            var mobileEmptyMessage = document.querySelector<HTMLElement>('[data-mobile-empty-message]');
+            var desktopSectionsFullHeight = 0;
+            var currentQuery = '';
+
+            function cacheDesktopSectionsHeight() {
+              if (!desktopSectionsContainer) return;
+              var measuredHeight = desktopSectionsContainer.offsetHeight;
+              if (measuredHeight > 0) {
+                desktopSectionsFullHeight = measuredHeight;
+              }
+            }
 
             function escapeHtml(str: string) {
               return String(str)
@@ -321,6 +341,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
 
             function applyLearnSearch(rawQuery: string) {
               var query = (rawQuery || '').trim().toLowerCase();
+              currentQuery = query;
 
               allItems.forEach(function (itemElement) {
                 var titleText = (itemElement.getAttribute('data-title') || '').toLowerCase();
@@ -332,6 +353,8 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
               });
 
               var sections = document.querySelectorAll<HTMLElement>('section[id^="letter-"]');
+              var hasVisibleDesktopSection = false;
+              var hasVisibleMobileItem = false;
               sections.forEach(function (section) {
                 var context = section.getAttribute('data-letter-section') || '';
                 var hasVisibleItem = false;
@@ -339,12 +362,18 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 contextItems.forEach(function (itemElement) {
                   if (itemElement.style.display !== 'none') {
                     hasVisibleItem = true;
+                    if (context === 'mobile') {
+                      hasVisibleMobileItem = true;
+                    }
                   }
                 });
                 if (!query) {
                   section.style.display = '';
                 } else {
                   section.style.display = hasVisibleItem ? '' : 'none';
+                }
+                if (context === 'desktop' && section.style.display !== 'none') {
+                  hasVisibleDesktopSection = true;
                 }
               });
 
@@ -376,6 +405,28 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                   }
                 }
               });
+
+              if (desktopSectionsContainer) {
+                if (query && !hasVisibleDesktopSection) {
+                  if (!desktopSectionsFullHeight) {
+                    cacheDesktopSectionsHeight();
+                  }
+                  desktopSectionsContainer.style.minHeight = desktopSectionsFullHeight + 'px';
+                } else {
+                  desktopSectionsContainer.style.minHeight = '';
+                  if (!query) {
+                    cacheDesktopSectionsHeight();
+                  }
+                }
+              }
+
+              if (mobileEmptyMessage) {
+                if (!query) {
+                  mobileEmptyMessage.style.display = 'none';
+                } else {
+                  mobileEmptyMessage.style.display = hasVisibleMobileItem ? 'none' : 'flex';
+                }
+              }
             }
 
             searchInputs.forEach(function (input) {
@@ -389,6 +440,13 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 });
                 applyLearnSearch(value);
               });
+            });
+
+            cacheDesktopSectionsHeight();
+            window.addEventListener('resize', function () {
+              if (!currentQuery) {
+                cacheDesktopSectionsHeight();
+              }
             });
 
             applyLearnSearch('');
