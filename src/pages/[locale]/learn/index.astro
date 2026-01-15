@@ -77,10 +77,10 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
     <div class="max-w-[1440px] mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-3">
         <!-- Left Column - Learn Content -->
-        <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-0 border border-t-0 border-border">
+        <div class="lg:col-span-2 pt-5 md:py-5">
           <!-- Mobile Layout -->
           <div class="md:hidden">
-            <nav class="text-xs text-muted-foreground mb-1">
+            <nav class="text-xs text-muted-foreground mb-1 px-4">
               <a href={`/${locale}`} class="hover:text-foreground">
                 Learn
               </a>
@@ -88,12 +88,8 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
               <span class="text-primary">Jargon</span>
             </nav>
 
-            <h1 class="text-[32px] font-medium text-gray-900 mb-4">
-              Jargon
-            </h1>
-
-            <div class="mb-5">
-              <div class="border border-gray-300 rounded-lg px-3 py-2.5 flex items-center gap-2">
+            <div class="mt-4 mb-4  px-4">
+              <div class="border border-gray-300 rounded-[2px] px-3 py-2.5 flex items-center gap-2">
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -105,14 +101,16 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
               </div>
             </div>
 
-            <div class="relative" data-letter-scroll-container>
+            <div class="border-b border-border"></div>
+
+            <div class="relative  px-4" data-letter-scroll-container>
               <div class="divide-y divide-gray-200 max-h-[calc(100vh-190px)] overflow-y-auto pr-2" data-letter-scroll>
                 {allLetters.map((letter) => {
                   const items = learnItemsByLetter[letter] || []
                   if (items.length === 0) return null
 
                   return (
-                    <section id={`letter-${letter}`} class="py-5 scroll-mt-24">
+                    <section id={`letter-${letter}`} class="py-5 scroll-mt-24" data-letter-section="mobile">
                       <div class="mb-2">
                         <span class="text-[48px] font-medium text-[#052019] opacity-30">{letter}</span>
                       </div>
@@ -138,11 +136,12 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 })}
               </div>
 
-              <div class="absolute -right-2 top-0 flex flex-col items-center gap-1 text-xs text-gray-800" data-letter-nav>
+              <div class="absolute right-1 top-0 flex flex-col items-center gap-1 text-xs text-gray-800" data-letter-nav>
                 {allLetters.filter((letter) => availableLetters.includes(letter)).map((letter) => (
                   <a
                     href={`#letter-${letter}`}
                     data-letter-target={letter}
+                    data-letter-context="mobile"
                     class="px-1 py-0.5 font-medium tracking-wide hover:text-primary"
                   >
                     {letter}
@@ -166,7 +165,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
               Jargon
             </h1>
 
-            <div class="border-y border-gray-200 py-4 mb-5 md:px-6">
+            <div class="border-y border-gray-200 py-4 mb-5 md:px-6 md:sticky md:top-[97px] md:bg-white md:z-10" data-desktop-letter-bar>
               <div class="flex flex-col gap-4 md:flex-row md:items-center">
                 <div class="w-full md:w-[180px] relative">
                   <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,7 +174,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                   <input
                     type="text"
                     placeholder="Search terms here..."
-                    class="w-full md:w-[180px] pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:text-primary focus:border-transparent outline-none text-sm"
+                    class="w-full md:w-[180px] pl-9 pr-3 py-2.5 border border-gray-300 rounded-[2px] focus:ring-2 focus:text-primary focus:border-transparent outline-none text-sm"
                   />
                 </div>
                 <div class="flex-1">
@@ -184,6 +183,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                       <a
                         href={`#letter-${letter}`}
                         data-letter-target={letter}
+                        data-letter-context="desktop"
                         class="px-1 font-medium tracking-wide text-gray-800 hover:text-primary"
                       >
                         {letter}
@@ -200,7 +200,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 if (items.length === 0) return null
 
                 return (
-                  <section id={`letter-${letter}`} class="flex scroll-mt-32">
+                  <section id={`letter-${letter}`} class="flex scroll-mt-32" data-letter-section="desktop">
                     <div class="h-[90px] w-[160px] flex items-center justify-start">
                       <span class="text-[64px] font-medium text-[#052019] opacity-20">{letter}</span>
                     </div>
@@ -249,33 +249,113 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
       document.addEventListener('DOMContentLoaded', function () {
         var links = document.querySelectorAll('a[data-letter-target]');
         if (!links.length) return;
-        links.forEach(function (link) {
-          link.addEventListener('click', function (event) {
-            event.preventDefault();
+
+        /**
+         * 设置当前高亮的字母导航
+         * @param {string} activeId
+         */
+        // @ts-ignore - 使用 JSDoc 提示类型，避免在内联脚本中写 TS 语法
+        function setActiveLetter(activeId) {
+          links.forEach(function (link) {
             var href = link.getAttribute('href') || '';
             if (!href || href.charAt(0) !== '#') return;
             var id = href.slice(1);
-            var section = document.getElementById(id);
-            if (!section) return;
+            if (id === activeId) {
+              link.classList.add('text-primary');
+              link.classList.add('font-semibold');
+            } else {
+              link.classList.remove('text-primary');
+              link.classList.remove('font-semibold');
+            }
+          });
+        }
+
+        var desktopBarElement = document.querySelector('[data-desktop-letter-bar]');
+
+        /**
+         * 处理字母导航点击事件，区分移动端容器滚动与桌面端窗口滚动
+         */
+        links.forEach(function (link) {
+          link.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            var href = link.getAttribute('href') || '';
+            if (!href || href.charAt(0) !== '#') return;
+
+            var id = href.slice(1);
+
             var navParent = link.closest('[data-letter-nav]');
             var scrollContainer = null;
             if (navParent && navParent.parentElement) {
               scrollContainer = navParent.parentElement.querySelector('[data-letter-scroll]');
             }
+
+            // 高亮当前点击的字母
+            setActiveLetter(id);
+
             if (scrollContainer) {
+              // Mobile layout: scroll inside the container
+              var section = scrollContainer.querySelector('#' + id);
+              if (!section) return;
+
               var containerRect = scrollContainer.getBoundingClientRect();
               var sectionRect = section.getBoundingClientRect();
               var offsetInside = 0;
               var topInside = scrollContainer.scrollTop + (sectionRect.top - containerRect.top) - offsetInside;
               scrollContainer.scrollTo({ top: topInside, behavior: 'smooth' });
             } else {
+              // Desktop layout: scroll window and account for sticky header + letter bar
+              var context = link.getAttribute('data-letter-context') || 'desktop';
+              var sectionSelector =
+                context === 'desktop'
+                  ? 'section[id="' + id + '"][data-letter-section="desktop"]'
+                  : 'section[id="' + id + '"][data-letter-section="mobile"]';
+              var section = document.querySelector(sectionSelector);
+              if (!section) return;
+
               var rect = section.getBoundingClientRect();
-              var offset = 100;
-              var top = window.pageYOffset + rect.top - offset;
-              window.scrollTo({ top: top, behavior: 'smooth' });
+              var currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+              var sectionY = currentScroll + rect.top;
+
+              // Header 高度约 97px，加上字母条高度和一点间距
+              var headerOffset = 97;
+              var barHeight = 0;
+              if (desktopBarElement instanceof HTMLElement && window.innerWidth >= 768) {
+                var barRect = desktopBarElement.getBoundingClientRect();
+                barHeight = barRect.height;
+              }
+
+              var gap = 16;
+              var desiredOffset = headerOffset + barHeight + gap;
+              var targetTop = sectionY - desiredOffset;
+              if (targetTop < 0) targetTop = 0;
+
+              window.scrollTo({ top: targetTop, behavior: 'smooth' });
             }
           });
         });
+
+        var mobileScrollElement = document.querySelector('[data-letter-scroll]');
+        if (mobileScrollElement instanceof HTMLElement) {
+          var mobileScroll = mobileScrollElement;
+          mobileScroll.addEventListener('scroll', function () {
+            var sections = mobileScroll.querySelectorAll('section[id^="letter-"]');
+            var containerRect = mobileScroll.getBoundingClientRect();
+            var nearestId = null;
+            var nearestOffset = Infinity;
+            sections.forEach(function (section) {
+              var rect = section.getBoundingClientRect();
+              var offsetTop = rect.top - containerRect.top;
+              if (offsetTop >= -20 && offsetTop < nearestOffset) {
+                nearestOffset = offsetTop;
+                nearestId = section.id;
+              }
+            });
+            if (nearestId) {
+              setActiveLetter(nearestId);
+            }
+          });
+        }
       });
     }
   </script>
