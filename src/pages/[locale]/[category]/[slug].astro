@@ -4,16 +4,16 @@ import AuthMount from '@/components/common/react/AuthMount'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import ArticleSidebar from '@/components/article/react/ArticleSidebar'
-// Removed: ShareSection direct import; it will be portaled by AuthMount
 import { fetchArticle } from '@/api/articles'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
 import RecentResearch from '@/components/article/astro/RecentResearch.astro';
 import { SITE_CONFIG } from '@/config/constants'
 
-export const prerender = false // Enable SSR for this page
+export const prerender = false
 
-const { locale, category, slug } = Astro.params as { locale: Locale; category: string; slug: string }
+const { params, url } = Astro
+const { locale, category, slug } = params as { locale: Locale; category: string; slug: string }
 
 // Validate category
 const validCategories = ['insights', 'news', 'research']
@@ -21,34 +21,35 @@ if (!validCategories.includes(category.toLowerCase())) {
   return Astro.redirect('/404')
 }
 
-// Extract promote code from slug if present
-// URL format: /locale/category/article-slug-promoteCode
 let actualSlug = slug
 let promoteCode = null
 
-// Check if slug contains promote code (ends with -promoteCode pattern)
 const slugParts = slug.split('-')
 if (slugParts.length > 1) {
-  // Last part might be promote code, check if it matches expected pattern
   const lastPart = slugParts[slugParts.length - 1]
-  if (lastPart && lastPart.length >= 5) { // Promote codes are typically 5+ characters
+  if (lastPart && lastPart.length >= 5) {
     promoteCode = lastPart
     actualSlug = slugParts.slice(0, -1).join('-')
   }
 }
 
-// 组合包含推广码的 slug，用于在多语言切换时保留推广码
 const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug
 
-// Fetch article data using the actual slug
-const article = await fetchArticle(actualSlug, locale, category)
+type ArticleLang = 'en' | 'zh'
+const rawLang = url.searchParams.get('lang')
+const articleLang: ArticleLang =
+  rawLang === 'en' || rawLang === 'zh'
+    ? rawLang
+    : locale === 'asia'
+      ? 'zh'
+      : 'en'
 
-// Handle 404 if article not found
+const article = await fetchArticle(actualSlug, locale, category, articleLang)
+
 if (!article) {
   return Astro.redirect('/404')
 }
 
-// Category display names
 const categoryNames = {
   insights: { en: 'Insights', zh: '洞察' },
   news: { en: 'News', zh: '新闻' },
@@ -58,10 +59,13 @@ const categoryNames = {
 const currentCategory = categoryNames[category.toLowerCase() as keyof typeof categoryNames]
 const categoryDisplayName = locale === 'us' ? currentCategory.en : currentCategory.zh
 
-// SEO optimization
 const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
-const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/${category}/${slug}`
+const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/${category}/${slug}`
+const canonicalUrl =
+  rawLang === 'en' || rawLang === 'zh'
+    ? `${baseCanonicalUrl}?lang=${rawLang}`
+    : baseCanonicalUrl
 
 // Dynamically generate OG image
 const ogImageParams = new URLSearchParams({
@@ -126,6 +130,7 @@ const author = article?.author?.name || article.author_name
             category={category} 
             categoryDisplayName={categoryDisplayName}
             slugWithPromote={slugWithPromote}
+            articleLang={articleLang}
           />
         </div>
         

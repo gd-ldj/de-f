@@ -106,15 +106,23 @@ export async function fetchArticles(
 }
 
 /**
- * Fetch single article by slug and category
- * @param slug - Article slug
- * @param locale - Current locale (used to map API language to our Locale union)
- * @param category - Article category (unused in API call but kept for compatibility)
- * @returns Promise<ApiArticle | null> - Returns backend format directly
+ * Fetch single article by slug
+ * Optional lang param controls article language independently from site locale
  */
-export async function fetchArticle(slug: string, locale?: Locale, category?: string): Promise<ApiArticle | null> {
+export async function fetchArticle(
+  slug: string,
+  locale?: Locale,
+  category?: string,
+  lang?: 'en' | 'zh'
+): Promise<ApiArticle | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles/info?slug=${slug}`, {
+    const params = new URLSearchParams();
+    params.set('slug', slug);
+    if (lang) {
+      params.set('lang', lang);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles/info?${params.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
       },
