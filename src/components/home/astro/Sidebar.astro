@@ -51,9 +51,13 @@ const isWithin12Hours = (createdAt: string) => {
             >
               <!-- Mobile: Time indicator in top right corner -->
               <div class="absolute top-0 right-0">
-                {isWithin12Hours(article.created_at) && (
+                {isWithin12Hours(article.created_at) ? (
                   <div class="flex items-center space-x-1 text-xs bg-primary p-1 rounded">
                     <span class="text-white" >{formatRelativeTime(article.created_at, locale)}</span>
+                  </div>
+                ) : (
+                   <div class="flex items-center space-x-1 text-xs bg-primary p-1 rounded">
+                    <span class="text-white" >12H</span>
                   </div>
                 )}
               </div>
@@ -83,9 +87,13 @@ const isWithin12Hours = (createdAt: string) => {
               <!-- Article content container -->
               <div class="flex-1 min-w-0 flex">
                 <!-- Desktop: Show timestamp for recent articles -->
-                {isWithin12Hours(article.created_at) && (
+                {isWithin12Hours(article.created_at) ? (
                   <div class="flex-none text-[12px] mr-[10px] text-primary">
                     <span>{formatRelativeTime(article.created_at, locale)}</span>
+                  </div>
+                ) : (
+                  <div class="flex-none text-[12px] mr-[10px] text-primary">
+                    <span>12H</span>
                   </div>
                 )}
                 
