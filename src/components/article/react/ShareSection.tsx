@@ -211,14 +211,14 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
         </div>
 
         {/* Additional login prompt below input for unauthenticated users */}
-        {!isEffectivelyLoggedIn && (
+        {/* {!isEffectivelyLoggedIn && (
           <div className="text-xs text-muted-foreground">
             <span onClick={handleLoginClick} className="text-primary hover:underline cursor-pointer">
               {t('article.loginNow')}
             </span>
             <span className="ml-1">{t('article.generatePromoCode')}</span>
           </div>
-        )}
+        )} */}
       </div>
     </motion.div>
   );
