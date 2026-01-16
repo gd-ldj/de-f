@@ -86,8 +86,8 @@ const topics = rawTopics.map(topic => ({
                       <span class="" data-date={article.created_at} data-locale={locale}>
                         {formatDate(article.created_at, locale)}
                       </span>
-                      {/* <span class="hidden xl:group-hover:inline-block">/ {t('article.by')} </span>
-                      <span class="hidden xl:group-hover:inline-block text-foreground">{article.author.name}</span> */}
+                      <span class="hidden xl:group-hover:inline-block">/ {t('article.by')} </span>
+                      <span class="hidden xl:group-hover:inline-block text-foreground uppercase">{article?.author?.name || 'detake'}</span>
                     </div>
                   </div>
                 </div>

@@ -204,14 +204,13 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                       <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 md:line-clamp-4">{article.sub_title}</p>
 
                       {/* Date */}
-                      <div className="flex items-center text-xs text-muted-foreground space-x-1">
+                      {/* <div className="flex items-center text-xs text-muted-foreground space-x-1">
                         <span data-date={article.created_at} data-locale={locale}>
                           {formatDate(article.created_at, locale)}
                         </span>
                         <span>/ {t('article.by')} </span>
                         <span className="text-foreground uppercase">{article.author.name}</span>
-                        {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author.name}</a> */}
-                      </div>
+                      </div> */}
                     </div>
                   </article>
                 ))}

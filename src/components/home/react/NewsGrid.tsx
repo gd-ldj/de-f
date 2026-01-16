@@ -156,7 +156,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
         <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide">
           {articles.map((article) => (
             <article key={article.entry_id} className="bg-white rounded overflow-hidden group flex-shrink-0" style={{ width: '212px' }}>
-              <div className="block">
+              <div className="flex flex-col h-full">
                 {/* Article image */}
                 <div className="relative w-full">
                   <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
@@ -164,7 +164,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                   </ArticleLink>
                 </div>
 
-                <div className="py-4">
+                <div className="flex flex-col py-4 h-full">
                   {/* Category label - clickable to enter category page */}
                   <div className="flex flex-wrap gap-2 mb-2">
                     <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
