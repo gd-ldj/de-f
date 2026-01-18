@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { headerTexts } from './constants';
-import type { Locale } from '@/types';
+import type { Locale, CollectionItem } from '@/types';
 import { createTranslator } from '@/lib/i18n';
+import { fetchCollections } from '@/api/collections';
 
 import CountryIcon from './assets/country.svg?url';
 import MeIcon from './assets/me.svg?url';
@@ -14,11 +15,6 @@ interface MobileSidebarProps {
   onCategoryPageOpen?: (category: string) => void;
 }
 
-interface HeaderCollectionItem {
-  id: string;
-  title: string;
-}
-
 /**
  * Mobile sidebar navigation component
  * 100% pixel-perfect restoration based on UI design
@@ -27,27 +23,31 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
   const [isArticleExpanded, setIsArticleExpanded] = useState(false);
   const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false);
   const [isLocaleExpanded, setIsLocaleExpanded] = useState(false);
+  const [headerCollectionItems, setHeaderCollectionItems] = useState<CollectionItem[]>([]);
   const t = createTranslator(locale);
   const texts = headerTexts[locale] || headerTexts.us;
 
-  const headerCollectionItems: HeaderCollectionItem[] = [
-    {
-      id: 'zkcandy-ecosystem-1',
-      title: 'ZKCandy Ecosystem',
-    },
-    {
-      id: 'zkcandy-ecosystem-2',
-      title: 'ZKCandy Ecosystem',
-    },
-    {
-      id: 'zkcandy-ecosystem-3',
-      title: 'ZKCandy Ecosystem',
-    },
-    {
-      id: 'zkcandy-ecosystem-4',
-      title: 'ZKCandy Ecosystem',
-    },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadHeaderCollections = async () => {
+      try {
+        const { items } = await fetchCollections(1, 10);
+        if (!isMounted) return;
+        setHeaderCollectionItems(items);
+      } catch (error) {
+        console.error('Failed to fetch mobile header collections:', error);
+      }
+    };
+
+    if (isOpen && headerCollectionItems.length === 0) {
+      loadHeaderCollections();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, headerCollectionItems.length]);
 
   if (!isOpen) return null;
 
@@ -133,7 +133,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
                 <div className="mt-2 space-y-1 pl-2">
                   {headerCollectionItems.map((item) => (
                     <button key={item.id} onClick={() => handleNavigation(`/${locale}/collections/${item.id}`)} className="flex items-center justify-between w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
-                      <span className="truncate">{item.title}</span>
+                      <span className="truncate">{item.name}</span>
                       <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
