@@ -71,8 +71,8 @@ export const prerender = false
     <div class="max-w-[1440px] mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-3">
         <!-- Left Column - Learn Content (SSR/ISR for SEO) -->
-        <div class="lg:col-span-2 pt-5 md:py-5 border border-t-0 border-border">
-          <div class="mb-6 pb-4 px-4 md:px-6 border-b border-border">
+        <div class="lg:col-span-2 pt-5 md:pt-8 md:py-5 border border-t-0 border-border">
+          <div class="mb-6 pb-5 px-4 md:px-6 border-b border-border">
             <div class="mb-3 text-sm text-muted-foreground">
               <a href={`/${locale}/collections`} class="hover:text-primary">
                 Collections
@@ -82,11 +82,11 @@ export const prerender = false
                 {collectionItem.title}
               </span>
             </div>
-            <h1 class="text-[32px] md:text-[40px] font-medium tracking-tight text-foreground mb-2 leading-tight">
+            <h1 class="text-[48px] font-medium tracking-tight text-foreground mb-2 leading-tight">
               {collectionItem.title}
             </h1>
             {collectionItem.description && (
-              <p class="text-sm md:text-base text-muted-foreground max-w-3xl">
+              <p class="text-sm md:text-[20px] text-muted-foreground max-w-3xl">
                 {collectionItem.description}
               </p>
             )}

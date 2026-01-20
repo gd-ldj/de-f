@@ -43,11 +43,11 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
       </div>
 
       <div class="flex items-center">
-        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7]">
+        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
           {languageButtons.map(({ code, label }) => (
             <a
               href={`${baseArticlePath}?lang=${code}`}
-              class={`inline-flex items-center justify-center rounded-[2px] w-5 h-5 text-xs leading-none ${
+              class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
                 articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
               }`}
             >

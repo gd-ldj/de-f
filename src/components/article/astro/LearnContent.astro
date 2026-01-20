@@ -25,8 +25,8 @@ function getContent(item: LearnDetailItem): string {
 
 function formatLearnContent(raw: string): string {
   return raw
-    .replace(/## (.*)/g, '<h2 class="text-[32px] md:text-[32px] font-both text-[#052019] mt-10 mb-4">$1</h2>')
-    .replace(/### (.*)/g, '<h3 class="text-[32px] md:text-[24px] font-both text-[#052019] mt-8 mb-3">$1</h3>')
+    .replace(/## (.*)/g, '<h2 class="text-[32px] md:text-[32px] font-medium text-[#052019] mt-10 mb-4">$1</h2>')
+    .replace(/### (.*)/g, '<h3 class="text-[32px] md:text-[24px] font-medium text-[#052019] mt-8 mb-3">$1</h3>')
     .replace(/\n\n/g, '</p><p class="text-[16px] text-[#909399] leading-relaxed mb-4">')
     .replace(/^\s*/, '<p class="text-[16px] text-[#909399] leading-relaxed mb-4">')
     .replace(/\s*$/, '</p>')
@@ -47,7 +47,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
 ---
 
 <article class="bg-white">
-  <header class="mb-8">
+  <header class="mb-6 pb-5 px-4 md:px-6 border-b border-border">
     <nav class="flex items-center space-x-2 text-sm text-[#909399] mb-4">
       <a href={`/${locale}/learn`} class="hover:text-[#052019]">
         Learn
@@ -70,11 +70,11 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         <span class="text-foreground uppercase">{learnItem?.author?.name}</span>
       </p>
       <div class="ml-auto flex items-center">
-        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7]">
+        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
           {languageButtons.map(({ code, label }) => (
             <a
               href={`${baseLearnPath}?lang=${code}`}
-              class={`inline-flex items-center justify-center rounded-[2px] w-5 h-5 text-xs leading-none ${
+              class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
                 learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
               }`}
             >
@@ -84,9 +84,12 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         </div>
       </div>
     </div>
+
+
+
   </header>
 
-  <section class="mb-10">
+  <section class="mb-10 px-4 md:px-6">
     <div class="max-w-none" set:html={renderedContent} />
   </section>
 </article>

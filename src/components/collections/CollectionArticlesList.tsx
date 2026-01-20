@@ -76,12 +76,12 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
               <div className="relative">
                 {article.img_url && (
                   <a href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`} className="block">
-                    <img src={article.img_url} alt={article.title} className="w-full h-[224px] md:h-[260px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    <img src={article.img_url} alt={article.title} className="w-full h-[224px] md:h-[260px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
                   </a>
                 )}
                 <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex flex-wrap gap-3 items-center text-[11px] font-semibold tracking-wide">
+                    <div className="flex flex-wrap gap-3 items-center text-[12px] font-semibold tracking-wide">
                       <span className="uppercase text-white">{article.category_name}</span>
                       {article.tags &&
                         article.tags.slice(0, 2).map((tag) => (
@@ -97,21 +97,21 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 </div>
               </div>
               <div className="py-4 md:py-5">
-                <h2 className="text-lg md:text-xl font-both text-foreground mb-2 leading-tight">
+                <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
                   <a href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`} className="hover:text-primary transition-colors line-clamp-1">
                     {article.title}
                   </a>
                 </h2>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed line-clamp-1 md:line-clamp-1">{article.sub_title}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-1 md:line-clamp-1">{article.sub_title}</p>
               </div>
             </article>
           ) : (
             <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow">
               <div className="flex gap-3 md:block">
-                <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
+                <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48 rounded-[2px]">
                   {article.img_url && (
-                    <a href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors" data-article-link="true" data-slug={article.slug} data-locale={locale}>
-                      <img src={article.img_url} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    <a href={`/${locale}/${article.business_type_name.toLowerCase()}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors rounded" data-article-link="true" data-slug={article.slug} data-locale={locale}>
+                      <img src={article.img_url} alt={article.title} className="w-full h-full object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </a>
                   )}
                 </div>
@@ -148,7 +148,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 </div>
               </div>
             </article>
-          )
+          ),
         )}
       </div>
       <div ref={sentinelRef} className="h-10 mt-4 md:mt-6 flex items-center justify-center text-xs text-muted-foreground">

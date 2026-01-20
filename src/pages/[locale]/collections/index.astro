@@ -74,7 +74,7 @@ try {
         <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-0 border border-t-0 border-border">
           <!-- Page Title -->
           <header class="md:px-6 mb-4 hidden md:block">
-            <h1 class="text-[32px] md:text-[64px] font-both text-[#052019]">
+            <h1 class="text-[32px] md:text-[56px] font-medium text-[#052019]">
               Collections
             </h1>
           </header>
@@ -107,21 +107,30 @@ try {
                             class="w-full h-full object-cover"
                           />
                         </div>
-                        <div class="absolute right-4 top-4 h-6 px-2 rounded-[2px] bg-white/40 flex items-center gap-1">
-                          <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#C0C4CC]"></span>
-                          <span class="text-[10px] font-medium text-white">{item.views_count}</span>
+                        <div class="absolute right-4 top-4 h-6 px-2 rounded-[2px] bg-white/40 flex items-center gap-1 text-[12px]">
+                         <span class="inline-block w-[14px] h-[14px] overflow-hidden">
+                          <img
+                            src="/avatar_3.svg"
+                            alt="avatar"
+                            loading="lazy"
+                            class="w-[full] h-full object-cover"
+                          />
+                          </span>
+                          <span>{item.views_count}</span>
                         </div>
                       </div>
-                      <div class="px-4 pt-3 pb-4">
-                        <h2 class="text-[15px] font-semibold leading-snug text-[#052019]">
-                          {item.name}
-                        </h2>
-                        <p class="mt-2 text-[12px] leading-[18px] text-[#909399]">
-                          {item.description}
-                        </p>
-                        <div class="mt-4 rounded-[2px] bg-white px-3 py-5 flex items-center gap-20">
+                      <div class="p-4">
+                        <div class="flex flex-col justify-between h-full">
+                          <h2 class="text-[20px] font-medium leading-snug text-[#052019]">
+                            {item.name}
+                          </h2>
+                          <p class="mt-[10px] text-[14px] leading-[18px] text-[#909399]">
+                            {item.description}
+                          </p>
+                         </div>
+                        <div class="rounded-[2px] bg-white/40 p-3 flex items-center gap-20">
                           <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-[2px] bg-[#121721] flex items-center justify-center overflow-hidden">
+                            <div class="w-[26px] h-[26px] rounded-[2px] flex items-center justify-center overflow-hidden">
                               <img
                                 src={item.logo_url}
                                 alt={item.name}
@@ -130,21 +139,21 @@ try {
                               />
                             </div>
                             <div>
-                              <div class="text-[13px] font-semibold text-[#121721]">
+                              <div class="text-[16px] font-medium text-[#121721]">
                                 {item.hunters_count}
                               </div>
-                              <div class="mt-0.5 text-[11px] text-[#6E6F79]">
-                                {locale === 'us' ? 'Hunters' : 'Hunters'}
+                              <div class="text-[12px] text-[#6E6F79]">
+                                {locale === 'us' ? 'Hunters' : '猎人'}
                               </div>
                             </div>
                           </div>
                           <div class="flex items-center gap-3">
                             <div>
-                              <div class="text-[13px] font-semibold text-[#121721]">
+                              <div class="text-[16px] font-medium text-[#121721]">
                                 {item.bonus_amt}
                               </div>
-                              <div class="mt-0.5 text-[11px] text-[#6E6F79]">
-                                {locale === 'us' ? 'Bonus' : 'Bonus'}
+                              <div class="text-[12px] text-[#6E6F79]">
+                                {locale === 'us' ? 'Bonus' : '奖励'}
                               </div>
                             </div>
                           </div>
@@ -155,9 +164,9 @@ try {
 
                 {/* Desktop layout */}
                 <div class="hidden md:flex md:flex-row">
-                  <div class="flex-1 flex flex-col" style={`background-color: ${cardBackgrounds[index % cardBackgrounds.length]};`}>
-                    <div class="px-4 md:px-6 pt-4 md:pt-5 pb-4 flex items-start justify-between">
-                      <div class="flex flex-col gap-3">
+                  <div class="flex-1 flex flex-col justify-between" style={`background-color: ${cardBackgrounds[index % cardBackgrounds.length]};`}>
+                    <div class="px-4 md:px-5 pt-4 md:pt-5 pb-4 flex items-start justify-between">
+                      <div class="flex flex-col gap-4">
                         <div class="w-10 h-10 rounded-[2px] overflow-hidden bg-black flex items-center justify-center">
                           <img
                             src={item.logo_url}
@@ -167,7 +176,7 @@ try {
                           />
                         </div>
                         <div class="max-w-full">
-                          <h2 class="text-base md:text-[24px] font-both text-[#052019]">
+                          <h2 class="text-base md:text-[24px] font-medium text-[#052019]">
                             {item.name}
                           </h2>
                           <p class="text-xs md:text-sm text-gray-600 mt-[10px] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -175,22 +184,22 @@ try {
                           </p>
                         </div>
                       </div>
-                      <div class="inline-flex items-center gap-1 px-2 py-1 rounded-[2px] bg-white/70  text-gray-600">
-                        <span class="inline-block w-[18px] h-[18px] overflow-hidden">
+                      <div class="inline-flex items-center gap-1 px-2 py-1 rounded-[2px] bg-white/70  text-gray-600 text-[12px]">
+                        <span class="inline-block w-[14px] h-[14px] overflow-hidden">
                           <img
                             src="/avatar_3.svg"
                             alt="avatar"
                             loading="lazy"
-                            class="w-full h-full object-cover"
+                            class="w-[full] h-full object-cover"
                           />
                         </span>
                         <span>{item.views_count}</span>
                       </div>
                     </div>
-                    <div class="px-4 md:px-6 py-4">
-                      <div class="bg-white rounded-md px-4 py-3 flex items-center gap-10 text-xs text-gray-700">
+                    <div class="px-4 md:px-5 py-4">
+                      <div class="bg-white rounded-[2px] p-3 flex items-center gap-24 text-xs text-gray-700">
                         <div class="flex items-center gap-3">
-                          <div class="w-8 h-8 rounded-[2px] overflow-hidden">
+                          <div class="w-[26px] h-[26px] rounded-[2px] overflow-hidden">
                             <img
                               src="/collection-image.svg"
                               alt="collection"
@@ -199,17 +208,17 @@ try {
                             />
                           </div>
                           <div>
-                            <div class="text-sm font-semibold">{item.hunters_count}</div>
-                            <div class="text-[11px] text-gray-500 mt-0.5">
-                              {locale === 'us' ? 'Hunters' : 'Hunters'}
+                            <div class="text-[16px] font-medium">{item.hunters_count}</div>
+                            <div class="text-[12px] text-[#6E6F79]">
+                                {locale === 'us' ? 'Hunters' : '猎人'}
                             </div>
                           </div>
                         </div>
                         <div class="flex items-center gap-3">
                           <div>
-                            <div class="text-sm font-semibold">{item.bonus_amt}</div>
-                            <div class="text-[11px] text-gray-500 mt-0.5">
-                              {locale === 'us' ? 'Bonus' : 'Bonus'}
+                            <div class="text-[16px] font-medium">{item.bonus_amt}</div>
+                            <div class="text-[12px] text-[#6E6F79]">
+                              {locale === 'us' ? 'Bonus' : '奖金'}
                             </div>
                           </div>
                         </div>
