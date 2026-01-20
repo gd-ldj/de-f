@@ -7,9 +7,10 @@ import ArticleCard from '../../common/astro/ArticleCard.astro';
 interface Props {
   locale: Locale;
   currentEntryId?: string;
+  limit?: number;
 }
 
-const { locale, currentEntryId } = Astro.props as Props;
+const { locale, currentEntryId, limit = 2 } = Astro.props as Props;
 const t = createTranslator(locale);
 
 
@@ -19,8 +20,10 @@ const t = createTranslator(locale);
  */
 let articles: ApiArticle[] = [];
 
+const fetchLimit = currentEntryId ? limit * 2 : limit;
+
 try {
-  const data = await fetchArticles(locale, 1, 5, {
+  const data = await fetchArticles(locale, 1, fetchLimit, {
     business_type_name: 'Research',
     order_by: 'Latest',
   });
@@ -38,7 +41,7 @@ if (currentEntryId) {
   articles = articles.filter((article) => article.entry_id !== currentEntryId);
 }
 
-articles = articles.slice(0, 4);
+articles = articles.slice(0, limit);
 
 ---
 <div class="">
