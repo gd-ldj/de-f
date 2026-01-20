@@ -20,7 +20,6 @@
 
 更多依赖与架构细节按需查看：
 - 分析与埋点：`docs/ANALYTICS_GUIDE.md`
-- Collections / Learn 相关 API：`docs/API_COLLECTIONS_LEARN.md`
 
 ## 三、核心编程约定（高频规则，控制在 5 条内）
 
@@ -80,9 +79,6 @@ pnpm type-check       # 类型检查（改动代码后必跑）
 - 详细分析与埋点系统  
   → `docs/ANALYTICS_GUIDE.md`
 
-- Collections / Learn 接口协议与字段说明  
-  → `docs/API_COLLECTIONS_LEARN.md`
-
 - 更细的架构设计、历史决策记录等  
   → 后续如有新增架构文档（例如 `docs/architecture.md`），在这里补充链接即可。
 
@@ -98,7 +94,6 @@ pnpm type-check       # 类型检查（改动代码后必跑）
 
 - `.md` 文档正文使用中文撰写。  
 - 正式长期文档放在 `docs/` 目录。  
-- 方案 / 评审类文档建议放在 `discuss/` 目录（如存在）。
 
 ## React / Next.js / TypeScript / JavaScript
 
