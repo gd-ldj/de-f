@@ -162,7 +162,7 @@ const author = article?.author?.name || article.author_name
             <div id="share-section-root" class=""></div>
             <!-- <ArticleSidebar locale={locale} client:load /> -->
             <div class="px-6 p-5">
-              <RecentResearch locale={locale} />
+              <RecentResearch locale={locale} currentEntryId={article.entry_id} />
             </div>
           </div>
         </div>

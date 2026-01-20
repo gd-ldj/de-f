@@ -3,22 +3,35 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel/serverless';
+import sitemap from '@astrojs/sitemap';
 
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
-
 const isDev = process.env.NODE_ENV === 'development';
-console.log('🚀 ~ isDev:', isDev);
+
+const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL || 'detake.news';
 
 // https://astro.build/config
 const devDefineConfig = defineConfig({
+  site: `https://${productionHost}`,
   output: 'server', // Enable SSR
   adapter: vercel({
     webAnalytics: {
       enabled: true,
     },
   }),
-  integrations: [react()],
+  integrations: [
+    react(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'us',
+        locales: {
+          us: 'en-US',
+          asia: 'zh-CN',
+        },
+      },
+    }),
+  ],
   i18n: {
     defaultLocale: 'us',
     locales: ['us', 'asia'],
@@ -34,7 +47,6 @@ const devDefineConfig = defineConfig({
         protocolImports: true,
         include: ['buffer', 'process', 'path', 'util', 'fs', 'os'],
       }) as any,
-
     ],
     define: {
       global: 'globalThis',
@@ -60,13 +72,25 @@ const devDefineConfig = defineConfig({
 export default isDev
   ? devDefineConfig
   : defineConfig({
+      site: `https://${productionHost}`,
       output: 'server', // Enable SSR
       adapter: vercel({
         webAnalytics: {
           enabled: true,
         },
       }),
-      integrations: [react()],
+      integrations: [
+        react(),
+        sitemap({
+          i18n: {
+            defaultLocale: 'us',
+            locales: {
+              us: 'en-US',
+              asia: 'zh-CN',
+            },
+          },
+        }),
+      ],
       compressHTML: true, // Remove HTML comments and whitespace
       i18n: {
         defaultLocale: 'us',

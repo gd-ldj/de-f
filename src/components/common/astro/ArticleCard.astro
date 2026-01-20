@@ -59,7 +59,10 @@ function formatDate(dateString: string, locale: Locale): string {
 function getArticleUrl(article: any, locale: Locale): string {
   if (article.url) return article.url;
   if (article.slug) {
-    return `/${locale}/${article.business_type || 'article'}/${article.slug}`;
+    const businessSegment = (article.business_type || article.business_type_name || 'article')
+      .toString()
+      .toLowerCase();
+    return `/${locale}/${businessSegment}/${article.slug}`;
   }
   return '#';
 }

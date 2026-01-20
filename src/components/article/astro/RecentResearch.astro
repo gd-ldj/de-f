@@ -6,9 +6,10 @@ import ArticleCard from '../../common/astro/ArticleCard.astro';
 
 interface Props {
   locale: Locale;
+  currentEntryId?: string;
 }
 
-const { locale } = Astro.props;
+const { locale, currentEntryId } = Astro.props as Props;
 const t = createTranslator(locale);
 
 
@@ -19,7 +20,7 @@ const t = createTranslator(locale);
 let articles: ApiArticle[] = [];
 
 try {
-  const data = await fetchArticles(locale, 1, 2, {
+  const data = await fetchArticles(locale, 1, 5, {
     business_type_name: 'Research',
     order_by: 'Latest',
   });
@@ -32,6 +33,12 @@ try {
 } catch (err) {
   console.error('Failed to fetch research data:', err);
 }
+
+if (currentEntryId) {
+  articles = articles.filter((article) => article.entry_id !== currentEntryId);
+}
+
+articles = articles.slice(0, 4);
 
 ---
 <div class="">

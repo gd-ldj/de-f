@@ -1,29 +1,44 @@
-import type { APIRoute } from 'astro';
+import { SITE_CONFIG } from '@/config/constants';
 
-export const GET: APIRoute = () => {
-  // Check if it's production environment
-  // Production environment when NODE_ENV is empty or 'production'
-  const isProduction = !process.env.NODE_ENV || process.env.NODE_ENV === 'production';
-  
-  let robots: string;
-  
-  if (isProduction) {
-    // Production environment - Allow search engine crawling
-    robots = `User-agent: *
-Allow: /
+/**
+ * 获取站点主域名（优先使用 Vercel 生产域名环境变量）
+ */
+function getHost(): string {
+  const envHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL;
 
-Sitemap: ${new URL('sitemap.xml', import.meta.env.SITE).href}`;
-  } else {
-    // Test/Development environment - Disallow search engine crawling
-    robots = `User-agent: *
-Disallow: /`;
+  if (envHost && typeof envHost === 'string') {
+    return envHost;
   }
 
-  return new Response(robots, {
-    status: 200,
+  try {
+    const url = new URL(SITE_CONFIG.SITE_URL);
+    return url.host;
+  } catch {
+    return 'detake.news';
+  }
+}
+
+/**
+ * 生成 robots.txt 内容
+ */
+function generateRobots(): string {
+  const host = getHost();
+  const sitemapUrl = `https://${host}/sitemap-index.xml`;
+
+  return ['# DeTake Website - Robots.txt', '# Allow all crawlers to access the site', '', 'User-agent: *', 'Allow: /', '', '# Sitemap location', `Sitemap: ${sitemapUrl}`, '', '# Optional: Disallow specific paths if needed', '# Disallow: /api/', '# Disallow: /admin/', '# Disallow: /_astro/', '', '# Crawl-delay for specific bots (optional)', '# User-agent: Googlebot', '# Crawl-delay: 0', '', '# User-agent: Bingbot', '# Crawl-delay: 0', ''].join('\n');
+}
+
+export const prerender = true;
+
+/**
+ * 处理 /robots.txt 请求
+ */
+export async function GET() {
+  const body = generateRobots();
+
+  return new Response(body, {
     headers: {
-      'Content-Type': 'text/plain',
-      'Cache-Control': 'max-age=86400', // Cache for 1 day
+      'Content-Type': 'text/plain; charset=utf-8',
     },
   });
-};
+}
