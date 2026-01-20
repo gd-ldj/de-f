@@ -7,9 +7,10 @@ import type { LearnDetailItem } from '@/api/learn'
 interface Props {
   learnItem: LearnDetailItem
   locale: Locale
+  learnLang?: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
 }
 
-const { learnItem, locale } = Astro.props as Props
+const { learnItem, locale, learnLang = 'en' } = Astro.props as Props
 
 const t = createTranslator(locale)
 
@@ -33,6 +34,15 @@ function formatLearnContent(raw: string): string {
 
 const renderedContent = formatLearnContent(getContent(learnItem))
 const displayDate = formatDate(learnItem.updatedAt || learnItem.createdAt, locale)
+
+const baseLearnPath = `/${locale}/learn/${learnItem.slug}`
+const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
+  { code: 'zh', label: '中' },
+  { code: 'en', label: 'A' },
+  { code: 'ar', label: 'ع' },
+  { code: 'ru', label: 'RU' },
+  { code: 'ja', label: 'あ' },
+]
 
 ---
 
@@ -59,10 +69,20 @@ const displayDate = formatDate(learnItem.updatedAt || learnItem.createdAt, local
         <span class="text-muted-foreground">/ {locale === 'us' ? 'By' : '作者'}</span>
         <span class="text-foreground uppercase">{learnItem?.author?.name}</span>
       </p>
-      <button class="ml-auto inline-flex items-center gap-1 px-2 py-1 text-[#909399] hover:text-[#052019]">
-        <span class="text-xs border px-1 py-[1px] rounded">A</span>
-        <span class="text-xs">A</span>
-      </button>
+      <div class="ml-auto flex items-center">
+        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7]">
+          {languageButtons.map(({ code, label }) => (
+            <a
+              href={`${baseLearnPath}?lang=${code}`}
+              class={`inline-flex items-center justify-center rounded-[2px] w-5 h-5 text-xs leading-none ${
+                learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
+              }`}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   </header>
 

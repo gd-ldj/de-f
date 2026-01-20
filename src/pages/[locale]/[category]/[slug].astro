@@ -4,7 +4,7 @@ import AuthMount from '@/components/common/react/AuthMount'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import ArticleSidebar from '@/components/article/react/ArticleSidebar'
-import { fetchArticle } from '@/api/articles'
+import { fetchArticle, fetchTranslatedArticle } from '@/api/articles'
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
 import RecentResearch from '@/components/article/astro/RecentResearch.astro';
@@ -35,20 +35,41 @@ if (slugParts.length > 1) {
 
 const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug
 
-type ArticleLang = 'en' | 'zh'
+type ArticleLanguageCode = 'en' | 'zh' | 'ar' | 'ru' | 'ja'
 const rawLang = url.searchParams.get('lang')
-const articleLang: ArticleLang =
-  rawLang === 'en' || rawLang === 'zh'
+const defaultLangForLocale: ArticleLanguageCode = locale === 'asia' ? 'zh' : 'en'
+const pageLanguage: ArticleLanguageCode =
+  rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
     ? rawLang
-    : locale === 'asia'
-      ? 'zh'
-      : 'en'
+    : defaultLangForLocale
 
-const article = await fetchArticle(actualSlug, locale, category, articleLang)
+const baseArticle = await fetchArticle(actualSlug, locale, category)
 
-if (!article) {
+if (!baseArticle) {
   return Astro.redirect('/404')
 }
+
+const baseArticleLanguage: ArticleLanguageCode =
+  baseArticle.language === 'en' || baseArticle.language === 'zh' || baseArticle.language === 'ar' || baseArticle.language === 'ru' || baseArticle.language === 'ja'
+    ? baseArticle.language
+    : 'en'
+
+let article = baseArticle
+
+if (pageLanguage !== baseArticleLanguage) {
+  const translated = await fetchTranslatedArticle(baseArticle.entry_id, pageLanguage)
+  if (translated) {
+    article = {
+      ...baseArticle,
+      title: translated.title,
+      sub_title: translated.sub_title,
+      body: translated.body,
+      language: translated.language,
+    }
+  }
+}
+
+const articleLang = pageLanguage
 
 const categoryNames = {
   insights: { en: 'Insights', zh: '洞察' },
@@ -63,7 +84,7 @@ const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
 const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/${category}/${slug}`
 const canonicalUrl =
-  rawLang === 'en' || rawLang === 'zh'
+  rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
     ? `${baseCanonicalUrl}?lang=${rawLang}`
     : baseCanonicalUrl
 

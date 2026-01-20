@@ -105,22 +105,14 @@ export async function fetchArticles(
   }
 }
 
-/**
- * Fetch single article by slug
- * Optional lang param controls article language independently from site locale
- */
 export async function fetchArticle(
   slug: string,
   locale?: Locale,
   category?: string,
-  lang?: 'en' | 'zh'
 ): Promise<ApiArticle | null> {
   try {
     const params = new URLSearchParams();
     params.set('slug', slug);
-    if (lang) {
-      params.set('lang', lang);
-    }
 
     const response = await fetch(`${API_BASE_URL}/api/v1/articles/info?${params.toString()}`, {
       headers: {
@@ -144,6 +136,48 @@ export async function fetchArticle(
     }
   } catch (error) {
     console.error('Error fetching article:', error);
+    return null;
+  }
+}
+
+interface TranslatedArticlePayload {
+  entry_id: string;
+  language: string;
+  title: string;
+  sub_title: string;
+  body?: string;
+}
+
+export async function fetchTranslatedArticle(entryId: string, language: string): Promise<TranslatedArticlePayload | null> {
+  try {
+    const params = new URLSearchParams();
+    params.set('entry_id', entryId);
+    params.set('language', language);
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles/translated?${params.toString()}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch translated article: ${response.statusText}`);
+    }
+
+    const result: {
+      code: number;
+      msg?: { en?: string; zh?: string } | string;
+      data?: TranslatedArticlePayload;
+    } = await response.json();
+
+    if (result.code === 2000 && result.data) {
+      return result.data;
+    }
+
+    const msg = typeof result.msg === 'string' ? result.msg : result.msg?.en || result.msg?.zh || 'Unknown error';
+    throw new Error(`Translated article API Error: ${msg}`);
+  } catch (error) {
+    console.error('Error fetching translated article:', error);
     return null;
   }
 }

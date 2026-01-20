@@ -285,10 +285,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                   {item.name}
                 </a>
               ) : (
-                <button key={item.key} className={`text-sm transition-colors hover:text-primary ${currentPath === item.href ? 'text-primary' : 'text-gray-600'}`}>
+                <button key={item.key} className={`text-sm transition-colors ${currentPath === item.href ? 'text-primary' : 'text-gray-600'}`}>
                   {item.name}
                 </button>
-              )
+              ),
             )}
 
             {/* Search Icon */}

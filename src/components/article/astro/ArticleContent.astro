@@ -5,14 +5,12 @@ import Image from '@/components/common/astro/ImageSSR.astro'
 import {formatDate} from '@/utils/util'
 
 interface Props {
-  // ApiArticle: the raw article shape returned by backend API
-  // Only includes fields used by this component to keep typing minimal
   article: ApiArticle
   locale: Locale
   category: string
   categoryDisplayName: string
   slugWithPromote: string
-  articleLang: 'en' | 'zh'
+  articleLang: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
 }
 
 const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang } = Astro.props
@@ -20,8 +18,13 @@ const { article, locale, category, categoryDisplayName, slugWithPromote, article
 const t = createTranslator(locale)
 
 const baseArticlePath = `/${locale}/${category.toLowerCase()}/${slugWithPromote}`
-const zhUrl = `${baseArticlePath}?lang=zh`
-const enUrl = `${baseArticlePath}?lang=en`
+const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
+  { code: 'zh', label: '中' },
+  { code: 'en', label: 'A' },
+  { code: 'ar', label: 'ع' },
+  { code: 'ru', label: 'RU' },
+  { code: 'ja', label: 'あ' },
+]
 
 ---
  
@@ -41,26 +44,16 @@ const enUrl = `${baseArticlePath}?lang=en`
 
       <div class="flex items-center">
         <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7]">
-          <a
-            href={zhUrl}
-            class={`inline-flex items-center justify-center rounded-[2px] w-5 h-5 text-xs leading-none ${
-              articleLang === 'zh'
-                ? 'bg-white text-foreground'
-                : 'text-muted-foreground'
-            }`}
-          >
-            中
-          </a>
-          <a
-            href={enUrl}
-            class={`inline-flex items-center justify-center rounded-[2px] w-5 h-5 text-xs leading-none ${
-              articleLang === 'en'
-                ? 'bg-white text-foreground'
-                : 'text-muted-foreground'
-            }`}
-          >
-            A
-          </a>
+          {languageButtons.map(({ code, label }) => (
+            <a
+              href={`${baseArticlePath}?lang=${code}`}
+              class={`inline-flex items-center justify-center rounded-[2px] w-5 h-5 text-xs leading-none ${
+                articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
+              }`}
+            >
+              {label}
+            </a>
+          ))}
         </div>
       </div>
     </nav>

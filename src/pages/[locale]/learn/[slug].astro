@@ -9,6 +9,7 @@ import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import LearnContent from '@/components/article/astro/LearnContent.astro'
 import { SITE_CONFIG } from '@/config/constants'
+import { fetchTranslatedArticle } from '@/api/articles'
 export const prerender = false // Enable SSR for this page
 
 const { locale, slug } = Astro.params as { locale: Locale; slug: string }
@@ -21,8 +22,18 @@ if (!validLocales.includes(locale)) {
 
 const t = createTranslator(locale)
 
-// Fetch learn item
-let learnItem = null
+type LearnLanguageCode = 'en' | 'zh' | 'ar' | 'ru' | 'ja'
+
+const { url } = Astro
+const rawLang = url.searchParams.get('lang')
+const defaultLangForLocale: LearnLanguageCode = locale === 'asia' ? 'zh' : 'en'
+const pageLanguage: LearnLanguageCode =
+  rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
+    ? rawLang
+    : defaultLangForLocale
+
+// Fetch learn item (base language)
+let learnItem = null as any
 try {
   learnItem = await fetchLearnItem(locale, slug)
   if (!learnItem) {
@@ -33,10 +44,34 @@ try {
   return Astro.redirect('/404')
 }
 
+const baseLearnLanguage: LearnLanguageCode =
+  learnItem.language === 'en' || learnItem.language === 'zh' || learnItem.language === 'ar' || learnItem.language === 'ru' || learnItem.language === 'ja'
+    ? learnItem.language
+    : 'en'
+
+if (pageLanguage !== baseLearnLanguage) {
+  const translated = await fetchTranslatedArticle(learnItem.entry_id, pageLanguage)
+  if (translated) {
+    learnItem = {
+      ...learnItem,
+      title: translated.title,
+      sub_title: translated.sub_title,
+      content: translated.body,
+      language: translated.language,
+    }
+  }
+}
+
+const learnLang = pageLanguage
+
 // SEO optimization
 const title = `${learnItem.title} | Learn | deTake`
 const description = learnItem.description
-const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn/${slug}`
+const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn/${slug}`
+const canonicalUrl =
+  rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
+    ? `${baseCanonicalUrl}?lang=${rawLang}`
+    : baseCanonicalUrl
 
 // Generate OG image
 const ogImageParams = new URLSearchParams({
@@ -85,7 +120,8 @@ function formatContent(content: string) {
         <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-6 border border-t-0 border-border">
           <LearnContent 
             learnItem={learnItem} 
-            locale={locale} 
+            locale={locale}
+            learnLang={learnLang}
           />
         </div>
         
