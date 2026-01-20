@@ -1,299 +1,109 @@
-# DeTake 前端 - Claude 代码文档
+# DeTake 前端 - Claude 使用说明（高频精简版）
 
-## 项目概述
+> 本文件只放「AI 每次都需要记住的少量规则」，其余细节用链接指向 docs/ 下的文档。
 
-DeTake 是一个使用现代 Web 技术构建的加密货币新闻和分析平台。前端使用 Astro 和 React 组件开发，提供服务端渲染 (SSR) 功能和多语言支持。
+## 一、项目速览
 
-## 技术栈
+- 产品：加密货币新闻和分析平台 DeTake 前端
+- 框架：Astro（开启 SSR）+ React 19（前端交互）
+- 语言与样式：TypeScript + Tailwind CSS 4
+- 包管理与部署：pnpm，部署在 Vercel
+- 路由与多语言：`/us/...` 和 `/asia/...` 两套前缀
 
-### 核心技术
+## 二、关键技术版本（只列最重要的）
 
-- **框架**: Astro 5.13.2 (启用 SSR)
-- **UI 库**: React 19.1.0
-- **样式**: Tailwind CSS 4.1.11
-- **语言**: TypeScript
-- **包管理器**: pnpm
-- **部署**: Vercel
+- Astro：5.13.2
+- React：19.x
+- Tailwind CSS：4.1.11
+- TypeScript：5.9.x
+- 主要依赖：Jotai（全局状态）、TanStack React Query（请求）、Radix UI、i18next / astro-i18next（国际化）
 
-### 关键库
+更多依赖与架构细节按需查看：
+- 分析与埋点：`docs/ANALYTICS_GUIDE.md`
+- Collections / Learn 相关 API：`docs/API_COLLECTIONS_LEARN.md`
 
-- **身份验证**: Privy (@privy-io/react-auth)
-- **钱包集成**: Solana SPL Token, Reown AppKit
-- **状态管理**: Jotai
-- **数据获取**: TanStack React Query
-- **UI 组件**: Radix UI primitives
-- **国际化**: i18next, astro-i18next
-- **分析**: 自定义分析系统 + Vercel Analytics
-- **图表**: Recharts
-- **图标**: Lucide React
-- **动画**: Framer Motion
+## 三、核心编程约定（高频规则，控制在 5 条内）
 
-## 项目结构
+1. **优先使用 TypeScript 强类型**  
+   - 新增数据结构必须定义类型，避免使用 `any`。  
+   - 如果确实需要 `any` 或原始 JSON，先在对话中说明理由。
 
-```
+2. **Astro + React 组合策略**  
+   - Astro 负责页面结构和 SEO；交互用 React 组件，通过 islands 方式挂载。  
+   - 避免把纯静态内容写成 React 组件。
+
+3. **样式统一使用 Tailwind CSS v4**  
+   - 优先使用已有原子类；遵循项目中现有的命名和布局习惯。  
+   - 需要复用的复杂样式优先抽成组件而不是写内联 style。
+
+4. **命令与校验（提交前务必跑）**  
+   - 类型检查：`pnpm type-check`  
+   - 构建与本地预览：`pnpm build`、`pnpm preview`（或按项目脚本使用）。  
+   - 如果后续补充 Lint / Test / Git Hooks，视为第一层「强制执行层」规则。
+
+5. **注释与多语言约定**  
+   - 代码注释以英文为基础说明，但对**复杂或核心函数**，可以额外补充简体中文解释，帮助人类快速理解。  
+   - HTML / Astro 模板中的注释使用英文。  
+   - 与用户对话一律使用简体中文。
+
+## 四、项目结构与使用方式（简版）
+
+仅保留 AI 高频需要的结构，详细内容请去 docs。
+
+```text
 src/
-├── api/                    # API 集成层
-│   ├── articles.ts
-│   ├── auth.ts
-│   └── users.ts
-├── components/
-│   ├── article/           # 文章相关组件
-│   │   ├── astro/         # Astro 组件
-│   │   └── react/         # React 组件
-│   ├── common/            # 可复用组件
-│   │   ├── astro/         # Astro 组件
-│   │   └── react/         # React 组件
-│   └── home/              # 首页组件
-├── config/
-│   └── constants.ts       # 全局常量
-├── layouts/
-│   └── BaseLayout.astro   # 主布局模板
-├── lib/                   # 工具库
-│   ├── analytics.ts       # 分析系统
-│   ├── i18n.ts           # 国际化
-│   └── utils.ts          # 通用工具
-├── locales/              # 翻译文件
-│   ├── asia/
-│   └── us/
-├── pages/                # Astro 页面 (基于文件的路由)
-│   ├── [locale]/         # 本地化路由
-│   └── api/              # API 端点
-├── stores/               # 全局状态管理
-├── styles/
-│   └── global.css        # 全局样式
-└── types/                # TypeScript 类型定义
+├── api/           # 与后端交互的 API 封装
+├── components/    # 组件（article/common/home 等子目录）
+├── config/        # 全局常量与站点配置
+├── layouts/       # 页面布局
+├── lib/           # 工具库（i18n、analytics 等）
+├── locales/       # 文本翻译
+├── pages/         # Astro 路由页面
+├── stores/        # Jotai 全局状态
+├── styles/        # 全局样式
+└── types/         # TypeScript 类型定义
 ```
 
-## 开发命令
+常用脚本（只列最重要的）：
 
 ```bash
-# 开发
-pnpm dev                  # 启动开发服务器
-pnpm build               # 构建生产版本
-pnpm preview             # 预览生产构建
-pnpm start               # 启动 Vercel 开发服务器
-pnpm vercel:simulate     # 本地构建并启动 Vercel
-
-# 类型检查
-pnpm type-check          # 运行 Astro 类型检查
+pnpm dev              # 开发
+pnpm build            # 构建
+pnpm preview          # 预览构建
+pnpm type-check       # 类型检查（改动代码后必跑）
 ```
 
-## 架构
+## 五、按需查阅层（只放链接，不在此堆细节）
 
-### 渲染策略
+这些内容**AI 并不需要每次都完整加载**，只在相关改动时按需打开：
 
-- **SSR**: 启用服务端渲染以获得更好的 SEO 和性能
-- **Islands 架构**: React 组件使用 Astro 的 islands 按需水合
-- **客户端指令**:
-  - `client:load` - 页面加载时立即水合
-  - `client:only` - 仅在客户端渲染 (防止 SSR 水合问题)
-  - `client:idle` - 浏览器空闲时水合
+- 详细分析与埋点系统  
+  → `docs/ANALYTICS_GUIDE.md`
 
-### 国际化
+- Collections / Learn 接口协议与字段说明  
+  → `docs/API_COLLECTIONS_LEARN.md`
 
-- **支持的语言环境**: 美国英语 (`us`) 和亚洲 (`asia`)
-- **路由**: 基于前缀的路由 (`/us/...`, `/asia/...`)
+- 更细的架构设计、历史决策记录等  
+  → 后续如有新增架构文档（例如 `docs/architecture.md`），在这里补充链接即可。
 
-### 身份验证和钱包集成
+---
 
-- **Privy**: 处理用户身份验证和钱包连接
-- **钱包支持**: 多钱包支持，包括 Solana 钱包
-- **状态管理**: 使用 Jotai atoms 管理全局认证状态
-
-### 分析系统
-
-- **自定义分析**: 支持访客 ID 的事件跟踪系统
-- **Vercel Analytics**: 集成性能监控
-- **实现**: SSR 到客户端的分析事件桥接
-
-## 关键功能
-
-### 多语言支持
-
-- 基于语言环境的动态路由
-- 组件级国际化
-- 针对不同市场的 SEO 优化
-
-### 高级身份验证
-
-- 基于钱包的身份验证
-- 通过 Privy 的社交登录集成
-- 全局身份验证状态管理
-
-### 内容管理
-
-- 支持丰富内容的文章系统
-- 作者管理和个人资料
-- 基于分类的过滤
-- 搜索功能
-
-### 分析和跟踪
-
-- 自定义行为跟踪
-- 性能监控
-- 用户参与度指标
-- A/B 测试功能
-
-## 开发指南
-
-### 组件架构
-
-- **Astro 组件**: 用于静态内容和 SEO 关键元素
-- **React 组件**: 用于交互功能和客户端状态
-- **混合方法**: 结合两者以获得最佳性能
-
-### 状态管理
-
-- **Jotai**: 用于全局状态 (认证、用户偏好)
-- **本地状态**: React 的 useState 用于组件特定状态
-- **服务器状态**: TanStack Query 用于 API 数据
-
-### 样式
-
-- **Tailwind CSS**: 实用优先的方法
-- **组件变体**: 使用 class-variance-authority
-- **响应式设计**: 移动优先的方法
-
-### 性能优化
-
-- **代码分割**: Astro islands 自动处理
-- **图像优化**: 自定义图像组件
-- **包分析**: 监控包大小和依赖项
-
-## 常见问题与解决方案
-
-### 水合不匹配
-
-- 确保 SSR 和客户端渲染相同内容
-- 对具有客户端特定行为的组件使用 `client:only`
-- 实现适当的加载状态
-
-### 钱包集成
-
-- 优雅地处理钱包连接状态
-- 为不支持的钱包实现回退 UI
-- 管理钱包断开连接场景
-
-### 国际化
-
-- 保持翻译键在各语言环境中的一致性
-- 处理动态内容翻译
-- 在开发过程中测试所有语言环境
-
-## 部署
-
-### Vercel 配置
-
-- 框架: Astro
-- 输出: 无服务器函数
-- 分析: 已启用
-- 环境变量: 在 Vercel 控制台中配置
-
-### 构建过程
-
-1. 类型检查
-2. Astro 构建 (SSG/SSR 混合)
-3. 资源优化
-4. 部署到 Vercel 边缘网络
-
-## 环境变量
-
-### 站点环境配置
-
-项目支持多环境部署，通过 `PUBLIC_SITE_ENV` 环境变量区分不同站点：
-
-- **beta**: beta.detake.com → beta-api.detake.com
-- **web3**: detake.com → api.detake.com
-
-### 核心环境变量
-
-- `PUBLIC_SITE_ENV`: 站点环境标识 (`beta` | `production`)
-- `PUBLIC_PRIVY_APP_ID`: Privy 身份验证应用 ID
-- `PUBLIC_GA_MEASUREMENT_ID`: Google Analytics 测量 ID
-- `PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`: Cloudflare 分析令牌
-
-### 环境文件
-
-- `.env` - 开发环境配置
-- `.env.beta` - Beta 站点配置
-- `.env.production` - 生产站点配置
-
-### 自动配置
-
-API 端点和站点 URL 根据 `PUBLIC_SITE_ENV` 自动配置：
-- API 端点通过 `SITE_CONFIG.API_BASE_URL` 获取
-- 站点 URL 通过 `SITE_CONFIG.SITE_URL` 获取
-
-## 故障排除
-
-### 构建错误
-
-1. **类型错误**: 运行 `pnpm type-check` 识别 TypeScript 问题
-2. **导入错误**: 检查文件路径并确保正确导出
-3. **环境变量**: 验证所有必需变量已设置
-
-### 运行时问题
-
-1. **水合错误**: 检查浏览器控制台中的特定组件问题
-2. **API 失败**: 验证 API 端点和网络连接
-3. **身份验证问题**: 检查 Privy 配置和钱包连接
-
-### 性能问题
-
-1. **加载缓慢**: 分析包大小并优化导入
-2. **内存泄漏**: 检查 useEffect 钩子中的适当清理
-3. **SEO 问题**: 验证元标签和结构化数据
-
-## 贡献指南
-
-在此项目上工作时：
-
-1. **遵循既定模式** 进行组件结构设计
-2. **在多个语言环境中测试** 再提交更改
-3. **检查钱包功能** 在不同钱包类型中的表现
-4. **运行类型检查** 在提交之前
-5. **测试 SSR 行为** 以避免水合问题
-
-## 性能监控
-
-### 需要跟踪的指标
-
-- **核心 Web 指标**: LCP、FID、CLS
-- **包大小**: 监控 JavaScript 负载
-- **API 响应时间**: 跟踪后端性能
-- **用户参与度**: 分析和转化率
-
-### 工具
-
-- **Vercel Analytics**: 内置性能监控
-- **Lighthouse**: 定期进行性能和 SEO 审计
-- **Bundle Analyzer**: 分析 webpack 包组成
-- **自定义分析**: 跟踪用户行为和功能使用情况
-
-### 优化策略
-
-- **代码分割**: 利用 Astro 的自动分割
-- **图像优化**: 使用优化格式和懒加载
-- **缓存**: 实现适当的缓存头和策略
-- **CDN**: 利用 Vercel 的全球边缘网络
-
-# 任何项目都务必遵守的规则（极其重要！！！）
+# 通用团队规则（所有项目共用，保持简短）
 
 ## Communication
 
-- 永远使用简体中文进行思考和对话
+- 与人类沟通一律使用简体中文。
 
 ## Documentation
 
-- 编写 .md 文档时，也要用中文
-- 正式文档写到项目的 docs/ 目录下
-- 用于讨论和评审的计划、方案等文档，写到项目的 discuss/ 目录下
+- `.md` 文档正文使用中文撰写。  
+- 正式长期文档放在 `docs/` 目录。  
+- 方案 / 评审类文档建议放在 `discuss/` 目录（如存在）。
 
 ## React / Next.js / TypeScript / JavaScript
 
-- Next.js 强制使用 v5.13 版本
-- React 强制使用 v19 版本，不要再用 v18 或以下版本
-- Tailwind CSS 强制使用 Tailwind CSS v4。不要再用 v3 或以下版本
-- 尽可能使用 TypeScript。只有在构建工具完全不支持 TypeScript 的时候，才使用 JavaScript（如微信小程序的主工程）
-- 数据结构尽可能全部定义成强类型。如果个别场景不得不使用 any 或未经结构化定义的 json，需要先停下来征求用户的同意
-- 注释都需要英文，不能用中文
+- React 强制使用 19 版本，不再使用 18 或以下版本。  
+- Tailwind CSS 强制使用 v4，不再使用 v3 或以下版本。  
+- 能用 TypeScript 就不要用 JavaScript。  
+- 数据结构尽量全部定义成强类型；需要使用 `any` 时，先在对话里明确说明原因。  
+- 新增代码时，遵循本文件前半部分所列的项目级约定。
