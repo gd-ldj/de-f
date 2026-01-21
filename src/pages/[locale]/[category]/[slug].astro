@@ -82,7 +82,7 @@ const categoryDisplayName = locale === 'us' ? currentCategory.en : currentCatego
 
 const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
-const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/${category}/${slug}`
+const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/${category}/${actualSlug}`
 const canonicalUrl =
   rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
     ? `${baseCanonicalUrl}?lang=${rawLang}`
@@ -95,7 +95,9 @@ const ogImageParams = new URLSearchParams({
   category: categoryDisplayName,
   author: article?.author?.name || article.author_name || 'DeTake'
 });
-const ogImageUrl = article.img_url || ``
+const ogImageUrl = article.img_url
+  ? (article.img_url.startsWith('http') ? article.img_url : `${SITE_CONFIG.SITE_URL}${article.img_url}`)
+  : `${SITE_CONFIG.SITE_URL}/api/og/article.svg?${ogImageParams.toString()}`
 
 // Extract keywords and tags
 const keywords = article.tags || []

@@ -51,7 +51,6 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
 <html lang={locale === 'us' ? 'en' : 'zh'}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="https://cdn.detake.com/icons/favicon-green.svg" />
     <meta name="generator" content={Astro.generator} />
@@ -103,8 +102,8 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
     <link rel="canonical" href={currentUrl} />
     
     <!-- Alternate language versions -->
-    <link rel="alternate" hreflang="us" href={currentUrl.replace('/asia/', '/us/')} />
-    <link rel="alternate" hreflang="asia" href={currentUrl.replace('/us/', '/asia/')} />
+    <link rel="alternate" hreflang="en-US" href={currentUrl.replace('/asia/', '/us/')} />
+    <link rel="alternate" hreflang="zh-CN" href={currentUrl.replace('/us/', '/asia/')} />
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

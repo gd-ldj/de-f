@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
-import vercel from '@astrojs/vercel/serverless';
+import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
 
 import { nodePolyfills } from 'vite-plugin-node-polyfills';

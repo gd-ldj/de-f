@@ -136,7 +136,7 @@ const AuthorArticlesSection: React.FC<AuthorArticlesSectionProps> = ({
       if (response && response.articles.length > 0) {
         setArticles(prev => [...prev, ...response.articles]);
         setHasMore(response.hasMore);
-        setNextCursor(response.nextCursor);
+        setNextCursor(response.nextCursor ?? null);
         setCurrentPage(prev => prev + 1);
       } else {
         setHasMore(false);
