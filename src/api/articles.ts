@@ -264,9 +264,10 @@ export async function fetchArticleTags(): Promise<ArticleTag[]> {
  * Fetch home page data from API
  * @returns Promise<HomePageData>
  */
-export async function fetchHomePageData(): Promise<HomePageData | null> {
+export async function fetchHomePageData(locale: Locale): Promise<HomePageData | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles/home`, {
+    const localeParam = locale === 'us' ? 'en' : 'zh';
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles/home?locale=${encodeURIComponent(localeParam)}`, {
       headers: {
         'Content-Type': 'application/json',
       },
