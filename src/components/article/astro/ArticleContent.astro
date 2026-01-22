@@ -11,13 +11,21 @@ interface Props {
   categoryDisplayName: string
   slugWithPromote: string
   articleLang: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
+  collection?: {
+    id: string
+    title?: string
+  }
 }
 
-const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang } = Astro.props
+const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, collection } = Astro.props
 
 const t = createTranslator(locale)
 
-const baseArticlePath = `/${locale}/${category.toLowerCase()}/${slugWithPromote}`
+const baseArticlePath = collection
+  ? `/${locale}/collections/${collection.id}/${slugWithPromote}`
+  : `/${locale}/${category.toLowerCase()}/${slugWithPromote}`
+const collectionLabel = locale === 'us' ? 'Collections' : '合集'
+const collectionTitle = collection?.title || collection?.id
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
   { code: 'zh', label: '中' },
   { code: 'en', label: 'A' },
@@ -33,13 +41,23 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
    <header class="mb-4">
     <nav class="flex items-center justify-between text-sm text-muted-foreground mb-2">
       <div class="flex items-center space-x-2">
-        <a href={`/${locale}`} class="hover:text-primary">{t('article.articles')}</a>
-        <span>/</span>
-        <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
-        <span>/</span>
-        <!-- <span class="text-foreground">{article.title}</span> -->
-        <!-- <a href={`/${locale}/category/${article.category_name.toLowerCase()}`} class="hover:text-primary">{article.category_name}</a> -->
-        <a href="javascript:;" class="hover:text-primary">{article.category_name}</a>
+        {collection ? (
+          <>
+            <a href={`/${locale}/collections`} class="hover:text-primary">{collectionLabel}</a>
+            <span>/</span>
+            <a href={`/${locale}/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
+            <span>/</span>
+            <a href="javascript:;" class="hover:text-primary">{article.category_name}</a>
+          </>
+        ) : (
+          <>
+            <a href={`/${locale}`} class="hover:text-primary">{t('article.articles')}</a>
+            <span>/</span>
+            <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
+            <span>/</span>
+            <a href="javascript:;" class="hover:text-primary">{article.category_name}</a>
+          </>
+        )}
       </div>
 
       <div class="flex items-center">
