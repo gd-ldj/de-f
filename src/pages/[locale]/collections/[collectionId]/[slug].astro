@@ -87,17 +87,7 @@ const resolveCollectionTitle = async (id: string) => {
 
 const collectionTitle = await resolveCollectionTitle(collectionId)
 
-// 基于文章字段推导展示用分类名称
-const categoryNames = {
-  insights: { en: 'Insights', zh: '洞察' },
-  news: { en: 'News', zh: '新闻' },
-  research: { en: 'Research', zh: '研究' }
-}
-
-const rawCategory = (article.business_type_name || article.category_name || 'news').toLowerCase()
-const categoryKey = rawCategory === 'insights' || rawCategory === 'news' || rawCategory === 'research' ? rawCategory : 'news'
-const defaultCategoryName = locale === 'us' ? categoryNames[categoryKey].en : categoryNames[categoryKey].zh
-const categoryDisplayName = rawCategory === categoryKey ? defaultCategoryName : (article.category_name || defaultCategoryName)
+const categoryDisplayName = article.business_type_name ? `${article.business_type_name[0].toUpperCase()}${article.business_type_name.slice(1)}` : 'News'
 
 // 生成 SEO 与分享元信息
 const title = `${article.title} | ${categoryDisplayName} | deTake`
@@ -164,8 +154,7 @@ const author = article?.author?.name || article.author_name
           <ArticleContent 
             article={article} 
             locale={locale} 
-            category={categoryKey} 
-            categoryDisplayName={categoryDisplayName}
+            category={article.business_type_name} 
             slugWithPromote={slugWithPromote}
             articleLang={articleLang}
             collection={{ id: collectionId, title: collectionTitle }}

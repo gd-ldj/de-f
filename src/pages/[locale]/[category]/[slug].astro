@@ -71,14 +71,7 @@ if (pageLanguage !== baseArticleLanguage) {
 
 const articleLang = pageLanguage
 
-const categoryNames = {
-  insights: { en: 'Insights', zh: '洞察' },
-  news: { en: 'News', zh: '新闻' },
-  research: { en: 'Research', zh: '研究' }
-}
-
-const currentCategory = categoryNames[category.toLowerCase() as keyof typeof categoryNames]
-const categoryDisplayName = locale === 'us' ? currentCategory.en : currentCategory.zh
+const categoryDisplayName = category  ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News'
 
 const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title

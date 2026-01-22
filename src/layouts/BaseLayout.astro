@@ -37,7 +37,10 @@ const {
   articleSection
 } = Astro.props
 
-const currentUrl = canonicalUrl || Astro.url.href
+// 统一使用当前访问域名生成分享与 canonical 链接
+const currentOrigin = Astro.url.origin
+const rawCanonicalUrl = canonicalUrl ? new URL(canonicalUrl) : Astro.url
+const currentUrl = new URL(`${currentOrigin}${rawCanonicalUrl.pathname}${rawCanonicalUrl.search}${rawCanonicalUrl.hash}`).href
 
 // Default OG image
 const defaultOgImage = 'https://cdn.detake.com/images/social-card.png'
