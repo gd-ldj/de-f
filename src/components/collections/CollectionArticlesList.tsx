@@ -3,6 +3,8 @@ import type { ApiArticle, Locale } from '@/types';
 import { fetchCollectionArticles } from '@/api/collections';
 import { formatDate } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
+import { useAtom } from 'jotai';
+import { persistedPromoteCodeAtom } from '@/stores';
 
 interface CollectionArticlesListProps {
   locale: Locale;
@@ -23,7 +25,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
   const [loading, setLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const t = createTranslator(locale);
-
+  const [promoteCode, _] = useAtom(persistedPromoteCodeAtom);
   /**
    * 加载更多合集文章（用于移动端无限滚动）
    */
@@ -98,7 +100,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
               </div>
               <div className="py-4 md:py-5">
                 <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
-                  <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="hover:text-primary transition-colors line-clamp-1">
+                  <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-1">
                     {article.title}
                   </a>
                 </h2>
@@ -130,7 +132,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                   </div>
                   <div className="pt-1">
                     <h3 className="text-[16px] md:text-[18px] font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
-                      <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="hover:text-primary transition-colors">
+                      <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors">
                         {article.title}
                       </a>
                     </h3>

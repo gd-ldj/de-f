@@ -1,5 +1,6 @@
 ---
 import type { Locale } from '../../../types/index.ts';
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 
 export interface Props {
   article: any;
@@ -22,6 +23,8 @@ const {
   imageSize = 'medium',
   className = ''
 } = Astro.props;
+
+const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
 
 /**
  * Format date based on locale
@@ -62,7 +65,7 @@ function getArticleUrl(article: any, locale: Locale): string {
     const businessSegment = (article.business_type || article.business_type_name || 'article')
       .toString()
       .toLowerCase();
-    return `/${locale}/${businessSegment}/${article.slug}`;
+    return `/${locale}/${businessSegment}/${article.slug}-${promoteCode}`;
   }
   return '#';
 }

@@ -32,10 +32,17 @@ const pageLanguage: LearnLanguageCode =
     ? rawLang
     : defaultLangForLocale
 
+let actualSlug = slug
+
+const slugParts = slug.split('-')
+if (slugParts.length > 1) {
+  actualSlug = slugParts.slice(0, -1).join('-')
+}
+
 // Fetch learn item (base language)
 let learnItem = null as any
 try {
-  learnItem = await fetchLearnItem(locale, slug)
+  learnItem = await fetchLearnItem(locale, actualSlug)
   if (!learnItem) {
     return Astro.redirect('/404')
   }
@@ -67,7 +74,7 @@ const learnLang = pageLanguage
 // SEO optimization
 const title = `${learnItem.title} | Learn | deTake`
 const description = learnItem.description
-const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn/${slug}`
+const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn/${actualSlug}`
 const canonicalUrl =
   rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
     ? `${baseCanonicalUrl}?lang=${rawLang}`

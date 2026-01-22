@@ -7,7 +7,7 @@ import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
-import { SITE_CONFIG } from '@/config/constants'
+import { SITE_CONFIG, DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
@@ -34,12 +34,14 @@ try {
   availableLetters = []
 }
 
+const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
+
 // SEO optimization
 const title = locale === 'us' ? 'Learn | Paragons | deTake' : '学习 | Paragons | deTake'
 const description = locale === 'us' 
   ? 'Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms'
   : '通过我们全面的术语词典学习加密货币和区块链术语'
-const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn?mask=detake`
 
 // Generate OG image
 const ogImageParams = new URLSearchParams({
@@ -125,7 +127,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                             data-description={item.description}
                           >
                             <a
-                              href={`/${locale}/learn/${item.slug}`}
+                              href={`/${locale}/learn/${item.slug}-${promoteCode}`}
                               class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
                             >
                               <h3 class="text-[20px] font-medium text-[#052019] mb-1" data-learn-title>
@@ -230,7 +232,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                           data-description={item.description}
                         >
                           <a
-                            href={`/${locale}/learn/${item.slug}`}
+                            href={`/${locale}/learn/${item.slug}-${promoteCode}`}
                             class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
                           >
                             <h3 class="text-[32px] font-medium text-[#052019] mb-2" data-learn-title>

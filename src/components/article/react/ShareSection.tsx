@@ -35,11 +35,13 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
       const u = new URL(inputUrl);
       const lastSeg = (u.pathname.split('/').pop() || '').trim();
       const match = lastSeg.match(/-([^-]+)$/);
-      return match ? match[1] : null;
+      const code = match ? match[1] : null;
+      return code || null;
     } catch {
       // Fallback: best-effort extraction from a plain string
       const match = inputUrl.match(/([^/]+?)-([^-]+)(?:\?|#|$)/);
-      return match ? match[2] : null;
+      const code = match ? match[2] : null;
+      return code || null;
     }
   };
 
@@ -49,8 +51,49 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
    */
   const evaluateShouldShowPrompt = (targetUrl: string, userCode?: string | null, loggedIn?: boolean) => {
     const urlPromoCode = getPromoCodeFromUrl(targetUrl);
-    return !!(loggedIn && !(urlPromoCode && userCode && urlPromoCode === userCode));
+    const urlMaskCode = (() => {
+      try {
+        const urlObj = new URL(targetUrl);
+        const maskValue = urlObj.searchParams.get('mask');
+        return maskValue && maskValue.length > 0 ? maskValue : null;
+      } catch {
+        const match = targetUrl.match(/[?&]mask=([^&#]+)/);
+        return match && match[1] ? match[1] : null;
+      }
+    })();
+    const isUserCodeMatch = (code?: string | null) => !!(code && userCode && code === userCode);
+    return !!(loggedIn && !(isUserCodeMatch(urlPromoCode) || isUserCodeMatch(urlMaskCode)));
   };
+
+  // 将分享链接的域名替换为当前访问域名，避免环境配置导致的域名不一致
+  const normalizeShareUrl = (inputUrl: string) => {
+    if (typeof window === 'undefined') return inputUrl;
+    try {
+      const parsedUrl = new URL(inputUrl, window.location.href);
+      return `${window.location.origin}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+    } catch {
+      return inputUrl;
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      setShareUrl((prev) => normalizeShareUrl(prev));
+      return;
+    }
+    const currentHref = window.location.href;
+    const shouldUseCurrent = (() => {
+      try {
+        const urlObj = new URL(currentHref);
+        if (urlObj.searchParams.has('mask')) return true;
+      } catch {
+        if (/[?&]mask=/.test(currentHref)) return true;
+      }
+      return !!getPromoCodeFromUrl(currentHref);
+    })();
+    const nextUrl = shouldUseCurrent ? currentHref : url;
+    setShareUrl(normalizeShareUrl(nextUrl));
+  }, [url]);
 
   // Local state for controlling the prompt visibility so we can update it right after actions.
   const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(() => evaluateShouldShowPrompt(shareUrl, myPromoteCode, isEffectivelyLoggedIn));
@@ -75,7 +118,6 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
       u.pathname = pathname.slice(0, lastSlashIdx + 1) + updatedLastSeg;
       return u.toString();
     } catch {
-      // Fallback for unexpected input; perform a safe string replace on the last '-' segment
       return inputUrl.replace(/([^/]+?)(-[^-]+)?(\?[^#]*)?(#.*)?$/, (_m, base, _oldCode, qs = '', hash = '') => {
         const updated = /-[^-]+$/.test(base) ? base.replace(/-[^-]+$/, `-${newCode}`) : `${base}-${newCode}`;
         return updated + qs + hash;
@@ -89,27 +131,46 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
    * and hides itself when the link already contains the user's code.
    */
   const handleGenerateMyCode = () => {
-    const targetCode = myPromoteCode || 'ABCDE';
-    const replaced = replaceLastPromoCodeInUrl(shareUrl, targetCode);
-    setShareUrl(replaced);
+    const targetCode = myPromoteCode || 'detake';
+    const hasMaskParam = (() => {
+      try {
+        const urlObj = new URL(shareUrl, typeof window === 'undefined' ? 'https://detake.news' : window.location.href);
+        return urlObj.searchParams.has('mask');
+      } catch {
+        return /[?&]mask=/.test(shareUrl);
+      }
+    })();
+    const replaced = hasMaskParam ? shareUrl : replaceLastPromoCodeInUrl(shareUrl, targetCode);
+    const replacedWithMask = (() => {
+      try {
+        const urlObj = new URL(replaced, typeof window === 'undefined' ? 'https://detake.news' : window.location.href);
+        if (!urlObj.searchParams.has('mask')) return replaced;
+        urlObj.searchParams.set('mask', targetCode);
+        return urlObj.toString();
+      } catch {
+        if (!/[?&]mask=/.test(replaced)) return replaced;
+        return replaced.replace(/([?&]mask=)[^&#]*/g, `$1${targetCode}`);
+      }
+    })();
+    setShareUrl(replacedWithMask);
 
     // Immediately update the prompt state after generating new link
-    setShouldShowPrompt(evaluateShouldShowPrompt(replaced, myPromoteCode, isEffectivelyLoggedIn));
+    setShouldShowPrompt(evaluateShouldShowPrompt(replacedWithMask, myPromoteCode, isEffectivelyLoggedIn));
 
     // Update browser address bar URL - only update the pathname to avoid CORS issues
     if (typeof window !== 'undefined' && window.history) {
       try {
         // Extract pathname from the replaced URL
-        const urlObj = new URL(replaced);
+        const urlObj = new URL(replacedWithMask);
         const newPath = urlObj.pathname + urlObj.search + urlObj.hash;
         window.history.pushState(null, '', newPath);
       } catch (error) {
         console.warn('Failed to update browser URL:', error);
         // Fallback: just update the hash or search params if possible
         const currentUrl = new URL(window.location.href);
-        const replacedUrl = new URL(replaced);
+        const replacedUrl = new URL(replacedWithMask);
         if (currentUrl.origin === replacedUrl.origin) {
-          window.history.pushState(null, '', replaced);
+          window.history.pushState(null, '', replacedWithMask);
         }
       }
     }
@@ -184,7 +245,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
           {/* Share to X Platform Button */}
           <svg
             onClick={() => {
-              const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+              const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`;
 
               // Track Twitter share event
               try {
@@ -192,7 +253,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
                   (window as any).detakeAnalytics.trackEvent(TRACKING_EVENTS.ARTICLE_SHARE, {
                     platform: 'twitter',
                     articleTitle: title,
-                    articleUrl: url,
+                    articleUrl: shareUrl,
                     shareUrl: twitterShareUrl,
                   });
                 }
