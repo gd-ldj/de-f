@@ -58,6 +58,10 @@ function formatDate(dateString: string, locale: Locale): string {
  * @param {any} article - Article object
  * @param {Locale} locale - Current locale
  * @returns {string} Article URL
+ *
+ * URL formats:
+ * - Admin/System articles: /{locale}/{business}/{slug}-{promoteCode}
+ * - User articles: /{locale}/{userId}/{business}/{slug}-{promoteCode}
  */
 function getArticleUrl(article: any, locale: Locale): string {
   if (article.url) return article.url;
@@ -65,7 +69,14 @@ function getArticleUrl(article: any, locale: Locale): string {
     const businessSegment = (article.business_type || article.business_type_name || 'article')
       .toString()
       .toLowerCase();
-    return `/${locale}/${businessSegment}/${article.slug}-${promoteCode}`;
+
+    // If article has user_id, it's a regular user article
+    if (article.user_id) {
+      return `/${locale}/${article.user_id}/article/${businessSegment}/${article.slug}-${promoteCode}`;
+    }
+
+    // Otherwise, it's an admin/system article
+    return `/${locale}/article/${businessSegment}/${article.slug}-${promoteCode}`;
   }
   return '#';
 }

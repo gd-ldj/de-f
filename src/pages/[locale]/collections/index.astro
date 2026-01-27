@@ -120,15 +120,15 @@ try {
                         </div>
                       </div>
                       <div class="p-4">
-                        <div class="flex flex-col justify-between h-full">
-                          <h2 class="text-[20px] font-medium leading-snug text-[#052019]">
+                        <div class="flex flex-col justify-between h-full mb-4">
+                          <h2 class="text-[20px] font-medium leading-snug text-[#052019] line-clamp-1">
                             {item.name}
                           </h2>
-                          <p class="mt-[10px] text-[14px] leading-[18px] text-[#909399]">
+                          <p class="mt-[10px] text-[14px] leading-[18px] text-[#909399] line-clamp-2">
                             {item.description}
                           </p>
                          </div>
-                        <div class="rounded-[2px] bg-white/40 p-3 flex items-center gap-20">
+                        <div class="rounded-[2px] bg-white p-3 flex items-center gap-24">
                           <div class="flex items-center gap-3">
                             <div class="w-[26px] h-[26px] rounded-[2px] flex items-center justify-center overflow-hidden">
                               <img
@@ -163,8 +163,8 @@ try {
                 </div>
 
                 {/* Desktop layout */}
-                <div class="hidden md:flex md:flex-row">
-                  <div class="flex-1 flex flex-col justify-between" style={`background-color: ${cardBackgrounds[index % cardBackgrounds.length]};`}>
+                <div class="hidden md:flex md:flex-row h-[260px]">
+                  <div class="flex-1 flex flex-col" style={`background-color: ${cardBackgrounds[index % cardBackgrounds.length]};`}>
                     <div class="px-4 md:px-5 pt-4 md:pt-5 pb-4 flex items-start justify-between">
                       <div class="flex flex-col gap-4">
                         <div class="w-10 h-10 rounded-[2px] overflow-hidden bg-black flex items-center justify-center">
@@ -176,10 +176,10 @@ try {
                           />
                         </div>
                         <div class="max-w-full">
-                          <h2 class="text-base md:text-[24px] font-medium text-[#052019]">
+                          <h2 class="text-base md:text-[24px] font-medium text-[#052019] line-clamp-1">
                             {item.name}
                           </h2>
-                          <p class="text-xs md:text-sm text-gray-600 mt-[10px] whitespace-nowrap overflow-hidden text-ellipsis">
+                          <p class="text-xs md:text-sm text-gray-600 mt-[10px] line-clamp-2">
                             {item.description}
                           </p>
                         </div>
@@ -196,7 +196,7 @@ try {
                         <span>{item.views_count}</span>
                       </div>
                     </div>
-                    <div class="px-4 md:px-5 py-4">
+                    <div class="px-4 md:px-5 pb-4 mt-auto">
                       <div class="bg-white rounded-[2px] p-3 flex items-center gap-24 text-xs text-gray-700">
                         <div class="flex items-center gap-3">
                           <div class="w-[26px] h-[26px] rounded-[2px] overflow-hidden">
@@ -225,7 +225,7 @@ try {
                       </div>
                     </div>
                   </div>
-                  <div class="flex-1 w-full md:w-[476px] h-[260px] bg-black relative">
+                  <div class="md:w-[476px] h-[260px] bg-black relative flex-shrink-0">
                     <img
                       src={item.image_url}
                       alt={item.name}

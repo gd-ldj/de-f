@@ -58,16 +58,21 @@ function updateAllArticleLinks() {
     links.forEach(link => {
       const slug = link.dataset.slug;
       const locale = link.dataset.locale;
+      const business = (link.dataset.business || 'news').toLowerCase();
+      const authorId = link.dataset.authorId;
       
       if (slug && locale) {
         const oldHref = link.href;
-        const newUrl = `/${locale}/news/${slug}-${currentPromoteCode}`;
+        const prefix = authorId ? `/${locale}/${authorId}/article` : `/${locale}/article`;
+        const newUrl = `${prefix}/${business}/${slug}-${currentPromoteCode}`;
         link.href = newUrl;
         
         // Uncomment for debugging
         // console.log('[ArticleLink] Updated link:', {
         //   slug,
         //   locale,
+        //   business,
+        //   authorId,
         //   oldHref,
         //   newHref: newUrl,
         //   promoteCode: currentPromoteCode

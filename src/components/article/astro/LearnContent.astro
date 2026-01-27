@@ -69,7 +69,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         <span class="text-muted-foreground">/ {locale === 'us' ? 'By' : '作者'}</span>
         <span class="text-foreground uppercase">{learnItem?.author?.name}</span>
       </p>
-      <div class="ml-auto flex items-center">
+      <div class="ml-auto hidden md:flex items-center">
         <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
           {languageButtons.map(({ code, label }) => (
             <a
@@ -88,6 +88,21 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
 
 
   </header>
+
+  <div class="md:hidden fixed right-4 top-3 z-50">
+    <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+      {languageButtons.map(({ code, label }) => (
+        <a
+          href={`${baseLearnPath}?lang=${code}`}
+          class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
+            learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
+          }`}
+        >
+          {label}
+        </a>
+      ))}
+    </div>
+  </div>
 
   <section class="mb-10 px-4 md:px-6">
     <div class="max-w-none" set:html={renderedContent} />

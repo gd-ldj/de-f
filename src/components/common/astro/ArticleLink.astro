@@ -6,21 +6,34 @@ interface Props {
   slug: string
   locale: Locale
   business: string
+  userId?: string // User ID for regular user articles
   children?: any
   class?: string
   onClick?: string
 }
 
-const { slug, locale, business, class: className = '', onClick } = Astro.props
+const { slug, locale, business, userId, class: className = '', onClick } = Astro.props
 
 /**
  * Generate article URL with promote code from cookies (SSR-friendly)
  * This ensures the URL is generated correctly on the server side
+ *
+ * URL formats:
+ * - Admin/System articles: /{locale}/{business}/{slug}-{promoteCode}
+ * - User articles: /{locale}/{userId}/{business}/{slug}-{promoteCode}
  */
 const getArticleUrl = (slug: string) => {
   // Get promote code from cookies (SSR-compatible) or use default
   const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
-  return `/${locale}/${business.toLowerCase()}/${slug}-${promoteCode}`
+  const businessPath = business.toLowerCase()
+
+  // If userId exists, it's a regular user article
+  if (userId) {
+    return `/${locale}/${userId}/article/${businessPath}/${slug}-${promoteCode}`
+  }
+
+  // Otherwise, it's an admin/system article
+  return `/${locale}/article/${businessPath}/${slug}-${promoteCode}`
 }
 
 const articleUrl = getArticleUrl(slug)
@@ -33,6 +46,8 @@ const articleUrl = getArticleUrl(slug)
   data-article-link="true"
   data-slug={slug}
   data-locale={locale}
+  data-business={business.toLowerCase()}
+  data-author-id={userId}
 >
   <slot />
 </a>

@@ -60,7 +60,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         )}
       </div>
 
-      <div class="flex items-center">
+      <div class="hidden md:flex items-center">
         <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
           {languageButtons.map(({ code, label }) => (
             <a
@@ -76,6 +76,21 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
       </div>
     </nav>
 
+    <div class="md:hidden fixed right-4 top-[18px] z-500">
+      <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+        {languageButtons.map(({ code, label }) => (
+          <a
+            href={`${baseArticlePath}?lang=${code}`}
+            class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
+              articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
+            }`}
+          >
+            {label}
+          </a>
+        ))}
+      </div>
+    </div>
+
     <!-- Title -->
     <h1 class="text-[32px] md:text-[48px] font-medium tracking-tight text-foreground mb-[10px] md:mb-4 leading-tight">
       {article.title}
@@ -83,7 +98,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
  
      <!-- Author and Date - Mobile: above title, Desktop: below tags -->
      <div class="md:hidden mb-[10px] md:mb-4">
-       <div class="flex items-center space-x-1">
+       <div class="flex items-center space-x-1 truncate">
          <time 
            class="text-[12px] text-muted-foreground" 
            datetime={article.created_at}

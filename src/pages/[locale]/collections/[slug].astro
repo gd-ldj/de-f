@@ -7,7 +7,7 @@ import Footer from '@/components/common/react/footer/Index'
 import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { SITE_CONFIG } from '@/config/constants'
-import { fetchCollectionArticles } from '@/api/collections'
+import { fetchCollectionArticles, fetchCollections } from '@/api/collections'
 import { formatDate } from '@/utils/util'
 import CollectionArticlesList from '@/components/collections/CollectionArticlesList'
 
@@ -20,10 +20,34 @@ if (!validLocales.includes(locale)) {
 
 const t = createTranslator(locale)
 
-const collectionItem = {
-  title: 'ZKCandy Ecosystem',
-  description: 'Dive into the ZKCandy Ecosystem & grow your onchain presence.'
+// 从接口获取合集元信息（名称、描述等），避免写死
+const resolveCollectionItem = async (id: string) => {
+  try {
+    const { items } = await fetchCollections(1, 100)
+    const found = items.find((item) => item.id === id)
+    if (found) {
+      return {
+        title: found.name,
+        description: found.description,
+        logo_url: found.logo_url,
+        image_url: found.image_url,
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch collection item:', error)
+  }
+  // Fallback：用 slug 兜底标题，描述为空
+  const fallbackTitle = slug
+    .split('-')
+    .map((w) => (w.toLowerCase() === 'ai' ? 'AI' : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(' ')
+  return {
+    title: fallbackTitle,
+    description: '',
+  }
 }
+
+const collectionItem = await resolveCollectionItem(slug)
 
 let collectionArticles: ApiArticle[] = []
 let collectionTotal = 0

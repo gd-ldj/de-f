@@ -3,31 +3,34 @@ import BaseLayout from '@/layouts/BaseLayout.astro'
 import AuthMount from '@/components/common/react/AuthMount'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
-import ArticleSidebar from '@/components/article/react/ArticleSidebar'
+import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { fetchArticle, fetchTranslatedArticle } from '@/api/articles'
 import type { Locale } from '@/types'
-import Footer from '@/components/common/react/footer/Index';
-import RecentResearch from '@/components/article/astro/RecentResearch.astro';
+import Footer from '@/components/common/react/footer/Index'
 import { SITE_CONFIG } from '@/config/constants'
 
-export const prerender = false
+interface Props {
+  locale: Locale
+  category: string
+  slug: string
+  userId?: string
+}
 
-const { params, url } = Astro
-const { locale, category, slug } = params as { locale: Locale; category: string; slug: string }
+const { locale, category, slug, userId } = Astro.props as Props
+const { url } = Astro
 
-// Validate category
 const validCategories = ['insights', 'news', 'research']
 if (!validCategories.includes(category.toLowerCase())) {
   return Astro.redirect('/404')
 }
 
 let actualSlug = slug
-let promoteCode = null
+let promoteCode = null as string | null
 
 const slugParts = slug.split('-')
 if (slugParts.length > 1) {
   const lastPart = slugParts[slugParts.length - 1]
-  if (lastPart && lastPart.length >= 5) {
+  if (lastPart) {
     promoteCode = lastPart
     actualSlug = slugParts.slice(0, -1).join('-')
   }
@@ -71,28 +74,29 @@ if (pageLanguage !== baseArticleLanguage) {
 
 const articleLang = pageLanguage
 
-const categoryDisplayName = category  ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News'
+const categoryDisplayName = category ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News'
 
 const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
-const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/${category}/${actualSlug}`
+const pathPrefix = userId ? `/${locale}/${userId}/article/${category}/${actualSlug}` : `/${locale}/article/${category}/${actualSlug}`
+const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}${pathPrefix}`
 const canonicalUrl =
   rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
     ? `${baseCanonicalUrl}?lang=${rawLang}`
     : baseCanonicalUrl
 
-// Dynamically generate OG image
 const ogImageParams = new URLSearchParams({
   title: article.title,
   description: article.sub_title,
   category: categoryDisplayName,
-  author: article?.author?.name || article.author_name || 'DeTake'
-});
+  author: article?.author?.name || article.author_name || 'DeTake',
+})
 const ogImageUrl = article.img_url
-  ? (article.img_url.startsWith('http') ? article.img_url : `${SITE_CONFIG.SITE_URL}${article.img_url}`)
+  ? article.img_url.startsWith('http')
+    ? article.img_url
+    : `${SITE_CONFIG.SITE_URL}${article.img_url}`
   : `${SITE_CONFIG.SITE_URL}/api/og/article.svg?${ogImageParams.toString()}`
 
-// Extract keywords and tags
 const keywords = article.tags || []
 const publishedTime = article.created_at
 const modifiedTime = article.updated_at
@@ -114,10 +118,7 @@ const author = article?.author?.name || article.author_name
   keywords={keywords}
   articleSection={categoryDisplayName}
 >
-  <!-- React mount point for Header - Move to outermost layer to ensure sticky effect -->
-  <!-- React Header - Independent loading -->
   <HeaderWithFallback locale={locale} />
-  <!-- AuthMount manages wallet-related buttons and share, author components -->
   <AuthMount 
     client:load 
     userButtonTargetId="user-button-root"
@@ -138,7 +139,6 @@ const author = article?.author?.name || article.author_name
   <main class="min-h-screen mt-[56px] md:mt-[97px]">
     <div class="max-w-[1440px] mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-3">
-        <!-- Left Column - Article Content (SSR/ISR for SEO) -->
         <div class="lg:col-span-2 pt-5 md:pt-8 md:py-5 px-4 md:px-6 border border-t-0 border-border">
           <ArticleContent 
             article={article} 
@@ -150,12 +150,9 @@ const author = article?.author?.name || article.author_name
           />
         </div>
         
-        <!-- Right Column - Data Display (React Components) -->
         <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
           <div class="top-8">
-            <!-- Share Section mount: rendered via AuthMount under PrivyProvider -->
             <div id="share-section-root" class=""></div>
-            <!-- <ArticleSidebar locale={locale} client:load /> -->
             <div class="px-6 p-5">
               <RecentResearch locale={locale} currentEntryId={article.entry_id} limit={4} />
             </div>
@@ -164,45 +161,6 @@ const author = article?.author?.name || article.author_name
       </div>
     </div>
   </main>
-  <!-- Footer -->
-      <Footer client:load />
+  <Footer client:load />
 </BaseLayout>
 
-<style>
-  .prose {
-    color: hsl(var(--foreground));
-  }
-  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-    color: hsl(var(--foreground));
-    font-weight: 600;
-  }
-  .prose p {
-    margin-bottom: 1rem;
-    line-height: 1.625;
-  }
-  .prose a {
-    color: hsl(var(--primary));
-    text-decoration: none;
-  }
-  .prose a:hover {
-    text-decoration: underline;
-  }
-  .prose blockquote {
-    border-left: 4px solid hsl(var(--primary));
-    padding-left: 1rem;
-    font-style: italic;
-    color: hsl(var(--muted-foreground));
-  }
-  .prose code {
-    background-color: hsl(var(--secondary));
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-  }
-  .prose pre {
-    background-color: hsl(var(--secondary));
-    padding: 1rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-  }
-</style>

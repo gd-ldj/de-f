@@ -1,0 +1,8 @@
+---
+import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro'
+import type { Locale } from '@/types'
+
+const { locale, userId, category, slug } = Astro.params as { locale: Locale; userId: string; category: string; slug: string }
+---
+
+<BaseArticlePage locale={locale} category={category} slug={slug} userId={userId} />

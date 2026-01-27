@@ -89,7 +89,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
 
                 {/* Article meta info */}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-1 truncate">
                     <span data-date={article.created_at} data-locale={locale}>
                       {formatDate(article.created_at, locale)}
                     </span>

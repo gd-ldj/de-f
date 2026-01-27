@@ -30,13 +30,33 @@ export function formatDate(date: Date | string, locale: string = 'en-US'): strin
  * Generate article URL with locale and promote code
  * @param slug - Article slug
  * @param locale - Current locale
+ * @param business - Business type (news/insights/research)
+ * @param userId - Optional user ID for regular user articles
  * @param promoteCode - Optional promote code, will use default if not provided
  * @returns Article URL with promote code parameter
+ *
+ * URL formats:
+ * - Admin/System articles: /{locale}/{business}/{slug}-{promoteCode}
+ * - User articles: /{locale}/{userId}/{business}/{slug}-{promoteCode}
  */
-export const getArticleUrl = (slug: string, locale: string, promoteCode?: string) => {
+export const getArticleUrl = (
+  slug: string,
+  locale: string,
+  business: string = 'news',
+  userId?: string,
+  promoteCode?: string
+) => {
   // Use provided promote code or default
   const finalPromoteCode = promoteCode || DEFAULT_PROMOTE_CODE
-  return `/${locale}/news/${slug}-${finalPromoteCode}`
+  const businessPath = business.toLowerCase()
+
+  // If userId exists, it's a regular user article
+  if (userId) {
+    return `/${locale}/${userId}/${businessPath}/${slug}-${finalPromoteCode}`
+  }
+
+  // Otherwise, it's an admin/system article
+  return `/${locale}/${businessPath}/${slug}-${finalPromoteCode}`
 }
 
 /**

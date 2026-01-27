@@ -12,15 +12,13 @@ import { SITE_CONFIG } from '@/config/constants';
  * @param promoteCode Optional promote code (defaults to DEFAULT_PROMOTE_CODE)
  * @returns Canonical article URL
  */
-export function getCanonicalArticleUrl(
-  slug: string,
-  locale: Locale,
-  category: string = 'news',
-  promoteCode?: string
-): string {
-  const normalizedCategory = category.toLowerCase()
-  const normalizedSlug = promoteCode ? `${slug}-${promoteCode}` : slug
-  return `/${locale}/${normalizedCategory}/${normalizedSlug}`
+export function getCanonicalArticleUrl(slug: string, locale: Locale, category: string = 'news', promoteCode?: string, userId?: string): string {
+  const normalizedCategory = category.toLowerCase();
+  const normalizedSlug = promoteCode ? `${slug}-${promoteCode}` : slug;
+  if (userId) {
+    return `/${locale}/${userId}/article/${normalizedCategory}/${normalizedSlug}`;
+  }
+  return `/${locale}/article/${normalizedCategory}/${normalizedSlug}`;
 }
 
 /**
@@ -40,11 +38,12 @@ export function generateArticleStructuredData(
     img_url?: string;
     author?: string;
     category?: string;
+    user_id?: string;
   },
   locale: Locale,
-  baseUrl: string = SITE_CONFIG.SITE_URL
+  baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category)}`;
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, undefined, article.user_id)}`;
 
   return {
     '@context': 'https://schema.org',
@@ -88,11 +87,12 @@ export function generateArticleMetaTags(
     slug: string;
     img_url?: string;
     category?: string;
+    user_id?: string;
   },
   locale: Locale,
-  baseUrl: string = SITE_CONFIG.SITE_URL
+  baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category)}`;
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, undefined, article.user_id)}`;
   const imageUrl = article.img_url ? `${baseUrl}${article.img_url}` : `${baseUrl}/og-default.png`;
 
   return {
@@ -128,12 +128,13 @@ export function generateSitemapEntry(
     slug: string;
     created_at: string;
     category?: string;
+    user_id?: string;
   },
   locale: Locale,
-  baseUrl: string = SITE_CONFIG.SITE_URL
+  baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
   return {
-    url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category)}`,
+    url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, undefined, article.user_id)}`,
     lastmod: article.created_at,
     changefreq: 'weekly' as const,
     priority: 0.8,
@@ -147,14 +148,9 @@ export function generateSitemapEntry(
  * @param baseUrl Site base URL
  * @returns Alternate language links
  */
-export function generateAlternateLinks(
-  slug: string,
-  locales: Locale[],
-  baseUrl: string = SITE_CONFIG.SITE_URL,
-  category: string = 'news'
-) {
+export function generateAlternateLinks(slug: string, locales: Locale[], baseUrl: string = SITE_CONFIG.SITE_URL, category: string = 'news', userId?: string) {
   return locales.map((locale) => ({
     hreflang: locale,
-    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale, category)}`,
+    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale, category, undefined, userId)}`,
   }));
 }

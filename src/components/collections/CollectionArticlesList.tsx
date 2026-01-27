@@ -83,14 +83,8 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 )}
                 <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex flex-wrap gap-3 items-center text-[12px] font-semibold tracking-wide">
-                      <span className="uppercase text-white">{article.category_name}</span>
-                      {article.tags &&
-                        article.tags.slice(0, 2).map((tag) => (
-                          <span key={tag} className="uppercase text-white">
-                            {tag}
-                          </span>
-                        ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[12px] font-medium tracking-wide text-white uppercase truncate">{[article.category_name, ...(article.tags ? article.tags.slice(0, 2) : [])].join('  ')}</div>
                     </div>
                     <div className="text-[11px] text-white/80 whitespace-nowrap">
                       {new Date(article.created_at).toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })} / <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
@@ -98,7 +92,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                   </div>
                 </div>
               </div>
-              <div className="py-4 md:py-5">
+              <div className="pt-4 md:py-5">
                 <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
                   <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-1">
                     {article.title}
@@ -108,16 +102,16 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
               </div>
             </article>
           ) : (
-            <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow">
-              <div className="flex gap-3 md:block">
-                <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48 rounded-[2px]">
+            <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow h-full">
+              <div className="flex gap-3 md:flex-col h-full">
+                <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-[128px] rounded-[2px]">
                   {article.img_url && (
                     <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors rounded">
                       <img src={article.img_url} alt={article.title} className="w-full h-full object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </a>
                   )}
                 </div>
-                <div className="flex-1 md:mt-5">
+                <div className="flex-1 md:mt-5 flex flex-col">
                   <div className="flex flex-wrap gap-1 md:gap-2">
                     <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{article.category_name}</span>
                     {article.tags && article.tags.length > 0 && (
@@ -130,7 +124,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                       </div>
                     )}
                   </div>
-                  <div className="pt-1">
+                  <div className="pt-1 flex flex-col h-full">
                     <h3 className="text-[16px] md:text-[18px] font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
                       <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors">
                         {article.title}
@@ -139,8 +133,8 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                     <div className="hidden md:block">
                       <p className=" text-muted-foreground text-[12px] md:text-[14px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title}</p>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <div className="flex items-center space-x-1">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
+                      <div className="flex items-center space-x-1 truncate">
                         <span>{formatDate(article.created_at, locale)}</span>
                         <span className="">{`/ ${t('article.by')} `}</span>
                         <span className="text-foreground uppercase">{article.author?.name || article.author_name}</span>
@@ -154,7 +148,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
         )}
       </div>
       <div ref={sentinelRef} className="h-10 mt-4 md:mt-6 flex items-center justify-center text-xs text-muted-foreground">
-        {loading && (locale === 'us' ? 'Loading...' : '加载中...')}
+        <span className="h-10 mt-4 md:mt-6">{loading && (locale === 'us' ? 'Loading...' : '加载中...')}</span>
         {/* {!hasMore && !loading && articles.length > 0 && (
           <span>{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>
         )} */}

@@ -19,6 +19,7 @@ export interface ApiArticle {
   language?: string;
   page_view?: string;
   unique_vistor?: string;
+  user_id?: string; // User ID for regular user articles (not present for admin/system articles)
   contact?: {
     email: string;
     phone: string;
