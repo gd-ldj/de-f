@@ -48,7 +48,6 @@ export async function fetchCollectionArticles(locale: Locale, collectionId: stri
         next?: boolean;
       };
     } = await response.json();
-    console.log('🚀 ~ fetchCollectionArticles ~ result:', result);
 
     if (result.code === 2000 && result.data) {
       const list = result.data.list || [];
