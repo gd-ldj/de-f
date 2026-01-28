@@ -15,20 +15,14 @@ interface CollectionArticlesListProps {
 
 const ITEMS_PER_PAGE = 11;
 
-/**
- * 合集文章列表组件（移动端支持滚动触底自动加载）
- */
 const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale, collectionId, initialArticles, hasMore: initialHasMore }) => {
   const [articles, setArticles] = useState<ApiArticle[]>(initialArticles || []);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(initialArticles && initialArticles.length > 0 ? 1 : 0);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const t = createTranslator(locale);
   const [promoteCode, _] = useAtom(persistedPromoteCodeAtom);
-  /**
-   * 加载更多合集文章（用于移动端无限滚动）
-   */
   const loadMoreArticles = async () => {
     if (loading || !hasMore) return;
     setLoading(true);
@@ -46,6 +40,34 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (initialArticles && initialArticles.length > 0) return;
+    let cancelled = false;
+    const loadInitialArticles = async () => {
+      setLoading(true);
+      try {
+        const response = await fetchCollectionArticles(locale, collectionId, 1, ITEMS_PER_PAGE);
+        if (cancelled) return;
+        const firstArticles = response.articles || [];
+        setArticles(firstArticles);
+        setPage(1);
+        setHasMore(response.hasMore);
+      } catch (error) {
+        if (!cancelled) {
+          setHasMore(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+    loadInitialArticles();
+    return () => {
+      cancelled = true;
+    };
+  }, [collectionId, locale, initialArticles]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

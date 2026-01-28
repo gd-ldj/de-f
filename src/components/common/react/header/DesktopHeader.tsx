@@ -34,6 +34,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const collectionsDropdownRef = React.useRef<HTMLDivElement>(null);
   const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
 
+  const pathSegments = currentPath.split('/');
+  const collectionsIndex = pathSegments.indexOf('collections');
+  const activeCollectionId = collectionsIndex >= 0 && pathSegments.length > collectionsIndex + 1 ? pathSegments[collectionsIndex + 1] : null;
+
   // Handle click outside to close dropdowns
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -264,11 +268,11 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
               {/* Collections Dropdown Menu */}
               {collectionsDropdownOpen && (
-                <div className="absolute -right-1 w-50 z-50 px-1">
-                  <div className="mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+                <div className="absolute -right-1 z-50 px-1">
+                  <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[192px] w-max">
                     <div className="py-1">
                       {headerCollectionItems.map((item) => (
-                        <a key={item.id} href={`/${locale}/collections/${item.id}`} className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors" onClick={() => setCollectionsDropdownOpen(false)}>
+                        <a key={item.id} href={`/${locale}/collections/${item.id}`} className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors whitespace-nowrap ${activeCollectionId === item.id ? 'text-primary font-medium bg-gray-50' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
                           {item.name}
                         </a>
                       ))}

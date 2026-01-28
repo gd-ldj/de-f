@@ -50,7 +50,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
             <span>/</span>
             <a href={`/${locale}/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
             <span>/</span>
-            <a href="javascript:;" class="hover:text-primary">{article.category_name}</a>
+            <a href="javascript:;" class="text-primary">{article.category_name}</a>
           </>
         ) : (
           <>
@@ -58,7 +58,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
             <span>/</span>
             <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
             <span>/</span>
-            <a href="javascript:;" class="hover:text-primary">{article.category_name}</a>
+            <a href="javascript:;" class="text-primary">{article.category_name}</a>
           </>
         )}
       </div>

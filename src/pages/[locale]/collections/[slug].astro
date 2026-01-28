@@ -2,12 +2,12 @@
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import AuthMount from '@/components/common/react/AuthMount'
-import type { Locale, ApiArticle } from '@/types'
+import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { SITE_CONFIG } from '@/config/constants'
-import { fetchCollectionArticles, fetchCollections } from '@/api/collections'
+import { fetchCollections } from '@/api/collections'
 import { formatDate } from '@/utils/util'
 import CollectionArticlesList from '@/components/collections/CollectionArticlesList'
 
@@ -48,16 +48,6 @@ const resolveCollectionItem = async (id: string) => {
 }
 
 const collectionItem = await resolveCollectionItem(slug)
-
-let collectionArticles: ApiArticle[] = []
-let collectionHasMore = false
-try {
-  const data = await fetchCollectionArticles(locale, slug, 1, 11)
-  collectionArticles = data.articles || []
-  collectionHasMore = data.hasMore
-} catch (error) {
-  console.error('Failed to fetch collection articles:', error)
-}
 
 const title = `${collectionItem.title} | Collections | deTake`
 const description = collectionItem.description
@@ -120,8 +110,8 @@ export const prerender = false
             client:load
             locale={locale}
             collectionId={slug}
-            initialArticles={collectionArticles}
-            hasMore={collectionHasMore}
+            initialArticles={[]}
+            hasMore={true}
           />
         </div>
         
