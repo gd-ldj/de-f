@@ -8,9 +8,10 @@ interface Props {
   learnItem: LearnDetailItem
   locale: Locale
   learnLang?: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
+  slugWithPromote?: string
 }
 
-const { learnItem, locale, learnLang = 'en' } = Astro.props as Props
+const { learnItem, locale, learnLang = 'en', slugWithPromote } = Astro.props as Props
 
 const t = createTranslator(locale)
 
@@ -35,7 +36,9 @@ function formatLearnContent(raw: string): string {
 const renderedContent = formatLearnContent(getContent(learnItem))
 const displayDate = formatDate(learnItem.updatedAt || learnItem.createdAt, locale)
 
-const baseLearnPath = `/${locale}/learn/${learnItem.slug}`
+const baseLearnPath = slugWithPromote
+  ? `/${locale}/learn/${slugWithPromote}`
+  : `/${locale}/learn/${learnItem.slug}`
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
   { code: 'zh', label: '中' },
   { code: 'en', label: 'A' },

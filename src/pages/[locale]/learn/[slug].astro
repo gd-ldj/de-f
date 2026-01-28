@@ -33,11 +33,11 @@ const pageLanguage: LearnLanguageCode =
     : defaultLangForLocale
 
 let actualSlug = slug
-
 const slugParts = slug.split('-')
 if (slugParts.length > 1) {
   actualSlug = slugParts.slice(0, -1).join('-')
 }
+const slugWithPromote = slug
 
 // Fetch learn item (base language)
 let learnItem = null as any
@@ -129,6 +129,7 @@ function formatContent(content: string) {
             learnItem={learnItem} 
             locale={locale}
             learnLang={learnLang}
+            slugWithPromote={slugWithPromote}
           />
         </div>
         

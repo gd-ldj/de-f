@@ -11,19 +11,22 @@ interface Props {
   categoryDisplayName?: string
   slugWithPromote: string
   articleLang: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
+  userId?: string
   collection?: {
     id: string
     title?: string
   }
 }
 
-const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, collection } = Astro.props
+const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, userId, collection } = Astro.props
 
 const t = createTranslator(locale)
 
 const baseArticlePath = collection
   ? `/${locale}/collections/${collection.id}/${slugWithPromote}`
-  : `/${locale}/${category.toLowerCase()}/${slugWithPromote}`
+  : userId
+  ? `/${locale}/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
+  : `/${locale}/article/${category.toLowerCase()}/${slugWithPromote}`
 const collectionLabel = locale === 'us' ? 'Collections' : '合集'
 const collectionTitle = collection?.title || collection?.id
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [

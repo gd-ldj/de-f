@@ -147,6 +147,7 @@ const author = article?.author?.name || article.author_name
             categoryDisplayName={categoryDisplayName}
             slugWithPromote={slugWithPromote}
             articleLang={articleLang}
+            userId={userId}
           />
         </div>
         
@@ -163,4 +164,3 @@ const author = article?.author?.name || article.author_name
   </main>
   <Footer client:load />
 </BaseLayout>
-
