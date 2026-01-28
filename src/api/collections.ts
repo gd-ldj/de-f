@@ -21,6 +21,9 @@ interface CollectionsApiResponse {
 }
 
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
+const SSR_API_BASE_URL = SITE_CONFIG.SSR_API_BASE_URL || SITE_CONFIG.API_BASE_URL;
+
+const getSsrCollectionsBaseUrl = () => (typeof window === 'undefined' ? SSR_API_BASE_URL : API_BASE_URL);
 
 export async function fetchCollectionArticles(locale: Locale, collectionId: string, page: number = 1, limit: number = 11): Promise<CollectionArticlesResponse> {
   try {
@@ -80,7 +83,7 @@ export async function fetchCollections(page: number = 1, limit: number = 10): Pr
   params.set('page', String(page));
   params.set('limit', String(limit));
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/collections?${params.toString()}`, {
+  const response = await fetch(`${getSsrCollectionsBaseUrl()}/api/v1/collections?${params.toString()}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

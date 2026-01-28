@@ -1,11 +1,10 @@
 import type { UserPersonalInfo, UserPersonalInfoResponse, HomeWhoToFollow } from '../types'
 import { SITE_CONFIG } from '../config/constants'
 
-/**
- * API configuration
- * Uses environment-based configuration from SITE_CONFIG
- */
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
+const SSR_API_BASE_URL = SITE_CONFIG.SSR_API_BASE_URL || SITE_CONFIG.API_BASE_URL;
+
+const getSsrAwareBaseUrl = () => (typeof window === 'undefined' ? SSR_API_BASE_URL : API_BASE_URL);
 
 /**
  * Follow author API response type
@@ -185,12 +184,12 @@ function getMockAuthorProfile(authorIdentifier: string): AuthorProfile {
  */
 export async function fetchWhoToFollow(locale: string): Promise<HomeWhoToFollow[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/users/who-to-follow?locale=${locale}`, {
+    const response = await fetch(`${getSsrAwareBaseUrl()}/api/users/who-to-follow?locale=${locale}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-    })
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)

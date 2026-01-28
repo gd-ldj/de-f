@@ -13,11 +13,14 @@ export const SITE_CONFIG = {
 
   // API base URLs based on environment
   API_ENDPOINTS: {
-    beta: 'https://beta-api.aggregation.top',
-    web2: 'https://beta-api.aggregation.top',
+    beta: 'https://beta-api.detake.com',
+    web2: 'https://beta-api.detake.com',
     web3: 'https://api.detake.com',
     beta_dev: 'https://preview-api.detake.com',
   },
+
+  // Dedicated SSR API base URL (used only on server-side rendering)
+  SSR_API_BASE_URL: 'https://beta-ssr-api.detake.com',
 
   // Site URLs based on environment
   SITE_URLS: {

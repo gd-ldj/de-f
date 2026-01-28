@@ -1,11 +1,10 @@
 import type { ApiArticle, ArticlesResponse, Locale, ArticleCategory, ArticleBusinessType, ArticleTag, HomePageResponse, HomePageData } from '../types';
 import { SITE_CONFIG } from '../config/constants';
 
-/**
- * API configuration
- * Uses environment-based configuration from SITE_CONFIG
- */
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
+const SSR_API_BASE_URL = SITE_CONFIG.SSR_API_BASE_URL;
+
+const getApiBaseUrl = () => (typeof window === 'undefined' ? SSR_API_BASE_URL : API_BASE_URL);
 
 /**
  * Fetch articles list with advanced filtering and pagination support
@@ -71,13 +70,13 @@ export async function fetchArticles(
     if (options?.category && !options?.business_type_name) {
       queryParts.push(`business_type_name=${encodeURIComponent(options.category)}`);
     }
-
     const queryString = queryParts.join('&');
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles?${queryString}`, {
+    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles?${queryString}`, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
+      console.log('🚀 ~ fetchArticles ~ getApiBaseUrl():', getApiBaseUrl(), response);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch articles: ${response.statusText}`);
@@ -114,7 +113,7 @@ export async function fetchArticle(
     const params = new URLSearchParams();
     params.set('slug', slug);
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles/info?${params.toString()}`, {
+    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles/info?${params.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -154,7 +153,7 @@ export async function fetchTranslatedArticle(entryId: string, language: string):
     params.set('entry_id', entryId);
     params.set('language', language);
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles/translated?${params.toString()}`, {
+    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles/translated?${params.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -267,7 +266,7 @@ export async function fetchArticleTags(): Promise<ArticleTag[]> {
 export async function fetchHomePageData(locale: Locale): Promise<HomePageData | null> {
   try {
     const localeParam = locale === 'us' ? 'en' : 'zh';
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles/home?locale=${encodeURIComponent(localeParam)}`, {
+    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles/home?locale=${encodeURIComponent(localeParam)}`, {
       headers: {
         'Content-Type': 'application/json',
       },

@@ -2,6 +2,9 @@ import { SITE_CONFIG } from '@/config/constants';
 import type { Locale, ApiArticle } from '@/types';
 
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
+const SSR_API_BASE_URL = SITE_CONFIG.SSR_API_BASE_URL || SITE_CONFIG.API_BASE_URL;
+
+const getApiBaseUrl = () => (typeof window === 'undefined' ? SSR_API_BASE_URL : API_BASE_URL);
 
 export interface LearnItem {
   id: string;
@@ -61,7 +64,7 @@ export async function fetchLearnItems(locale: Locale): Promise<LearnItemsRespons
     queryParts.push(`locale=${encodeURIComponent(localeParam)}`);
 
     const queryString = queryParts.join('&');
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles?${queryString}`, {
+    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles?${queryString}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -150,7 +153,7 @@ export async function fetchLearnItem(locale: Locale, slug: string): Promise<Lear
     queryParts.push(`locale=${encodeURIComponent(localeParam)}`);
 
     const queryString = queryParts.join('&');
-    const response = await fetch(`${API_BASE_URL}/api/v1/articles/info?${queryString}`, {
+    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles/info?${queryString}`, {
       headers: {
         'Content-Type': 'application/json',
       },
