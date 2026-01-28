@@ -113,7 +113,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
          
          <p class="text-[12px] font-medium text-foreground">
            <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
-           <span class="uppercase">{article.author?.name || article.author_name}</span>
+           <span class="uppercase truncate">{article.author?.name || article.author_name}</span>
          </p>
        </div>
      </div>

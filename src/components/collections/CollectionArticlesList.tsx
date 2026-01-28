@@ -84,7 +84,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12px] font-medium tracking-wide text-white uppercase truncate">{[article.category_name, ...(article.tags ? article.tags.slice(0, 2) : [])].join('  ')}</div>
+                      <div className="text-[12px] font-medium text-white uppercase truncate">{[article.category_name, ...(article.tags ? article.tags.slice(0, 2) : [])].join('  ')}</div>
                     </div>
                     <div className="text-[11px] text-white/80 whitespace-nowrap">
                       {new Date(article.created_at).toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })} / <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
@@ -137,7 +137,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                       <div className="flex items-center space-x-1 truncate">
                         <span>{formatDate(article.created_at, locale)}</span>
                         <span className="">{`/ ${t('article.by')} `}</span>
-                        <span className="text-foreground uppercase">{article.author?.name || article.author_name}</span>
+                        <span className="text-foreground uppercase truncate">{article.author?.name || article.author_name}</span>
                       </div>
                     </div>
                   </div>

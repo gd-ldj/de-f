@@ -71,23 +71,23 @@ const topics = rawTopics.map(topic => ({
             locale={locale}
             class="flex items-start justify-between group"
           >
-            <div class="flex-1 pr-4">
+            <div class="flex-1 pr-4  min-w-0">
               <div class="flex items-start space-x-3">
                 <span class="hidden md:inline-block text-primary font-medium text-[12px] leading-none mt-1">{index + 1}</span>
-                <div class="flex-1">
+                <div class="flex-1  min-w-0">
                   <h5 class="text-foreground font-medium text-[14px] leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">
                     {article.title}
                   </h5>
                   <div class="flex items-center text-xs text-muted-foreground">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-3 h-3 mr-1 truncate" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
                     </svg>
-                    <div class="flex items-center space-x-1 truncate">
+                    <div class="flex-1 flex items-center space-x-1 truncate">
                       <span class="" data-date={article.created_at} data-locale={locale}>
                         {formatDate(article.created_at, locale)}
                       </span>
                       <span class="hidden xl:group-hover:inline-block">/ {t('article.by')} </span>
-                      <span class="hidden xl:group-hover:inline-block text-foreground uppercase">{article?.author?.name || 'detake'}</span>
+                      <span class="hidden xl:group-hover:inline-block text-foreground uppercase truncate">{article?.author?.name || 'detake'}</span>
                     </div>
                   </div>
                 </div>

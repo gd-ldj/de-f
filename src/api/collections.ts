@@ -33,7 +33,7 @@ export async function fetchCollectionArticles(locale: Locale, collectionId: stri
     params.set('limit', String(limit));
     params.set('collection_id', collectionId);
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/collections/detail?${params.toString()}`, {
+    const response = await fetch(`${getSsrCollectionsBaseUrl()}/api/v1/collections/detail?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

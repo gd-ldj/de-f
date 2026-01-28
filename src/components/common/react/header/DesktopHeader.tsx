@@ -178,6 +178,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
   const currentCategoryTypeKey = categoriesItems.find((item) => item.href === currentPath)?.key || null;
 
+  const isCategoryRouteActive = categoriesItems.some((item) => currentPath === item.href || currentPath.startsWith(`${item.href}/`) || currentPath.startsWith(`${item.href}?`)) || Boolean(currentCategoryTypeKey);
+
+  const isCollectionsRouteActive = currentPath.startsWith(`/${locale}/collections`);
+
   const handleCollectionsClick = () => {
     setCollectionsDropdownOpen(false);
     if (typeof window !== 'undefined') {
@@ -201,7 +205,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             {/* Categories Dropdown */}
             <div className="" ref={categoriesDropdownRef}>
               <button onClick={toggleCategoriesDropdown} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.allCategories} aria-expanded={categoriesDropdownOpen}>
-                <span className={`${categoriesDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{texts.navigation.allCategories}</span>
+                <span className={`${categoriesDropdownOpen ? 'text-white' :  isCategoryRouteActive ? 'text-primary' : 'text-gray-600'}`}>{texts.navigation.allCategories}</span>
                 <img src={categoriesDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -262,7 +266,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             {/* Collections Dropdown */}
             <div className="relative" ref={collectionsDropdownRef} onMouseEnter={() => setCollectionsDropdownOpen(true)} onMouseLeave={() => setCollectionsDropdownOpen(false)}>
               <button onClick={handleCollectionsClick} className={`flex items-center cursor-pointer space-x-1  text-sm px-3 h-12  transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
-                <span className={`${collectionsDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{texts.navigation.collections}</span>
+                <span className={`${collectionsDropdownOpen ? 'text-white' : isCollectionsRouteActive ? 'text-primary' : 'text-gray-600'}`}>{texts.navigation.collections}</span>
                 <img src={collectionsDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
