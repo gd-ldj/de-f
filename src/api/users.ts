@@ -1,5 +1,6 @@
 import type { UserPersonalInfo, UserPersonalInfoResponse, HomeWhoToFollow } from '../types'
 import { SITE_CONFIG } from '../config/constants'
+import { ssrFetch } from '@/lib/serverFetch';
 
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
 const SSR_API_BASE_URL = SITE_CONFIG.SSR_API_BASE_URL || SITE_CONFIG.API_BASE_URL;
@@ -184,11 +185,12 @@ function getMockAuthorProfile(authorIdentifier: string): AuthorProfile {
  */
 export async function fetchWhoToFollow(locale: string): Promise<HomeWhoToFollow[]> {
   try {
-    const response = await fetch(`${getSsrAwareBaseUrl()}/api/users/who-to-follow?locale=${locale}`, {
+    const response = await ssrFetch(`${getSsrAwareBaseUrl()}/api/users/who-to-follow?locale=${locale}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      endpointName: 'fetchWhoToFollow',
     });
 
     if (!response.ok) {

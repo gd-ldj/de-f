@@ -1,5 +1,6 @@
 import type { ApiArticle, ArticlesResponse, Locale, ArticleCategory, ArticleBusinessType, ArticleTag, HomePageResponse, HomePageData } from '../types';
 import { SITE_CONFIG } from '../config/constants';
+import { ssrFetch } from '@/lib/serverFetch';
 
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
 const SSR_API_BASE_URL = SITE_CONFIG.SSR_API_BASE_URL;
@@ -71,12 +72,12 @@ export async function fetchArticles(
       queryParts.push(`business_type_name=${encodeURIComponent(options.category)}`);
     }
     const queryString = queryParts.join('&');
-    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles?${queryString}`, {
+    const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles?${queryString}`, {
       headers: {
         'Content-Type': 'application/json',
       },
+      endpointName: 'fetchArticles',
     });
-      console.log('🚀 ~ fetchArticles ~ getApiBaseUrl():', getApiBaseUrl(), response);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch articles: ${response.statusText}`);
@@ -113,10 +114,11 @@ export async function fetchArticle(
     const params = new URLSearchParams();
     params.set('slug', slug);
 
-    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles/info?${params.toString()}`, {
+    const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles/info?${params.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
       },
+      endpointName: 'fetchArticle',
     });
 
     if (!response.ok) {
@@ -153,10 +155,11 @@ export async function fetchTranslatedArticle(entryId: string, language: string):
     params.set('entry_id', entryId);
     params.set('language', language);
 
-    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles/translated?${params.toString()}`, {
+    const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles/translated?${params.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
       },
+      endpointName: 'fetchTranslatedArticle',
     });
 
     if (!response.ok) {
@@ -266,10 +269,11 @@ export async function fetchArticleTags(): Promise<ArticleTag[]> {
 export async function fetchHomePageData(locale: Locale): Promise<HomePageData | null> {
   try {
     const localeParam = locale === 'us' ? 'en' : 'zh';
-    const response = await fetch(`${getApiBaseUrl()}/api/v1/articles/home?locale=${encodeURIComponent(localeParam)}`, {
+    const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles/home?locale=${encodeURIComponent(localeParam)}`, {
       headers: {
         'Content-Type': 'application/json',
       },
+      endpointName: 'fetchHomePageData',
     });
 
     if (!response.ok) {

@@ -122,9 +122,9 @@ function formatContent(content: string) {
   
   <main class="min-h-screen mt-[56px] md:mt-[97px]">
     <div class="max-w-[1440px] mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-3">
+      <div class="grid layout-two-column-fixed-1440">
         <!-- Left Column - Learn Content (SSR/ISR for SEO) -->
-        <div class="lg:col-span-2 pt-5 md:pt-8 md:py-5 border border-t-0 border-border">
+        <div class="pt-5 md:pt-8 md:py-5 border border-t-0 border-border">
           <LearnContent 
             learnItem={learnItem} 
             locale={locale}
@@ -134,7 +134,7 @@ function formatContent(content: string) {
         </div>
         
         <!-- Right Column - Data Display (React Components) -->
-        <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
+        <div class="border border-t-0 border-l-0 border-border">
           <div class="top-8">
             <!-- Share Section mount: rendered via AuthMount under PrivyProvider -->
             <div id="share-section-root" class=""></div>

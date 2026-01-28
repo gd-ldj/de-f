@@ -58,7 +58,8 @@
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2",
     "vite-plugin-node-polyfills": "^0.24.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@sentry/astro": "^10.33.0"
   },
   "devDependencies": {
     "@rollup/plugin-inject": "^5.0.5",

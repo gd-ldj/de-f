@@ -1,5 +1,6 @@
 import type { ApiArticle, Locale, CollectionItem } from '../types';
 import { SITE_CONFIG } from '../config/constants';
+import { ssrFetch } from '@/lib/serverFetch';
 
 interface CollectionArticlesResponse {
   collectionId: string;
@@ -83,11 +84,12 @@ export async function fetchCollections(page: number = 1, limit: number = 10): Pr
   params.set('page', String(page));
   params.set('limit', String(limit));
 
-  const response = await fetch(`${getSsrCollectionsBaseUrl()}/api/v1/collections?${params.toString()}`, {
+  const response = await ssrFetch(`${getSsrCollectionsBaseUrl()}/api/v1/collections?${params.toString()}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
+    endpointName: 'fetchCollections',
   });
 
   if (!response.ok) {

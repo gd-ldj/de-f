@@ -60,9 +60,9 @@ const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/topics/${topic}`
 
       <main class="min-h-screen mt-[56px] md:mt-[97px]">
     <div class="max-w-[1440px] mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-3">
+      <div class="grid layout-two-column-fixed-1440">
         <!-- Left Column - Article Content (SSR/ISR for SEO) -->
-        <div class="lg:col-span-2 md:py-5 md:px-6 border border-t-0 border-border">
+        <div class="md:py-5 md:px-6 border border-t-0 border-border">
           <!-- Topic Header: simplified to match visual design (breadcrumb + large title) -->
       <div class="max-w-[1440px] mx-auto px-4 py-6 border-b border-border">
         <!-- Breadcrumb -->
@@ -92,7 +92,7 @@ const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/topics/${topic}`
         </div>
         
         <!-- Right Column - Data Display (React Components) -->
-        <div class="hidden md:block lg:col-span-1 border border-t-0 border-l-0 border-border">
+        <div class="hidden md:block border border-t-0 border-l-0 border-border">
           <div class="top-8">
             <!-- Share Section mount: rendered via AuthMount under PrivyProvider -->
             <div id="share-section-root" class=""></div>

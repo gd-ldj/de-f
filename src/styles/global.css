@@ -59,6 +59,7 @@
     /* Apply global font and default to Medium weight (500) so most text uses Medium */
     font-family: var(--font-sans);
     font-weight: 400; /* Medium uses 500 */
+    line-height: 1.4;
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
@@ -114,6 +115,22 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
+}
+
+.layout-two-column-fixed-1440 {
+  grid-template-columns: minmax(0, 2fr);
+}
+
+@media (min-width: 1024px) {
+  .layout-two-column-fixed-1440 {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .layout-two-column-fixed-1440 {
+    grid-template-columns: 1000px 440px;
+  }
 }
 
 /* Global prose styles - 确保在所有设备上都能正常工作 */

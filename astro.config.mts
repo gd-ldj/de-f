@@ -4,6 +4,7 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
 import sitemap from '@astrojs/sitemap';
+import sentry from '@sentry/astro';
 
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
@@ -30,6 +31,11 @@ const devDefineConfig = defineConfig({
           asia: 'zh-CN',
         },
       },
+    }),
+    sentry({
+      project: 'detake',
+      org: 'tadle',
+      dsn: process.env.SENTRY_DSN || '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',
     }),
   ],
   i18n: {
@@ -89,6 +95,11 @@ export default isDev
               asia: 'zh-CN',
             },
           },
+        }),
+        sentry({
+          project: 'detake',
+          org: 'tadle',
+          dsn: process.env.SENTRY_DSN || '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',
         }),
       ],
       compressHTML: true, // Remove HTML comments and whitespace

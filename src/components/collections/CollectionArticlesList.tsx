@@ -71,14 +71,14 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
 
   return (
     <section className="px-4 md:px-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-x-4 md:gap-y-6">
         {articles.map((article, index) =>
           index === 0 ? (
-            <article key={article.entry_id} className="md:col-span-2 lg:col-span-2 overflow-hidden bg-white transition-shadow">
+            <article key={article.entry_id} className="md:col-span-2 lg:col-span-2 overflow-hidden bg-white transition-shadow max-w-[460px]">
               <div className="relative">
                 {article.img_url && (
-                  <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="block">
-                    <img src={article.img_url} alt={article.title} className="w-full h-[224px] md:h-[260px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="block ">
+                    <img src={article.img_url} alt={article.title} className="w-full md:h-[258px] lg:w-[460px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
                   </a>
                 )}
                 <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
@@ -92,7 +92,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                   </div>
                 </div>
               </div>
-              <div className="pt-4 md:py-5">
+              <div className="pt-2">
                 <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
                   <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-1">
                     {article.title}
@@ -103,15 +103,15 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
             </article>
           ) : (
             <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow h-full">
-              <div className="flex gap-3 md:flex-col h-full">
-                <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-[128px] rounded-[2px]">
+              <div className="flex gap-[10px] md:flex-col h-full">
+                <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-[127px] rounded-[2px]">
                   {article.img_url && (
                     <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors rounded">
                       <img src={article.img_url} alt={article.title} className="w-full h-full object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </a>
                   )}
                 </div>
-                <div className="flex-1 md:mt-5 flex flex-col">
+                <div className="flex-1 flex flex-col">
                   <div className="flex flex-wrap gap-1 md:gap-2">
                     <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{article.category_name}</span>
                     {article.tags && article.tags.length > 0 && (
@@ -126,12 +126,12 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                   </div>
                   <div className="pt-1 flex flex-col h-full">
                     <h3 className="text-[16px] md:text-[18px] font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
-                      <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors">
+                      <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors leading-[140%]">
                         {article.title}
                       </a>
                     </h3>
                     <div className="hidden md:block">
-                      <p className=" text-muted-foreground text-[12px] md:text-[14px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title}</p>
+                      <p className=" text-muted-foreground text-[12px] md:text-[14px] mb-2 md:mb-4 md:line-clamp-3 leading-[140%]">{article.sub_title}</p>
                     </div>
                     <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
                       <div className="flex items-center space-x-1 truncate">

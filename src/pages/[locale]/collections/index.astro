@@ -66,12 +66,10 @@ try {
   <AuthMount client:load shareSection={{ locale, title, url: canonicalUrl }} />
   
   <main class="min-h-screen mt-[56px] md:mt-[97px]">
-
-
     <div class="max-w-[1440px] mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-3">
+      <div class="grid layout-two-column-fixed-1440">
         <!-- Left Column - Collections Content -->
-        <div class="lg:col-span-2 pt-5 md:py-5 px-4 md:px-0 border border-t-0 border-border">
+        <div class="pt-5 md:py-5 px-4 md:px-0 border border-t-0 border-border">
           <!-- Page Title -->
           <header class="md:px-6 mb-4 hidden md:block">
             <h1 class="text-[32px] md:text-[56px] font-medium text-[#052019]">
@@ -240,7 +238,7 @@ try {
         </div>
         
         <!-- Right Column - Sidebar Content -->
-        <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
+        <div class="border border-t-0 border-l-0 border-border">
           <div class="sticky top-8">
             <div id="share-section-root" class=""></div>
             <div class="px-6 p-5">

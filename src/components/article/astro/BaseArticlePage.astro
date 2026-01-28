@@ -138,8 +138,8 @@ const author = article?.author?.name || article.author_name
   
   <main class="min-h-screen mt-[56px] md:mt-[97px]">
     <div class="max-w-[1440px] mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-3">
-        <div class="lg:col-span-2 pt-5 md:pt-8 md:py-5 px-4 md:px-6 border border-t-0 border-border">
+      <div class="grid grid-cols-1 lg:grid-cols-[1000px_440px]">
+        <div class="pt-5 md:pt-8 md:py-5 px-4 md:px-6 border border-t-0 border-border">
           <ArticleContent 
             article={article} 
             locale={locale} 
@@ -151,7 +151,7 @@ const author = article?.author?.name || article.author_name
           />
         </div>
         
-        <div class="lg:col-span-1 border border-t-0 border-l-0 border-border">
+        <div class="border border-t-0 border-l-0 border-border">
           <div class="top-8">
             <div id="share-section-root" class=""></div>
             <div class="px-6 p-5">
