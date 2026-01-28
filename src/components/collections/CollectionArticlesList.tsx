@@ -10,18 +10,18 @@ interface CollectionArticlesListProps {
   locale: Locale;
   collectionId: string;
   initialArticles: ApiArticle[];
-  total: number;
+  hasMore: boolean;
 }
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 11;
 
 /**
  * 合集文章列表组件（移动端支持滚动触底自动加载）
  */
-const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale, collectionId, initialArticles, total }) => {
+const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale, collectionId, initialArticles, hasMore: initialHasMore }) => {
   const [articles, setArticles] = useState<ApiArticle[]>(initialArticles || []);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(initialArticles.length < total);
+  const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const t = createTranslator(locale);
@@ -34,12 +34,12 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
     setLoading(true);
     try {
       const nextPage = page + 1;
-      const response = await fetchCollectionArticles(locale, collectionId, nextPage, ITEMS_PER_PAGE);
+      const response = await fetchCollectionArticles(locale, collectionId, nextPage, 12);
       const nextArticles = response.articles || [];
       const mergedArticles = [...articles, ...nextArticles];
       setArticles(mergedArticles);
       setPage(nextPage);
-      setHasMore(mergedArticles.length < (response.total || 0));
+      setHasMore(response.hasMore);
     } catch (error) {
       setHasMore(false);
     } finally {
@@ -62,7 +62,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
         root: null,
         rootMargin: '0px',
         threshold: 0.1,
-      }
+      },
     );
 
     observer.observe(sentinel);
@@ -147,12 +147,21 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
           ),
         )}
       </div>
-      <div ref={sentinelRef} className="h-10 mt-4 md:mt-6 flex items-center justify-center text-xs text-muted-foreground">
-        <span className="h-10 mt-4 md:mt-6">{loading && (locale === 'us' ? 'Loading...' : '加载中...')}</span>
-        {/* {!hasMore && !loading && articles.length > 0 && (
-          <span>{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>
-        )} */}
+      <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center text-xs text-muted-foreground md:hidden">
+        <span className="h-10 mt-4">{loading && (locale === 'us' ? 'Loading...' : '加载中...')}</span>
+        {!hasMore && !loading && articles.length > 0 && <span className="ml-2">{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>}
       </div>
+
+      {articles.length > 0 && (
+        <div className="hidden md:flex items-center justify-center mt-8 mb-2">
+          {hasMore && (
+            <button type="button" onClick={loadMoreArticles} disabled={loading} className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-[2px] hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors text-[14px]">
+              {loading ? (locale === 'us' ? 'Loading...' : '加载中...') : locale === 'us' ? 'Load More' : '加载更多'}
+            </button>
+          )}
+          {/* {!hasMore && !loading && <span className="text-xs text-muted-foreground">{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>} */}
+        </div>
+      )}
     </section>
   );
 };

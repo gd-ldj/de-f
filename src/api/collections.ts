@@ -5,6 +5,7 @@ interface CollectionArticlesResponse {
   collectionId: string;
   articles: ApiArticle[];
   total: number;
+  hasMore: boolean;
 }
 
 interface CollectionsApiResponse {
@@ -21,7 +22,7 @@ interface CollectionsApiResponse {
 
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
 
-export async function fetchCollectionArticles(locale: Locale, collectionId: string, page: number = 1, limit: number = 10): Promise<CollectionArticlesResponse> {
+export async function fetchCollectionArticles(locale: Locale, collectionId: string, page: number = 1, limit: number = 11): Promise<CollectionArticlesResponse> {
   try {
     const params = new URLSearchParams();
     params.set('page', String(page));
@@ -47,13 +48,17 @@ export async function fetchCollectionArticles(locale: Locale, collectionId: stri
         next?: boolean;
       };
     } = await response.json();
+    console.log('🚀 ~ fetchCollectionArticles ~ result:', result);
 
     if (result.code === 2000 && result.data) {
       const list = result.data.list || [];
+      const hasMore = !!result.data.next;
       return {
         collectionId,
         articles: list,
+        // 后端未返回 total，这里仅保留当前页数量以兼容旧字段
         total: list.length,
+        hasMore,
       };
     }
 
@@ -65,6 +70,7 @@ export async function fetchCollectionArticles(locale: Locale, collectionId: stri
       collectionId,
       articles: [],
       total: 0,
+      hasMore: false,
     };
   }
 }
