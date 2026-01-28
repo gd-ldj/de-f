@@ -35,7 +35,7 @@ const devDefineConfig = defineConfig({
     sentry({
       project: 'detake',
       org: 'tadle',
-      dsn: process.env.SENTRY_DSN || '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',
+      dsn: process.env.SENTRY_DSN || '',
     }),
   ],
   i18n: {
@@ -99,7 +99,7 @@ export default isDev
         sentry({
           project: 'detake',
           org: 'tadle',
-          dsn: process.env.SENTRY_DSN || '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',
+          dsn: process.env.SENTRY_DSN || '',
         }),
       ],
       compressHTML: true, // Remove HTML comments and whitespace
