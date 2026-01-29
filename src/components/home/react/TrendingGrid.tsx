@@ -201,7 +201,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         </ArticleLink>
                       </h4>
 
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 md:line-clamp-4">{article.sub_title}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-4">{article.sub_title}</p>
 
                       {/* Date */}
                       {/* <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">
