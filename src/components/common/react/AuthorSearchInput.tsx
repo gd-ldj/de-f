@@ -25,11 +25,11 @@ export default function AuthorSearchInput({
   className = ''
 }: AuthorSearchInputProps) {
   const t = createTranslator(locale);
-  const [value, setValue] = useState<string>(defaultValue)
+  const [value, setValue] = useState<string>(defaultValue);
 
   // Store throttle metadata in refs to preserve values across renders without re-creating timers
-  const lastRef = useRef<number>(0)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * Trigger the search side-effects (CustomEvent + optional callback)
@@ -37,53 +37,50 @@ export default function AuthorSearchInput({
    */
   const fireSearch = (query: string) => {
     // Dispatch a DOM event so Astro or vanilla scripts can listen easily
-    document.dispatchEvent(new CustomEvent('author:search', { detail: { query } }))
+    document.dispatchEvent(new CustomEvent('author:search', { detail: { query } }));
     // Optional React consumer callback
-    onSearch?.(query)
-  }
+    onSearch?.(query);
+  };
 
   /**
-   * Throttled executor: schedules or invokes fireSearch at most once per delay window.
-   * - Leading suppression with trailing execution ensures we get the latest value while typing
+   * 防抖执行器：在用户停止输入一段时间后才触发搜索，避免频繁请求
    */
-  const throttledFire = useMemo(() => {
+  const debouncedFire = useMemo(() => {
     return (query: string) => {
-      const now = Date.now()
-      const remaining = delayMs - (now - lastRef.current)
-
-      if (remaining <= 0) {
-        if (timerRef.current) {
-          clearTimeout(timerRef.current)
-          timerRef.current = null
-        }
-        lastRef.current = now
-        fireSearch(query)
-      } else if (!timerRef.current) {
-        timerRef.current = setTimeout(() => {
-          lastRef.current = Date.now()
-          timerRef.current = null
-          fireSearch(query)
-        }, remaining)
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
-    }
-  }, [delayMs])
+      timerRef.current = setTimeout(() => {
+        fireSearch(query);
+      }, delayMs);
+    };
+  }, [delayMs]);
 
   useEffect(() => {
     // Sync external default value changes (e.g. when coming from server-rendered prop)
-    setValue(defaultValue)
-  }, [defaultValue])
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   /**
-   * Handle input change and route through the throttle executor.
+   * 处理输入变化，将值传入防抖搜索执行器
    */
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const q = e.target.value
-    setValue(q)
-    throttledFire(q.trim())
+    const q = e.target.value;
+    setValue(q);
+    debouncedFire(q.trim());
     // Announce author input present/empty for outer CLEAR ALL enable/disable
-    const hasText = q.trim().length > 0
-    document.dispatchEvent(new CustomEvent('author:changed', { detail: { hasText } }))
-  }
+    const hasText = q.trim().length > 0;
+    document.dispatchEvent(new CustomEvent('author:changed', { detail: { hasText } }));
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []);
 
   /**
    * Listen global clear events to reset the input immediately.
@@ -94,25 +91,25 @@ export default function AuthorSearchInput({
     const clearAuthorInput = () => {
       // Cancel pending trailing throttle to avoid firing stale queries
       if (timerRef.current) {
-        clearTimeout(timerRef.current)
-        timerRef.current = null
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
-      lastRef.current = 0
-      setValue('')
+      lastRef.current = 0;
+      setValue('');
       // Fire an empty query so consumers can reload data accordingly
-      fireSearch('')
+      fireSearch('');
       // Also announce no text for outer UI state
-      document.dispatchEvent(new CustomEvent('author:changed', { detail: { hasText: false } }))
-    }
+      document.dispatchEvent(new CustomEvent('author:changed', { detail: { hasText: false } }));
+    };
 
-    document.addEventListener('author:clear', clearAuthorInput)
-    document.addEventListener('filter:clear-all', clearAuthorInput)
+    document.addEventListener('author:clear', clearAuthorInput);
+    document.addEventListener('filter:clear-all', clearAuthorInput);
 
     return () => {
-      document.removeEventListener('author:clear', clearAuthorInput)
-      document.removeEventListener('filter:clear-all', clearAuthorInput)
-    }
-  }, [])
+      document.removeEventListener('author:clear', clearAuthorInput);
+      document.removeEventListener('filter:clear-all', clearAuthorInput);
+    };
+  }, []);
 
   const placeholder = t('common.inputAuthor');
 
