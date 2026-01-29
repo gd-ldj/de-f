@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/astro';
 
 const isServer = typeof window === 'undefined';
+const isProdEnv = process.env.NODE_ENV === 'production';
 
 export interface SsrFetchOptions extends RequestInit {
   endpointName?: string;
@@ -9,7 +10,7 @@ export interface SsrFetchOptions extends RequestInit {
 export async function ssrFetch(input: string | URL, init?: SsrFetchOptions): Promise<Response> {
   const response = await fetch(input, init);
 
-  if (isServer && !response.ok) {
+  if (isServer && isProdEnv && !response.ok) {
     try {
       const url = typeof input === 'string' ? input : input.toString();
       const method = init?.method || 'GET';
@@ -33,4 +34,3 @@ export async function ssrFetch(input: string | URL, init?: SsrFetchOptions): Pro
 
   return response;
 }
-

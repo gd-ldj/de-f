@@ -17,13 +17,7 @@ interface AuthorSearchInputProps {
  * - Dispatches a DOM CustomEvent("author:search", { detail: { query } }) for non-React consumers
  * - Also supports an optional onSearch callback for React consumers
  */
-export default function AuthorSearchInput({
-  locale,
-  defaultValue = '',
-  delayMs = 400,
-  onSearch,
-  className = ''
-}: AuthorSearchInputProps) {
+export default function AuthorSearchInput({ locale, defaultValue = '', delayMs = 1000, onSearch, className = '' }: AuthorSearchInputProps) {
   const t = createTranslator(locale);
   const [value, setValue] = useState<string>(defaultValue);
 

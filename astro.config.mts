@@ -68,6 +68,7 @@ const devDefineConfig = defineConfig({
         process: 'process/browser',
         path: 'path-browserify',
       },
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
     },
     optimizeDeps: {
       include: ['buffer', 'process', 'path-browserify'],
@@ -120,6 +121,7 @@ export default isDev
             buffer: 'buffer',
             process: 'process/browser',
           },
+          dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
         },
         optimizeDeps: {
           include: ['buffer', 'process'],

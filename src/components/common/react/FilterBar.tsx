@@ -119,9 +119,7 @@ export default function FilterBar({
             </svg>
             <span className="text-sm font-medium">{i18n.filters}</span>
           </div>
-          <button className={`pr-4 md:pr-0 text-xs uppercase tracking-wide font-medium transition-colors ${anyActive ? 'text-primary hover:text-primary/80' : 'text-muted-foreground cursor-not-allowed'}`} aria-label={i18n.clearAll} disabled={!anyActive} onClick={handleClearAllFilters}>
-            {i18n.clearAll}
-          </button>
+          <button className={`pr-4 md:pr-0 text-xs uppercase tracking-wide font-medium transition-colors ${anyActive ? 'text-primary hover:text-primary/80' : 'text-muted-foreground cursor-not-allowed'}`} aria-label={i18n.clearAll} disabled={!anyActive} onClick={handleClearAllFilters}></button>
         </div>
 
         {/* Mobile Filter Content - Horizontal Scrollable Layout */}
@@ -187,7 +185,7 @@ export default function FilterBar({
 
         {/* Right: view toggles */}
         <div className="flex items-center space-x-4">
-          <div className="flex overflow-hidden rounded-md border border-border">
+          {/* <div className="flex overflow-hidden rounded-md border border-border">
             <button className={`p-2 ${viewMode === 'list' ? 'bg-secondary' : 'bg-white hover:bg-accent'}`} aria-label="List view">
               <svg className="w-4 h-4 text-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M4 6h16M4 12h16M4 18h16"></path>
@@ -199,7 +197,7 @@ export default function FilterBar({
                 <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path>
               </svg>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
