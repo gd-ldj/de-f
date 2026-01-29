@@ -19,6 +19,7 @@ export interface Props {
   modifiedTime?: string
   keywords?: string[]
   articleSection?: string
+  pageLang?: 'en' | 'zh' | 'ar' | 'ru' | 'ja'
 }
 
 const { 
@@ -34,13 +35,26 @@ const {
   publishedTime,
   modifiedTime,
   keywords,
-  articleSection
+  articleSection,
+  pageLang
 } = Astro.props
+
+type ArticleLanguageCode = 'en' | 'zh' | 'ar' | 'ru' | 'ja'
 
 // 统一使用当前访问域名生成分享与 canonical 链接
 const currentOrigin = Astro.url.origin
 const rawCanonicalUrl = canonicalUrl ? new URL(canonicalUrl) : Astro.url
 const currentUrl = new URL(`${currentOrigin}${rawCanonicalUrl.pathname}${rawCanonicalUrl.search}${rawCanonicalUrl.hash}`).href
+
+// 页面整体语言仍然跟随站点 locale（导航、Footer 等文案），而正文可使用 section 级 lang 区分
+const htmlLang = locale === 'asia' ? 'zh' : 'en'
+
+// Open Graph 语言也采用站点级区域语言
+const ogLocale = locale === 'asia' ? 'zh_CN' : 'en_US'
+
+// 仅在正文语言未显式指定，或与站点默认语言一致时输出 region 级别的 hreflang，避免误标其他语言内容
+const regionDefaultLang: ArticleLanguageCode = locale === 'asia' ? 'zh' : 'en'
+const shouldEmitRegionAlternates = !pageLang || pageLang === regionDefaultLang
 
 // Default OG image
 const defaultOgImage = 'https://cdn.detake.com/images/social-card.png'
@@ -51,7 +65,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
 ---
 
 <!DOCTYPE html>
-<html lang={locale === 'us' ? 'en' : 'zh'}>
+<html lang={htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -74,7 +88,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
     {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="800" />
-    <meta property="og:locale" content={locale === 'us' ? 'en_US' : 'zh_CN'} />
+    <meta property="og:locale" content={ogLocale} />
     
     {/* Article-specific Open Graph tags */}
     {ogType === 'article' && (
@@ -104,9 +118,13 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
     <!-- Canonical URL -->
     <link rel="canonical" href={currentUrl} />
     
-    <!-- Alternate language versions -->
-    <link rel="alternate" hreflang="en-US" href={currentUrl.replace('/asia/', '/us/')} />
-    <link rel="alternate" hreflang="zh-CN" href={currentUrl.replace('/us/', '/asia/')} />
+    {/* Alternate language versions */}
+    {shouldEmitRegionAlternates && (
+      <>
+        <link rel="alternate" hreflang="en-US" href={currentUrl.replace('/asia/', '/us/')} />
+        <link rel="alternate" hreflang="zh-CN" href={currentUrl.replace('/us/', '/asia/')} />
+      </>
+    )}
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
