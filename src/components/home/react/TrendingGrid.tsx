@@ -46,12 +46,12 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   </ArticleLink>
                 </h4>
                 <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{article.sub_title}</p>
-                <div className="flex items-center text-xs text-muted-foreground space-x-1">
+                <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">
                   <span data-date={article.created_at} data-locale={locale}>
                     {formatDate(article.created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground uppercase">{article.author.name}</span>
+                  <span className="text-foreground uppercase truncate">{article.author.name}</span>
                   {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author.name}</a> */}
                 </div>
               </div>
@@ -75,12 +75,12 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {articles[2].title}
                   </ArticleLink>
                 </h4>
-                <div className="flex items-center text-xs text-muted-foreground space-x-1">
+                <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">
                   <span data-date={articles[2].created_at} data-locale={locale}>
                     {formatDate(articles[2].created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground uppercase">{articles[2].author.name}</span>
+                  <span className="text-foreground uppercase truncate">{articles[2].author.name}</span>
                   {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author.name}</a> */}
                 </div>
               </div>
@@ -136,13 +136,13 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     </div>
 
                     {/* Date */}
-                    <div className="flex items-center text-xs text-muted-foreground space-x-1">
+                    <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">
                       <span data-date={article.created_at} data-locale={locale}>
                         {formatDate(article.created_at, locale)}
                       </span>
                       <span>/ {t('article.by')} </span>
                       {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author.name}</a> */}
-                      <span className="text-foreground uppercase">{article.author.name}</span>
+                      <span className="text-foreground uppercase truncate">{article.author.name}</span>
                     </div>
                   </div>
                 </article>
@@ -172,16 +172,16 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         </ArticleLink>
                       </h4>
 
-                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-4">{articles[2].sub_title}</p>
+                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-3">{articles[2].sub_title}</p>
                     </div>
 
                     {/* Date */}
-                    <div className="flex items-center text-xs text-muted-foreground space-x-1">
+                    <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">
                       <span data-date={articles[2].created_at} data-locale={locale}>
                         {formatDate(articles[2].created_at, locale)}
                       </span>
                       <span>/ {t('article.by')} </span>
-                      <span className="text-foreground uppercase">{articles[2].author.name}</span>
+                      <span className="text-foreground uppercase truncate">{articles[2].author.name}</span>
                       {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author.name}</a> */}
                     </div>
                   </div>
@@ -204,12 +204,12 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                       <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 md:line-clamp-4">{article.sub_title}</p>
 
                       {/* Date */}
-                      {/* <div className="flex items-center text-xs text-muted-foreground space-x-1">
+                      {/* <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">
                         <span data-date={article.created_at} data-locale={locale}>
                           {formatDate(article.created_at, locale)}
                         </span>
                         <span>/ {t('article.by')} </span>
-                        <span className="text-foreground uppercase">{article.author.name}</span>
+                        <span className="text-foreground uppercase truncate">{article.author.name}</span>
                       </div> */}
                     </div>
                   </article>
