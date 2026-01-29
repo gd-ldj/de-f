@@ -54,7 +54,8 @@ const { title, description } = seoContent[locale] || seoContent.us
     <!-- AuthMount only manages wallet-related buttons -->
     <AuthMount client:load userButtonTargetId="user-button-root" />
     
-    <div class="min-h-screen bg-background mt-[56px] md:mt-[97px]">
+    <!-- Main content area fills remaining height so that the footer sticks to the bottom when content is short -->
+    <main class="flex-1 bg-background mt-[56px] md:mt-[97px]">
       <!-- Category Header: simplified to match visual design (breadcrumb + large title) -->
       <div class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block">
         <!-- Breadcrumb -->
@@ -81,10 +82,10 @@ const { title, description } = seoContent[locale] || seoContent.us
         initialTag={initialTag}
         initialOrderBy={initialOrderBy}
       />
-      
-      <!-- Footer -->
-      <Footer client:load />
-    </div>
+    </main>
+    
+    <!-- Footer -->
+    <Footer client:load />
 </BaseLayout>
 
 <style>
