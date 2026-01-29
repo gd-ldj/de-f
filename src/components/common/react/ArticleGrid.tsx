@@ -19,7 +19,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
           <div className="flex gap-3 md:block">
             {/* Article Image */}
             <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
-              <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="block group w-full h-full">
+              <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="block group w-full h-full overflow-hidden">
                 <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
               </ArticleLink>
             </div>

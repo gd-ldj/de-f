@@ -159,7 +159,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
               <div className="flex flex-col h-full">
                 {/* Article image */}
                 <div className="relative w-full">
-                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
+                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block overflow-hidden">
                     <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                   </ArticleLink>
                 </div>
