@@ -34,7 +34,8 @@ function generateRobots(): string {
       '# Block all crawlers in non-production environments',
       '',
       'User-agent: *',
-      'Disallow: /',
+      // 'Disallow: /',
+      'Allow: /', // TODO: Temporarily clearing the index requires
       '',
       '# No sitemap for non-production environments',
       '',
