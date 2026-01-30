@@ -9,7 +9,7 @@
  */
 export const SITE_CONFIG = {
   // Current site environment (beta | production)
-  ENVIRONMENT: import.meta.env.PUBLIC_SITE_ENV || 'web3',
+  ENVIRONMENT: import.meta.env.PUBLIC_SITE_ENV || 'beta',
 
   // API base URLs based on environment
   API_ENDPOINTS: {
