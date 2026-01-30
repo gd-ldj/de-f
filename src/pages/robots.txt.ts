@@ -25,7 +25,45 @@ function generateRobots(): string {
   const host = getHost();
   const sitemapUrl = `https://${host}/sitemap-index.xml`;
 
-  return ['# DeTake Website - Robots.txt', '# Allow all crawlers to access the site', '', 'User-agent: *', 'Allow: /', '', '# Sitemap location', `Sitemap: ${sitemapUrl}`, '', '# Optional: Disallow specific paths if needed', '# Disallow: /api/', '# Disallow: /admin/', '# Disallow: /_astro/', '', '# Crawl-delay for specific bots (optional)', '# User-agent: Googlebot', '# Crawl-delay: 0', '', '# User-agent: Bingbot', '# Crawl-delay: 0', ''].join('\n');
+  const env = SITE_CONFIG.ENVIRONMENT;
+  const isProductionEnv = env === 'web2' || env === 'web3';
+
+  if (!isProductionEnv) {
+    return [
+      '# DeTake Website - Robots.txt',
+      '# Block all crawlers in non-production environments',
+      '',
+      'User-agent: *',
+      'Disallow: /',
+      '',
+      '# No sitemap for non-production environments',
+      '',
+    ].join('\n');
+  }
+
+  return [
+    '# DeTake Website - Robots.txt',
+    '# Allow all crawlers to access the production site',
+    '',
+    'User-agent: *',
+    'Allow: /',
+    '',
+    '# Sitemap location',
+    `Sitemap: ${sitemapUrl}`,
+    '',
+    '# Optional: Disallow specific paths if needed',
+    '# Disallow: /api/',
+    '# Disallow: /admin/',
+    '# Disallow: /_astro/',
+    '',
+    '# Crawl-delay for specific bots (optional)',
+    '# User-agent: Googlebot',
+    '# Crawl-delay: 0',
+    '',
+    '# User-agent: Bingbot',
+    '# Crawl-delay: 0',
+    '',
+  ].join('\n');
 }
 
 export const prerender = true;

@@ -1,6 +1,7 @@
 ---
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
 import { Analytics } from '@vercel/analytics/react';
+import { SITE_CONFIG } from '@/config/constants';
 
 import '../styles/global.css'
 
@@ -62,6 +63,11 @@ const finalOgImage = ogImage || defaultOgImage
 
 // Generate keywords meta tag
 const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis'
+
+const isProductionSite = SITE_CONFIG.ENVIRONMENT === 'web2' || SITE_CONFIG.ENVIRONMENT === 'web3'
+const robotsContent = isProductionSite
+  ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+  : 'noindex, nofollow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
 ---
 
 <!DOCTYPE html>
@@ -112,7 +118,7 @@ const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis
     {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
     
     <!-- Other SEO optimizations -->
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="robots" content={robotsContent} />
     <link rel="image_src" href={finalOgImage} />
     
     <!-- Canonical URL -->
