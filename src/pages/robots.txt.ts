@@ -24,6 +24,7 @@ function getHost(): string {
 function generateRobots(): string {
   const host = getHost();
   const sitemapUrl = `https://${host}/sitemap-index.xml`;
+  const sitemapArticlesUrl = `https://${host}/sitemap-articles.xml`;
 
   const env = SITE_CONFIG.ENVIRONMENT;
   const isProductionEnv = env === 'web2' || env === 'web3';
@@ -51,6 +52,8 @@ function generateRobots(): string {
     '',
     '# Sitemap location',
     `Sitemap: ${sitemapUrl}`,
+    `Sitemap: ${sitemapArticlesUrl}`,
+    `Sitemap: https://${host}/sitemap-categories.xml`,
     '',
     '# Optional: Disallow specific paths if needed',
     '# Disallow: /api/',

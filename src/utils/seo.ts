@@ -1,4 +1,4 @@
-import type { Locale } from '@/types'
+import type { Locale } from '@/types';
 import { SITE_CONFIG } from '@/config/constants';
 
 /**
@@ -43,7 +43,7 @@ export function generateArticleStructuredData(
   locale: Locale,
   baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, undefined, article.user_id)}`;
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id)}`;
 
   return {
     '@context': 'https://schema.org',
@@ -92,7 +92,7 @@ export function generateArticleMetaTags(
   locale: Locale,
   baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, undefined, article.user_id)}`;
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id)}`;
   const imageUrl = article.img_url ? `${baseUrl}${article.img_url}` : `${baseUrl}/og-default.png`;
 
   return {
@@ -134,7 +134,7 @@ export function generateSitemapEntry(
   baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
   return {
-    url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, undefined, article.user_id)}`,
+    url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id)}`,
     lastmod: article.created_at,
     changefreq: 'weekly' as const,
     priority: 0.8,
@@ -151,6 +151,6 @@ export function generateSitemapEntry(
 export function generateAlternateLinks(slug: string, locales: Locale[], baseUrl: string = SITE_CONFIG.SITE_URL, category: string = 'news', userId?: string) {
   return locales.map((locale) => ({
     hreflang: locale,
-    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale, category, undefined, userId)}`,
+    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale, category, 'detake', userId)}`,
   }));
 }
