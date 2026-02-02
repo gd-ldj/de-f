@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Locale } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import BackIcon from './assets/back.svg?url';
@@ -73,19 +74,20 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
   const allCategoriesText = locale === 'us' ? 'All Categories' : '所有类别';
   const learnText = locale === 'us' ? 'Learn' : '学习';
 
-  return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" onClick={onClose} />
+  if (typeof document === 'undefined') return null;
 
-      {/* Category Page */}
-      <div className="fixed top-0 left-0 w-full h-full bg-white z-50 md:hidden overflow-y-auto">
-        {/* Header */}
+  const categoryContent = (
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-[110] md:hidden" onClick={onClose} />
+
+      <div className="fixed top-0 left-0 w-full h-full bg-white z-[120] md:hidden overflow-y-auto">
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           <button onClick={onBack} className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label="Back">
             <img src={BackIcon} alt="DeTake" className="h-6" />
           </button>
-          <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
+          <a href={`/${locale}`} className="flex items-center" onClick={onClose}>
+            <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
+          </a>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close menu">
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -93,7 +95,6 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
           </button>
         </div>
 
-        {/* Breadcrumb */}
         <div className="px-4 py-4 border-b border-gray-100">
           <div className="flex items-center space-x-2 text-sm">
             <span className="text-gray-500">{allCategoriesText}</span>
@@ -102,7 +103,6 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
           </div>
         </div>
 
-        {/* Content */}
         <div className="px-4 py-6">
           {/* Category Title */}
           <div className="flex items-center justify-between mb-8">
@@ -194,4 +194,6 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
       </div>
     </>
   );
+
+  return createPortal(categoryContent, document.body);
 }

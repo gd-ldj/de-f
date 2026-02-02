@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { headerTexts } from './constants';
 import type { Locale, CollectionItem } from '@/types';
 import { createTranslator } from '@/lib/i18n';
@@ -70,17 +71,18 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
     onClose();
   };
 
-  return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" onClick={onClose} />
+  if (typeof document === 'undefined') return null;
 
-      {/* Sidebar */}
-      <div className="fixed top-0 left-0 w-full h-full bg-white z-50 md:hidden overflow-y-auto">
-        {/* Header */}
+  const sidebarContent = (
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-[110] md:hidden" onClick={onClose} />
+
+      <div className="fixed top-0 left-0 w-full h-full bg-white z-[120] md:hidden overflow-y-auto">
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           <div className="w-5"></div>
-          <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
+          <a href={`/${locale}`} className="flex items-center" onClick={onClose}>
+            <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
+          </a>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close menu">
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -88,7 +90,6 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
           </button>
         </div>
 
-        {/* Navigation Content */}
         <div className="px-4 py-6">
           {/* All Categories */}
           <div className="mb-1">
@@ -208,4 +209,6 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
       </div>
     </>
   );
+
+  return createPortal(sidebarContent, document.body);
 }

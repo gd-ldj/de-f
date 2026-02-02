@@ -1,30 +1,26 @@
-import { useState, useEffect } from 'react'
-import TopicMultiSelect from '@/components/common/react/TopicMultiSelect'
-import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect'
-import AuthorSearchInput from '@/components/common/react/AuthorSearchInput'
-import { createTranslator } from '@/lib/i18n'
-import type { Locale } from '@/types'
+import { useState, useEffect, useRef } from 'react';
+import TopicMultiSelect from '@/components/common/react/TopicMultiSelect';
+import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect';
+import AuthorSearchInput from '@/components/common/react/AuthorSearchInput';
+import { createTranslator } from '@/lib/i18n';
+import type { Locale } from '@/types';
 
 export interface FilterBarProps {
-  locale: Locale
-  authorName?: string
-  viewMode?: 'list' | 'grid'
-  initialCategoryName?: string | string[]
-  initialTag?: string | string[]
+  locale: Locale;
+  authorName?: string;
+  viewMode?: 'list' | 'grid';
+  initialCategoryName?: string | string[];
+  initialTag?: string | string[];
 }
 
-export default function FilterBar({
-  locale,
-  authorName = '',
-  viewMode = 'grid',
-  initialCategoryName,
-  initialTag,
-}: FilterBarProps) {
+export default function FilterBar({ locale, authorName = '', viewMode = 'grid', initialCategoryName, initialTag }: FilterBarProps) {
   const [categoryActive, setCategoryActive] = useState(false);
   const [topicActive, setTopicActive] = useState(false);
   const [authorActive, setAuthorActive] = useState(false);
   const [anyActive, setAnyActive] = useState(false);
   const [anyDropdownOpen, setAnyDropdownOpen] = useState(false);
+  const mobileScrollRef = useRef<HTMLDivElement | null>(null);
+  const topicFilterRef = useRef<HTMLDivElement | null>(null);
 
   // Create a translation function bound to the current locale
   const t = createTranslator(locale);
@@ -71,6 +67,16 @@ export default function FilterBar({
   }, [categoryDropdownOpen, topicDropdownOpen]);
 
   useEffect(() => {
+    if (topicDropdownOpen && topicFilterRef.current) {
+      topicFilterRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'start',
+        block: 'nearest',
+      });
+    }
+  }, [topicDropdownOpen]);
+
+  useEffect(() => {
     refreshButtonState();
   }, [categoryActive, topicActive, authorActive]);
 
@@ -108,7 +114,7 @@ export default function FilterBar({
   }, []);
 
   return (
-    <div className="bg-white pl-4 md:pl-0 pb-2 md:pb-0 border-b md:border border-border">
+    <div className="bg-white px-4 md:px-0 pb-2 md:pb-0 border-b md:border border-border">
       {/* Mobile Layout */}
       <div className="md:hidden">
         {/* Mobile Filter Header */}
@@ -119,12 +125,14 @@ export default function FilterBar({
             </svg>
             <span className="text-sm font-medium">{i18n.filters}</span>
           </div>
-          <button className={`pr-4 md:pr-0 text-xs uppercase tracking-wide font-medium transition-colors ${anyActive ? 'text-primary hover:text-primary/80' : 'text-muted-foreground cursor-not-allowed'}`} aria-label={i18n.clearAll} disabled={!anyActive} onClick={handleClearAllFilters}></button>
+          <button className={`pr-4 md:pr-0 text-xs uppercase tracking-wide font-medium transition-colors ${anyActive ? 'text-primary hover:text-primary/80' : 'text-muted-foreground cursor-not-allowed'}`} aria-label={i18n.clearAll} disabled={!anyActive} onClick={handleClearAllFilters}>
+            {i18n.clearAll}
+          </button>
         </div>
 
         {/* Mobile Filter Content - Horizontal Scrollable Layout */}
         <div className="md:px-4 py-3 overflow-visible">
-          <div className={`flex space-x-4 scrollbar-hide ${anyDropdownOpen ? 'overflow-visible' : 'overflow-x-auto overflow-y-visible'}`}>
+          <div ref={mobileScrollRef} className={`flex space-x-4 scrollbar-hide overflow-x-auto overflow-y-visible ${anyDropdownOpen ? '' : ''}`}>
             {/* Category Filter */}
             <div className="flex-shrink-0">
               <CategoryMultiSelect locale={locale} initialValues={initialCategoryName} placeholder={i18n.category} onOpenChange={handleCategoryOpenChange} />
@@ -136,7 +144,7 @@ export default function FilterBar({
             </div>
 
             {/* Topic Filter */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0" ref={topicFilterRef}>
               <TopicMultiSelect locale={locale} initialValues={initialTag} placeholder={i18n.topic} onOpenChange={handleTopicOpenChange} />
             </div>
           </div>

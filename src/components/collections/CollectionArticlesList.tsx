@@ -87,22 +87,22 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                       <div className="text-[12px] font-medium text-white uppercase truncate">{[article.category_name, ...(article.tags ? article.tags.slice(0, 2) : [])].join('  ')}</div>
                     </div>
                     <div className="text-[11px] text-white/80 whitespace-nowrap">
-                      {new Date(article.created_at).toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })} / <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
+                      {new Date(article.created_at).toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })} <span className="">{`/ ${t('article.by')} `}</span> <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="pt-2">
+              <div className="pt-[10px] md:pt-2">
                 <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
-                  <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-1">
+                  <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-2 md:line-clamp-1">
                     {article.title}
                   </a>
                 </h2>
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-1 md:line-clamp-1">{article.sub_title}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-1">{article.sub_title}</p>
               </div>
             </article>
           ) : (
-            <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow h-full">
+            <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow h-full py-2 md:py-0">
               <div className="flex gap-[10px] md:flex-col h-full">
                 <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-[127px] rounded-[2px]">
                   {article.img_url && (

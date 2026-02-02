@@ -101,7 +101,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
   return (
     <>
       {/* Mobile Header - Fixed positioning with proper z-index */}
-      <header className="md:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40">
+      <header className="md:hidden fixed top-0 left-0 right-0 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between px-4 py-3 h-14">
           {/* Left - Menu Icon (only on homepage) or Empty Space */}
           <div className="w-8 h-8 flex items-center justify-center">

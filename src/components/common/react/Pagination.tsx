@@ -69,16 +69,49 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
   };
 
   const pageNumbers = getPageNumbers();
+  const mobilePageNumbers = (() => {
+    const rangeWithDots: Array<number | string> = [];
+
+    if (totalPages <= 1) {
+      return rangeWithDots;
+    }
+
+    const pages = new Set<number>([1, totalPages, currentPage - 1, currentPage, currentPage + 1]);
+
+    const sortedPages = Array.from(pages)
+      .filter((page) => page >= 1 && page <= totalPages)
+      .sort((a, b) => a - b);
+
+    sortedPages.forEach((page, index) => {
+      const prevPage = sortedPages[index - 1];
+
+      if (index === 0) {
+        rangeWithDots.push(page);
+        return;
+      }
+
+      if (page - prevPage > 1) {
+        rangeWithDots.push('...');
+      }
+
+      rangeWithDots.push(page);
+    });
+
+    return rangeWithDots;
+  })();
+
+  const hidePrevNextOnMobile = currentPage >= 3;
 
   return (
-    <nav className="flex items-center justify-center space-x-2 mt-8" aria-label="Pagination">
+    <nav className="flex flex-wrap items-center justify-center gap-2 mt-8 max-w-full" aria-label="Pagination">
       {/* Previous Button */}
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className={`
-          flex items-center justify-center px-3 py-2 text-sm font-medium rounded border cursor-pointer min-w-[80px] md:min-w-[92px]
+          flex items-center justify-center px-2 sm:px-3 py-2 text-sm font-medium rounded border cursor-pointer min-w-[64px] sm:min-w-[80px] md:min-w-[92px]
           ${currentPage === 1 ? 'text-[#909399] border-[#D3D3D5] cursor-not-allowed' : 'text-primary border-[#D3D3D5] hover:border-primary'}
+          ${hidePrevNextOnMobile ? 'hidden sm:flex' : ''}
         `}
         aria-label={locale === 'us' ? 'Previous page' : '上一页'}
       >
@@ -90,34 +123,65 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
 
       {/* Page Numbers - only show in full pagination mode */}
       {!onlyNext && (
-        <div className="flex items-center space-x-2">
-          {pageNumbers.map((pageNumber, index) => {
-            if (pageNumber === '...') {
+        <>
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:hidden">
+            {mobilePageNumbers.map((pageNumber, index) => {
+              if (pageNumber === '...') {
+                return (
+                  <span key={`dots-mobile-${index}`} className="px-2 py-2 text-muted-foreground cursor-pointer">
+                    ...
+                  </span>
+                );
+              }
+
+              const isCurrentPage = pageNumber === currentPage;
+
               return (
-                <span key={`dots-${index}`} className="px-3 py-2 text-muted-foreground cursor-pointer">
-                  ...
-                </span>
+                <button
+                  key={`mobile-${pageNumber}`}
+                  onClick={() => handlePageChange(pageNumber as number)}
+                  className={`
+                    flex items-center justify-center px-2 py-2 text-sm font-medium rounded-md min-w-[40px] cursor-pointer
+                    ${isCurrentPage ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
+                  `}
+                  aria-label={`${locale === 'us' ? 'Page' : '第'} ${pageNumber} ${locale === 'us' ? '' : '页'}`}
+                  aria-current={isCurrentPage ? 'page' : undefined}
+                >
+                  {pageNumber}
+                </button>
               );
-            }
+            })}
+          </div>
 
-            const isCurrentPage = pageNumber === currentPage;
+          <div className="hidden flex-wrap items-center justify-center gap-2 sm:flex">
+            {pageNumbers.map((pageNumber, index) => {
+              if (pageNumber === '...') {
+                return (
+                  <span key={`dots-${index}`} className="px-2 sm:px-3 py-2 text-muted-foreground cursor-pointer">
+                    ...
+                  </span>
+                );
+              }
 
-            return (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageChange(pageNumber as number)}
-                className={`
-                  flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md min-w-[40px] cursor-pointer
-                  ${isCurrentPage ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
-                `}
-                aria-label={`${locale === 'us' ? 'Page' : '第'} ${pageNumber} ${locale === 'us' ? '' : '页'}`}
-                aria-current={isCurrentPage ? 'page' : undefined}
-              >
-                {pageNumber}
-              </button>
-            );
-          })}
-        </div>
+              const isCurrentPage = pageNumber === currentPage;
+
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => handlePageChange(pageNumber as number)}
+                  className={`
+                    flex items-center justify-center px-2 sm:px-3 py-2 text-sm font-medium rounded-md min-w-[40px] cursor-pointer
+                    ${isCurrentPage ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
+                  `}
+                  aria-label={`${locale === 'us' ? 'Page' : '第'} ${pageNumber} ${locale === 'us' ? '' : '页'}`}
+                  aria-current={isCurrentPage ? 'page' : undefined}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {/* Next Button */}
@@ -125,8 +189,9 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={onlyNext ? !hasMore : currentPage === totalPages}
         className={`
-          flex items-center justify-center px-3 py-2 text-sm font-medium rounded border cursor-pointer min-w-[80px] md:min-w-[92px]
+          flex items-center justify-center px-2 sm:px-3 py-2 text-sm font-medium rounded border cursor-pointer min-w-[64px] sm:min-w-[80px] md:min-w-[92px]
           ${(onlyNext ? !hasMore : currentPage === totalPages) ? 'text-[#909399] border-[#D3D3D5] cursor-not-allowed' : 'text-primary border-[#D3D3D5] hover:border-primary'}
+          ${hidePrevNextOnMobile ? 'hidden sm:flex' : ''}
         `}
         aria-label={locale === 'us' ? 'Next' : '下一页'}
       >
