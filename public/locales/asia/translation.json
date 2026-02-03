@@ -144,5 +144,11 @@
     "authorDanny": "Danny K",
     "authorJack": "JACK KUBINEC"
   },
+  "social": {
+    "subscribeButtonLabel": "+ 订阅",
+    "noRecommendationsTitle": "暂无关注推荐",
+    "noRecommendationsDescription": "多关注一些创作者，后续会在这里展示个性化推荐。",
+    "refresh": "刷新"
+  },
   "test": "测试"
 }

@@ -144,5 +144,11 @@
     "authorDanny": "Danny K",
     "authorJack": "JACK KUBINEC"
   },
+  "social": {
+    "subscribeButtonLabel": "+ Subscribe",
+    "noRecommendationsTitle": "No recommendations available",
+    "noRecommendationsDescription": "Follow more creators to see personalized recommendations here.",
+    "refresh": "Refresh"
+  },
   "test": "test"
 }

@@ -12,7 +12,6 @@ interface Props {
 const { locale, whoToFollow = [] } = Astro.props as Props
 const t = createTranslator(locale)
 
-// Server-side rendering optimization - Horizontal card layout
 const followUsers = whoToFollow
 const hasUsers = followUsers.length > 0
 ---
@@ -71,7 +70,7 @@ const hasUsers = followUsers.length > 0
                   userId={user.user_id}
                   locale={locale}
                   className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
-                  text={locale === 'us' ? '+ Subscribe' : '+ 订阅'}
+                  text={t('social.subscribeButtonLabel')}
                   client:load
                 />
               </div>
@@ -89,19 +88,16 @@ const hasUsers = followUsers.length > 0
         </svg>
       </div>
       <h3 class="text-lg font-medium text-foreground mb-2">
-        {locale === 'us' ? 'No Recommendations Available' : '暂无推荐'}
+        {t('social.noRecommendationsTitle')}
       </h3>
       <p class="text-muted-foreground mb-4">
-        {locale === 'us' 
-          ? 'We\'re working on finding great accounts for you to follow.'
-          : '我们正在为您寻找值得关注的优质账户。'
-        }
+        {t('social.noRecommendationsDescription')}
       </p>
       <button 
         class="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-colors"
         onclick="window.location.reload()"
       >
-        {locale === 'us' ? 'Refresh' : '刷新'}
+        {t('social.refresh')}
       </button>
     </div>
   )}

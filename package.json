@@ -10,7 +10,8 @@
     "start": "vercel dev",
     "vercel:simulate": "pnpm build && pnpm start",
     "astro": "astro",
-    "type-check": "astro check"
+    "type-check": "astro check",
+    "check:no-chinese-us": "node check-no-chinese-us.js"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
