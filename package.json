@@ -11,7 +11,8 @@
     "vercel:simulate": "pnpm build && pnpm start",
     "astro": "astro",
     "type-check": "astro check",
-    "check:no-chinese-us": "node check-no-chinese-us.js"
+    "check:no-chinese-us": "node check-no-chinese-us.js",
+    "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -66,10 +67,14 @@
     "@rollup/plugin-inject": "^5.0.5",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.0.0",
+    "simple-git-hooks": "^2.11.1",
     "terser": "^5.44.0"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "simple-git-hooks": {
+    "pre-push": "pnpm check:no-chinese-us"
   },
   "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
 }
