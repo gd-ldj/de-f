@@ -84,6 +84,63 @@ pnpm type-check       # 类型检查（改动代码后必跑）
 
 ---
 
+## 六、推荐 AI Skills 清单（首版）
+
+> 这部分是给 AI 用的「能力菜单」，方便快速选择合适的 skill。  
+> 如无特别说明，所有修改都默认遵守前文的类型、安全与样式约定。
+
+1. **布局与样式调整（Tailwind + 响应式）**  
+   - 能力：修改页面/组件布局，调整间距、对齐、配色；修复 mobile/desktop 响应式问题（包含滚动条、overflow、断点样式）。  
+   - 主要位置：`src/components/**`、`src/pages/**`、`src/styles/global.css`。  
+   - 注意：优先复用现有 Tailwind class 和布局模式（如 `max-w-[1440px]`、`layout-two-column-fixed-1440` 等）。
+
+2. **Astro 页面与路由结构调整**  
+   - 能力：增删改 Astro 路由页，调整页面骨架、`BaseLayout` 参数（SEO、OG、canonical 等），处理 `/us` / `/asia` 多语言路由。  
+   - 主要位置：`src/pages/**`、`src/layouts/BaseLayout.astro`。  
+   - 注意：保持现有 URL 结构不变，除非明确需求要求变更。
+
+3. **文章详情页 / 列表页体验优化**  
+   - 能力：修改文章详情（`ArticleContent`、`BaseArticlePage`）、分类页（`CategoryPage`）、Topic 页等的布局与交互，包括标题区、标签、作者信息、图片展示等。  
+   - 主要位置：`src/components/article/astro/**`、`src/components/pages/**`。  
+   - 注意：保持 SEO 相关结构（标题层级、主内容区域）稳定。
+
+4. **移动端适配与滚动行为修复**  
+   - 能力：针对小屏设备调整布局（如 `mt-[56px]` header 占位）、修复多余滚动条、遮挡、内容不可见等问题。  
+   - 主要位置：各页面 `main` 容器、移动端专用组件、`global.css` 中与 `.prose`、滚动相关的样式。  
+   - 注意：优先用 Tailwind 工具类与现有媒体查询模式，不随意新增全局样式。
+
+5. **头部导航与移动端侧边栏（包含 Portal / z-index）**  
+   - 能力：调整 `HeaderWithFallback`、`MobileSidebar`、`MobileCategoryPage` 等导航相关组件的结构、层级和交互（包含语言切换按钮遮挡问题等）。  
+   - 主要位置：`src/components/common/react/header/**`、相关 Astro 页面中的挂载点。  
+   - 注意：统一使用 Portal + 清晰 z-index 层级，避免再制造新的 stacking context 问题。
+
+6. **筛选栏与分页（FilterBar / Topic / Category）**  
+   - 能力：修改列表页筛选逻辑（分类、Topic、多选）、清空筛选、分页展示，以及与 URL 参数的同步。  
+   - 主要位置：`src/components/common/react/FilterBar.tsx`、`src/components/pages/CategoryPage.tsx`、`src/components/pages/TopicPage.tsx` 等。  
+   - 注意：遵循已有事件总线约定（如 `category:changed`、`filter:changed`、`filter:clear-all` 等自定义事件）。
+
+7. **多语言与文案（i18n / 语言切换）**  
+   - 能力：增删改文案 key，补充缺失翻译，调整语言切换行为（如文章详情语言按钮）。  
+   - 主要位置：`src/locales/**`、`src/lib/i18n`、语言切换相关组件。  
+   - 注意：不能随意改动已有 key，新增 key 时保持命名规范（如 `article.*`、`common.*`）。
+
+8. **数据获取与 API 封装**  
+   - 能力：调整文章、作者、Topic、合集等数据的获取逻辑，扩展查询参数，优化分页与缓存策略。  
+   - 主要位置：`src/api/**`、`src/components/pages/**`、使用 React Query 的地方。  
+   - 注意：遵循现有 API 封装模式，避免在组件里直接写裸 `fetch`。
+
+9. **组件抽象与复用重构**  
+   - 能力：将重复 UI / 逻辑提取为公共组件（React 或 Astro），统一列表卡片、按钮、标签等常见元素的用法。  
+   - 主要位置：`src/components/common/**`、`src/components/article/**`、`src/components/home/**`。  
+   - 注意：重构前先阅读现有类似组件，保证风格和 props 设计保持一致。
+
+10. **诊断与排错（类型 / 交互 / 样式）**  
+    - 能力：根据报错信息或截图排查问题，定位到具体组件或样式，并给出修复方案；包含 TypeScript 类型错误、React 渲染异常、Astro 构建错误、样式错乱等。  
+    - 主要位置：全局。  
+    - 注意：修复后优先运行 `pnpm type-check`，必要时说明缺失的 lint/test 命令。
+
+---
+
 # 通用团队规则（所有项目共用，保持简短）
 
 ## Communication
