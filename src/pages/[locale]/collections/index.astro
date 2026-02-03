@@ -7,6 +7,7 @@ import Footer from '@/components/common/react/footer/Index'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { SITE_CONFIG } from '@/config/constants'
 import { fetchCollections } from '@/api/collections'
+import { createTranslator } from '@/lib/i18n'
 
 export const prerender = false // Enable SSR for this page
 
@@ -19,11 +20,9 @@ if (!validLocales.includes(locale)) {
 }
 
 // SEO optimization
-const title = locale === 'us' ? 'Collections | deTake' : '我的收藏 | deTake'
-const description =
-  locale === 'us'
-    ? 'Discover curated collections of crypto insights, research and news on deTake.'
-    : '在 deTake 浏览精心整理的加密洞察、研究与资讯收藏集。'
+const t = createTranslator(locale)
+const title = t('pages.collectionsTitle')
+const description = t('pages.collectionsDescription')
 const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/collections?mask=detake`
 
 // Generate OG image
@@ -73,7 +72,7 @@ try {
           <!-- Page Title -->
           <header class="md:px-6 mb-4 hidden md:block">
             <h1 class="text-[32px] md:text-[56px] font-medium text-[#052019]">
-              Collections
+              {t('navigation.collections')}
             </h1>
           </header>
 
@@ -141,7 +140,7 @@ try {
                                 {item.hunters_count}
                               </div>
                               <div class="text-[12px] text-[#6E6F79]">
-                                {locale === 'us' ? 'Hunters' : '猎人'}
+                                {t('collections.hunters')}
                               </div>
                             </div>
                           </div>
@@ -151,7 +150,7 @@ try {
                                 {item.bonus_amt}
                               </div>
                               <div class="text-[12px] text-[#6E6F79]">
-                                {locale === 'us' ? 'Bonus' : '奖励'}
+                                {t('collections.bonus')}
                               </div>
                             </div>
                           </div>
@@ -208,7 +207,7 @@ try {
                           <div>
                             <div class="text-[16px] font-medium">{item.hunters_count}</div>
                             <div class="text-[12px] text-[#6E6F79]">
-                                {locale === 'us' ? 'Hunters' : '猎人'}
+                                {t('collections.hunters')}
                             </div>
                           </div>
                         </div>
@@ -216,7 +215,7 @@ try {
                           <div>
                             <div class="text-[16px] font-medium">{item.bonus_amt}</div>
                             <div class="text-[12px] text-[#6E6F79]">
-                              {locale === 'us' ? 'Bonus' : '奖金'}
+                              {t('collections.bonus')}
                             </div>
                           </div>
                         </div>

@@ -37,10 +37,8 @@ try {
 const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
 
 // SEO optimization
-const title = locale === 'us' ? 'Learn | Paragons | deTake' : '学习 | Paragons | deTake'
-const description = locale === 'us' 
-  ? 'Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms'
-  : '通过我们全面的术语词典学习加密货币和区块链术语'
+const title = t('pages.learnTitle')
+const description = t('pages.learnDescription')
 const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn?mask=detake`
 
 // Generate OG image
@@ -82,10 +80,10 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
           <div class="md:hidden">
             <nav class="text-xs text-muted-foreground mb-1 px-4">
               <a href={`/${locale}`} class="hover:text-foreground">
-                Learn
+                {t('navigation.learn')}
               </a>
               <span class="mx-1">/</span>
-              <span class="text-primary">Jargon</span>
+              <span class="text-primary">{t('learn.jargon')}</span>
             </nav>
 
             <div class="mt-4 mb-4  px-4">
@@ -95,7 +93,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 </svg>
                 <input
                   type="text"
-                  placeholder="Search terms here..."
+                  placeholder={t('learn.searchPlaceholder')}
                   class="flex-1 bg-transparent text-sm outline-none"
                   data-learn-search="mobile"
                 />
@@ -148,7 +146,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 data-mobile-empty-message
                 style="display: none"
               >
-                No results found. Try another term.
+                {t('learn.noResults')}
               </div>
 
               <div class="absolute right-1 top-0 flex flex-col items-center gap-1 text-xs text-gray-800" data-letter-nav>
@@ -170,14 +168,14 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
           <div class="hidden md:block">
             <nav class="text-sm text-muted-foreground mb-2 md:px-6">
               <a href={`/${locale}`} class="hover:text-foreground">
-                Learn
+                {t('navigation.learn')}
               </a>
               <span class="mx-1">/</span>
-              <span class="text-primary">Jargon</span>
+              <span class="text-primary">{t('learn.jargon')}</span>
             </nav>
 
             <h1 class="text-[48px] font-medium text-gray-900 mb-6 md:px-6">
-              Jargon
+              {t('learn.jargon')}
             </h1>
 
             <div class="border-y border-gray-200 py-3 mb-5 md:px-6 md:sticky md:top-[97px] md:bg-white md:z-10" data-desktop-letter-bar>
@@ -188,7 +186,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                   </svg>
                   <input
                     type="text"
-                    placeholder="Search terms here..."
+                    placeholder={t('learn.searchPlaceholder')}
                     class="w-full md:w-[180px] pl-9 pr-3 py-[9px] border border-gray-300 rounded-[2px] focus:ring-2 focus:text-primary focus:border-transparent outline-none text-sm"
                     data-learn-search="desktop"
                   />
@@ -451,9 +449,6 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
 
             applyLearnSearch('');
 
-        /**
-         * 处理字母导航点击事件，区分移动端容器滚动与桌面端窗口滚动
-         */
         links.forEach(function (link) {
           link.addEventListener('click', function (event) {
             event.preventDefault();
@@ -469,7 +464,6 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
               scrollContainer = navParent.parentElement.querySelector('[data-letter-scroll]');
             }
 
-            // 高亮当前点击的字母
             setActiveLetter(id);
 
             if (scrollContainer) {
@@ -496,7 +490,6 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
               var currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
               var sectionY = currentScroll + rect.top;
 
-              // Header 高度约 97px，加上字母条高度和一点间距
               var headerOffset = 97;
               var barHeight = 0;
               if (desktopBarElement instanceof HTMLElement && window.innerWidth >= 768) {

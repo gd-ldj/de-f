@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../../../types/index.ts';
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
+import { createTranslator } from '@/lib/i18n'
 
 export interface Props {
   article: any;
@@ -23,6 +24,8 @@ const {
   imageSize = 'medium',
   className = ''
 } = Astro.props;
+
+const t = createTranslator(locale)
 
 const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
 
@@ -158,7 +161,7 @@ const imageClasses = imageSizeClasses[imageSize];
       )}
       {showAuthor && author && (
         <p class="font-medium text-foreground space-x-1">
-          <span class="text-muted-foreground ">/ {locale === 'us' ? 'By' : '作者'}</span>
+          <span class="text-muted-foreground ">/ {t('article.by')}</span>
           <span class="text-foreground uppercase">{author}</span>
         </p>
       )}
@@ -215,7 +218,7 @@ const imageClasses = imageSizeClasses[imageSize];
       <!-- Author -->
       {showAuthor && author && (
         <div class="text-xs text-muted-foreground mb-2">
-          <span class="text-muted-foreground">{locale === 'us' ? 'by' : '作者'}</span>
+          <span class="text-muted-foreground">{t('article.by')}</span>
           <span class="text-foreground uppercase ml-1">{author}</span>
         </div>
       )}
@@ -229,7 +232,7 @@ const imageClasses = imageSizeClasses[imageSize];
             </span>
           ))}
           {tags.length > 3 && (
-            <span class="text-xs text-muted-foreground">+{tags.length - 3} {locale === 'us' ? 'more' : '个'}</span>
+            <span class="text-xs text-muted-foreground">+{tags.length - 3}{t('common.more')}</span>
           )}
         </div>
       )}

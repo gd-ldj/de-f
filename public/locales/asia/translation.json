@@ -57,12 +57,29 @@
     "blockchain": "区块链",
     "defi": "DeFi",
     "nft": "NFT",
-    "web3": "Web3"
+    "web3": "Web3",
+    "more": "更多"
   },
   "pages": {
     "articles": "文章",
     "homeTitle": "DeTake - 加密货币新闻、分析与洞察",
-    "homeDescription": "获取最新的加密货币新闻、市场分析和区块链洞察。您值得信赖的加密信息来源。"
+    "homeDescription": "获取最新的加密货币新闻、市场分析和区块链洞察。您值得信赖的加密信息来源。",
+    "collectionsTitle": "我的收藏 | deTake",
+    "collectionsDescription": "在 deTake 浏览精心整理的加密洞察、研究与资讯收藏集。",
+    "learnTitle": "学习 | 模范 | deTake",
+    "learnDescription": "通过我们全面的术语词典学习加密货币和区块链术语"
+  },
+  "learn": {
+    "jargon": "术语",
+    "searchPlaceholder": "搜索术语...",
+    "noResults": "未找到结果，请尝试其他词条。",
+    "languageShort": {
+      "zh": "中",
+      "en": "A",
+      "ar": "ع",
+      "ru": "RU",
+      "ja": "あ"
+    }
   },
   "article": {
     "minRead": "分钟阅读",
@@ -90,6 +107,20 @@
     "views": "浏览量",
     "volume24h": "24小时成交量",
     "articles": "文章"
+  },
+  "author": {
+    "followers": "关注者",
+    "articles": "文章",
+    "subscribe": "订阅",
+    "subscribePlaceholder": "订阅功能将与认证系统集成实现",
+    "noArticles": "暂无文章",
+    "loadMore": "加载更多",
+    "loading": "加载中...",
+    "loadMorePlaceholder": "加载更多功能将与API集成实现"
+  },
+  "collections": {
+    "hunters": "猎人",
+    "bonus": "奖励"
   },
   "home": {
     "decentralizedTakes": "去中心化观点。",

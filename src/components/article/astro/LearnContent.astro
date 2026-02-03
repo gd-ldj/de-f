@@ -40,11 +40,11 @@ const baseLearnPath = slugWithPromote
   ? `/${locale}/learn/${slugWithPromote}`
   : `/${locale}/learn/${learnItem.slug}`
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
-  { code: 'zh', label: '中' },
-  { code: 'en', label: 'A' },
-  { code: 'ar', label: 'ع' },
-  { code: 'ru', label: 'RU' },
-  { code: 'ja', label: 'あ' },
+  { code: 'zh', label: t('learn.languageShort.zh') },
+  { code: 'en', label: t('learn.languageShort.en') },
+  { code: 'ar', label: t('learn.languageShort.ar') },
+  { code: 'ru', label: t('learn.languageShort.ru') },
+  { code: 'ja', label: t('learn.languageShort.ja') },
 ]
 
 ---
@@ -69,7 +69,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
     <div class="flex items-center justify-start text-xs md:text-sm text-muted-foreground space-x-1 mt-2">
       <span>{displayDate}</span>
       <p class="font-medium text-foreground space-x-1">
-        <span class="text-muted-foreground">/ {locale === 'us' ? 'By' : '作者'}</span>
+        <span class="text-muted-foreground">/ {t('article.by')}</span>
         <span class="text-foreground uppercase">{learnItem?.author?.name}</span>
       </p>
       <div class="ml-auto hidden md:flex items-center">

@@ -48,14 +48,14 @@ function formatNumber(num: number): string {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M17 20h5v-2a3 3 0 00-5.196-2.121M9 20H4v-2a3 3 0 015.196-2.121M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             <span class="font-medium">{formatNumber(authorProfile.followers)}</span>
-            <span>{locale === 'us' ? 'followers' : '关注者'}</span>
+            <span>{t('author.followers')}</span>
           </div>
           <div class="flex items-center space-x-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <span class="font-medium">{formatNumber(authorProfile.articles_count)}</span>
-            <span>{locale === 'us' ? 'articles' : '文章'}</span>
+            <span>{t('author.articles')}</span>
           </div>
         </div>
 
@@ -89,10 +89,11 @@ function formatNumber(num: number): string {
         id="subscribe-btn"
         data-author-id={authorProfile.user_id}
         data-locale={locale}
+        data-subscribe-message={t('author.subscribePlaceholder')}
         class="px-6 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center space-x-2"
       >
         <span>+</span>
-        <span>{locale === 'us' ? 'Subscribe' : '订阅'}</span>
+        <span>{t('author.subscribe')}</span>
       </button>
     </div>
   </div>
@@ -116,9 +117,10 @@ function formatNumber(num: number): string {
     subscribeBtn.addEventListener('click', async () => {
       // This would need to integrate with the auth system
       // For now, just show a placeholder message
-      const locale = subscribeBtn.getAttribute('data-locale');
-      const message = locale === 'us' ? 'Subscribe functionality will be implemented with auth integration' : '订阅功能将与认证系统集成实现';
-      alert(message);
+      const message = subscribeBtn.getAttribute('data-subscribe-message');
+      if (message) {
+        alert(message);
+      }
     });
   }
 </script>

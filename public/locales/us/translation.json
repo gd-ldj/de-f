@@ -57,12 +57,29 @@
     "blockchain": "Blockchain",
     "defi": "DeFi",
     "nft": "NFT",
-    "web3": "Web3"
+    "web3": "Web3",
+    "more": " more"
   },
   "pages": {
     "articles": "Articles",
     "homeTitle": "DeTake - Crypto News, Analysis & Insights",
-    "homeDescription": "Get the latest cryptocurrency news, market analysis, and blockchain insights. Your trusted source for crypto information."
+    "homeDescription": "Get the latest cryptocurrency news, market analysis, and blockchain insights. Your trusted source for crypto information.",
+    "collectionsTitle": "Collections | deTake",
+    "collectionsDescription": "Discover curated collections of crypto insights, research and news on deTake.",
+    "learnTitle": "Learn | Paragons | deTake",
+    "learnDescription": "Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms"
+  },
+  "learn": {
+    "jargon": "Jargon",
+    "searchPlaceholder": "Search terms here...",
+    "noResults": "No results found. Try another term.",
+    "languageShort": {
+      "zh": "中",
+      "en": "A",
+      "ar": "ع",
+      "ru": "RU",
+      "ja": "あ"
+    }
   },
   "article": {
     "minRead": "min read",
@@ -90,6 +107,20 @@
     "views": "Views",
     "volume24h": "Vol. (24h)",
     "articles": "Articles"
+  },
+  "author": {
+    "followers": "followers",
+    "articles": "articles",
+    "subscribe": "Subscribe",
+    "subscribePlaceholder": "Subscribe functionality will be implemented with auth integration",
+    "noArticles": "No articles found",
+    "loadMore": "Load More",
+    "loading": "Loading...",
+    "loadMorePlaceholder": "Load more functionality will be implemented with API integration"
+  },
+  "collections": {
+    "hunters": "Hunters",
+    "bonus": "Bonus"
   },
   "home": {
     "decentralizedTakes": "Decentralized Takes.",
