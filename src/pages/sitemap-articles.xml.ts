@@ -6,6 +6,11 @@ import { fetchCollections, fetchCollectionArticles } from '@/api/collections';
 import { generateSitemapEntry } from '@/utils/seo';
 
 const SUPPORTED_LOCALES: Locale[] = ['us', 'asia'];
+const TRANSLATION_LANGS = ['en', 'zh', 'ar', 'ru', 'ja'] as const;
+
+const getDefaultLang = (locale: Locale) => (locale === 'asia' ? 'zh' : 'en');
+const getAlternateLangs = (locale: Locale) => TRANSLATION_LANGS.filter((lang) => lang !== getDefaultLang(locale));
+const appendLangParam = (url: string, lang: string) => `${url}${url.includes('?') ? '&' : '?'}lang=${lang}`;
 
 /**
  * 生成站点文章级 sitemap（首页、文章、Learn、Collections）
@@ -38,6 +43,7 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
   for (const locale of SUPPORTED_LOCALES) {
     const homeData = (await fetchHomePageData(locale)) as HomePageData | null;
     if (!homeData) continue;
+    const alternateLangs = getAlternateLangs(locale);
 
     const allHomeArticles: Array<HomeNewsArticle | HomeLatestArticle | HomeMostReadArticle> = [...(homeData.lastest || []), ...(homeData.mostread || []), ...(homeData.news_all || []), ...(homeData.news?.flatMap((group) => group.data) || []), ...(homeData.insights || []), ...(homeData.research || [])];
 
@@ -51,19 +57,27 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
           category,
         },
         locale,
-        origin,
+        baseUrl,
       );
 
       addEntry(entry.url, entry.lastmod);
+      for (const lang of alternateLangs) {
+        addEntry(appendLangParam(entry.url, lang), entry.lastmod);
+      }
     }
   }
 
   // Learn 词条：使用 Learn 列表接口
   for (const locale of SUPPORTED_LOCALES) {
     const learnResponse = await fetchLearnItems(locale);
+    const alternateLangs = getAlternateLangs(locale);
     for (const item of learnResponse.items) {
-      const learnUrl = `${origin}/${locale}/learn/${encodeURIComponent(item.slug)}`;
-      addEntry(learnUrl, item.updatedAt || item.createdAt || nowIso);
+      const learnUrl = `${baseUrl}/${locale}/learn/${encodeURIComponent(item.slug)}`;
+      const lastmod = item.updatedAt || item.createdAt || nowIso;
+      addEntry(learnUrl, lastmod);
+      for (const lang of alternateLangs) {
+        addEntry(appendLangParam(learnUrl, lang), lastmod);
+      }
     }
   }
 
@@ -72,6 +86,7 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
     let page = 1;
     const limit = 50;
     const maxPages = 50;
+    const alternateLangs = getAlternateLangs(locale);
 
     while (page <= maxPages) {
       const { items, hasNext } = await fetchCollections(page, limit);
@@ -93,9 +108,12 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
           }
 
           for (const article of articles) {
-            const url = `${origin}/${locale}/collections/${collection.id}/${encodeURIComponent(article.slug)}`;
+            const url = `${baseUrl}/${locale}/collections/${collection.id}/${encodeURIComponent(article.slug)}`;
             const lastmod = article.updated_at || article.created_at || nowIso;
             addEntry(url, lastmod);
+            for (const lang of alternateLangs) {
+              addEntry(appendLangParam(url, lang), lastmod);
+            }
           }
 
           if (!hasMore) {

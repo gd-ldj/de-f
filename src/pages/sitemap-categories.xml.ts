@@ -33,8 +33,8 @@ async function buildCategoriesSitemapXml(origin: string): Promise<string> {
     addEntry(`${prefix}/research`, nowIso);
 
     // Learn 列表、Collections 列表、Social 列表
-    addEntry(`${prefix}/learn`, nowIso);
-    addEntry(`${prefix}/collections`, nowIso);
+    addEntry(`${prefix}/learn?mask=detake`, nowIso);
+    addEntry(`${prefix}/collections?mask=detake`, nowIso);
     addEntry(`${prefix}/social`, nowIso);
 
     // Topics 列表页：根据首页 topics 数据生成
