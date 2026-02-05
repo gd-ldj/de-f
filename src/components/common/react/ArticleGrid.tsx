@@ -1,5 +1,5 @@
-import type { ApiArticle, Locale } from '@/types'
-import ArticleLink from './ArticleLink'
+import type { ApiArticle, Locale } from '@/types';
+import ArticleLink from './ArticleLink';
 import { formatDate } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 
@@ -12,7 +12,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
   const t = createTranslator(locale);
 
   return (
-    <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-1 md:mb-12 mt-1 md:mt-6 px-4 md:px-6">
+    <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-1 md:mb-12 mt-5 md:mt-6 px-4 md:px-6">
       {articles.map((article) => (
         <article key={article.slug} className="rounded overflow-hidden">
           {/* Mobile: Left image, right content layout */}
