@@ -12,12 +12,12 @@ import { SITE_CONFIG } from '@/config/constants';
 export const prerender = false // Enable SSR for this page
 
 // Extract Astro properties at the top
-const { params, url, redirect } = Astro
+const { params, url } = Astro
 const { locale, topic } = params as { locale: Locale; topic: string }
 
 // Validate locale
 if (!['us', 'asia'].includes(locale)) {
-  return redirect('/404')
+  return Astro.redirect('/404')
 }
 
 // Extract page parameter

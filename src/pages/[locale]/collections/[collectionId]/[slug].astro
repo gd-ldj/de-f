@@ -133,7 +133,6 @@ const author = article?.author?.name || article.author_name
   <HeaderWithFallback locale={locale} />
   <AuthMount 
     client:load 
-    userButtonTargetId="user-button-root"
     shareSection={{ locale, title: article.title, url: canonicalUrl }}
     authorSection={{
       author: {

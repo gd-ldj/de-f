@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import AuthMount from '@/components/common/react/AuthMount';
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro';
 import type { Locale } from '@/types'
 import Footer from '@/components/common/react/footer/Index';
@@ -51,9 +50,6 @@ const { title, description } = seoContent[locale] || seoContent.us
 <BaseLayout title={title} description={description} locale={locale}>
     <!-- React Header - Independent loading -->
     <HeaderWithFallback locale={locale} />
-    <!-- AuthMount only manages wallet-related buttons -->
-    <AuthMount client:load userButtonTargetId="user-button-root" />
-    
     <!-- Main content area fills remaining height so that the footer sticks to the bottom when content is short -->
     <main class="flex-1 bg-background mt-[56px] md:mt-[97px]">
       <!-- Category Header: simplified to match visual design (breadcrumb + large title) -->

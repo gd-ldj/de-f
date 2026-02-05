@@ -1,12 +1,10 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import AuthMount from '@/components/common/react/AuthMount'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import RecommendedAccounts from '@/components/social/astro/RecommendedAccounts.astro'
 import { fetchWhoToFollow } from '@/api/users'
 import type { Locale, HomeWhoToFollow } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
-import { createTranslator } from '@/lib/i18n'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import TwitterPost from '@/components/social/astro/TwitterPost.astro'
 import { SITE_CONFIG } from '@/config/constants'
@@ -19,8 +17,6 @@ const validLocales = ['us', 'asia']
 if (!validLocales.includes(locale)) {
   return Astro.redirect('/404')
 }
-
-const t = createTranslator(locale)
 
 // Fetch recommended accounts to follow
 let whoToFollow: HomeWhoToFollow[] = []
