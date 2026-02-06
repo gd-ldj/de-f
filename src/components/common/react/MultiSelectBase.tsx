@@ -35,6 +35,7 @@ export interface MultiSelectBaseProps {
 export default function MultiSelectBase({ locale, sections, onSectionsChange, leadingLabel, placeholder, changedEventName = 'filter:changed', clearEventNames = ['filter:clear-all'], onOpenChange }: MultiSelectBaseProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const lastSelectedValuesRef = useRef<string[] | null>(null);
 
   /**
    * Count selected options across all sections
@@ -76,6 +77,16 @@ export default function MultiSelectBase({ locale, sections, onSectionsChange, le
     const selectedCount = countSelected(sections);
     const hasSelection = selectedCount > 0;
     const selectedValues = sections.flatMap((s) => s.options.filter((o) => o.checked).map((o) => o.label));
+    const lastSelectedValues = lastSelectedValuesRef.current;
+    if (lastSelectedValues) {
+      const isSameLength = lastSelectedValues.length === selectedValues.length;
+      const isSameValues = isSameLength && lastSelectedValues.every((value, index) => value === selectedValues[index]);
+      if (isSameValues) return;
+    } else if (!hasSelection) {
+      lastSelectedValuesRef.current = selectedValues;
+      return;
+    }
+    lastSelectedValuesRef.current = selectedValues;
     document.dispatchEvent(new CustomEvent(changedEventName, { detail: { selectedCount, hasSelection, selectedValues } }));
   }, [sections, changedEventName]);
 

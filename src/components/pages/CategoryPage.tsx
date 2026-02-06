@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { fetchArticles } from '@/api/articles';
 import type { ApiArticle, Locale } from '@/types';
 import FilterBarReact from '@/components/common/react/FilterBar';
@@ -24,9 +24,6 @@ interface FilterState {
 }
 
 export default function CategoryPage({ locale, category, initialPage, initialCategoryName, initialAuthorName, initialTag, initialOrderBy }: CategoryPageProps) {
-  const [articles, setArticles] = useState<ApiArticle[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
   // Helper function to parse comma-separated values from URL parameters
   const parseCommaSeparatedValue = (value: string): string | string[] => {
     if (!value) return '';
@@ -36,6 +33,33 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       .filter((part) => part);
     return parts.length > 1 ? parts : value;
   };
+  const normalizeFilterValues = (value: string | string[]) => {
+    if (!value) return [];
+    const rawValues = Array.isArray(value) ? value : value.split(',').map((part) => part.trim());
+    return rawValues.filter((part) => part);
+  };
+  const areFilterValuesEqual = (left: string | string[], right: string | string[]) => {
+    const leftValues = normalizeFilterValues(left);
+    const rightValues = normalizeFilterValues(right);
+    if (leftValues.length !== rightValues.length) return false;
+    return leftValues.every((value, index) => value === rightValues[index]);
+  };
+
+  const [articles, setArticles] = useState<ApiArticle[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const lastFetchKeyRef = useRef<string>('');
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const loadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
+  const filtersRef = useRef<FilterState>({
+    page: initialPage,
+    categoryName: parseCommaSeparatedValue(initialCategoryName),
+    authorName: initialAuthorName,
+    tag: parseCommaSeparatedValue(initialTag),
+    orderBy: initialOrderBy,
+  });
 
   const [filters, setFilters] = useState<FilterState>({
     page: initialPage,
@@ -44,6 +68,11 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     tag: parseCommaSeparatedValue(initialTag),
     orderBy: initialOrderBy,
   });
+
+  // Keep filtersRef in sync
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   const itemsPerPage = 12;
 
@@ -100,10 +129,12 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     window.history.replaceState({}, '', finalUrl);
   }, []);
 
+
   // Fetch articles based on current filters
   const fetchArticlesData = useCallback(
-    async (currentFilters: FilterState) => {
+    async (currentFilters: FilterState, append = false) => {
       setLoading(true);
+      loadingRef.current = true;
       try {
         const options = {
           business_type_name: category,
@@ -117,21 +148,55 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         const response = await fetchArticles(locale, currentFilters.page, itemsPerPage, options);
         console.log('🚀 ~ CategoryPage ~ response:', response);
         if (response) {
-          setArticles(response.articles || []);
+          if (append) {
+            // Mobile infinite scroll: append new articles
+            setArticles((prev) => [...prev, ...(response.articles || [])]);
+          } else {
+            // Desktop pagination: replace articles
+            setArticles(response.articles || []);
+          }
           setTotal(response.total || 0);
+
+          // Check if there are more articles to load
+          const currentTotal = append ? articles.length + (response.articles || []).length : (response.articles || []).length;
+          const hasMoreValue = currentTotal < (response.total || 0);
+          setHasMore(hasMoreValue);
+          hasMoreRef.current = hasMoreValue;
         } else {
+          if (!append) {
+            setArticles([]);
+            setTotal(0);
+          }
+          setHasMore(false);
+          hasMoreRef.current = false;
+        }
+      } catch (error) {
+        if (!append) {
           setArticles([]);
           setTotal(0);
         }
-      } catch (error) {
-        setArticles([]);
-        setTotal(0);
+        setHasMore(false);
+        hasMoreRef.current = false;
       } finally {
         setLoading(false);
+        loadingRef.current = false;
       }
     },
-    [locale, category, itemsPerPage]
+    [locale, category, itemsPerPage, articles.length]
   );
+
+  // Load more articles for mobile infinite scroll
+  const loadMoreArticles = useCallback(() => {
+    // Check if mobile in real-time
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    console.log('[loadMoreArticles] isMobile:', isMobile, 'loading:', loadingRef.current, 'hasMore:', hasMoreRef.current);
+
+    if (!isMobile || loadingRef.current || !hasMoreRef.current) return;
+
+    const nextPage = filtersRef.current.page + 1;
+    console.log('[loadMoreArticles] Loading page:', nextPage);
+    setFilters((prev) => ({ ...prev, page: nextPage }));
+  }, []);
 
   // Handle filter changes from FilterBar
   const handleFilterChange = useCallback(
@@ -157,6 +222,16 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       // Reset to page 1 when filters change (except for page change)
       if (filterType !== 'page') {
         newFilters.page = 1;
+        setHasMore(true); // Reset hasMore when filters change
+      }
+
+      const isSameCategory = areFilterValuesEqual(newFilters.categoryName, filters.categoryName);
+      const isSameTag = areFilterValuesEqual(newFilters.tag, filters.tag);
+      const isSameAuthor = newFilters.authorName === filters.authorName;
+      const isSameOrder = newFilters.orderBy === filters.orderBy;
+      const isSamePage = newFilters.page === filters.page;
+      if (isSameCategory && isSameTag && isSameAuthor && isSameOrder && isSamePage) {
+        return;
       }
 
       setFilters(newFilters);
@@ -168,6 +243,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   // Handle page change
   const handlePageChange = useCallback(
     (page: number) => {
+      if (page === filters.page) return;
       const newFilters = { ...filters, page };
       setFilters(newFilters);
       updateURL(newFilters);
@@ -186,6 +262,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     };
     setFilters(clearedFilters);
     updateURL(clearedFilters);
+    setHasMore(true); // Reset hasMore when clearing filters
   }, [updateURL]);
 
   // Listen for filter events from FilterBar
@@ -236,23 +313,70 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
   // Fetch articles when filters change
   useEffect(() => {
-    fetchArticlesData(filters);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const isPageIncrement = filters.page > 1;
+    const shouldAppend = isMobile && isPageIncrement;
+
+    const fetchKey = JSON.stringify({
+      page: filters.page,
+      categoryName: normalizeFilterValues(filters.categoryName),
+      authorName: filters.authorName,
+      tag: normalizeFilterValues(filters.tag),
+      orderBy: filters.orderBy,
+    });
+
+    // Skip if this is the same request
+    if (fetchKey === lastFetchKeyRef.current) return;
+
+    lastFetchKeyRef.current = fetchKey;
+    fetchArticlesData(filters, shouldAppend);
   }, [filters, fetchArticlesData]);
+
+  // Setup IntersectionObserver for mobile infinite scroll
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || typeof window === 'undefined' || window.innerWidth >= 768) {
+      console.log('[IntersectionObserver] Not setting up - sentinel:', !!sentinel, 'width:', typeof window !== 'undefined' ? window.innerWidth : 'SSR');
+      return;
+    }
+
+    console.log('[IntersectionObserver] Setting up observer');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        console.log('[IntersectionObserver] Entry:', entry.isIntersecting, 'loading:', loadingRef.current, 'hasMore:', hasMoreRef.current);
+        // Use refs to avoid re-creating observer
+        if (!entry.isIntersecting || loadingRef.current || !hasMoreRef.current) return;
+        loadMoreArticles();
+      },
+      {
+        root: null,
+        rootMargin: '200px',
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(sentinel);
+    return () => {
+      console.log('[IntersectionObserver] Disconnecting');
+      observer.disconnect();
+    };
+  }, [loadMoreArticles]);
 
   return (
     <main className="max-w-[1440px] mx-auto py-4">
       {/* Filter Bar */}
       <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialTag={filters.tag} />
 
-      {/* Loading State */}
-      {loading && (
+      {/* Loading State - Only show for initial load or desktop pagination */}
+      {loading && articles.length === 0 && (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       )}
 
       {/* Articles Grid */}
-      {!loading && <ArticleGrid articles={articles} locale={locale} />}
+      {articles.length > 0 && <ArticleGrid articles={articles} locale={locale} />}
 
       {/* No Results */}
       {!loading && articles.length === 0 && (
@@ -261,8 +385,18 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         </div>
       )}
 
-      {/* Pagination */}
-      {!loading && total > itemsPerPage && <PaginationReact currentPage={filters.page} totalItems={total} itemsPerPage={itemsPerPage} onPageChange={handlePageChange} locale={locale} />}
+      {/* Mobile Infinite Scroll Sentinel and Loading Indicator */}
+      <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center text-xs text-muted-foreground md:hidden">
+        {loading && articles.length > 0 && <span>{locale === 'us' ? 'Loading...' : '加载中...'}</span>}
+        {!hasMore && !loading && articles.length > 0 && <span>{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>}
+      </div>
+
+      {/* Desktop Pagination - Hidden on mobile */}
+      {!loading && total > itemsPerPage && (
+        <div className="hidden md:block">
+          <PaginationReact currentPage={filters.page} totalItems={total} itemsPerPage={itemsPerPage} onPageChange={handlePageChange} locale={locale} />
+        </div>
+      )}
     </main>
   );
 }

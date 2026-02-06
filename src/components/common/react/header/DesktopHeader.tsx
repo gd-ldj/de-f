@@ -234,7 +234,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
           <div className="flex items-center space-x-8 flex-1">
             {/* Categories Dropdown */}
             <div
-              className=""
+              className="relative"
               ref={categoriesDropdownRef}
               onMouseEnter={() => setCategoriesDropdownOpen(true)}
               onMouseLeave={() => {
@@ -247,32 +247,11 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
               {/* Categories Dropdown Menu */}
               {categoriesDropdownOpen && (
-                <div className="absolute -left-1 z-50 px-1">
+                <div className="absolute left-0 z-50">
                   <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[480px] w-max">
                     <div className="py-3 px-4">
                       <div className="mt-1 grid grid-cols-4 gap-8">
-                        {[
-                          {
-                            key: 'technology',
-                            name: 'Technology',
-                            items: ['New Releases', 'Feature Updates', 'Models', 'Agents', 'Tools (Image, Video, Audio gen)', 'Skills'],
-                          },
-                          {
-                            key: 'business',
-                            name: 'Business',
-                            items: ['Press Release', 'Funding', 'Reports', 'Enterprise Adoption'],
-                          },
-                          {
-                            key: 'hardware',
-                            name: 'Hardware',
-                            items: ['Chips', 'Military', 'Robotics', 'Drone', 'Energy (Nuclear, Grid, Sustainability)'],
-                          },
-                          {
-                            key: 'policy',
-                            name: 'Policy',
-                            items: ['Regulation', 'Safety & Ethics', 'Geopolitics'],
-                          },
-                        ].map((group) => {
+                        {texts.dropdown.newsGroups.map((group) => {
                           const isGroupActive = currentCategoryTypeKey === 'news' && selectedCategoryName === group.name;
 
                           return (
@@ -321,7 +300,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm font-medium">
-                              {['Benchmarks', 'Breakthroughs', 'Context', 'RAG', 'Labs (DeepMind, OpenAI, FAIR news)'].map((label) => {
+                              {texts.dropdown.researchItems.map((label) => {
                                 const isResearchItemActive = currentCategoryTypeKey === 'research' && selectedCategoryName === label;
 
                                 return (
@@ -350,7 +329,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm font-medium">
-                              {['Competition', 'Adoption', 'New Players', 'Trend Watch'].map((label) => {
+                              {texts.dropdown.insightsItems.map((label) => {
                                 const isInsightsItemActive = currentCategoryTypeKey === 'insights' && selectedCategoryName === label;
 
                                 return (
@@ -379,7 +358,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm font-medium">
-                              {['Talks', 'Blogs'].map((label) => {
+                              {texts.dropdown.voicesItems.map((label) => {
                                 const isVoicesItemActive = currentCategoryTypeKey === 'voices' && selectedCategoryName === label;
 
                                 return (
@@ -452,7 +431,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm font-medium">
-                              {['Glossary', 'Prompting', 'Playbooks', 'Workflows', 'Vibe Coding'].map((label) => {
+                              {texts.dropdown.tutorialsItems.map((label) => {
                                 const isTutorialItemActive = isTutorialsRouteActive && selectedCategoryName === label;
 
                                 return (

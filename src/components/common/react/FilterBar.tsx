@@ -19,6 +19,7 @@ export default function FilterBar({ locale, authorName = '', viewMode = 'grid', 
   const [authorActive, setAuthorActive] = useState(false);
   const [anyActive, setAnyActive] = useState(false);
   const [anyDropdownOpen, setAnyDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const mobileScrollRef = useRef<HTMLDivElement | null>(null);
   const topicFilterRef = useRef<HTMLDivElement | null>(null);
 
@@ -77,6 +78,16 @@ export default function FilterBar({ locale, authorName = '', viewMode = 'grid', 
   }, [topicDropdownOpen]);
 
   useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
     refreshButtonState();
   }, [categoryActive, topicActive, authorActive]);
 
@@ -116,6 +127,7 @@ export default function FilterBar({ locale, authorName = '', viewMode = 'grid', 
   return (
     <div className="bg-white px-4 md:px-0 pb-2 md:pb-0 border-b md:border border-border">
       {/* Mobile Layout */}
+      {isMobile && (
       <div className="md:hidden">
         {/* Mobile Filter Header */}
         <div className="flex items-center justify-between md:px-4 py-3 md:border-b border-border">
@@ -150,8 +162,10 @@ export default function FilterBar({ locale, authorName = '', viewMode = 'grid', 
           </div>
         </div>
       </div>
+      )}
 
       {/* Desktop Layout */}
+      {!isMobile && (
       <div className="hidden md:flex items-center px-4 py-3">
         <div className="flex items-center flex-1 min-w-0">
           {/* Static Filters label */}
@@ -208,6 +222,7 @@ export default function FilterBar({ locale, authorName = '', viewMode = 'grid', 
           </div> */}
         </div>
       </div>
+      )}
     </div>
   );
 }

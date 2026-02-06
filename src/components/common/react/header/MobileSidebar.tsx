@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { headerTexts } from './constants';
 import type { Locale, CollectionItem } from '@/types';
-import { createTranslator } from '@/lib/i18n';
 import { fetchCollections } from '@/api/collections';
 
 import CountryIcon from './assets/country.svg?url';
-import MeIcon from './assets/me.svg?url';
 
 interface MobileSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   locale: Locale;
   onLocaleSwitch: (newLocale: Locale) => void;
-  onCategoryPageOpen?: (category: string) => void;
 }
 
 /**
  * Mobile sidebar navigation component
  * 100% pixel-perfect restoration based on UI design
  */
-export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch, onCategoryPageOpen }: MobileSidebarProps) {
-  const [isArticleExpanded, setIsArticleExpanded] = useState(false);
+export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch }: MobileSidebarProps) {
+  const [isNewsExpanded, setIsNewsExpanded] = useState(false);
+  const [isResearchExpanded, setIsResearchExpanded] = useState(false);
+  const [isInsightsExpanded, setIsInsightsExpanded] = useState(false);
+  const [isVoicesExpanded, setIsVoicesExpanded] = useState(false);
+  const [isTutorialsExpanded, setIsTutorialsExpanded] = useState(false);
   const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false);
   const [isLocaleExpanded, setIsLocaleExpanded] = useState(false);
   const [headerCollectionItems, setHeaderCollectionItems] = useState<CollectionItem[]>([]);
-  const t = createTranslator(locale);
   const texts = headerTexts[locale] || headerTexts.us;
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
           <a href={`/${locale}`} className="flex items-center" onClick={onClose}>
             <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
           </a>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close menu">
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.closeMenu}>
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -91,25 +91,114 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
         </div>
 
         <div className="px-4 py-6">
-          {/* All Categories */}
-          <div className="mb-1">
-            <button onClick={() => onCategoryPageOpen && onCategoryPageOpen('article')} className="flex items-center justify-between w-full py-3 text-left">
-              <span className="text-lg font-medium text-gray-900">{texts.navigation.allCategories}</span>
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-
           {/* Navigation Items */}
           <div className="space-y-1 mb-8">
-            <button onClick={() => handleNavigation(`/${locale}/research`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
-              {texts.navigation.categories.research}
-            </button>
+            {/* News with expandable subcategories (two levels) */}
+            <div>
+              <div className="flex items-center justify-between w-full py-3">
+                <button onClick={() => handleNavigation(`/${locale}/news`)} className="text-lg text-gray-900 text-left flex-1">
+                  {texts.navigation.news}
+                </button>
+                <button onClick={() => setIsNewsExpanded(!isNewsExpanded)} className="p-1 ml-2" aria-label={isNewsExpanded ? texts.actions.collapseNews : texts.actions.expandNews}>
+                  <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isNewsExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
 
-            <button onClick={() => handleNavigation(`/${locale}/insights`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
-              {texts.navigation.categories.insights}
-            </button>
+              {isNewsExpanded && (
+                <div className="mt-2 space-y-3 pl-4">
+                  {texts.dropdown.newsGroups.map((group) => (
+                    <div key={group.key}>
+                      {/* Group title */}
+                      <button onClick={() => handleNavigation(`/${locale}/news?category_name=${encodeURIComponent(group.name)}`)} className="block w-full py-2 px-2 text-left text-base font-medium text-gray-900 hover:bg-gray-50 rounded-md">
+                        {group.name}
+                      </button>
+                      {/* Group items */}
+                      <div className="mt-1 space-y-1 pl-3">
+                        {group.items.map((item) => (
+                          <button key={item} onClick={() => handleNavigation(`/${locale}/news?category_name=${encodeURIComponent(group.name)}&tag=${encodeURIComponent(item)}`)} className="block w-full py-1.5 px-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                            {item}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Research with expandable subcategories */}
+            <div>
+              <div className="flex items-center justify-between w-full py-3">
+                <button onClick={() => handleNavigation(`/${locale}/research`)} className="text-lg text-gray-900 text-left flex-1">
+                  {texts.navigation.categories.research}
+                </button>
+                <button onClick={() => setIsResearchExpanded(!isResearchExpanded)} className="p-1 ml-2" aria-label={isResearchExpanded ? texts.actions.collapseResearch : texts.actions.expandResearch}>
+                  <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isResearchExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {isResearchExpanded && (
+                <div className="mt-2 space-y-1 pl-4">
+                  {texts.dropdown.researchItems.map((category) => (
+                    <button key={category} onClick={() => handleNavigation(`/${locale}/research?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Insights with expandable subcategories */}
+            <div>
+              <div className="flex items-center justify-between w-full py-3">
+                <button onClick={() => handleNavigation(`/${locale}/insights`)} className="text-lg text-gray-900 text-left flex-1">
+                  {texts.navigation.categories.insights}
+                </button>
+                <button onClick={() => setIsInsightsExpanded(!isInsightsExpanded)} className="p-1 ml-2" aria-label={isInsightsExpanded ? texts.actions.collapseInsights : texts.actions.expandInsights}>
+                  <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isInsightsExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {isInsightsExpanded && (
+                <div className="mt-2 space-y-1 pl-4">
+                  {texts.dropdown.insightsItems.map((category) => (
+                    <button key={category} onClick={() => handleNavigation(`/${locale}/insights?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Voices with expandable subcategories */}
+            <div>
+              <div className="flex items-center justify-between w-full py-3">
+                <button onClick={() => handleNavigation(`/${locale}/voices`)} className="text-lg text-gray-900 text-left flex-1">
+                  {texts.navigation.categories.voices}
+                </button>
+                <button onClick={() => setIsVoicesExpanded(!isVoicesExpanded)} className="p-1 ml-2" aria-label={isVoicesExpanded ? texts.actions.collapseVoices : texts.actions.expandVoices}>
+                  <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isVoicesExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {isVoicesExpanded && (
+                <div className="mt-2 space-y-1 pl-4">
+                  {texts.dropdown.voicesItems.map((category) => (
+                    <button key={category} onClick={() => handleNavigation(`/${locale}/voices?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Collections with arrow */}
             <div>
@@ -117,7 +206,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
                 <button onClick={() => handleNavigation(`/${locale}/collections`)} className="text-lg text-gray-900 text-left flex-1">
                   {texts.navigation.collections}
                 </button>
-                <button onClick={() => setIsCollectionsExpanded(!isCollectionsExpanded)} className="p-1 ml-2" aria-label={isCollectionsExpanded ? 'Collapse collections' : 'Expand collections'}>
+                <button onClick={() => setIsCollectionsExpanded(!isCollectionsExpanded)} className="p-1 ml-2" aria-label={isCollectionsExpanded ? texts.actions.collapseCollections : texts.actions.expandCollections}>
                   <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isCollectionsExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -125,34 +214,39 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
               </div>
 
               {isCollectionsExpanded && (
-                <div className="mt-2 space-y-1 pl-2">
+                <div className="mt-2 space-y-1 pl-4">
                   {headerCollectionItems.map((item) => (
-                    <button key={item.id} onClick={() => handleNavigation(`/${locale}/collections/${item.id}`)} className="flex items-center justify-between w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                    <button key={item.id} onClick={() => handleNavigation(`/${locale}/collections/${item.id}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
                       <span className="truncate">{item.name}</span>
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            <button
-              // onClick={() => handleNavigation(`/${locale}/trending`)}
-              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            >
-              {texts.navigation.trending}
-            </button>
+            {/* Tutorials with expandable subcategories */}
+            <div>
+              <div className="flex items-center justify-between w-full py-3">
+                <button onClick={() => handleNavigation(`/${locale}/tutorials`)} className="text-lg text-gray-900 text-left flex-1">
+                  {texts.navigation.learn}
+                </button>
+                <button onClick={() => setIsTutorialsExpanded(!isTutorialsExpanded)} className="p-1 ml-2" aria-label={isTutorialsExpanded ? texts.actions.collapseTutorials : texts.actions.expandTutorials}>
+                  <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isTutorialsExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
 
-            {/* Learn */}
-            <button onClick={() => handleNavigation(`/${locale}/tutorials`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
-              {texts.navigation.learn}
-            </button>
-
-            <button onClick={() => handleNavigation(`/${locale}/voices`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
-              {texts.navigation.categories.voices}
-            </button>
+              {isTutorialsExpanded && (
+                <div className="mt-2 space-y-1 pl-4">
+                  {texts.dropdown.tutorialsItems.map((category) => (
+                    <button key={category} onClick={() => handleNavigation(`/${locale}/tutorials?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Divider */}
