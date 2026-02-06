@@ -12,7 +12,7 @@ interface MobileCategoryPageProps {
   category: string;
 }
 
-type ArticleTypeKey = 'news' | 'insights' | 'research';
+type ArticleTypeKey = 'news' | 'insights' | 'research' | 'voices';
 
 /**
  * Mobile category page component
@@ -41,6 +41,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
     { key: 'news', href: `/${locale}/news` },
     { key: 'insights', href: `/${locale}/insights` },
     { key: 'research', href: `/${locale}/research` },
+    { key: 'voices', href: `/${locale}/voices` },
   ];
 
   const subCategories = ['Politics', 'Economy', 'Society', 'Climate', 'Technology', 'Markets'];
@@ -69,6 +70,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
     news: locale === 'us' ? 'News' : '新闻',
     insight: locale === 'us' ? 'Insight' : '洞察',
     research: locale === 'us' ? 'Research' : '研究',
+    voices: locale === 'us' ? 'Voices' : '观点',
   };
 
   const allCategoriesText = locale === 'us' ? 'All Categories' : '所有类别';
@@ -179,6 +181,29 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
                   <div className="flex flex-wrap gap-x-4 gap-y-2 pl-1">
                     {subCategories.map((item) => (
                       <button key={`research-${item}`} onClick={() => handleNavigation(getCategoryFilterUrl('research', item))} className="text-sm text-muted-foreground hover:text-primary">
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Voices */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <button onClick={() => handleNavigation(`/${locale}/voices`)} className="text-xl text-gray-900 text-left">
+                    {locale === 'us' ? 'Voices' : '观点'}
+                  </button>
+                  <button onClick={() => toggleTypeExpand('voices')} className="p-1 hover:bg-gray-100 rounded-md transition-all duration-200" aria-label={expandedType === 'voices' ? 'Collapse voices categories' : 'Expand voices categories'}>
+                    <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${expandedType === 'voices' ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                </div>
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedType === 'voices' ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 pl-1">
+                    {subCategories.map((item) => (
+                      <button key={`voices-${item}`} onClick={() => handleNavigation(getCategoryFilterUrl('voices', item))} className="text-sm text-muted-foreground hover:text-primary">
                         {item}
                       </button>
                     ))}

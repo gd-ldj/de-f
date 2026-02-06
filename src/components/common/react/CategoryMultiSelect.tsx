@@ -26,6 +26,18 @@ export default function CategoryMultiSelect({
   onOpenChange,
 }: CategoryMultiSelectProps) {
   const t = createTranslator(locale);
+  const normalizeSelectedValues = (values?: string | string[]) => {
+    if (!values) return [];
+    const rawValues = Array.isArray(values) ? values : values.split(',').map((v) => v.trim());
+    return Array.from(new Set(rawValues.filter((value) => value)));
+  };
+  const mergeMissingOptions = (options: { id: string; label: string; checked: boolean }[], selectedValues: string[]) => {
+    const existingLabels = new Set(options.map((option) => option.label));
+    const missingOptions = selectedValues
+      .filter((value) => !existingLabels.has(value))
+      .map((value) => ({ id: `custom-${value}`, label: value, checked: true }));
+    return missingOptions.length > 0 ? [...options, ...missingOptions] : options;
+  };
   const [sections, setSections] = useState<FilterSection[]>([
     {
       id: 'category',
@@ -40,11 +52,12 @@ export default function CategoryMultiSelect({
    * @param selectedValues - Array of initially selected category names
    */
   const mapCategoriesToOptions = (cats: { id: string; name: string }[], selectedValues: string[] = []) => {
-    return cats.map((c) => ({ 
-      id: c.id, 
-      label: c.name, 
-      checked: selectedValues.includes(c.name) 
-    }))
+    const mappedOptions = cats.map((c) => ({
+      id: c.id,
+      label: c.name,
+      checked: selectedValues.includes(c.name),
+    }));
+    return mergeMissingOptions(mappedOptions, selectedValues);
   }
 
   /**
@@ -57,9 +70,7 @@ export default function CategoryMultiSelect({
         if (!mounted) return
         if (Array.isArray(cats) && cats.length > 0) {
           // Parse initial values into array format
-          const selectedValues = initialValues 
-            ? (Array.isArray(initialValues) ? initialValues : initialValues.split(',').map(v => v.trim()))
-            : [];
+          const selectedValues = normalizeSelectedValues(initialValues);
           
           setSections([
             {
@@ -70,30 +81,33 @@ export default function CategoryMultiSelect({
           ])
         } else {
           // Fallback defaults when API returns empty
+          const selectedValues = normalizeSelectedValues(initialValues);
+          const fallbackOptions = [
+            { id: 'markets', label: t('common.markets'), checked: false },
+            { id: 'news', label: t('common.news'), checked: false },
+            { id: 'research', label: t('common.research'), checked: false },
+          ];
           setSections([
             {
               id: 'category',
               title: t('common.category'),
-              options: [
-                { id: 'markets', label: t('common.markets'), checked: false },
-                { id: 'news', label: t('common.news'), checked: false },
-                { id: 'research', label: t('common.research'), checked: false },
-              ],
+              options: mergeMissingOptions(fallbackOptions, selectedValues),
             },
           ])
         }
       })
       .catch(() => {
-        // Network error -> fallback defaults
+        const selectedValues = normalizeSelectedValues(initialValues);
+        const fallbackOptions = [
+          { id: 'markets', label: t('common.markets'), checked: false },
+          { id: 'news', label: t('common.news'), checked: false },
+          { id: 'research', label: t('common.research'), checked: false },
+        ];
         setSections([
           {
             id: 'category',
             title: t('common.category'),
-            options: [
-              { id: 'markets', label: t('common.markets'), checked: false },
-              { id: 'news', label: t('common.news'), checked: false },
-              { id: 'research', label: t('common.research'), checked: false },
-            ],
+            options: mergeMissingOptions(fallbackOptions, selectedValues),
           },
         ])
       })

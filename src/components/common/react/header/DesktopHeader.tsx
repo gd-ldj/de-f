@@ -27,12 +27,20 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const [localeDropdownOpen, setLocaleDropdownOpen] = React.useState(false);
   const [collectionsDropdownOpen, setCollectionsDropdownOpen] = React.useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
-  const [activeCategoryType, setActiveCategoryType] = React.useState<string | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
+  const [selectedCategoryTag, setSelectedCategoryTag] = React.useState<string | null>(null);
   const [headerCollectionItems, setHeaderCollectionItems] = React.useState<CollectionItem[]>([]);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const collectionsDropdownRef = React.useRef<HTMLDivElement>(null);
   const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
+  const researchDropdownRef = React.useRef<HTMLDivElement>(null);
+  const insightsDropdownRef = React.useRef<HTMLDivElement>(null);
+  const voicesDropdownRef = React.useRef<HTMLDivElement>(null);
+  const tutorialsDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [researchDropdownOpen, setResearchDropdownOpen] = React.useState(false);
+  const [insightsDropdownOpen, setInsightsDropdownOpen] = React.useState(false);
+  const [voicesDropdownOpen, setVoicesDropdownOpen] = React.useState(false);
+  const [tutorialsDropdownOpen, setTutorialsDropdownOpen] = React.useState(false);
 
   const pathSegments = currentPath.split('/');
   const collectionsIndex = pathSegments.indexOf('collections');
@@ -49,7 +57,18 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       }
       if (categoriesDropdownRef.current && !categoriesDropdownRef.current.contains(event.target as Node)) {
         setCategoriesDropdownOpen(false);
-        setActiveCategoryType(null);
+      }
+      if (researchDropdownRef.current && !researchDropdownRef.current.contains(event.target as Node)) {
+        setResearchDropdownOpen(false);
+      }
+      if (insightsDropdownRef.current && !insightsDropdownRef.current.contains(event.target as Node)) {
+        setInsightsDropdownOpen(false);
+      }
+      if (voicesDropdownRef.current && !voicesDropdownRef.current.contains(event.target as Node)) {
+        setVoicesDropdownOpen(false);
+      }
+      if (tutorialsDropdownRef.current && !tutorialsDropdownRef.current.contains(event.target as Node)) {
+        setTutorialsDropdownOpen(false);
       }
     };
 
@@ -63,7 +82,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const categoryName = params.get('category_name');
+    const categoryTag = params.get('tag');
     setSelectedCategoryName(categoryName);
+    setSelectedCategoryTag(categoryTag);
   }, [currentPath]);
 
   // 从后端加载 header 中使用的合集列表
@@ -88,11 +109,15 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   }, []);
 
   const toggleCategoriesDropdown = () => {
-    if (categoriesDropdownOpen) {
-      setCategoriesDropdownOpen(false);
-      setActiveCategoryType(null);
-    } else {
-      setCategoriesDropdownOpen(true);
+    setCategoriesDropdownOpen(!categoriesDropdownOpen);
+  };
+
+  const handleCategoriesRootClick = () => {
+    setCategoriesDropdownOpen(false);
+    if (typeof window !== 'undefined') {
+      const defaultCategory = categoriesItems[0];
+      const targetHref = defaultCategory?.href || `/${locale}/news`;
+      window.location.href = targetHref;
     }
   };
 
@@ -100,31 +125,26 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const navigation = {
     left: [
       {
-        name: texts.navigation.social,
-        href: `/${locale}/social`,
-        key: 'social',
+        name: texts.navigation.categories.research,
+        href: `/${locale}/research`,
+        key: 'research',
       },
       {
-        name: texts.navigation.explore,
-        href: `/${locale}/explore`,
-        key: 'explore',
+        name: texts.navigation.categories.insights,
+        href: `/${locale}/insights`,
+        key: 'insights',
       },
       {
-        name: texts.navigation.technology,
-        href: `/${locale}/technology`,
-        key: 'technology',
+        name: texts.navigation.categories.voices,
+        href: `/${locale}/voices`,
+        key: 'voices',
       },
     ],
     right: [
       {
-        name: texts.navigation.trending,
-        href: `/${locale}/trending`,
-        key: 'trending',
-      },
-      {
         name: texts.navigation.learn,
-        href: `/${locale}/learn`,
-        key: 'learn',
+        href: `/${locale}/tutorials`,
+        key: 'tutorials',
       },
     ],
   };
@@ -174,13 +194,23 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       href: `/${locale}/research`,
       key: 'research',
     },
+    {
+      name: texts.navigation.categories.voices,
+      href: `/${locale}/voices`,
+      key: 'voices',
+    },
   ];
 
-  const currentCategoryTypeKey = categoriesItems.find((item) => item.href === currentPath)?.key || null;
+  const articleIndex = pathSegments.indexOf('article');
+  const articleCategoryKey = articleIndex >= 0 && pathSegments.length > articleIndex + 1 ? pathSegments[articleIndex + 1] : null;
+  const normalizedArticleCategoryKey = categoriesItems.some((item) => item.key === articleCategoryKey) ? articleCategoryKey : null;
+  const currentCategoryTypeKey = categoriesItems.find((item) => currentPath === item.href || currentPath.startsWith(`${item.href}/`) || currentPath.startsWith(`${item.href}?`))?.key || normalizedArticleCategoryKey || null;
 
   const isCategoryRouteActive = categoriesItems.some((item) => currentPath === item.href || currentPath.startsWith(`${item.href}/`) || currentPath.startsWith(`${item.href}?`)) || Boolean(currentCategoryTypeKey);
 
   const isCollectionsRouteActive = currentPath.startsWith(`/${locale}/collections`);
+  const isNewsRouteActive = currentPath === `/${locale}/news` || currentPath.startsWith(`/${locale}/news/`) || currentPath.startsWith(`/${locale}/news?`) || normalizedArticleCategoryKey === 'news';
+  const isTutorialsRouteActive = currentPath === `/${locale}/tutorials` || currentPath.startsWith(`/${locale}/tutorials/`) || currentPath.startsWith(`/${locale}/tutorials?`);
 
   const handleCollectionsClick = () => {
     setCollectionsDropdownOpen(false);
@@ -203,55 +233,176 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
           {/* Left Navigation */}
           <div className="flex items-center space-x-8 flex-1">
             {/* Categories Dropdown */}
-            <div className="" ref={categoriesDropdownRef}>
-              <button onClick={toggleCategoriesDropdown} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.allCategories} aria-expanded={categoriesDropdownOpen}>
-                <span className={`${categoriesDropdownOpen ? 'text-white' :  isCategoryRouteActive ? 'text-primary' : 'text-gray-600'}`}>{texts.navigation.allCategories}</span>
-                <img src={categoriesDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} />
+            <div
+              className=""
+              ref={categoriesDropdownRef}
+              onMouseEnter={() => setCategoriesDropdownOpen(true)}
+              onMouseLeave={() => {
+                setCategoriesDropdownOpen(false);
+              }}
+            >
+              <button onClick={handleCategoriesRootClick} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.news} aria-expanded={categoriesDropdownOpen}>
+                <span className={`${categoriesDropdownOpen ? 'text-white' : isNewsRouteActive ? 'text-primary' : 'text-gray-600'}`}>{texts.navigation.news}</span>
               </button>
 
               {/* Categories Dropdown Menu */}
               {categoriesDropdownOpen && (
-                <div className="absolute left-0 right-0 top-[96px] w-screen bg-white z-50 border border-border">
-                  <div className="max-w-[1440px] mx-auto px-4">
-                    <div className="pt-4 pb-4" onMouseLeave={() => setActiveCategoryType(null)}>
-                      <h3 className="text-lg font-medium text-foreground mb-2 mt-1">{texts.dropdown.article}</h3>
-                      <div className="flex items-center gap-8">
-                        {categoriesItems.map((item) => (
-                          <a key={item.key} href={item.href} className={`text-sm py-2 relative transition-colors ${currentPath === item.href ? 'text-primary font-medium' : 'text-muted-foreground hover:text-primary'}`} onClick={() => setCategoriesDropdownOpen(false)} onMouseEnter={() => setActiveCategoryType(item.key)}>
-                            {item.name}
-                            {currentPath === item.href && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />}
-                          </a>
-                        ))}
+                <div className="absolute -left-1 z-50 px-1">
+                  <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[480px] w-max">
+                    <div className="py-3 px-4">
+                      <div className="mt-1 grid grid-cols-4 gap-8">
+                        {[
+                          {
+                            key: 'technology',
+                            name: 'Technology',
+                            items: ['New Releases', 'Feature Updates', 'Models', 'Agents', 'Tools (Image, Video, Audio gen)', 'Skills'],
+                          },
+                          {
+                            key: 'business',
+                            name: 'Business',
+                            items: ['Press Release', 'Funding', 'Reports', 'Enterprise Adoption'],
+                          },
+                          {
+                            key: 'hardware',
+                            name: 'Hardware',
+                            items: ['Chips', 'Military', 'Robotics', 'Drone', 'Energy (Nuclear, Grid, Sustainability)'],
+                          },
+                          {
+                            key: 'policy',
+                            name: 'Policy',
+                            items: ['Regulation', 'Safety & Ethics', 'Geopolitics'],
+                          },
+                        ].map((group) => {
+                          const isGroupActive = currentCategoryTypeKey === 'news' && selectedCategoryName === group.name;
+
+                          return (
+                            <div key={group.key} className="min-w-[160px]">
+                              <a href={getCategoryFilterUrl('news', group.name)} className={`block text-sm font-medium mb-2 text-foreground hover:text-primary cursor-pointer ${isGroupActive ? 'text-primary' : ''}`} onClick={() => setCategoriesDropdownOpen(false)}>
+                                {group.name}
+                              </a>
+                              <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+                                {group.items.map((category) => {
+                                  const isSubcategoryActive = currentCategoryTypeKey === 'news' && selectedCategoryName === group.name && selectedCategoryTag === category;
+
+                                  return (
+                                    <a
+                                      key={category}
+                                      href={`${getCategoryFilterUrl('news', group.name)}&tag=${encodeURIComponent(category)}`}
+                                      className={`whitespace-nowrap hover:text-primary ${isSubcategoryActive ? 'text-primary font-medium' : ''}`}
+                                      onClick={() => {
+                                        setCategoriesDropdownOpen(false);
+                                      }}
+                                    >
+                                      {category}
+                                    </a>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      {activeCategoryType && (
-                        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-                          {['Politics', 'Economy', 'Society', 'Climate', 'Technology', 'Markets'].map((category) => (
-                            <a
-                              key={category}
-                              href={getCategoryFilterUrl(activeCategoryType, category)}
-                              className={`whitespace-nowrap hover:text-primary ${selectedCategoryName === category && activeCategoryType === currentCategoryTypeKey ? 'text-primary font-medium' : ''}`}
-                              onClick={() => {
-                                setCategoriesDropdownOpen(false);
-                                setActiveCategoryType(null);
-                              }}
-                            >
-                              {category}
-                            </a>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
               )}
             </div>
+            {navigation.left.map((item) => {
+              const isActive = currentPath === item.href || currentPath.startsWith(`${item.href}/`) || currentPath.startsWith(`${item.href}?`) || normalizedArticleCategoryKey === item.key;
 
-            {/* Other Navigation Items */}
-            {navigation.left.map((item) => (
-              <button key={item.key} className={`text-sm transition-colors hover:text-gray-900 ${currentPath === item.href ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
-                {item.name}
-              </button>
-            ))}
+              if (item.key === 'research') {
+                return (
+                  <div key={item.key} className="relative" ref={researchDropdownRef} onMouseEnter={() => setResearchDropdownOpen(true)} onMouseLeave={() => setResearchDropdownOpen(false)}>
+                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${researchDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                      {item.name}
+                    </a>
+                    {researchDropdownOpen && (
+                      <div className="absolute -left-1 z-50 px-1">
+                        <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
+                          <div className="py-3 px-4">
+                            <div className="flex flex-col gap-2 text-sm font-medium">
+                              {['Benchmarks', 'Breakthroughs', 'Context', 'RAG', 'Labs (DeepMind, OpenAI, FAIR news)'].map((label) => {
+                                const isResearchItemActive = currentCategoryTypeKey === 'research' && selectedCategoryName === label;
+
+                                return (
+                                  <a key={label} href={getCategoryFilterUrl('research', label)} className={`whitespace-nowrap hover:text-primary ${isResearchItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setResearchDropdownOpen(false)}>
+                                    {label}
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              if (item.key === 'insights') {
+                return (
+                  <div key={item.key} className="relative" ref={insightsDropdownRef} onMouseEnter={() => setInsightsDropdownOpen(true)} onMouseLeave={() => setInsightsDropdownOpen(false)}>
+                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${insightsDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                      {item.name}
+                    </a>
+                    {insightsDropdownOpen && (
+                      <div className="absolute -left-1 z-50 px-1">
+                        <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
+                          <div className="py-3 px-4">
+                            <div className="flex flex-col gap-2 text-sm font-medium">
+                              {['Competition', 'Adoption', 'New Players', 'Trend Watch'].map((label) => {
+                                const isInsightsItemActive = currentCategoryTypeKey === 'insights' && selectedCategoryName === label;
+
+                                return (
+                                  <a key={label} href={getCategoryFilterUrl('insights', label)} className={`whitespace-nowrap hover:text-primary ${isInsightsItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setInsightsDropdownOpen(false)}>
+                                    {label}
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              if (item.key === 'voices') {
+                return (
+                  <div key={item.key} className="relative" ref={voicesDropdownRef} onMouseEnter={() => setVoicesDropdownOpen(true)} onMouseLeave={() => setVoicesDropdownOpen(false)}>
+                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${voicesDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                      {item.name}
+                    </a>
+                    {voicesDropdownOpen && (
+                      <div className="absolute -left-1 z-50 px-1">
+                        <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
+                          <div className="py-3 px-4">
+                            <div className="flex flex-col gap-2 text-sm font-medium">
+                              {['Talks', 'Blogs'].map((label) => {
+                                const isVoicesItemActive = currentCategoryTypeKey === 'voices' && selectedCategoryName === label;
+
+                                return (
+                                  <a key={label} href={getCategoryFilterUrl('voices', label)} className={`whitespace-nowrap hover:text-primary ${isVoicesItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setVoicesDropdownOpen(false)}>
+                                    {label}
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <a key={item.key} href={item.href} className={`text-sm transition-colors hover:text-gray-900 ${isActive ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>
+                  {item.name}
+                </a>
+              );
+            })}
           </div>
 
           {/* Logo - Center */}
@@ -287,17 +438,44 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             </div>
 
             {/* Right Navigation Items */}
-            {navigation.right.map((item) =>
-              item.key === 'learn' ? (
-                <a key={item.key} href={item.href} className={`text-sm transition-colors hover:text-primary ${currentPath === item.href ? 'text-primary' : 'text-gray-600'}`}>
-                  {item.name}
-                </a>
-              ) : (
-                <button key={item.key} className={`text-sm transition-colors ${currentPath === item.href ? 'text-primary' : 'text-gray-600'}`}>
+            {navigation.right.map((item) => {
+              const isActive = currentPath === item.href || currentPath.startsWith(`${item.href}/`) || currentPath.startsWith(`${item.href}?`);
+
+              if (item.key === 'tutorials') {
+                return (
+                  <div key={item.key} className="relative" ref={tutorialsDropdownRef} onMouseEnter={() => setTutorialsDropdownOpen(true)} onMouseLeave={() => setTutorialsDropdownOpen(false)}>
+                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${tutorialsDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                      {item.name}
+                    </a>
+                    {tutorialsDropdownOpen && (
+                      <div className="absolute right-0 z-50 px-1">
+                        <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
+                          <div className="py-3 px-4">
+                            <div className="flex flex-col gap-2 text-sm font-medium">
+                              {['Glossary', 'Prompting', 'Playbooks', 'Workflows', 'Vibe Coding'].map((label) => {
+                                const isTutorialItemActive = isTutorialsRouteActive && selectedCategoryName === label;
+
+                                return (
+                                  <a key={label} href={getCategoryFilterUrl('tutorials', label)} className={`whitespace-nowrap hover:text-primary ${isTutorialItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setTutorialsDropdownOpen(false)}>
+                                    {label}
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <button key={item.key} className={`text-sm transition-colors ${isActive ? 'text-primary' : 'text-gray-600'}`}>
                   {item.name}
                 </button>
-              ),
-            )}
+              );
+            })}
 
             {/* Search Icon */}
             <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search}>

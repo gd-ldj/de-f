@@ -19,7 +19,7 @@ interface Props {
 const { locale, category, slug, userId } = Astro.props as Props
 const { url } = Astro
 
-const validCategories = ['insights', 'news', 'research']
+const validCategories = ['insights', 'news', 'research', 'voices']
 if (!validCategories.includes(category.toLowerCase())) {
   return Astro.redirect('/404')
 }

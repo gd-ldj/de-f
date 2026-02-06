@@ -6,7 +6,7 @@
     "technology": "Technology",
     "collections": "Collections",
     "trending": "Trending",
-    "learn": "Learn",
+    "learn": "Tutorials",
     "search": "Search",
     "switchLanguage": "Switch Language",
     "settings": "Settings",
@@ -70,7 +70,7 @@
     "learnDescription": "Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms"
   },
   "learn": {
-    "jargon": "Jargon",
+    "glossary": "Glossary",
     "searchPlaceholder": "Search terms here...",
     "noResults": "No results found. Try another term.",
     "languageShort": {

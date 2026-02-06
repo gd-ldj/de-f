@@ -72,9 +72,9 @@ if (pageLanguage !== baseLearnLanguage) {
 const learnLang = pageLanguage
 
 // SEO optimization
-const title = `${learnItem.title} | Learn | deTake`
+const title = `${learnItem.title} | Tutorials | deTake`
 const description = learnItem.description
-const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn/${actualSlug}`
+const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/tutorials/${actualSlug}`
 const canonicalUrl =
   rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
     ? `${baseCanonicalUrl}?lang=${rawLang}`
@@ -89,7 +89,7 @@ const ogImageParams = new URLSearchParams({
 const ogImageUrl = `${SITE_CONFIG.SITE_URL}/api/og/learn.svg?${ogImageParams.toString()}`
 
 // Extract keywords
-const keywords = ['learn', 'paragons', 'cryptocurrency', 'blockchain', learnItem.title.toLowerCase()]
+const keywords = ['tutorials', 'paragons', 'cryptocurrency', 'blockchain', learnItem.title.toLowerCase()]
 
 // Format content - convert markdown-like content to HTML
 function formatContent(content: string) {

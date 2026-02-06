@@ -20,6 +20,18 @@ export interface TopicMultiSelectProps {
  */
 export default function TopicMultiSelect({ locale, initialValues, placeholder, onOpenChange }: TopicMultiSelectProps) {
   const t = createTranslator(locale);
+  const normalizeSelectedValues = (values?: string | string[]) => {
+    if (!values) return [];
+    const rawValues = Array.isArray(values) ? values : values.split(',').map((v) => v.trim());
+    return Array.from(new Set(rawValues.filter((value) => value)));
+  };
+  const mergeMissingOptions = (options: { id: string; label: string; checked: boolean }[], selectedValues: string[]) => {
+    const existingLabels = new Set(options.map((option) => option.label));
+    const missingOptions = selectedValues
+      .filter((value) => !existingLabels.has(value))
+      .map((value) => ({ id: `custom-${value}`, label: value, checked: true }));
+    return missingOptions.length > 0 ? [...options, ...missingOptions] : options;
+  };
   const [sections, setSections] = useState<FilterSection[]>([
     {
       id: 'topics',
@@ -34,11 +46,12 @@ export default function TopicMultiSelect({ locale, initialValues, placeholder, o
    * @param selectedValues - Array of initially selected tag names
    */
   const mapTagsToOptions = (tags: { id: string; name: string }[], selectedValues: string[] = []) => {
-    return tags.map((t) => ({
+    const mappedOptions = tags.map((t) => ({
       id: t.id,
       label: t.name,
       checked: selectedValues.includes(t.name),
     }));
+    return mergeMissingOptions(mappedOptions, selectedValues);
   };
 
   /**
@@ -51,7 +64,7 @@ export default function TopicMultiSelect({ locale, initialValues, placeholder, o
         if (!mounted) return;
         if (Array.isArray(tags) && tags.length > 0) {
           // Parse initial values into array format
-          const selectedValues = initialValues ? (Array.isArray(initialValues) ? initialValues : initialValues.split(',').map((v) => v.trim())) : [];
+          const selectedValues = normalizeSelectedValues(initialValues);
 
           setSections([
             {
@@ -62,32 +75,36 @@ export default function TopicMultiSelect({ locale, initialValues, placeholder, o
           ]);
         } else {
           // Fallback defaults when API returns empty
+          const selectedValues = normalizeSelectedValues(initialValues);
+          const fallbackOptions = [
+            { id: 'blockchain', label: t('common.blockchain'), checked: false },
+            { id: 'defi', label: t('common.defi'), checked: false },
+            { id: 'nft', label: t('common.nft'), checked: false },
+            { id: 'web3', label: t('common.web3'), checked: false },
+          ];
           setSections([
             {
               id: 'topics',
               title: t('common.topics'),
-              options: [
-                { id: 'blockchain', label: t('common.blockchain'), checked: false },
-                { id: 'defi', label: t('common.defi'), checked: false },
-                { id: 'nft', label: t('common.nft'), checked: false },
-                { id: 'web3', label: t('common.web3'), checked: false },
-              ],
+              options: mergeMissingOptions(fallbackOptions, selectedValues),
             },
           ]);
         }
       })
       .catch(() => {
         // Network error -> fallback defaults
+        const selectedValues = normalizeSelectedValues(initialValues);
+        const fallbackOptions = [
+          { id: 'blockchain', label: t('common.blockchain'), checked: false },
+          { id: 'defi', label: t('common.defi'), checked: false },
+          { id: 'nft', label: t('common.nft'), checked: false },
+          { id: 'web3', label: t('common.web3'), checked: false },
+        ];
         setSections([
           {
             id: 'topics',
             title: t('common.topics'),
-            options: [
-              { id: 'blockchain', label: t('common.blockchain'), checked: false },
-              { id: 'defi', label: t('common.defi'), checked: false },
-              { id: 'nft', label: t('common.nft'), checked: false },
-              { id: 'web3', label: t('common.web3'), checked: false },
-            ],
+            options: mergeMissingOptions(fallbackOptions, selectedValues),
           },
         ]);
       });

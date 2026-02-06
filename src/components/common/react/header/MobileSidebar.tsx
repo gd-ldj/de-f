@@ -103,18 +103,12 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
 
           {/* Navigation Items */}
           <div className="space-y-1 mb-8">
-            <button
-              // onClick={() => handleNavigation(`/${locale}/social`)}
-              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            >
-              {texts.navigation.social}
+            <button onClick={() => handleNavigation(`/${locale}/research`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+              {texts.navigation.categories.research}
             </button>
 
-            <button
-              // onClick={() => handleNavigation(`/${locale}/explore`)}
-              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            >
-              {texts.navigation.explore}
+            <button onClick={() => handleNavigation(`/${locale}/insights`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+              {texts.navigation.categories.insights}
             </button>
 
             {/* Collections with arrow */}
@@ -152,15 +146,12 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch,
             </button>
 
             {/* Learn */}
-            <button onClick={() => handleNavigation(`/${locale}/learn`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+            <button onClick={() => handleNavigation(`/${locale}/tutorials`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
               {texts.navigation.learn}
             </button>
 
-            <button
-              // onClick={() => handleNavigation(`/${locale}/technology`)}
-              className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            >
-              {texts.navigation.technology}
+            <button onClick={() => handleNavigation(`/${locale}/voices`)} className="block w-full py-3 text-left text-lg text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+              {texts.navigation.categories.voices}
             </button>
           </div>
 

@@ -27,15 +27,15 @@ async function buildCategoriesSitemapXml(origin: string): Promise<string> {
   for (const locale of SUPPORTED_LOCALES) {
     const prefix = `${baseUrl}/${locale}`;
 
-    // 频道列表页：News / Insights / Research
+    // 频道列表页：News / Insights / Research / Voices
     addEntry(`${prefix}/news`, nowIso);
     addEntry(`${prefix}/insights`, nowIso);
     addEntry(`${prefix}/research`, nowIso);
+    addEntry(`${prefix}/voices`, nowIso);
 
-    // Learn 列表、Collections 列表、Social 列表
-    addEntry(`${prefix}/learn?mask=detake`, nowIso);
+    // Tutorials 列表、Collections 列表
+    addEntry(`${prefix}/tutorials?mask=detake`, nowIso);
     addEntry(`${prefix}/collections?mask=detake`, nowIso);
-    addEntry(`${prefix}/social`, nowIso);
 
     // Topics 列表页：根据首页 topics 数据生成
     const homeData = (await fetchHomePageData(locale)) as HomePageData | null;

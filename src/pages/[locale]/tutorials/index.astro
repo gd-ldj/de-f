@@ -11,6 +11,7 @@ import { SITE_CONFIG, DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/consta
 export const prerender = false // Enable SSR for this page
 
 const { locale } = Astro.params as { locale: Locale }
+const { url } = Astro
 
 // Validate locale
 const validLocales = ['us', 'asia']
@@ -19,6 +20,7 @@ if (!validLocales.includes(locale)) {
 }
 
 const t = createTranslator(locale)
+const currentCategoryName = url.searchParams.get('category_name') || t('learn.glossary')
 
 // Fetch learn items grouped by letter
 let learnItemsByLetter: { [letter: string]: any[] } = {}
@@ -39,7 +41,7 @@ const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAU
 // SEO optimization
 const title = t('pages.learnTitle')
 const description = t('pages.learnDescription')
-const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/learn?mask=detake`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/${locale}/tutorials?mask=detake`
 
 // Generate OG image
 const ogImageParams = new URLSearchParams({
@@ -83,7 +85,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 {t('navigation.learn')}
               </a>
               <span class="mx-1">/</span>
-              <span class="text-primary">{t('learn.jargon')}</span>
+              <span class="text-primary">{currentCategoryName}</span>
             </nav>
 
             <div class="mt-4 mb-4  px-4">
@@ -123,7 +125,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                             data-description={item.description}
                           >
                             <a
-                              href={`/${locale}/learn/${item.slug}-${promoteCode}`}
+                              href={`/${locale}/tutorials/${item.slug}-${promoteCode}`}
                               class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
                             >
                               <h3 class="text-[20px] font-medium text-[#052019] mb-1" data-learn-title>
@@ -171,11 +173,11 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                 {t('navigation.learn')}
               </a>
               <span class="mx-1">/</span>
-              <span class="text-primary">{t('learn.jargon')}</span>
+              <span class="text-primary">{currentCategoryName}</span>
             </nav>
 
             <h1 class="text-[48px] font-medium text-gray-900 mb-6 md:px-6">
-              {t('learn.jargon')}
+              {t('learn.glossary')}
             </h1>
 
             <div class="border-y border-gray-200 py-3 mb-5 md:px-6 md:sticky md:top-[97px] md:bg-white md:z-10" data-desktop-letter-bar>
@@ -228,7 +230,7 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
                           data-description={item.description}
                         >
                           <a
-                            href={`/${locale}/learn/${item.slug}-${promoteCode}`}
+                            href={`/${locale}/tutorials/${item.slug}-${promoteCode}`}
                             class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
                           >
                             <h3 class="text-[32px] font-medium text-[#052019] mb-2" data-learn-title>

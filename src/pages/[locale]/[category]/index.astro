@@ -16,7 +16,7 @@ const { locale, category } = params as { locale: Locale; category: string }
 
 
 // Validate category against API data
-const validCategories = ['insights', 'news', 'research']
+const validCategories = ['insights', 'news', 'research', 'voices']
 if (!validCategories.includes(category.toLowerCase())) {
   return redirect('/404')
 }

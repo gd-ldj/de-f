@@ -72,7 +72,7 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
     const learnResponse = await fetchLearnItems(locale);
     const alternateLangs = getAlternateLangs(locale);
     for (const item of learnResponse.items) {
-      const learnUrl = `${baseUrl}/${locale}/learn/${encodeURIComponent(item.slug)}`;
+      const learnUrl = `${baseUrl}/${locale}/tutorials/${encodeURIComponent(item.slug)}`;
       const lastmod = item.updatedAt || item.createdAt || nowIso;
       addEntry(learnUrl, lastmod);
       for (const lang of alternateLangs) {
