@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { headerTexts } from './constants';
+import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
 import type { Locale, CollectionItem } from '@/types';
 import { fetchCollections } from '@/api/collections';
 
@@ -81,7 +81,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           <div className="w-5"></div>
           <a href={`/${locale}`} className="flex items-center" onClick={onClose}>
-            <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
+            <img src={HEADER_LOGO_BLACK_URL} alt="DeTake" className="h-6" />
           </a>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.closeMenu}>
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

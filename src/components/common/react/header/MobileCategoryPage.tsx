@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import type { Locale } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import BackIcon from './assets/back.svg?url';
+import { HEADER_LOGO_BLACK_URL } from './constants';
 
 interface MobileCategoryPageProps {
   isOpen: boolean;
@@ -88,7 +89,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
             <img src={BackIcon} alt="DeTake" className="h-6" />
           </button>
           <a href={`/${locale}`} className="flex items-center" onClick={onClose}>
-            <img src="https://cdn.detake.com/images/logo-black.svg" alt="DeTake" className="h-6" />
+            <img src={HEADER_LOGO_BLACK_URL} alt="DeTake" className="h-6" />
           </a>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close menu">
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

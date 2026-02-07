@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { headerTexts } from './constants';
+import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
 import { STORAGE_KEYS } from '@/config/constants';
 import { TRACKING_EVENTS } from '@/config/constants';
 import { toast } from '@/components/common/react/Toast';
@@ -299,7 +299,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                       <div className="absolute -left-1 z-50 px-1">
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
-                            <div className="flex flex-col gap-2 text-sm font-medium">
+                            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                               {texts.dropdown.researchItems.map((label) => {
                                 const isResearchItemActive = currentCategoryTypeKey === 'research' && selectedCategoryName === label;
 
@@ -328,7 +328,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                       <div className="absolute -left-1 z-50 px-1">
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
-                            <div className="flex flex-col gap-2 text-sm font-medium">
+                            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                               {texts.dropdown.insightsItems.map((label) => {
                                 const isInsightsItemActive = currentCategoryTypeKey === 'insights' && selectedCategoryName === label;
 
@@ -357,7 +357,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                       <div className="absolute -left-1 z-50 px-1">
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
-                            <div className="flex flex-col gap-2 text-sm font-medium">
+                            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                               {texts.dropdown.voicesItems.map((label) => {
                                 const isVoicesItemActive = currentCategoryTypeKey === 'voices' && selectedCategoryName === label;
 
@@ -387,7 +387,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
           {/* Logo - Center */}
           <div className="flex items-center justify-center flex-shrink-0">
             <a href={`/${locale}`} className="flex items-center">
-              <img src="https://cdn.detake.com/images/logo-black.svg" alt="logo" className="w-32" />
+              <img src={HEADER_LOGO_BLACK_URL} alt="logo" className="w-8" />
             </a>
           </div>
 
@@ -430,7 +430,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                       <div className="absolute right-0 z-50 px-1">
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
-                            <div className="flex flex-col gap-2 text-sm font-medium">
+                            <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                               {texts.dropdown.tutorialsItems.map((label) => {
                                 const isTutorialItemActive = isTutorialsRouteActive && selectedCategoryName === label;
 

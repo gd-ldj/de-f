@@ -3,6 +3,7 @@ import { headerTexts } from './constants';
 import { getLocaleFromPath } from '@/lib/utils';
 import MobileSidebar from './MobileSidebar';
 import MobileCategoryPage from './MobileCategoryPage';
+import { HEADER_LOGO_BLACK_URL } from './constants';
 
 // Import icons from local assets
 import SearchIcon from './assets/search.svg?url';
@@ -113,7 +114,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
           {/* Center - Logo */}
           <div className="flex-1 flex justify-center">
             <a href={`/${locale}`} className="flex items-center">
-              <img src="https://cdn.detake.com/images/logo-black.svg" alt="deTake" className="h-6 w-auto" />
+              <img src={HEADER_LOGO_BLACK_URL} alt="deTake" className="h-6 w-auto" />
             </a>
           </div>
 

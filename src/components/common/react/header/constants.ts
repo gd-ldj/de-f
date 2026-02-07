@@ -53,7 +53,7 @@ export const headerTexts = {
         {
           key: 'technology',
           name: 'Technology',
-          items: ['New Releases', 'Feature Updates', 'Models', 'Agents', 'Tools (Image, Video, Audio gen)', 'Skills'],
+          items: ['New Releases', 'Feature Updates', 'Models', 'Agents', 'Tools', 'Skills'],
         },
         {
           key: 'business',
@@ -63,7 +63,7 @@ export const headerTexts = {
         {
           key: 'hardware',
           name: 'Hardware',
-          items: ['Chips', 'Military', 'Robotics', 'Drone', 'Energy (Nuclear, Grid, Sustainability)'],
+          items: ['Chips', 'Military', 'Robotics', 'Drone', 'Energy'],
         },
         {
           key: 'policy',
@@ -71,7 +71,7 @@ export const headerTexts = {
           items: ['Regulation', 'Safety & Ethics', 'Geopolitics'],
         },
       ],
-      researchItems: ['Benchmarks', 'Breakthroughs', 'Context', 'RAG', 'Labs (DeepMind, OpenAI, FAIR news)'],
+      researchItems: ['Benchmarks', 'Breakthroughs', 'Context', 'RAG', 'Labs'],
       insightsItems: ['Competition', 'Adoption', 'New Players', 'Trend Watch'],
       voicesItems: ['Talks', 'Blogs'],
       tutorialsItems: ['Glossary', 'Prompting', 'Playbooks', 'Workflows', 'Vibe Coding'],
@@ -130,7 +130,7 @@ export const headerTexts = {
         {
           key: 'technology',
           name: '技术',
-          items: ['新品发布', '功能更新', '模型', '智能体', '工具（图像、视频、音频生成）', '技能'],
+          items: ['新品发布', '功能更新', '模型', '智能体', '工具', '技能'],
         },
         {
           key: 'business',
@@ -140,7 +140,7 @@ export const headerTexts = {
         {
           key: 'hardware',
           name: '硬件',
-          items: ['芯片', '军事', '机器人', '无人机', '能源（核能、电网、可持续）'],
+          items: ['芯片', '军事', '机器人', '无人机', '能源'],
         },
         {
           key: 'policy',
@@ -148,12 +148,13 @@ export const headerTexts = {
           items: ['监管', '安全与伦理', '地缘政治'],
         },
       ],
-      researchItems: ['基准测试', '突破', '上下文', 'RAG', '实验室（DeepMind、OpenAI、FAIR 新闻）'],
+      researchItems: ['基准测试', '突破', '上下文', 'RAG', '实验室'],
       insightsItems: ['竞争', '采用', '新玩家', '趋势观察'],
       voicesItems: ['访谈', '博客'],
       tutorialsItems: ['术语表', '提示工程', '操作手册', '工作流', '氛围编程'],
     },
   },
 };
+export const HEADER_LOGO_BLACK_URL = 'https://cdn.detake.com/icons/favicon-green.svg';
 
 export type HeaderTexts = typeof headerTexts.us;
