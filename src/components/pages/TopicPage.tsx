@@ -107,7 +107,7 @@ export default function TopicPage({ locale, topic, topicSlug, initialPage }: Top
           <div className="max-w-md mx-auto">
             <h3 className="text-lg font-medium text-foreground mb-2">{locale === 'us' ? 'No articles found' : '未找到文章'}</h3>
             <p className="text-muted-foreground mb-4">{locale === 'us' ? `No articles are currently tagged with "${topic}". Try browsing other topics or check back later.` : `当前没有标记为"${topic}"的文章。请尝试浏览其他主题或稍后再查看。`}</p>
-            <a href={`/${locale}`} className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
+            <a href="/" className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
               {locale === 'us' ? 'Browse All Articles' : '浏览所有文章'}
             </a>
           </div>

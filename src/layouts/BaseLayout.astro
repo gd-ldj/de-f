@@ -2,8 +2,11 @@
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
 import { Analytics } from '@vercel/analytics/react';
 import { SITE_CONFIG } from '@/config/constants';
+import { generateHreflangAlternates } from '@/lib/language-utils';
 
 import '../styles/global.css'
+
+import type { SourceLanguage, TranslationLanguage } from '@/types';
 
 export interface Props {
   title: string
@@ -20,13 +23,17 @@ export interface Props {
   modifiedTime?: string
   keywords?: string[]
   articleSection?: string
-  pageLang?: 'en' | 'zh' | 'ar' | 'ru' | 'ja'
+  pageLang?: TranslationLanguage | string
+  // Multi-source site architecture
+  sourceLanguage?: SourceLanguage
+  translationLanguage?: TranslationLanguage | null
+  availableTranslations?: TranslationLanguage[]
 }
 
-const { 
-  title, 
-  description = 'DeTake - News and Analysis', 
-  locale, 
+const {
+  title,
+  description = 'DeTake - News and Analysis',
+  locale,
   canonicalUrl,
   ogImage,
   ogImageAlt,
@@ -37,7 +44,10 @@ const {
   modifiedTime,
   keywords,
   articleSection,
-  pageLang
+  pageLang,
+  sourceLanguage,
+  translationLanguage,
+  availableTranslations
 } = Astro.props
 
 type ArticleLanguageCode = 'en' | 'zh' | 'ar' | 'ru' | 'ja'
@@ -68,6 +78,11 @@ const isProductionSite = SITE_CONFIG.ENVIRONMENT === 'web2' || SITE_CONFIG.ENVIR
 const robotsContent = isProductionSite
   ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
   : 'noindex, nofollow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+
+// Generate hreflang alternates for multi-source architecture
+const hreflangAlternates = sourceLanguage && availableTranslations
+  ? generateHreflangAlternates(Astro.url, sourceLanguage, availableTranslations)
+  : null
 ---
 
 <!DOCTYPE html>
@@ -123,14 +138,15 @@ const robotsContent = isProductionSite
     
     <!-- Canonical URL -->
     <link rel="canonical" href={currentUrl} />
-    
-    {/* Alternate language versions */}
-    {shouldEmitRegionAlternates && (
+
+    {/* Alternate language versions for multi-source architecture */}
+    {hreflangAlternates ? (
       <>
-        <link rel="alternate" hreflang="en-US" href={currentUrl.replace('/asia/', '/us/')} />
-        <link rel="alternate" hreflang="zh-CN" href={currentUrl.replace('/us/', '/asia/')} />
+        {hreflangAlternates.map((alternate) => (
+          <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+        ))}
       </>
-    )}
+    ) : null}
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

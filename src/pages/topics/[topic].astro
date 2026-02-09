@@ -1,0 +1,98 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import AuthMount from '@/components/common/react/AuthMount';
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro';
+import type { Locale, SourceLanguage } from '@/types'
+import Footer from '@/components/common/react/footer/Index';
+import TopicPage from '@/components/pages/TopicPage';
+import DraggableFloatingButton from '@/components/common/react/DraggableFloatingButton';
+import RecentResearch from '@/components/article/astro/RecentResearch.astro';
+import { SITE_CONFIG, MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { getSourceLanguageFromRequest } from '@/lib/language-utils';
+
+export const prerender = false
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
+
+const { params, url } = Astro
+const { topic } = params as { topic: string }
+
+const page = parseInt(url.searchParams.get('page') || '1', 10)
+const initialPage = Math.max(1, page)
+
+const topicDisplayName = topic.split('-').map(word => {
+  if (word.toLowerCase() === 'ai') {
+    return 'AI';
+  }
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}).join(' ')
+
+const seoContent = {
+  us: {
+    title: `${topicDisplayName} | DeTake`,
+    description: `Explore articles about ${topicDisplayName} on DeTake - NATO's #1 Decentralized media network.`
+  },
+  asia: {
+    title: `${topicDisplayName} - DeTake`,
+    description: `在DeTake上探索关于${topicDisplayName}的文章 - NATO的#1去中心化媒体网络。`
+  }
+}
+
+const { title, description } = seoContent[locale] || seoContent.us
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/topics/${topic}`
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <HeaderWithFallback locale={locale} />
+  <AuthMount client:load shareSection={{ locale, title: title, url: canonicalUrl }} shareMobileTargetId="share-section-root-mobile"/>
+
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid layout-two-column-fixed-1440">
+        <div class="md:py-5 md:px-6 border border-t-0 border-border">
+          <div class="max-w-[1440px] mx-auto px-4 py-6 border-b border-border">
+            <nav class="text-sm text-muted-foreground mb-2">
+              <a href="/" class="hover:text-foreground">
+                Articles
+              </a>
+              <span class="mx-1">/</span>
+              <span class="text-primary">Topics</span>
+            </nav>
+            
+            <h1 class="text-4xl md:text-5xl font-medium text-foreground">#{topicDisplayName}</h1>
+            <p class="text-muted-foreground mt-2">{topicDisplayName}</p>
+          </div>
+
+          <TopicPage 
+            client:load
+            locale={locale}
+            topic={topicDisplayName}
+            topicSlug={topic}
+            initialPage={initialPage}
+          />
+        </div>
+        
+        <div class="hidden md:block border border-t-0 border-l-0 border-border">
+          <div class="top-8">
+            <div id="share-section-root" class=""></div>
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </div>
+
+        <DraggableFloatingButton className='block md:hidden' client:load>
+          <div class="top-8">
+            <div id="share-section-root-mobile" class=""></div>
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </DraggableFloatingButton>
+      </div>
+    </div>
+  </main>
+  
+  <Footer client:load />
+</BaseLayout>

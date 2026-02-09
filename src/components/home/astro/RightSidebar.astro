@@ -27,7 +27,7 @@ const mostReadArticles: HomeMostReadArticle[] = mostRead
 // Transform topics to include URL and limit to 10 items
 const topics = rawTopics.map(topic => ({
   ...topic,
-  url: `${locale}/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`
+  url: `/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`
 })).slice(0, 10)
 ---
 

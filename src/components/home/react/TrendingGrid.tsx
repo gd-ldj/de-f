@@ -21,7 +21,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
       <div>
         <div className="flex items-center justify-between mb-4 md:mb-6">
           <h3 className="font-medium text-foreground">{t('common.trending')}</h3>
-          <a href={`/${locale}/insights`} className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors px-2 py-1" aria-label={t('common.moreTrending')}>
+          <a href={`/insights`} className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors px-2 py-1" aria-label={t('common.moreTrending')}>
             {t('common.moreTrending')}
           </a>
         </div>

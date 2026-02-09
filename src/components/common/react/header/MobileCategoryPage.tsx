@@ -39,10 +39,10 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
    * 文章大类与子分类配置，保持与 PC 端一致
    */
   const categoriesItems: { key: ArticleTypeKey; href: string }[] = [
-    { key: 'news', href: `/${locale}/news` },
-    { key: 'insights', href: `/${locale}/insights` },
-    { key: 'research', href: `/${locale}/research` },
-    { key: 'voices', href: `/${locale}/voices` },
+    { key: 'news', href: `/news` },
+    { key: 'insights', href: `/insights` },
+    { key: 'research', href: `/research` },
+    { key: 'voices', href: `/voices` },
   ];
 
   const subCategories = ['Politics', 'Economy', 'Society', 'Climate', 'Technology', 'Markets'];
@@ -53,7 +53,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
    */
   const getCategoryFilterUrl = (typeKey: ArticleTypeKey, categoryLabel: string) => {
     const typeItem = categoriesItems.find((item) => item.key === typeKey);
-    const baseHref = typeItem?.href || `/${locale}/${typeKey}`;
+    const baseHref = typeItem?.href || `/${typeKey}`;
     const encodedCategory = encodeURIComponent(categoryLabel);
     return `${baseHref}?category_name=${encodedCategory}`;
   };
@@ -88,7 +88,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
           <button onClick={onBack} className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label="Back">
             <img src={BackIcon} alt="DeTake" className="h-6" />
           </button>
-          <a href={`/${locale}`} className="flex items-center" onClick={onClose}>
+          <a href="/" className="flex items-center" onClick={onClose}>
             <img src={HEADER_LOGO_BLACK_URL} alt="DeTake" className="h-6" />
           </a>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close menu">
@@ -123,7 +123,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
               {/* News */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <button onClick={() => handleNavigation(`/${locale}/news`)} className="text-xl text-gray-900 text-left">
+                  <button onClick={() => handleNavigation(`/news`)} className="text-xl text-gray-900 text-left">
                     {locale === 'us' ? 'News' : '新闻'}
                   </button>
                   <button onClick={() => toggleTypeExpand('news')} className="p-1 hover:bg-gray-100 rounded-md transition-all duration-200" aria-label={expandedType === 'news' ? 'Collapse news categories' : 'Expand news categories'}>
@@ -146,7 +146,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
               {/* Insights */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <button onClick={() => handleNavigation(`/${locale}/insights`)} className="text-xl text-gray-900 text-left">
+                  <button onClick={() => handleNavigation(`/insights`)} className="text-xl text-gray-900 text-left">
                     {locale === 'us' ? 'Insights' : '洞察'}
                   </button>
                   <button onClick={() => toggleTypeExpand('insights')} className="p-1 hover:bg-gray-100 rounded-md transition-all duration-200" aria-label={expandedType === 'insights' ? 'Collapse insights categories' : 'Expand insights categories'}>
@@ -169,7 +169,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
               {/* Research */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <button onClick={() => handleNavigation(`/${locale}/research`)} className="text-xl text-gray-900 text-left">
+                  <button onClick={() => handleNavigation(`/research`)} className="text-xl text-gray-900 text-left">
                     {locale === 'us' ? 'Research' : '研究'}
                   </button>
                   <button onClick={() => toggleTypeExpand('research')} className="p-1 hover:bg-gray-100 rounded-md transition-all duration-200" aria-label={expandedType === 'research' ? 'Collapse research categories' : 'Expand research categories'}>
@@ -192,7 +192,7 @@ export default function MobileCategoryPage({ isOpen, onClose, onBack, locale, ca
               {/* Voices */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <button onClick={() => handleNavigation(`/${locale}/voices`)} className="text-xl text-gray-900 text-left">
+                  <button onClick={() => handleNavigation(`/voices`)} className="text-xl text-gray-900 text-left">
                     {locale === 'us' ? 'Voices' : '观点'}
                   </button>
                   <button onClick={() => toggleTypeExpand('voices')} className="p-1 hover:bg-gray-100 rounded-md transition-all duration-200" aria-label={expandedType === 'voices' ? 'Collapse voices categories' : 'Expand voices categories'}>

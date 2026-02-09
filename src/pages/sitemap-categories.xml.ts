@@ -25,7 +25,7 @@ async function buildCategoriesSitemapXml(origin: string): Promise<string> {
   const nowIso = new Date().toISOString();
 
   for (const locale of SUPPORTED_LOCALES) {
-    const prefix = `${baseUrl}/${locale}`;
+    const prefix = baseUrl;
 
     // 频道列表页：News / Insights / Research / Voices
     addEntry(`${prefix}/news`, nowIso);

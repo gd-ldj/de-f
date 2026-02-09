@@ -8,6 +8,7 @@ import { Wallet } from '@/components/common/react/ConnectWallet';
 import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
 import { accessTokenAtom } from '@/stores';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
 
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
@@ -49,9 +50,9 @@ interface AuthMountProps {
  */
 function getLocaleFromURL(): Locale {
   if (typeof window === 'undefined') return 'us';
-  const segments = window.location.pathname.split('/');
-  const seg = segments[1];
-  return seg === 'asia' || seg === 'us' ? (seg as Locale) : 'us';
+  const hostname = window.location.hostname;
+  const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+  return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
 }
 
 /**

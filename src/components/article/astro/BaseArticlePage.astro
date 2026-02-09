@@ -5,18 +5,21 @@ import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.ast
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { fetchArticle, fetchTranslatedArticle } from '@/api/articles'
-import type { Locale } from '@/types'
+import type { Locale, SourceLanguage, TranslationLanguage } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { SITE_CONFIG } from '@/config/constants'
+import { buildArticleUrl } from '@/lib/language-utils'
 
 interface Props {
   locale: Locale
   category: string
   slug: string
   userId?: string
+  sourceLanguage: SourceLanguage
+  translationLanguage: TranslationLanguage | null
 }
 
-const { locale, category, slug, userId } = Astro.props as Props
+const { locale, category, slug, userId, sourceLanguage, translationLanguage } = Astro.props as Props
 const { url } = Astro
 
 const validCategories = ['insights', 'news', 'research', 'voices']
@@ -38,29 +41,19 @@ if (slugParts.length > 1) {
 
 const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug
 
-type ArticleLanguageCode = 'en' | 'zh' | 'ar' | 'ru' | 'ja'
-const rawLang = url.searchParams.get('lang')
-const defaultLangForLocale: ArticleLanguageCode = locale === 'asia' ? 'zh' : 'en'
-const pageLanguage: ArticleLanguageCode =
-  rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
-    ? rawLang
-    : defaultLangForLocale
-
+// Determine which language to display
+// If translationLanguage is provided and different from source, fetch translation
 const baseArticle = await fetchArticle(actualSlug, locale, category)
 
 if (!baseArticle) {
   return Astro.redirect('/404')
 }
 
-const baseArticleLanguage: ArticleLanguageCode =
-  baseArticle.language === 'en' || baseArticle.language === 'zh' || baseArticle.language === 'ar' || baseArticle.language === 'ru' || baseArticle.language === 'ja'
-    ? baseArticle.language
-    : 'en'
-
 let article = baseArticle
 
-if (pageLanguage !== baseArticleLanguage) {
-  const translated = await fetchTranslatedArticle(baseArticle.entry_id, pageLanguage)
+// Fetch translation if needed
+if (translationLanguage && translationLanguage !== sourceLanguage) {
+  const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage)
   if (translated) {
     article = {
       ...baseArticle,
@@ -72,18 +65,18 @@ if (pageLanguage !== baseArticleLanguage) {
   }
 }
 
-const articleLang = pageLanguage
+// The effective language being displayed
+const articleLang = translationLanguage || sourceLanguage
 
 const categoryDisplayName = category ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News'
 
 const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
-const pathPrefix = userId ? `/${locale}/${userId}/article/${category}/${actualSlug}` : `/${locale}/article/${category}/${actualSlug}`
-const baseCanonicalUrl = `${SITE_CONFIG.SITE_URL}${pathPrefix}`
-const canonicalUrl =
-  rawLang === 'en' || rawLang === 'zh' || rawLang === 'ar' || rawLang === 'ru' || rawLang === 'ja'
-    ? `${baseCanonicalUrl}?lang=${rawLang}`
-    : baseCanonicalUrl
+
+// Build canonical URL using new multi-source architecture
+// Use current origin instead of SITE_CONFIG.SITE_URL to support multiple domains
+const articlePath = buildArticleUrl(category, actualSlug, sourceLanguage, translationLanguage, userId)
+const canonicalUrl = `${url.origin}${articlePath}`
 
 const ogImageParams = new URLSearchParams({
   title: article.title,

@@ -63,8 +63,8 @@ function formatDate(dateString: string, locale: Locale): string {
  * @returns {string} Article URL
  *
  * URL formats:
- * - Admin/System articles: /{locale}/{business}/{slug}-{promoteCode}
- * - User articles: /{locale}/{userId}/{business}/{slug}-{promoteCode}
+ * - Admin/System articles: /article/{business}/{slug}-{promoteCode}
+ * - User articles: /u/{userId}/article/{business}/{slug}-{promoteCode}
  */
 function getArticleUrl(article: any, locale: Locale): string {
   if (article.url) return article.url;
@@ -75,11 +75,11 @@ function getArticleUrl(article: any, locale: Locale): string {
 
     // If article has user_id, it's a regular user article
     if (article.user_id) {
-      return `/${locale}/${article.user_id}/article/${businessSegment}/${article.slug}-${promoteCode}`;
+      return `/u/${article.user_id}/article/${businessSegment}/${article.slug}-${promoteCode}`;
     }
 
     // Otherwise, it's an admin/system article
-    return `/${locale}/article/${businessSegment}/${article.slug}-${promoteCode}`;
+    return `/article/${businessSegment}/${article.slug}-${promoteCode}`;
   }
   return '#';
 }

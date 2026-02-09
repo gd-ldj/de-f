@@ -43,7 +43,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
 
   const getArticleUrl = (): string => {
     const category = article.business_type_name.toLowerCase();
-    return `/${locale}/${category}/${article.slug}`;
+    return `/article/${category}/${article.slug}`;
   };
 
   return (

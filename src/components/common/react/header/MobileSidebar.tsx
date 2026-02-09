@@ -80,7 +80,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
       <div className="fixed top-0 left-0 w-full h-full bg-white z-[120] md:hidden overflow-y-auto">
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           <div className="w-5"></div>
-          <a href={`/${locale}`} className="flex items-center" onClick={onClose}>
+          <a href="/" className="flex items-center" onClick={onClose}>
             <img src={HEADER_LOGO_BLACK_URL} alt="DeTake" className="h-6" />
           </a>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.closeMenu}>
@@ -96,7 +96,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             {/* News with expandable subcategories (two levels) */}
             <div>
               <div className="flex items-center justify-between w-full py-3">
-                <button onClick={() => handleNavigation(`/${locale}/news`)} className="text-lg text-gray-900 text-left flex-1">
+                <button onClick={() => handleNavigation(`/news`)} className="text-lg text-gray-900 text-left flex-1">
                   {texts.navigation.news}
                 </button>
                 <button onClick={() => setIsNewsExpanded(!isNewsExpanded)} className="p-1 ml-2" aria-label={isNewsExpanded ? texts.actions.collapseNews : texts.actions.expandNews}>
@@ -111,13 +111,13 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
                   {texts.dropdown.newsGroups.map((group) => (
                     <div key={group.key}>
                       {/* Group title */}
-                      <button onClick={() => handleNavigation(`/${locale}/news?category_name=${encodeURIComponent(group.name)}`)} className="block w-full py-2 px-2 text-left text-base font-medium text-gray-900 hover:bg-gray-50 rounded-md">
+                      <button onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(group.name)}`)} className="block w-full py-2 px-2 text-left text-base font-medium text-gray-900 hover:bg-gray-50 rounded-md">
                         {group.name}
                       </button>
                       {/* Group items */}
                       <div className="mt-1 space-y-1 pl-3">
                         {group.items.map((item) => (
-                          <button key={item} onClick={() => handleNavigation(`/${locale}/news?category_name=${encodeURIComponent(group.name)}&tag=${encodeURIComponent(item)}`)} className="block w-full py-1.5 px-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                          <button key={item} onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(group.name)}&tag=${encodeURIComponent(item)}`)} className="block w-full py-1.5 px-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                             {item}
                           </button>
                         ))}
@@ -131,7 +131,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             {/* Research with expandable subcategories */}
             <div>
               <div className="flex items-center justify-between w-full py-3">
-                <button onClick={() => handleNavigation(`/${locale}/research`)} className="text-lg text-gray-900 text-left flex-1">
+                <button onClick={() => handleNavigation(`/research`)} className="text-lg text-gray-900 text-left flex-1">
                   {texts.navigation.categories.research}
                 </button>
                 <button onClick={() => setIsResearchExpanded(!isResearchExpanded)} className="p-1 ml-2" aria-label={isResearchExpanded ? texts.actions.collapseResearch : texts.actions.expandResearch}>
@@ -144,7 +144,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
               {isResearchExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
                   {texts.dropdown.researchItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/${locale}/research?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                    <button key={category} onClick={() => handleNavigation(`/research?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
                       {category}
                     </button>
                   ))}
@@ -155,7 +155,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             {/* Insights with expandable subcategories */}
             <div>
               <div className="flex items-center justify-between w-full py-3">
-                <button onClick={() => handleNavigation(`/${locale}/insights`)} className="text-lg text-gray-900 text-left flex-1">
+                <button onClick={() => handleNavigation(`/insights`)} className="text-lg text-gray-900 text-left flex-1">
                   {texts.navigation.categories.insights}
                 </button>
                 <button onClick={() => setIsInsightsExpanded(!isInsightsExpanded)} className="p-1 ml-2" aria-label={isInsightsExpanded ? texts.actions.collapseInsights : texts.actions.expandInsights}>
@@ -168,7 +168,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
               {isInsightsExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
                   {texts.dropdown.insightsItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/${locale}/insights?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                    <button key={category} onClick={() => handleNavigation(`/insights?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
                       {category}
                     </button>
                   ))}
@@ -179,7 +179,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             {/* Voices with expandable subcategories */}
             <div>
               <div className="flex items-center justify-between w-full py-3">
-                <button onClick={() => handleNavigation(`/${locale}/voices`)} className="text-lg text-gray-900 text-left flex-1">
+                <button onClick={() => handleNavigation(`/voices`)} className="text-lg text-gray-900 text-left flex-1">
                   {texts.navigation.categories.voices}
                 </button>
                 <button onClick={() => setIsVoicesExpanded(!isVoicesExpanded)} className="p-1 ml-2" aria-label={isVoicesExpanded ? texts.actions.collapseVoices : texts.actions.expandVoices}>
@@ -192,7 +192,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
               {isVoicesExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
                   {texts.dropdown.voicesItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/${locale}/voices?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                    <button key={category} onClick={() => handleNavigation(`/voices?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
                       {category}
                     </button>
                   ))}
@@ -203,7 +203,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             {/* Collections with arrow */}
             <div>
               <div className="flex items-center justify-between w-full py-3">
-                <button onClick={() => handleNavigation(`/${locale}/collections`)} className="text-lg text-gray-900 text-left flex-1">
+                <button onClick={() => handleNavigation(`/collections`)} className="text-lg text-gray-900 text-left flex-1">
                   {texts.navigation.collections}
                 </button>
                 <button onClick={() => setIsCollectionsExpanded(!isCollectionsExpanded)} className="p-1 ml-2" aria-label={isCollectionsExpanded ? texts.actions.collapseCollections : texts.actions.expandCollections}>
@@ -216,7 +216,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
               {isCollectionsExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
                   {headerCollectionItems.map((item) => (
-                    <button key={item.id} onClick={() => handleNavigation(`/${locale}/collections/${item.id}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                    <button key={item.id} onClick={() => handleNavigation(`/collections/${item.id}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
                       <span className="truncate">{item.name}</span>
                     </button>
                   ))}
@@ -227,7 +227,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             {/* Tutorials with expandable subcategories */}
             <div>
               <div className="flex items-center justify-between w-full py-3">
-                <button onClick={() => handleNavigation(`/${locale}/tutorials`)} className="text-lg text-gray-900 text-left flex-1">
+                <button onClick={() => handleNavigation(`/tutorials`)} className="text-lg text-gray-900 text-left flex-1">
                   {texts.navigation.learn}
                 </button>
                 <button onClick={() => setIsTutorialsExpanded(!isTutorialsExpanded)} className="p-1 ml-2" aria-label={isTutorialsExpanded ? texts.actions.collapseTutorials : texts.actions.expandTutorials}>
@@ -240,7 +240,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
               {isTutorialsExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
                   {texts.dropdown.tutorialsItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/${locale}/tutorials?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                    <button key={category} onClick={() => handleNavigation(`/tutorials?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
                       {category}
                     </button>
                   ))}

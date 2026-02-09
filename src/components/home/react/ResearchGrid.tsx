@@ -30,7 +30,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
             <div className="flex-1 space-y-2">
               {/* Category tag */}
               <div className="flex flex-wrap gap-2">
-                <a href={`/${locale}/research`} className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">
+                <a href="/research" className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">
                   {article.author.name}
                 </a>
               </div>

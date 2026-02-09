@@ -33,11 +33,8 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
 
   const nowIso = new Date().toISOString();
 
-  // 首页：/us 和 /asia
-  for (const locale of SUPPORTED_LOCALES) {
-    const homeUrl = `${baseUrl}/${locale}`;
-    addEntry(homeUrl, nowIso);
-  }
+  // 首页：统一使用站点根路径
+  addEntry(baseUrl, nowIso);
 
   // 首页相关文章：通过首页数据接口拉取（news_all、insights、research、news、latest、mostread）
   for (const locale of SUPPORTED_LOCALES) {
@@ -72,7 +69,7 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
     const learnResponse = await fetchLearnItems(locale);
     const alternateLangs = getAlternateLangs(locale);
     for (const item of learnResponse.items) {
-      const learnUrl = `${baseUrl}/${locale}/tutorials/${encodeURIComponent(item.slug)}`;
+      const learnUrl = `${baseUrl}/tutorials/${encodeURIComponent(item.slug)}`;
       const lastmod = item.updatedAt || item.createdAt || nowIso;
       addEntry(learnUrl, lastmod);
       for (const lang of alternateLangs) {
@@ -108,7 +105,7 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
           }
 
           for (const article of articles) {
-            const url = `${baseUrl}/${locale}/collections/${collection.id}/${encodeURIComponent(article.slug)}`;
+            const url = `${baseUrl}/collections/${collection.id}/${encodeURIComponent(article.slug)}`;
             const lastmod = article.updated_at || article.created_at || nowIso;
             addEntry(url, lastmod);
             for (const lang of alternateLangs) {

@@ -77,7 +77,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
             <article key={article.entry_id} className="md:col-span-2 lg:col-span-2 overflow-hidden bg-white transition-shadow max-w-[460px]">
               <div className="relative">
                 {article.img_url && (
-                  <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="block overflow-hidden">
+                  <a href={`/collections/${collectionId}/${article.slug}`} className="block overflow-hidden">
                     <img src={article.img_url} alt={article.title} className="w-full md:h-[258px] lg:w-[460px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
                   </a>
                 )}
@@ -94,7 +94,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
               </div>
               <div className="pt-[10px] md:pt-2">
                 <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
-                  <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-2 md:line-clamp-1">
+                  <a href={`/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-2 md:line-clamp-1">
                     {article.title}
                   </a>
                 </h2>
@@ -106,7 +106,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
               <div className="flex gap-[10px] md:flex-col h-full">
                 <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-[127px] rounded-[2px]">
                   {article.img_url && (
-                    <a href={`/${locale}/collections/${collectionId}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors rounded-[2px] overflow-hidden">
+                    <a href={`/collections/${collectionId}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors rounded-[2px] overflow-hidden">
                       <img src={article.img_url} alt={article.title} className="w-full h-full object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </a>
                   )}
@@ -126,7 +126,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                   </div>
                   <div className="pt-1 flex flex-col h-full">
                     <h3 className="text-[16px] md:text-[18px] font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
-                      <a href={`/${locale}/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors leading-[140%]">
+                      <a href={`/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors leading-[140%]">
                         {article.title}
                       </a>
                     </h3>

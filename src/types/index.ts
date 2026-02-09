@@ -104,9 +104,50 @@ export interface ArticlesResponse {
 }
 
 /**
- * Supported locales
+ * Supported locales (legacy - will be deprecated)
+ * @deprecated Use SourceLanguage for new implementations
  */
 export type Locale = 'us' | 'asia';
+
+/**
+ * Source language codes (site-level language)
+ * Represents the primary language of a source site
+ */
+export type SourceLanguage = 'en' | 'zh' | 'ja';
+
+/**
+ * Translation language codes (content-level language)
+ * All languages that articles can be translated to
+ */
+export type TranslationLanguage = 'en' | 'zh' | 'ja' | 'fr' | 'ar' | 'ru' | 'de' | 'es' | 'ko';
+
+/**
+ * All supported languages in the system
+ */
+export type SupportedLanguage = TranslationLanguage;
+
+/**
+ * Site configuration for multi-source architecture
+ */
+export interface SiteConfig {
+  sourceLanguage: SourceLanguage;
+  domain: string;
+}
+
+/**
+ * Language display names
+ */
+export const LANGUAGE_NAMES: Record<SupportedLanguage, { en: string; native: string }> = {
+  en: { en: 'English', native: 'English' },
+  zh: { en: 'Chinese', native: '中文' },
+  ja: { en: 'Japanese', native: '日本語' },
+  fr: { en: 'French', native: 'Français' },
+  ar: { en: 'Arabic', native: 'العربية' },
+  ru: { en: 'Russian', native: 'Русский' },
+  de: { en: 'German', native: 'Deutsch' },
+  es: { en: 'Spanish', native: 'Español' },
+  ko: { en: 'Korean', native: '한국어' },
+};
 
 /**
  * Navigation item structure

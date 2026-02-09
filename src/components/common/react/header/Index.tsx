@@ -1,6 +1,7 @@
 import React from 'react';
 import MobileHeader from './mobile';
 import DesktopHeader from './DesktopHeader';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
 
 type Locale = 'us' | 'asia';
 
@@ -15,9 +16,13 @@ export default function Header({ locale, currentPath, userComponent }: HeaderPro
     if (newLocale === locale) {
       return;
     }
-    const newPath = currentPath.replace(`/${locale}`, `/${newLocale}`);
     if (typeof window !== 'undefined') {
-      window.location.href = newPath;
+      const targetLanguage = MULTI_SOURCE_CONFIG.localeToLanguage(newLocale);
+      const domains = MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS[targetLanguage] || [];
+      const targetDomain = domains[0] || window.location.hostname;
+      const protocol = window.location.protocol;
+      const newUrl = `${protocol}//${targetDomain}${currentPath}${window.location.search}${window.location.hash}`;
+      window.location.href = newUrl;
     }
   };
 

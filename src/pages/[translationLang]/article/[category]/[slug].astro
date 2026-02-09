@@ -1,0 +1,38 @@
+---
+/**
+ * Translated article route (with language prefix)
+ * URL pattern: /{translationLang}/article/{category}/{slug}
+ * Example: ja.detake.com/fr/article/news/japan-crypto-regulation
+ *
+ * This route serves translated versions of articles.
+ * The translation language is specified in the URL path.
+ */
+import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro';
+import type { SourceLanguage, TranslationLanguage } from '@/types';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils';
+
+const { translationLang, category, slug } = Astro.params as {
+  translationLang: string;
+  category: string;
+  slug: string;
+};
+
+// Validate translation language
+if (!isValidTranslationLanguage(translationLang)) {
+  return Astro.redirect('/404');
+}
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname);
+
+// Convert to legacy locale for backward compatibility with BaseArticlePage
+const locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+---
+
+<BaseArticlePage
+  locale={locale}
+  category={category}
+  slug={slug}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={translationLang as TranslationLanguage}
+/>

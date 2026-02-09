@@ -37,8 +37,8 @@ const renderedContent = formatLearnContent(getContent(learnItem))
 const displayDate = formatDate(learnItem.updatedAt || learnItem.createdAt, locale)
 
 const baseLearnPath = slugWithPromote
-  ? `/${locale}/tutorials/${slugWithPromote}`
-  : `/${locale}/tutorials/${learnItem.slug}`
+  ? `/tutorials/${slugWithPromote}`
+  : `/tutorials/${learnItem.slug}`
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
   { code: 'zh', label: t('learn.languageShort.zh') },
   { code: 'en', label: t('learn.languageShort.en') },
@@ -52,7 +52,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
 <article class="bg-white" lang={learnLang}>
   <header class="mb-6 pb-5 px-4 md:px-6 border-b border-border">
     <nav class="flex items-center space-x-2 text-sm text-[#909399] mb-4">
-      <a href={`/${locale}/tutorials`} class="hover:text-[#052019]">
+      <a href={`/tutorials`} class="hover:text-[#052019]">
         Tutorials
       </a>
       <span>/</span>
@@ -76,7 +76,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
           {languageButtons.map(({ code, label }) => (
             <a
-              href={`${baseLearnPath}?lang=${code}`}
+              href={code === learnLang ? baseLearnPath : `/${code}${baseLearnPath}`}
               class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
                 learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
               }`}
@@ -96,7 +96,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
     <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
       {languageButtons.map(({ code, label }) => (
         <a
-          href={`${baseLearnPath}?lang=${code}`}
+          href={code === learnLang ? baseLearnPath : `/${code}${baseLearnPath}`}
           class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
             learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
           }`}

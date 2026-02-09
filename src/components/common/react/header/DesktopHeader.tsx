@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
-import { STORAGE_KEYS } from '@/config/constants';
-import { TRACKING_EVENTS } from '@/config/constants';
+import { STORAGE_KEYS, TRACKING_EVENTS, MULTI_SOURCE_CONFIG } from '@/config/constants';
 import { toast } from '@/components/common/react/Toast';
-import type { CollectionItem } from '@/types';
+import type { CollectionItem, SourceLanguage } from '@/types';
 import { fetchCollections } from '@/api/collections';
+import { removeTranslationPrefix } from '@/lib/language-utils';
 
 // Import icons from local assets
 import DownIcon from './assets/down.svg?url';
@@ -22,8 +22,6 @@ interface DesktopHeaderProps {
 }
 
 export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, userComponent }: DesktopHeaderProps) {
-  const texts = headerTexts[locale] || headerTexts.us;
-
   const [localeDropdownOpen, setLocaleDropdownOpen] = React.useState(false);
   const [collectionsDropdownOpen, setCollectionsDropdownOpen] = React.useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
@@ -41,6 +39,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const [insightsDropdownOpen, setInsightsDropdownOpen] = React.useState(false);
   const [voicesDropdownOpen, setVoicesDropdownOpen] = React.useState(false);
   const [tutorialsDropdownOpen, setTutorialsDropdownOpen] = React.useState(false);
+  const [currentSourceLanguage, setCurrentSourceLanguage] = React.useState<SourceLanguage>('en');
+  const [isLocalHost, setIsLocalHost] = React.useState(false);
+  const localeForTexts = isLocalHost ? MULTI_SOURCE_CONFIG.languageToLocale(currentSourceLanguage) : locale;
+  const texts = headerTexts[localeForTexts] || headerTexts.us;
 
   const pathSegments = currentPath.split('/');
   const collectionsIndex = pathSegments.indexOf('collections');
@@ -76,6 +78,26 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      setCurrentSourceLanguage(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE);
+      return;
+    }
+    const hostname = window.location.hostname;
+    const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
+    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+    const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
+    const supportedLanguages: SourceLanguage[] = ['en', 'zh', 'ja'];
+    const isStoredLanguageValid = storedLanguage ? supportedLanguages.includes(storedLanguage) : false;
+    const detectedLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+    setIsLocalHost(!isKnownDomain);
+    if (!isKnownDomain && isStoredLanguageValid) {
+      setCurrentSourceLanguage(storedLanguage as SourceLanguage);
+    } else {
+      setCurrentSourceLanguage(detectedLanguage);
+    }
   }, []);
 
   React.useEffect(() => {
@@ -116,7 +138,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     setCategoriesDropdownOpen(false);
     if (typeof window !== 'undefined') {
       const defaultCategory = categoriesItems[0];
-      const targetHref = defaultCategory?.href || `/${locale}/news`;
+      const targetHref = defaultCategory?.href || `/news`;
       window.location.href = targetHref;
     }
   };
@@ -126,48 +148,103 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     left: [
       {
         name: texts.navigation.categories.research,
-        href: `/${locale}/research`,
+        href: `/research`,
         key: 'research',
       },
       {
         name: texts.navigation.categories.insights,
-        href: `/${locale}/insights`,
+        href: `/insights`,
         key: 'insights',
       },
       {
         name: texts.navigation.categories.voices,
-        href: `/${locale}/voices`,
+        href: `/voices`,
         key: 'voices',
       },
     ],
     right: [
       {
         name: texts.navigation.learn,
-        href: `/${locale}/tutorials`,
+        href: `/tutorials`,
         key: 'tutorials',
       },
     ],
   };
 
-  // Locale configuration
-  const localeConfig = {
-    us: {
-      name: texts.locale.northAmerica,
-      displayName: 'US',
-    },
-    asia: {
-      name: texts.locale.asia,
-      displayName: 'Asia',
-    },
-  };
+  const languageOptions: { code: SourceLanguage; label: string }[] = [
+    { code: 'en', label: 'English' },
+    { code: 'zh', label: '中文' },
+    { code: 'ja', label: '日本語' },
+  ];
 
-  const currentLocaleConfig = localeConfig[locale] || localeConfig.us;
+  const currentLanguageOption = languageOptions.find((item) => item.code === currentSourceLanguage) || languageOptions[0];
 
   /**
    * Toggle locale dropdown
    */
   const toggleLocaleDropdown = () => {
     setLocaleDropdownOpen(!localeDropdownOpen);
+  };
+
+  /**
+   * 根据选择的源站语言跳转到对应站点域名（桌面端语言切换）
+   * - 生产/预发环境：切换到对应语言域名（含多语言子域）
+   * - 测试/本地环境：如果当前域名不在已知配置列表，则仅保留当前域名，避免写死跳转
+   */
+  const handleLanguageSwitch = (targetLanguage: SourceLanguage) => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (targetLanguage === currentSourceLanguage) {
+      setLocaleDropdownOpen(false);
+      return;
+    }
+    const { protocol, hostname, port, search, hash } = window.location;
+
+    // 先尝试基于语言前缀子域名进行替换，如 en.detake.com / zh.detake.com / ja.detake.com
+    const subdomainMatch = hostname.match(/^(en|zh|ja)\.(.+)$/);
+
+    // 判断当前域名是否在配置的多源语言域名列表中（生产/预发）
+    const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
+    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+
+    const persistLanguage = (language: SourceLanguage) => {
+      localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, language);
+      document.cookie = `${STORAGE_KEYS.SOURCE_LANGUAGE}=${language}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    };
+
+    persistLanguage(targetLanguage);
+
+    let targetHost = hostname;
+
+    if (subdomainMatch) {
+      // 当前是语言前缀子域，直接替换前缀
+      const rootDomain = subdomainMatch[2];
+      targetHost = `${targetLanguage}.${rootDomain}`;
+    } else if (isKnownDomain) {
+      // 当前是已知生产/预发域名，根据配置选择目标语言的域名
+      const targetDomains = MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS[targetLanguage] || [];
+      if (targetDomains.length > 0) {
+        targetHost = targetDomains[0];
+      }
+    } else {
+      setCurrentSourceLanguage(targetLanguage);
+      setLocaleDropdownOpen(false);
+      const currentPathname = window.location.pathname;
+      const nextPath = removeTranslationPrefix(currentPathname);
+      const portPart = port ? `:${port}` : '';
+      const nextUrl = `${protocol}//${hostname}${portPart}${nextPath}${search}${hash}`;
+      if (nextUrl !== window.location.href) {
+        window.location.href = nextUrl;
+      } else {
+        window.location.href = window.location.href;
+      }
+      return;
+    }
+
+    const portPart = port ? `:${port}` : '';
+    const newUrl = `${protocol}//${targetHost}${portPart}${currentPath}${search}${hash}`;
+    window.location.href = newUrl;
   };
 
   /**
@@ -181,22 +258,22 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const categoriesItems = [
     {
       name: texts.navigation.categories.news,
-      href: `/${locale}/news`,
+      href: `/news`,
       key: 'news',
     },
     {
       name: texts.navigation.categories.insights,
-      href: `/${locale}/insights`,
+      href: `/insights`,
       key: 'insights',
     },
     {
       name: texts.navigation.categories.research,
-      href: `/${locale}/research`,
+      href: `/research`,
       key: 'research',
     },
     {
       name: texts.navigation.categories.voices,
-      href: `/${locale}/voices`,
+      href: `/voices`,
       key: 'voices',
     },
   ];
@@ -208,20 +285,20 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
   const isCategoryRouteActive = categoriesItems.some((item) => currentPath === item.href || currentPath.startsWith(`${item.href}/`) || currentPath.startsWith(`${item.href}?`)) || Boolean(currentCategoryTypeKey);
 
-  const isCollectionsRouteActive = currentPath.startsWith(`/${locale}/collections`);
-  const isNewsRouteActive = currentPath === `/${locale}/news` || currentPath.startsWith(`/${locale}/news/`) || currentPath.startsWith(`/${locale}/news?`) || normalizedArticleCategoryKey === 'news';
-  const isTutorialsRouteActive = currentPath === `/${locale}/tutorials` || currentPath.startsWith(`/${locale}/tutorials/`) || currentPath.startsWith(`/${locale}/tutorials?`);
+  const isCollectionsRouteActive = currentPath.startsWith(`/collections`);
+  const isNewsRouteActive = currentPath === `/news` || currentPath.startsWith(`/news/`) || currentPath.startsWith(`/news?`) || normalizedArticleCategoryKey === 'news';
+  const isTutorialsRouteActive = currentPath === `/tutorials` || currentPath.startsWith(`/tutorials/`) || currentPath.startsWith(`/tutorials?`);
 
   const handleCollectionsClick = () => {
     setCollectionsDropdownOpen(false);
     if (typeof window !== 'undefined') {
-      window.location.href = `/${locale}/collections`;
+      window.location.href = `/collections`;
     }
   };
 
   const getCategoryFilterUrl = (typeKey: string, categoryLabel: string) => {
     const typeItem = categoriesItems.find((item) => item.key === typeKey);
-    const baseHref = typeItem?.href || `/${locale}/${typeKey}`;
+    const baseHref = typeItem?.href || `/${typeKey}`;
     const encodedCategory = encodeURIComponent(categoryLabel);
     return `${baseHref}?category_name=${encodedCategory}`;
   };
@@ -386,7 +463,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
           {/* Logo - Center */}
           <div className="flex items-center justify-center flex-shrink-0">
-            <a href={`/${locale}`} className="flex items-center">
+            <a href={`/`} className="flex items-center">
               <img src={HEADER_LOGO_BLACK_URL} alt="logo" className="w-8" />
             </a>
           </div>
@@ -406,7 +483,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                   <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[192px] w-max">
                     <div className="py-1">
                       {headerCollectionItems.map((item) => (
-                        <a key={item.id} href={`/${locale}/collections/${item.id}`} className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors whitespace-nowrap ${activeCollectionId === item.id ? 'text-primary font-medium bg-gray-50' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
+                        <a key={item.id} href={`/collections/${item.id}`} className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors whitespace-nowrap ${activeCollectionId === item.id ? 'text-primary font-medium bg-gray-50' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
                           {item.name}
                         </a>
                       ))}
@@ -465,18 +542,19 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             <div className="relative" ref={dropdownRef}>
               <button onClick={toggleLocaleDropdown} className={`flex items-center space-x-2 px-2 h-12 hover:bg-gray-100 rounded transition-colors ${localeDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.actions.switchLanguage} aria-expanded={localeDropdownOpen}>
                 <img src={CountryIcon} alt="CountryIcon" className="w-4 h-4" />
-                <span className={`text-sm ${localeDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{currentLocaleConfig.name}</span>
+                <span className={`text-sm ${localeDropdownOpen ? 'text-white' : 'text-gray-600'}`}>{currentLanguageOption.label}</span>
                 <img src={localeDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${localeDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Dropdown Menu */}
               {localeDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                  <div className="px-4 py-2 border-b border-gray-100 text-xs font-medium text-gray-400">{texts.dropdown.internationalEdition}</div>
                   <div className="py-1">
-                    {Object.entries(localeConfig).map(([key, config]) => (
-                      <button key={key} onClick={() => onLocaleSwitch(key as Locale)} className={`w-full flex items-center space-x-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${locale === key ? 'bg-gray-50 text-primary' : 'text-gray-600'}`}>
-                        <span>{config.name}</span>
-                        {locale === key && <span className="ml-auto text-xs text-primary">✓</span>}
+                    {languageOptions.map((option) => (
+                      <button key={option.code} onClick={() => handleLanguageSwitch(option.code)} className={`w-full flex items-center space-x-3 px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${currentSourceLanguage === option.code ? 'bg-gray-50 text-primary' : 'text-gray-600'}`}>
+                        <span>{option.label}</span>
+                        {currentSourceLanguage === option.code && <span className="ml-auto text-xs text-primary">✓</span>}
                       </button>
                     ))}
                   </div>

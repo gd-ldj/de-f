@@ -1,4 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
+import { getSourceLanguageFromUrl, getSourceLanguageFromRequest, extractTranslationLanguageFromPath, shouldRedirectToSourceVersion, removeTranslationPrefix, isTranslationPath } from '@/lib/language-utils';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
 
 // HTML comment removal function
 function removeHTMLComments(html: string): string {
@@ -13,17 +15,40 @@ function removeHTMLComments(html: string): string {
   );
 }
 
+/**
+ * Middleware processing order:
+ * 1. Language redirect (if needed)
+ * 2. HTML minification (for text/html responses)
+ */
 export const onRequest = defineMiddleware(async (context, next) => {
+  const { url, redirect } = context;
+  const { pathname, search, hash } = url;
+  const hostname = url.hostname;
+  const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+
+  // Step 1: Check for language redirect
+  if (!isLocalHost && isTranslationPath(pathname)) {
+    const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
+    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`)) || /^(en|zh|ja)\./.test(hostname);
+    const sourceLanguage = isLocalHost ? getSourceLanguageFromRequest(context.request, hostname) : isKnownDomain ? getSourceLanguageFromUrl(url) : getSourceLanguageFromRequest(context.request, hostname);
+    const translationLanguage = extractTranslationLanguageFromPath(pathname);
+
+    // Redirect if translation language matches source language
+    // Example: ja.detake.com/ja/article/... → ja.detake.com/article/...
+    if (shouldRedirectToSourceVersion(sourceLanguage, translationLanguage)) {
+      const newPathname = removeTranslationPrefix(pathname);
+      const redirectUrl = `${newPathname}${search}${hash}`;
+      return redirect(redirectUrl, 301);
+    }
+  }
+  // Step 2: Continue to route handler
   const response = await next();
 
+  // Step 3: HTML minification (only for HTML responses)
   if (response.headers.get('content-type')?.includes('text/html')) {
-    // Get HTML content
     const html = await response.text();
-
-    // Remove comments and compress
     const minifiedHtml = removeHTMLComments(html);
 
-    // Return new response
     return new Response(minifiedHtml, {
       status: response.status,
       statusText: response.statusText,

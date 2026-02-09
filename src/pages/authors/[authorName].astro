@@ -1,0 +1,99 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import AuthMount from '@/components/common/react/AuthMount'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthorProfileSection from '@/components/author/astro/AuthorProfileSection.astro'
+import AuthorTabs from '@/components/author/astro/AuthorTabs.astro'
+import { fetchAuthorProfile } from '@/api/users'
+import { fetchArticles } from '@/api/articles'
+import type { Locale, SourceLanguage } from '@/types'
+import Footer from '@/components/common/react/footer/Index'
+import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import { SITE_CONFIG, MULTI_SOURCE_CONFIG } from '@/config/constants'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+
+export const prerender = false
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
+const { authorName } = Astro.params as { authorName: string }
+
+const decodedAuthorName = decodeURIComponent(authorName)
+
+const authorProfile = await fetchAuthorProfile(decodedAuthorName)
+if (!authorProfile) {
+  return Astro.redirect('/404')
+}
+
+const articlesResponse = await fetchArticles(locale, 1, 10, {
+  author_name: decodedAuthorName,
+  order_by: 'Latest'
+})
+
+const articles = articlesResponse?.articles || []
+
+const title = `${authorProfile.name} | Author Profile | deTake`
+const description = authorProfile.profile_bio || `Articles and insights by ${authorProfile.name} on deTake`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/authors/${encodeURIComponent(authorName)}`
+
+const ogImageParams = new URLSearchParams({
+  title: authorProfile.name,
+  description: description,
+  type: 'website'
+})
+const ogImageUrl = authorProfile.avatar_url || `${SITE_CONFIG.SITE_URL}/api/og/author.svg?${ogImageParams.toString()}`
+
+const keywords = ['author', 'profile', authorProfile.name, 'cryptocurrency', 'blockchain', 'analysis']
+---
+
+<BaseLayout 
+  title={title} 
+  description={description} 
+  locale={locale} 
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt={`${authorProfile.name} - Author profile on DeTake`}
+  ogType="website"
+  twitterCard="summary_large_image"
+  author={authorProfile.name}
+  keywords={keywords}
+>
+  <HeaderWithFallback locale={locale} />
+
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-[1000px_440px]">
+        <div class="pt-5 md:pt-8 md:py-5 px-4 md:px-6 border border-t-0 border-border">
+          <div class="mb-4">
+            <nav class="text-sm text-muted-foreground mb-2">
+              <a href="/" class="hover:text-foreground">
+                Social Media
+              </a>
+              <span class="mx-1">/</span>
+              <span class="text-primary">Authors</span>
+            </nav>
+          </div>
+          <AuthorProfileSection authorProfile={authorProfile} locale={locale} />
+          <AuthorTabs
+            articles={articles}
+            authorName={decodedAuthorName}
+            locale={locale}
+            hasMore={articlesResponse?.hasMore || false}
+            nextCursor={articlesResponse?.nextCursor || undefined}
+          />
+        </div>
+        
+        <div class="border border-t-0 border-l-0 border-border">
+          <div class="top-8">
+            <div id="share-section-root" class=""></div>
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <Footer client:load />
+</BaseLayout>

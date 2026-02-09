@@ -16,9 +16,9 @@ export function getCanonicalArticleUrl(slug: string, locale: Locale, category: s
   const normalizedCategory = category.toLowerCase();
   const normalizedSlug = promoteCode ? `${slug}-${promoteCode}` : slug;
   if (userId) {
-    return `/${locale}/${userId}/article/${normalizedCategory}/${normalizedSlug}`;
+    return `/u/${userId}/article/${normalizedCategory}/${normalizedSlug}`;
   }
-  return `/${locale}/article/${normalizedCategory}/${normalizedSlug}`;
+  return `/article/${normalizedCategory}/${normalizedSlug}`;
 }
 
 /**

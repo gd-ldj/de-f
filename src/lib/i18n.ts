@@ -1,8 +1,9 @@
-import type { Locale } from '@/types';
+import type { Locale, SourceLanguage } from '@/types';
 
-// Import translation files directly from src (avoid importing from public)
-import usTranslations from '../../public/locales/us/translation.json';
-import asiaTranslations from '../../public/locales/asia/translation.json';
+// Import translation files for multi-source architecture
+import enTranslations from '../../public/locales/en/translation.json';
+import zhTranslations from '../../public/locales/zh/translation.json';
+import jaTranslations from '../../public/locales/ja/translation.json';
 
 /**
  * Translation data type
@@ -12,11 +13,29 @@ interface TranslationData {
 }
 
 /**
- * Available translations
+ * Available translations (source language based)
+ */
+const languageTranslations: Record<SourceLanguage, TranslationData> = {
+  en: enTranslations as TranslationData,
+  zh: zhTranslations as TranslationData,
+  ja: jaTranslations as TranslationData,
+};
+
+/**
+ * Legacy locale to language mapping for backward compatibility
+ */
+const localeToLanguageMap: Record<Locale, SourceLanguage> = {
+  us: 'en',
+  asia: 'zh',
+};
+
+/**
+ * Available translations (legacy locale-based, using language translations)
+ * @deprecated Use languageTranslations directly for new implementations
  */
 const translations: Record<Locale, TranslationData> = {
-  us: usTranslations as TranslationData,
-  asia: asiaTranslations as TranslationData,
+  us: enTranslations as TranslationData,
+  asia: zhTranslations as TranslationData,
 };
 
 /**
@@ -84,4 +103,52 @@ export const useTranslation = (locale: Locale) => {
  */
 export const createTranslator = (locale: Locale) => {
   return (key: string, fallback?: string) => t(locale, key, fallback);
+};
+
+/**
+ * Translation function for source language (new multi-source architecture)
+ * @param language - Source language ('en' | 'zh' | 'ja')
+ * @param key - Translation key
+ * @param fallback - Optional fallback text
+ * @returns Translated text
+ */
+export const tl = (language: SourceLanguage, key: string, fallback?: string): string => {
+  const languageData = languageTranslations[language] || languageTranslations.en;
+  const translatedValue = getNestedValue(languageData, key);
+
+  // If translation found, return it
+  if (translatedValue !== key) {
+    return translatedValue;
+  }
+
+  // Try fallback language (en) if current language failed
+  if (language !== 'en') {
+    const fallbackValue = getNestedValue(languageTranslations.en, key);
+    if (fallbackValue !== key) {
+      return fallbackValue;
+    }
+  }
+
+  // Return provided fallback or the key itself
+  return fallback || key;
+};
+
+/**
+ * Hook for React components to use translations with source language
+ * @param language - Source language
+ * @returns Translation function bound to the language
+ */
+export const useLanguageTranslation = (language: SourceLanguage) => {
+  return {
+    t: (key: string, fallback?: string) => tl(language, key, fallback),
+  };
+};
+
+/**
+ * Create a translation function bound to a specific source language
+ * @param language - Source language
+ * @returns Translation function that only requires the key
+ */
+export const createLanguageTranslator = (language: SourceLanguage) => {
+  return (key: string, fallback?: string) => tl(language, key, fallback);
 };

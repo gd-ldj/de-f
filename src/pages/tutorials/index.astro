@@ -1,0 +1,262 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
+import { fetchLearnItemsByLetter, getAvailableLetters } from '@/api/learn'
+import type { Locale, SourceLanguage } from '@/types'
+import Footer from '@/components/common/react/footer/Index'
+import { createTranslator } from '@/lib/i18n'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import { SITE_CONFIG, DEFAULT_PROMOTE_CODE, STORAGE_KEYS, MULTI_SOURCE_CONFIG } from '@/config/constants'
+export const prerender = false
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
+const { url } = Astro
+
+const t = createTranslator(locale)
+const currentCategoryName = url.searchParams.get('category_name') || t('learn.glossary')
+
+// Fetch learn items grouped by letter
+let learnItemsByLetter: { [letter: string]: any[] } = {}
+let availableLetters: string[] = []
+try {
+  [learnItemsByLetter, availableLetters] = await Promise.all([
+    fetchLearnItemsByLetter(locale),
+    getAvailableLetters(locale)
+  ])
+} catch (error) {
+  console.error('Failed to fetch learn items:', error)
+  learnItemsByLetter = {}
+  availableLetters = []
+}
+
+const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
+
+// SEO optimization
+const title = t('pages.learnTitle')
+const description = t('pages.learnDescription')
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/tutorials?mask=detake`
+
+// Generate OG image
+const ogImageParams = new URLSearchParams({
+  title: title,
+  description: description,
+  type: 'website'
+})
+const ogImageUrl = `${SITE_CONFIG.SITE_URL}/api/og/learn.svg?${ogImageParams.toString()}`
+
+// Extract keywords
+const keywords = ['learn', 'paragons', 'cryptocurrency', 'blockchain', 'dictionary', 'terminology']
+
+// All alphabet letters for navigation
+const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+---
+
+<BaseLayout 
+  title={title} 
+  description={description} 
+  locale={locale} 
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt="Learn cryptocurrency and blockchain terminology on DeTake"
+  ogType="website"
+  twitterCard="summary_large_image"
+  keywords={keywords}
+>
+  <HeaderWithFallback locale={locale} />
+  <AuthMount client:load shareSection={{ locale, title, url: canonicalUrl }} />
+  
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid layout-two-column-fixed-1440">
+        <!-- Left Column - Learn Content -->
+        <div class="pt-5 md:pt-8 md:py-5 border border-t-0 border-border">
+          <!-- Mobile Layout -->
+          <div class="md:hidden">
+            <nav class="text-xs text-muted-foreground mb-1 px-4">
+              <a href="/" class="hover:text-foreground">
+                {t('navigation.learn')}
+              </a>
+              <span class="mx-1">/</span>
+              <span class="text-primary">{currentCategoryName}</span>
+            </nav>
+
+            <div class="mt-4 mb-4  px-4">
+              <div class="border border-gray-300 rounded-[2px] px-3 py-2.5 flex items-center gap-2">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder={t('learn.searchPlaceholder')}
+                  class="flex-1 bg-transparent text-sm outline-none"
+                  data-learn-search="mobile"
+                />
+              </div>
+            </div>
+
+            <div class="border-b border-border"></div>
+
+            <div class="relative  px-4" data-letter-scroll-container>
+              <div class="divide-y divide-gray-200 max-h-[calc(100vh-190px)] overflow-y-auto pr-2" data-letter-scroll>
+                {allLetters.map((letter) => {
+                  const items = learnItemsByLetter[letter] || []
+                  if (items.length === 0) return null
+
+                  return (
+                    <section id={`letter-${letter}`} class="py-5 scroll-mt-24" data-letter-section="mobile">
+                      <div class="mb-2">
+                        <span class="text-[48px] font-medium text-[#052019] opacity-30">{letter}</span>
+                      </div>
+                      <div class="space-y-3">
+                        {items.map((item: any, index: number) => (
+                          <div
+                            class={`pt-2 pb-3 ${index < items.length - 1 ? 'border-b border-gray-200' : ''}`}
+                            data-learn-item="mobile"
+                            data-letter={letter}
+                            data-title={item.title}
+                            data-description={item.description}
+                          >
+                            <a
+                              href={`/tutorials/${item.slug}-${promoteCode}`}
+                              class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
+                            >
+                              <h3 class="text-[20px] font-medium text-[#052019] mb-1" data-learn-title>
+                                {item.title}
+                              </h3>
+                              <p class="text-[#909399] text-[14px] leading-relaxed" data-learn-description>
+                                {item.description}
+                              </p>
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )
+                })}
+              </div>
+
+              <div
+                class="flex items-center justify-center py-6 min-h-[120px] text-center text-sm text-gray-500"
+                data-mobile-empty-message
+                style="display: none"
+              >
+                {t('learn.noResults')}
+              </div>
+
+              <div class="absolute right-1 top-0 flex flex-col items-center gap-1 text-xs text-gray-800" data-letter-nav>
+                {allLetters.filter((letter) => availableLetters.includes(letter)).map((letter) => (
+                  <a
+                    href={`#letter-${letter}`}
+                    data-letter-target={letter}
+                    data-letter-context="mobile"
+                    class="px-1 py-0.5 font-medium tracking-wide hover:text-primary"
+                  >
+                    {letter}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <!-- Desktop Layout -->
+          <div class="hidden md:block">
+            <nav class="text-sm text-muted-foreground mb-2 md:px-6">
+              <a href="/" class="hover:text-foreground">
+                {t('navigation.learn')}
+              </a>
+              <span class="mx-1">/</span>
+              <span class="text-primary">{currentCategoryName}</span>
+            </nav>
+
+            <h1 class="text-[48px] font-medium text-gray-900 mb-6 md:px-6">
+              {t('learn.glossary')}
+            </h1>
+
+            <div class="border-y border-gray-200 py-3 mb-5 md:px-6 md:sticky md:top-[97px] md:bg-white md:z-10" data-desktop-letter-bar>
+              <div class="flex flex-col gap-4 md:flex-row md:items-center">
+                <div class="w-full md:w-[180px] relative">
+                  <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder={t('learn.searchPlaceholder')}
+                    class="w-full md:w-[180px] pl-9 pr-3 py-[9px] border border-gray-300 rounded-[2px] focus:ring-2 focus:text-primary focus:border-transparent outline-none text-sm"
+                    data-learn-search="desktop"
+                  />
+                </div>
+                <div class="flex-1">
+                  <div class="flex flex-nowrap gap-2 md:justify-start text-sm overflow-x-auto whitespace-nowrap" data-letter-nav>
+                    {allLetters.filter((letter) => availableLetters.includes(letter)).map((letter) => (
+                      <a
+                        href={`#letter-${letter}`}
+                        data-letter-target={letter}
+                        data-letter-context="desktop"
+                        class="px-1 font-medium tracking-wide text-gray-800 hover:text-primary"
+                      >
+                        {letter}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divide-y divide-gray-200 md:px-6" data-desktop-sections>
+              {allLetters.map((letter) => {
+                const items = learnItemsByLetter[letter] || []
+                if (items.length === 0) return null
+
+                return (
+                  <section id={`letter-${letter}`} class="flex scroll-mt-32" data-letter-section="desktop">
+                    <div class="h-[90px] w-[160px] flex items-center justify-start">
+                      <span class="text-[64px] font-medium text-[#052019] opacity-20">{letter}</span>
+                    </div>
+                    <div class="flex-1">
+                      {items.map((item: any, index: number) => (
+                        <div
+                          class={`py-4 ${index < items.length - 1 ? 'border-b border-gray-200' : ''}`}
+                          data-learn-item="desktop"
+                          data-letter={letter}
+                          data-title={item.title}
+                          data-description={item.description}
+                        >
+                          <a
+                            href={`/tutorials/${item.slug}-${promoteCode}`}
+                            class="block hover:bg-gray-50 rounded-lg px-1 transition-colors"
+                          >
+                            <h3 class="text-[32px] font-medium text-[#052019] mb-2" data-learn-title>
+                              {item.title}
+                            </h3>
+                            <p class="text-[#909399] text-[16px] leading-relaxed" data-learn-description>
+                              {item.description}
+                            </p>
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column - Sidebar Content -->
+        <div class="border border-t-0 border-l-0 border-border">
+          <div class="sticky top-8">
+            <div id="share-section-root" class=""></div>
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <Footer client:load />
+</BaseLayout>

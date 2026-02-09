@@ -46,17 +46,14 @@ export const getArticleUrl = (
   userId?: string,
   promoteCode?: string
 ) => {
-  // Use provided promote code or default
   const finalPromoteCode = promoteCode || DEFAULT_PROMOTE_CODE
   const businessPath = business.toLowerCase()
 
-  // If userId exists, it's a regular user article
   if (userId) {
-    return `/${locale}/${userId}/${businessPath}/${slug}-${finalPromoteCode}`
+    return `/u/${userId}/article/${businessPath}/${slug}-${finalPromoteCode}`
   }
 
-  // Otherwise, it's an admin/system article
-  return `/${locale}/${businessPath}/${slug}-${finalPromoteCode}`
+  return `/article/${businessPath}/${slug}-${finalPromoteCode}`
 }
 
 /**

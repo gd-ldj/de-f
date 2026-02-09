@@ -19,8 +19,8 @@ const { slug, locale, business, userId, class: className = '', onClick } = Astro
  * This ensures the URL is generated correctly on the server side
  *
  * URL formats:
- * - Admin/System articles: /{locale}/{business}/{slug}-{promoteCode}
- * - User articles: /{locale}/{userId}/{business}/{slug}-{promoteCode}
+ * - Admin/System articles: /article/{business}/{slug}-{promoteCode}
+ * - User articles: /u/{userId}/article/{business}/{slug}-{promoteCode}
  */
 const getArticleUrl = (slug: string) => {
   // Get promote code from cookies (SSR-compatible) or use default
@@ -29,11 +29,11 @@ const getArticleUrl = (slug: string) => {
 
   // If userId exists, it's a regular user article
   if (userId) {
-    return `/${locale}/${userId}/article/${businessPath}/${slug}-${promoteCode}`
+    return `/u/${userId}/article/${businessPath}/${slug}-${promoteCode}`
   }
 
   // Otherwise, it's an admin/system article
-  return `/${locale}/article/${businessPath}/${slug}-${promoteCode}`
+  return `/article/${businessPath}/${slug}-${promoteCode}`
 }
 
 const articleUrl = getArticleUrl(slug)

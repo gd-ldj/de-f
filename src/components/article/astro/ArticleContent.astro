@@ -1,6 +1,8 @@
 ---
-import type { Locale, ApiArticle } from '@/types'
+import type { Locale, ApiArticle, TranslationLanguage, SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
+import { MULTI_SOURCE_CONFIG } from '@/config/constants'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import Image from '@/components/common/astro/ImageSSR.astro'
 import {formatDate} from '@/utils/util'
 
@@ -10,7 +12,7 @@ interface Props {
   category: string
   categoryDisplayName?: string
   slugWithPromote: string
-  articleLang: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
+  articleLang: TranslationLanguage | string
   userId?: string
   collection?: {
     id: string
@@ -22,11 +24,14 @@ const { article, locale, category, categoryDisplayName, slugWithPromote, article
 
 const t = createTranslator(locale)
 
+// Get current site's source language
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+
 const baseArticlePath = collection
-  ? `/${locale}/collections/${collection.id}/${slugWithPromote}`
+  ? `/collections/${collection.id}/${slugWithPromote}`
   : userId
-  ? `/${locale}/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
-  : `/${locale}/article/${category.toLowerCase()}/${slugWithPromote}`
+  ? `/u/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
+  : `/article/${category.toLowerCase()}/${slugWithPromote}`
 const collectionLabel = locale === 'us' ? 'Collections' : '合集'
 const collectionTitle = collection?.title || collection?.id
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
@@ -46,17 +51,17 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
       <div class="flex items-center space-x-2">
         {collection ? (
           <>
-            <a href={`/${locale}/collections`} class="hover:text-primary">{collectionLabel}</a>
+            <a href={`/collections`} class="hover:text-primary">{collectionLabel}</a>
             <span>/</span>
-            <a href={`/${locale}/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
+            <a href={`/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
             <span>/</span>
             <a href="javascript:;" class="text-primary">{article.category_name}</a>
           </>
         ) : (
           <>
-            <a href={`/${locale}`} class="hover:text-primary">{t('article.articles')}</a>
+            <a href={`/`} class="hover:text-primary">{t('article.articles')}</a>
             <span>/</span>
-            <a href={`/${locale}/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
+            <a href={`/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
             <span>/</span>
             <a href="javascript:;" class="text-primary">{article.category_name}</a>
           </>
@@ -67,7 +72,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
           {languageButtons.map(({ code, label }) => (
             <a
-              href={`${baseArticlePath}?lang=${code}`}
+              href={code === sourceLanguage ? baseArticlePath : `/${code}${baseArticlePath}`}
               class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
                 articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
               }`}
@@ -83,7 +88,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
       <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
         {languageButtons.map(({ code, label }) => (
           <a
-            href={`${baseArticlePath}?lang=${code}`}
+            href={code === sourceLanguage ? baseArticlePath : `/${code}${baseArticlePath}`}
             class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
               articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
             }`}

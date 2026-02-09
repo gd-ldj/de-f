@@ -38,13 +38,6 @@ function formatDate(dateString: string, locale: Locale): string {
   }
 }
 
-/**
- * Get article URL based on category and slug
- */
-function getArticleUrl(article: ApiArticle, locale: Locale): string {
-  const category = article.business_type_name.toLowerCase();
-  return `/${locale}/${category}/${article.slug}`;
-}
 ---
 
 <div>

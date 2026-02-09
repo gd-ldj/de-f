@@ -48,6 +48,7 @@ export const headerTexts = {
       pleaseLoginFirst: 'Please login first to access',
     },
     dropdown: {
+      internationalEdition: 'International Edition',
       article: 'Article',
       newsGroups: [
         {
@@ -125,6 +126,7 @@ export const headerTexts = {
       pleaseLoginFirst: '请先登录后再访问',
     },
     dropdown: {
+      internationalEdition: '国际版',
       article: '文章',
       newsGroups: [
         {

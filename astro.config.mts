@@ -42,7 +42,7 @@ const devDefineConfig = defineConfig({
     defaultLocale: 'us',
     locales: ['us', 'asia'],
     routing: {
-      prefixDefaultLocale: true,
+      prefixDefaultLocale: false,
     },
   },
   vite: {
@@ -108,7 +108,7 @@ export default isDev
         defaultLocale: 'us',
         locales: ['us', 'asia'],
         routing: {
-          prefixDefaultLocale: true,
+          prefixDefaultLocale: false,
         },
       },
       vite: {

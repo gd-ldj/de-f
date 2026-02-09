@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { footerTexts } from './constants';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
 
 // Import social media icons from locale assets
 import TwitterIcon from './assets/twitter.svg?url';
@@ -21,10 +22,9 @@ interface FooterProps {
  */
 function getLocaleFromURL(): Locale {
   if (typeof window === 'undefined') return 'us';
-  const pathname = window.location.pathname;
-  const segments = pathname.split('/');
-  const localeSegment = segments[1]; // First segment after domain
-  return localeSegment === 'asia' || localeSegment === 'us' ? localeSegment : 'us';
+  const hostname = window.location.hostname;
+  const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+  return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
 }
 
 export default function Footer({}: FooterProps) {
@@ -64,7 +64,7 @@ export default function Footer({}: FooterProps) {
         <div className="border-t border-gray-800 pt-8">
           <div className="grid grid-cols-2 border-b border-gray-800 pb-8">
             <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 px-6 md:px-12">
-              <a href={`/${locale}/news`} className="text-gray-300 hover:text-white text-sm">
+              <a href={`/news`} className="text-gray-300 hover:text-white text-sm">
                 {texts.navigation.news}
               </a>
               <button type="button" className="text-gray-300 hover:text-white text-sm text-left">

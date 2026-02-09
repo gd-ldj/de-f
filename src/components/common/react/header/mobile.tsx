@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { headerTexts } from './constants';
-import { getLocaleFromPath } from '@/lib/utils';
+import { MULTI_SOURCE_CONFIG, STORAGE_KEYS } from '@/config/constants';
+import { isValidSourceLanguage } from '@/lib/language-utils';
 import MobileSidebar from './MobileSidebar';
 import MobileCategoryPage from './MobileCategoryPage';
 import { HEADER_LOGO_BLACK_URL } from './constants';
@@ -18,13 +19,15 @@ interface MobileHeaderProps {
   currentPath?: string;
 }
 
-/**
- * Get locale from URL path
- */
 function getLocaleFromURL(): Locale {
   if (typeof window !== 'undefined') {
-    const pathLocale = getLocaleFromPath(window.location.pathname);
-    return pathLocale === 'us' || pathLocale === 'asia' ? pathLocale : 'us';
+    const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE);
+    if (storedLanguage && isValidSourceLanguage(storedLanguage)) {
+      return MULTI_SOURCE_CONFIG.languageToLocale(storedLanguage);
+    }
+    const hostname = window.location.hostname;
+    const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+    return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
   }
   return 'us';
 }
@@ -33,7 +36,7 @@ function getLocaleFromURL(): Locale {
  * Check if current path is homepage
  */
 function isHomePage(path: string, locale: Locale): boolean {
-  return path === `/${locale}` || path === `/${locale}/` || path === '/';
+  return path === '/';
 }
 
 /**
@@ -113,7 +116,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
 
           {/* Center - Logo */}
           <div className="flex-1 flex justify-center">
-            <a href={`/${locale}`} className="flex items-center">
+            <a href="/" className="flex items-center">
               <img src={HEADER_LOGO_BLACK_URL} alt="deTake" className="h-6 w-auto" />
             </a>
           </div>

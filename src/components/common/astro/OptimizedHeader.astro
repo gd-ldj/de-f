@@ -10,13 +10,14 @@ interface Props {
 }
 
 const { locale = 'us', userComponent } = Astro.props
+const currentPath = Astro.url.pathname
 ---
 
 <!-- Skeleton displayed during SSR -->
 <HeaderSkeleton locale={locale} />
 
 <!-- Real Header with client-side hydration, using idle strategy for delayed loading -->
-<Header client:idle userComponent={userComponent} />
+<Header client:idle locale={locale} currentPath={currentPath} userComponent={userComponent} />
 
 <script>
   // Client-side script: Hide skeleton when real Header is loaded

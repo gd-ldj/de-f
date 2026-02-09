@@ -1,3 +1,5 @@
+import type { SourceLanguage } from '@/types';
+
 /**
  * Application configuration constants
  * Centralized location for all global configuration values
@@ -44,6 +46,76 @@ export const SITE_CONFIG = {
 } as const;
 
 /**
+ * Multi-source site configuration
+ * Determines the source language of the current site based on domain or environment
+ */
+export const MULTI_SOURCE_CONFIG = {
+  // Source language from environment variable (fallback to 'en')
+  SOURCE_LANGUAGE: (import.meta.env.PUBLIC_SOURCE_LANGUAGE as SourceLanguage) || 'en',
+
+  // Supported source languages and their domain patterns
+  SOURCE_LANGUAGE_DOMAINS: {
+    en: ['en.detake.com', 'en.detake.news', 'detake.com', 'detake.news'],
+    zh: ['zh.detake.com', 'zh.detake.news'],
+    ja: ['ja.detake.com', 'ja.detake.news'],
+  } as Record<SourceLanguage, string[]>,
+
+  // Language to locale mapping (for backward compatibility with legacy code)
+  LANGUAGE_TO_LOCALE_MAP: {
+    en: 'us',
+    zh: 'asia',
+    ja: 'us', // Default to 'us' locale for Japanese
+  } as Record<SourceLanguage, 'us' | 'asia'>,
+
+  // Locale to language mapping (for backward compatibility)
+  LOCALE_TO_LANGUAGE_MAP: {
+    us: 'en',
+    asia: 'zh',
+  } as Record<'us' | 'asia', SourceLanguage>,
+
+  /**
+   * Get source language from hostname
+   * @param hostname - The hostname to check (e.g., 'ja.detake.com')
+   * @returns The detected source language or default from environment
+   */
+  getSourceLanguageFromDomain(hostname: string): SourceLanguage {
+    // Check each source language's domains
+    for (const [lang, domains] of Object.entries(this.SOURCE_LANGUAGE_DOMAINS)) {
+      if (domains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`))) {
+        return lang as SourceLanguage;
+      }
+    }
+
+    // Check for language subdomain pattern (e.g., ja.detake.com)
+    const match = hostname.match(/^(en|zh|ja)\./);
+    if (match) {
+      return match[1] as SourceLanguage;
+    }
+
+    // Fallback to environment variable or default
+    return this.SOURCE_LANGUAGE;
+  },
+
+  /**
+   * Convert source language to legacy locale (for backward compatibility)
+   * @param language - Source language code
+   * @returns Legacy locale code
+   */
+  languageToLocale(language: SourceLanguage): 'us' | 'asia' {
+    return this.LANGUAGE_TO_LOCALE_MAP[language] || 'us';
+  },
+
+  /**
+   * Convert legacy locale to source language
+   * @param locale - Legacy locale code
+   * @returns Source language code
+   */
+  localeToLanguage(locale: 'us' | 'asia'): SourceLanguage {
+    return this.LOCALE_TO_LANGUAGE_MAP[locale] || 'en';
+  },
+} as const;
+
+/**
  * Default promote code used throughout the application
  * This value is used as fallback when no user-specific promote code is available
  */
@@ -68,6 +140,7 @@ export const STORAGE_KEYS = {
   VISITOR_ID: 'visitor_id',
   GA_CLIENT_ID: 'ga_client_id',
   USER_BEHAVIOR_DATA: 'user_behavior_data',
+  SOURCE_LANGUAGE: 'source_language',
 } as const;
 
 /**

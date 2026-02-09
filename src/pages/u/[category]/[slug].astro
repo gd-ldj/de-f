@@ -1,0 +1,29 @@
+---
+/**
+ * Source language user article route (no language prefix)
+ * URL pattern: /{userId}/article/{category}/{slug}
+ * Example: ja.detake.com/user123/article/news/my-crypto-analysis
+ *
+ * This route serves user-generated articles in the source language of the current site.
+ */
+import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro';
+import type { SourceLanguage } from '@/types';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { getSourceLanguageFromRequest } from '@/lib/language-utils';
+
+const { userId, category, slug } = Astro.params as { userId: string; category: string; slug: string };
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname);
+
+// Convert to legacy locale for backward compatibility with BaseArticlePage
+const locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+---
+
+<BaseArticlePage
+  locale={locale}
+  category={category}
+  slug={slug}
+  userId={userId}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={null}
+/>
