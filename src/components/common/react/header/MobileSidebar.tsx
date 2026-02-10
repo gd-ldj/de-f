@@ -60,6 +60,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
   const [currentSourceLanguage, setCurrentSourceLanguage] = useState<SourceLanguage>(getInitialSourceLanguage);
   const localeForTexts: Locale = IS_DEV_ENV ? MULTI_SOURCE_CONFIG.languageToLocale(currentSourceLanguage) : locale;
   const texts = headerTexts[localeForTexts] || headerTexts.en;
+  const enTexts = headerTexts.en;
 
   const languageOptions: { code: SourceLanguage; label: string }[] = [
     { code: 'en', label: 'English' },
@@ -196,22 +197,28 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
 
               {isNewsExpanded && (
                 <div className="mt-2 space-y-3 pl-4">
-                  {texts.dropdown.newsGroups.map((group) => (
-                    <div key={group.key}>
-                      {/* Group title */}
-                      <button onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(group.name)}`)} className="block w-full py-2 px-2 text-left text-base font-medium text-gray-900 hover:bg-gray-50 rounded-md">
-                        {group.name}
-                      </button>
-                      {/* Group items */}
-                      <div className="mt-1 space-y-1 pl-3">
-                        {group.items.map((item) => (
-                          <button key={item} onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(group.name)}&subcategory_name=${encodeURIComponent(item)}`)} className="block w-full py-1.5 px-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md">
-                            {item}
-                          </button>
-                        ))}
+                  {texts.dropdown.newsGroups.map((group, groupIndex) => {
+                    const enGroup = enTexts.dropdown.newsGroups[groupIndex];
+                    return (
+                      <div key={group.key}>
+                        {/* Group title */}
+                        <button onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(enGroup.name)}`)} className="block w-full py-2 px-2 text-left text-base font-medium text-gray-900 hover:bg-gray-50 rounded-md">
+                          {group.name}
+                        </button>
+                        {/* Group items */}
+                        <div className="mt-1 space-y-1 pl-3">
+                          {group.items.map((item, itemIndex) => {
+                            const enItem = enGroup.items[itemIndex];
+                            return (
+                              <button key={item} onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(enGroup.name)}&subcategory_name=${encodeURIComponent(enItem)}`)} className="block w-full py-1.5 px-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                                {item}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -231,11 +238,14 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
 
               {isResearchExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
-                  {texts.dropdown.researchItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/research?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
-                      {category}
-                    </button>
-                  ))}
+                  {texts.dropdown.researchItems.map((category, index) => {
+                    const enCategory = enTexts.dropdown.researchItems[index];
+                    return (
+                      <button key={category} onClick={() => handleNavigation(`/research?category_name=${encodeURIComponent(enCategory)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                        {category}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -255,11 +265,14 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
 
               {isInsightsExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
-                  {texts.dropdown.insightsItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/insights?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
-                      {category}
-                    </button>
-                  ))}
+                  {texts.dropdown.insightsItems.map((category, index) => {
+                    const enCategory = enTexts.dropdown.insightsItems[index];
+                    return (
+                      <button key={category} onClick={() => handleNavigation(`/insights?category_name=${encodeURIComponent(enCategory)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                        {category}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -279,11 +292,14 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
 
               {isVoicesExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
-                  {texts.dropdown.voicesItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/voices?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
-                      {category}
-                    </button>
-                  ))}
+                  {texts.dropdown.voicesItems.map((category, index) => {
+                    const enCategory = enTexts.dropdown.voicesItems[index];
+                    return (
+                      <button key={category} onClick={() => handleNavigation(`/voices?category_name=${encodeURIComponent(enCategory)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                        {category}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -327,11 +343,14 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
 
               {isTutorialsExpanded && (
                 <div className="mt-2 space-y-1 pl-4">
-                  {texts.dropdown.tutorialsItems.map((category) => (
-                    <button key={category} onClick={() => handleNavigation(`/tutorials?category_name=${encodeURIComponent(category)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
-                      {category}
-                    </button>
-                  ))}
+                  {texts.dropdown.tutorialsItems.map((category, index) => {
+                    const enCategory = enTexts.dropdown.tutorialsItems[index];
+                    return (
+                      <button key={category} onClick={() => handleNavigation(`/tutorials?category_name=${encodeURIComponent(enCategory)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                        {category}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

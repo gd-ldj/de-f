@@ -67,6 +67,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
   const [currentSourceLanguage, setCurrentSourceLanguage] = React.useState<SourceLanguage>(getInitialSourceLanguage);
   const texts = headerTexts[locale] || headerTexts.en;
+  const enTexts = headerTexts.en;
 
   const pathSegments = currentPath.split('/');
   const collectionsIndex = pathSegments.indexOf('collections');
@@ -335,22 +336,24 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                   <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[480px] w-max">
                     <div className="py-3 px-4">
                       <div className="mt-1 grid grid-cols-4 gap-8">
-                        {texts.dropdown.newsGroups.map((group) => {
-                          const isGroupActive = currentCategoryTypeKey === 'news' && selectedCategoryName === group.name;
+                        {texts.dropdown.newsGroups.map((group, groupIndex) => {
+                          const enGroup = enTexts.dropdown.newsGroups[groupIndex];
+                          const isGroupActive = currentCategoryTypeKey === 'news' && (selectedCategoryName === group.name || selectedCategoryName === enGroup.name);
 
                           return (
                             <div key={group.key} className="min-w-[160px]">
-                              <a href={getCategoryFilterUrl('news', group.name)} className={`block text-sm font-medium mb-2 text-foreground hover:text-primary cursor-pointer ${isGroupActive ? 'text-primary' : ''}`} onClick={() => setCategoriesDropdownOpen(false)}>
+                              <a href={getCategoryFilterUrl('news', enGroup.name)} className={`block text-sm font-medium mb-2 text-foreground hover:text-primary cursor-pointer ${isGroupActive ? 'text-primary' : ''}`} onClick={() => setCategoriesDropdownOpen(false)}>
                                 {group.name}
                               </a>
                               <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                                {group.items.map((category) => {
-                                  const isSubcategoryActive = currentCategoryTypeKey === 'news' && selectedCategoryName === group.name && selectedSubcategoryName === category;
+                                {group.items.map((category, itemIndex) => {
+                                  const enCategory = enGroup.items[itemIndex];
+                                  const isSubcategoryActive = currentCategoryTypeKey === 'news' && (selectedCategoryName === group.name || selectedCategoryName === enGroup.name) && (selectedSubcategoryName === category || selectedSubcategoryName === enCategory);
 
                                   return (
                                     <a
                                       key={category}
-                                      href={`${getCategoryFilterUrl('news', group.name)}&subcategory_name=${encodeURIComponent(category)}`}
+                                      href={`${getCategoryFilterUrl('news', enGroup.name)}&subcategory_name=${encodeURIComponent(enCategory)}`}
                                       className={`whitespace-nowrap hover:text-primary ${isSubcategoryActive ? 'text-primary font-medium' : ''}`}
                                       onClick={() => {
                                         setCategoriesDropdownOpen(false);
@@ -384,11 +387,12 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                              {texts.dropdown.researchItems.map((label) => {
-                                const isResearchItemActive = currentCategoryTypeKey === 'research' && selectedCategoryName === label;
+                              {texts.dropdown.researchItems.map((label, index) => {
+                                const enLabel = enTexts.dropdown.researchItems[index];
+                                const isResearchItemActive = currentCategoryTypeKey === 'research' && (selectedCategoryName === label || selectedCategoryName === enLabel);
 
                                 return (
-                                  <a key={label} href={getCategoryFilterUrl('research', label)} className={`whitespace-nowrap hover:text-primary ${isResearchItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setResearchDropdownOpen(false)}>
+                                  <a key={label} href={getCategoryFilterUrl('research', enLabel)} className={`whitespace-nowrap hover:text-primary ${isResearchItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setResearchDropdownOpen(false)}>
                                     {label}
                                   </a>
                                 );
@@ -413,11 +417,12 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                              {texts.dropdown.insightsItems.map((label) => {
-                                const isInsightsItemActive = currentCategoryTypeKey === 'insights' && selectedCategoryName === label;
+                              {texts.dropdown.insightsItems.map((label, index) => {
+                                const enLabel = enTexts.dropdown.insightsItems[index];
+                                const isInsightsItemActive = currentCategoryTypeKey === 'insights' && (selectedCategoryName === label || selectedCategoryName === enLabel);
 
                                 return (
-                                  <a key={label} href={getCategoryFilterUrl('insights', label)} className={`whitespace-nowrap hover:text-primary ${isInsightsItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setInsightsDropdownOpen(false)}>
+                                  <a key={label} href={getCategoryFilterUrl('insights', enLabel)} className={`whitespace-nowrap hover:text-primary ${isInsightsItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setInsightsDropdownOpen(false)}>
                                     {label}
                                   </a>
                                 );
@@ -442,11 +447,12 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                              {texts.dropdown.voicesItems.map((label) => {
-                                const isVoicesItemActive = currentCategoryTypeKey === 'voices' && selectedCategoryName === label;
+                              {texts.dropdown.voicesItems.map((label, index) => {
+                                const enLabel = enTexts.dropdown.voicesItems[index];
+                                const isVoicesItemActive = currentCategoryTypeKey === 'voices' && (selectedCategoryName === label || selectedCategoryName === enLabel);
 
                                 return (
-                                  <a key={label} href={getCategoryFilterUrl('voices', label)} className={`whitespace-nowrap hover:text-primary ${isVoicesItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setVoicesDropdownOpen(false)}>
+                                  <a key={label} href={getCategoryFilterUrl('voices', enLabel)} className={`whitespace-nowrap hover:text-primary ${isVoicesItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setVoicesDropdownOpen(false)}>
                                     {label}
                                   </a>
                                 );
@@ -515,11 +521,12 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                         <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[240px] w-max">
                           <div className="py-3 px-4">
                             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                              {texts.dropdown.tutorialsItems.map((label) => {
-                                const isTutorialItemActive = isTutorialsRouteActive && selectedCategoryName === label;
+                              {texts.dropdown.tutorialsItems.map((label, index) => {
+                                const enLabel = enTexts.dropdown.tutorialsItems[index];
+                                const isTutorialItemActive = isTutorialsRouteActive && (selectedCategoryName === label || selectedCategoryName === enLabel);
 
                                 return (
-                                  <a key={label} href={getCategoryFilterUrl('tutorials', label)} className={`whitespace-nowrap hover:text-primary ${isTutorialItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setTutorialsDropdownOpen(false)}>
+                                  <a key={label} href={getCategoryFilterUrl('tutorials', enLabel)} className={`whitespace-nowrap hover:text-primary ${isTutorialItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setTutorialsDropdownOpen(false)}>
                                     {label}
                                   </a>
                                 );
