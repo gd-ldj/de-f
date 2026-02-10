@@ -5,7 +5,7 @@ import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '../config/constants'
 /**
  * Current locale atom
  */
-export const localeAtom = atom<Locale>('us')
+export const localeAtom = atom<Locale>('en')
 
 /**
  * User authentication state atom

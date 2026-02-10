@@ -63,7 +63,7 @@ export const getArticleUrl = (
  */
 export function getLocaleFromPath(pathname: string): string {
   const segments = pathname.split('/')
-  return segments[1] || 'us'
+  return segments[1] || 'en';
 }
 
 export const shortenAddress = (

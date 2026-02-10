@@ -22,20 +22,12 @@ const languageTranslations: Record<SourceLanguage, TranslationData> = {
 };
 
 /**
- * Legacy locale to language mapping for backward compatibility
- */
-const localeToLanguageMap: Record<Locale, SourceLanguage> = {
-  us: 'en',
-  asia: 'zh',
-};
-
-/**
- * Available translations (legacy locale-based, using language translations)
- * @deprecated Use languageTranslations directly for new implementations
+ * Available translations (locale-based)
  */
 const translations: Record<Locale, TranslationData> = {
-  us: enTranslations as TranslationData,
-  asia: zhTranslations as TranslationData,
+  en: enTranslations as TranslationData,
+  zh: zhTranslations as TranslationData,
+  ja: jaTranslations as TranslationData,
 };
 
 /**
@@ -58,13 +50,13 @@ const getNestedValue = (obj: TranslationData, path: string): string => {
 
 /**
  * Translation function - main API for getting translated text
- * @param locale - Current locale ('us' | 'asia')
+ * @param locale - Current locale ('en' | 'zh' | 'ja')
  * @param key - Translation key (e.g., 'common.filters', 'article.aboutAuthor')
  * @param fallback - Optional fallback text if translation not found
  * @returns Translated text
  */
 export const t = (locale: Locale, key: string, fallback?: string): string => {
-  const localeData = translations[locale] || translations.us;
+  const localeData = translations[locale] || translations.en;
   const translatedValue = getNestedValue(localeData, key);
 
   // If translation found, return it
@@ -72,9 +64,9 @@ export const t = (locale: Locale, key: string, fallback?: string): string => {
     return translatedValue;
   }
 
-  // Try fallback locale (us) if current locale failed
-  if (locale !== 'us') {
-    const fallbackValue = getNestedValue(translations.us, key);
+  // Try fallback locale (en) if current locale failed
+  if (locale !== 'en') {
+    const fallbackValue = getNestedValue(translations.en, key);
     if (fallbackValue !== key) {
       return fallbackValue;
     }

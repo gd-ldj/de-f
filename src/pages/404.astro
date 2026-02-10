@@ -6,8 +6,8 @@ import type { Locale } from '@/types'
 
 export const prerender = false // Enable SSR for this page
 
-// Default to 'us' locale for 404 page
-const locale: Locale = 'us'
+// Default to 'en' locale for 404 page
+const locale: Locale = 'en'
 
 // SEO content for 404 page
 const title = '404 - Page Not Found | deTake'
@@ -60,7 +60,7 @@ const description = 'Sorry, we couldn\'t find this page. But don\'t worry, you c
   </main>
   
   <!-- Footer -->
-  <Footer client:load />
+  <Footer client:load locale={locale} />
 </BaseLayout>
 
 <style>

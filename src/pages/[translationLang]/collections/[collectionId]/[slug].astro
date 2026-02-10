@@ -16,6 +16,7 @@ import type { SourceLanguage, TranslationLanguage } from '@/types';
 import Footer from '@/components/common/react/footer/Index';
 import RecentResearch from '@/components/article/astro/RecentResearch.astro';
 import { SITE_CONFIG, MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
 import { getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils';
 
 export const prerender = false;
@@ -60,8 +61,8 @@ if (!baseArticle) {
 const translationLanguage = translationLang as TranslationLanguage;
 let article = baseArticle;
 
-if (translationLanguage !== sourceLanguage) {
-  const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage);
+if ((translationLanguage && translationLanguage !== sourceLanguage) || (translationLanguage === null && sourceLanguage !== 'en')) {
+  const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage || sourceLanguage);
   if (translated) {
     article = {
       ...baseArticle,
@@ -86,9 +87,7 @@ const resolveCollectionTitle = async (id: string) => {
 
 const collectionTitle = await resolveCollectionTitle(collectionId);
 
-const categoryDisplayName = article.business_type_name
-  ? `${article.business_type_name[0].toUpperCase()}${article.business_type_name.slice(1)}`
-  : 'News';
+const categoryDisplayName = getArticleBusinessPath(article) || 'News';
 
 // SEO metadata
 const title = `${article.title} | ${categoryDisplayName} | deTake`;
@@ -154,7 +153,7 @@ const articleLang = article.language || translationLanguage;
           <ArticleContent
             article={article}
             locale={locale}
-            category={article.business_type_name}
+            category={getArticleBusinessPath(article)}
             slugWithPromote={slugWithPromote}
             articleLang={articleLang}
             collection={{ id: collectionId, title: collectionTitle }}
@@ -172,5 +171,5 @@ const articleLang = article.language || translationLanguage;
       </div>
     </div>
   </main>
-  <Footer client:load />
+  <Footer client:load locale={locale} />
 </BaseLayout>

@@ -11,6 +11,18 @@
     "switchLanguage": "言語切替",
     "settings": "設定",
     "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる",
+    "back": "戻る",
+    "expandCategory": "カテゴリーを展開",
+    "collapseCategory": "カテゴリーを折りたたむ",
+    "expandNewsCategories": "ニュースカテゴリーを展開",
+    "collapseNewsCategories": "ニュースカテゴリーを折りたたむ",
+    "expandInsightsCategories": "インサイトカテゴリーを展開",
+    "collapseInsightsCategories": "インサイトカテゴリーを折りたたむ",
+    "expandResearchCategories": "リサーチカテゴリーを展開",
+    "collapseResearchCategories": "リサーチカテゴリーを折りたたむ",
+    "expandVoicesCategories": "ボイスカテゴリーを展開",
+    "collapseVoicesCategories": "ボイスカテゴリーを折りたたむ",
     "switchToAsia": "アジアに切り替え"
   },
   "locale": {
@@ -46,6 +58,7 @@
     "copy": "コピー",
     "copied": "コピーしました",
     "all": "すべて",
+    "article": "記事",
     "opinion": "オピニオン",
     "decibels": "デシベル",
     "exchange": "取引所",
@@ -60,7 +73,24 @@
     "defi": "DeFi",
     "nft": "NFT",
     "web3": "Web3",
-    "more": " もっと見る"
+    "more": " もっと見る",
+    "insights": "インサイト",
+    "voices": "ボイス",
+    "loading": "読み込み中...",
+    "loadMore": "もっと読む",
+    "noMoreArticles": "これ以上の記事はありません",
+    "noArticlesFound": "記事が見つかりません",
+    "browseAllArticles": "すべての記事を見る",
+    "pagePrefix": "ページ ",
+    "pageSuffix": ""
+  },
+  "categories": {
+    "politics": "政治",
+    "economy": "経済",
+    "society": "社会",
+    "climate": "気候",
+    "technology": "テクノロジー",
+    "markets": "マーケット"
   },
   "pages": {
     "articles": "記事",
@@ -69,7 +99,9 @@
     "collectionsTitle": "コレクション | deTake",
     "collectionsDescription": "deTakeで厳選された暗号資産のインサイト、リサーチ、ニュースのコレクションを発見。",
     "learnTitle": "学習 | Paragons | deTake",
-    "learnDescription": "包括的な用語辞典で暗号資産とブロックチェーンの用語を学習"
+    "learnDescription": "包括的な用語辞典で暗号資産とブロックチェーンの用語を学習",
+    "topicNoArticlesPrefix": "現在「",
+    "topicNoArticlesSuffix": "」がタグ付けされた記事はありません。他のトピックを閲覧するか、後でもう一度確認してください。"
   },
   "learn": {
     "glossary": "用語集",
@@ -88,6 +120,7 @@
     "aboutAuthor": "著者について",
     "subscribe": "購読する",
     "recentResearch": "最近のリサーチ",
+    "recentResearchTitle": "Fusaka fork takes shape as Pectra enters final stretch",
     "by": "著",
     "tableOfContents": "目次",
     "bonusDistribution": "ボーナス配分",
@@ -108,12 +141,29 @@
     "holders": "保有者",
     "views": "閲覧数",
     "volume24h": "24時間取引量",
-    "articles": "記事"
+    "articles": "記事",
+    "collectionsLabel": "コレクション",
+    "shareUrlPlaceholder": "https://xxxxxxxxx",
+    "copyIconAlt": "コピーアイコン"
   },
   "author": {
     "followers": "フォロワー",
     "articles": "記事",
     "subscribe": "購読する",
+    "subscribing": "購読中...",
+    "followOnX": "Xでフォロー",
+    "sendEmail": "メールを送信",
+    "tabs": {
+      "articles": "記事",
+      "tweets": "ツイート",
+      "analytics": "分析",
+      "tweetsComingSoon": "ツイート内容は近日公開...",
+      "analyticsComingSoon": "分析内容は近日公開..."
+    },
+    "subscribeMissingId": "著者IDが見つかりません。ページを更新して再試行してください。",
+    "subscribeFailed": "購読に失敗しました。しばらくしてから再試行してください。",
+    "articlesCountSuffix": "件の記事",
+    "moreCountSuffix": "件",
     "subscribePlaceholder": "購読機能は認証統合で実装予定",
     "noArticles": "記事が見つかりません",
     "loadMore": "もっと読む",

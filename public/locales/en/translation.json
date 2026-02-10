@@ -11,6 +11,18 @@
     "switchLanguage": "Switch Language",
     "settings": "Settings",
     "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "back": "Back",
+    "expandCategory": "Expand category",
+    "collapseCategory": "Collapse category",
+    "expandNewsCategories": "Expand news categories",
+    "collapseNewsCategories": "Collapse news categories",
+    "expandInsightsCategories": "Expand insights categories",
+    "collapseInsightsCategories": "Collapse insights categories",
+    "expandResearchCategories": "Expand research categories",
+    "collapseResearchCategories": "Collapse research categories",
+    "expandVoicesCategories": "Expand voices categories",
+    "collapseVoicesCategories": "Collapse voices categories",
     "switchToAsia": "Switch to Asia"
   },
   "locale": {
@@ -46,6 +58,7 @@
     "copy": "Copy",
     "copied": "Copied",
     "all": "All",
+    "article": "Article",
     "opinion": "Opinion",
     "decibels": "Decibels",
     "exchange": "Exchange",
@@ -60,7 +73,24 @@
     "defi": "DeFi",
     "nft": "NFT",
     "web3": "Web3",
-    "more": " more"
+    "more": " more",
+    "insights": "Insights",
+    "voices": "Voices",
+    "loading": "Loading...",
+    "loadMore": "Load More",
+    "noMoreArticles": "No more articles",
+    "noArticlesFound": "No articles found",
+    "browseAllArticles": "Browse All Articles",
+    "pagePrefix": "Page ",
+    "pageSuffix": ""
+  },
+  "categories": {
+    "politics": "Politics",
+    "economy": "Economy",
+    "society": "Society",
+    "climate": "Climate",
+    "technology": "Technology",
+    "markets": "Markets"
   },
   "pages": {
     "articles": "Articles",
@@ -69,7 +99,9 @@
     "collectionsTitle": "Collections | deTake",
     "collectionsDescription": "Discover curated collections of crypto insights, research and news on deTake.",
     "learnTitle": "Learn | Paragons | deTake",
-    "learnDescription": "Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms"
+    "learnDescription": "Learn cryptocurrency and blockchain terminology with our comprehensive dictionary of terms",
+    "topicNoArticlesPrefix": "No articles are currently tagged with \"",
+    "topicNoArticlesSuffix": "\". Try browsing other topics or check back later."
   },
   "learn": {
     "glossary": "Glossary",
@@ -88,6 +120,7 @@
     "aboutAuthor": "About the Author",
     "subscribe": "Subscribe",
     "recentResearch": "Recent Research",
+    "recentResearchTitle": "Fusaka fork takes shape as Pectra enters final stretch",
     "by": "By",
     "tableOfContents": "Table of Contents",
     "bonusDistribution": "Bonus Distribution",
@@ -108,12 +141,29 @@
     "holders": "Holders",
     "views": "Views",
     "volume24h": "Vol. (24h)",
-    "articles": "Articles"
+    "articles": "Articles",
+    "collectionsLabel": "Collections",
+    "shareUrlPlaceholder": "https://xxxxxxxxx",
+    "copyIconAlt": "Copy icon"
   },
   "author": {
     "followers": "followers",
     "articles": "articles",
     "subscribe": "Subscribe",
+    "subscribing": "Subscribing...",
+    "followOnX": "Follow on X",
+    "sendEmail": "Send email",
+    "tabs": {
+      "articles": "Articles",
+      "tweets": "Tweets",
+      "analytics": "Analytics",
+      "tweetsComingSoon": "Tweets content coming soon...",
+      "analyticsComingSoon": "Analytics content coming soon..."
+    },
+    "subscribeMissingId": "Author ID is missing. Please refresh the page and try again.",
+    "subscribeFailed": "Failed to subscribe. Please try again.",
+    "articlesCountSuffix": " articles",
+    "moreCountSuffix": " more",
     "subscribePlaceholder": "Subscribe functionality will be implemented with auth integration",
     "noArticles": "No articles found",
     "loadMore": "Load More",

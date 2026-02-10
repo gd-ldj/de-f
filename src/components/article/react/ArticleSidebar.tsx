@@ -4,6 +4,7 @@ import TokenInfoCard from './TokenInfoCard';
 import BonusDistribution from './BonusDistribution';
 import BonusHunters from './BonusHunters';
 import PoolInfo from './PoolInfo';
+import { createTranslator } from '@/lib/i18n';
 
 interface ArticleSidebarProps {
   locale: Locale;
@@ -14,6 +15,7 @@ interface ArticleSidebarProps {
  * This component displays real-time data that doesn't need SEO optimization
  */
 const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ locale }) => {
+  const t = createTranslator(locale);
   // Mock data - in real app this would come from API
   const tokenData = {
     price: '$34.7M',
@@ -37,7 +39,7 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({ locale }) => {
   ];
 
   const recentResearch = {
-    title: locale === 'us' ? 'Fusaka fork takes shape as Pectra enters final stretch' : 'Fusaka分叉成型，Pectra进入最后阶段',
+    title: t('article.recentResearchTitle'),
     author: 'JACK KUBINEC',
     image: '/images/research-thumb.jpg',
   };

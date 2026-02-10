@@ -11,6 +11,18 @@
     "switchLanguage": "切换语言",
     "settings": "设置",
     "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "back": "返回",
+    "expandCategory": "展开分类",
+    "collapseCategory": "收起分类",
+    "expandNewsCategories": "展开新闻分类",
+    "collapseNewsCategories": "收起新闻分类",
+    "expandInsightsCategories": "展开洞察分类",
+    "collapseInsightsCategories": "收起洞察分类",
+    "expandResearchCategories": "展开研究分类",
+    "collapseResearchCategories": "收起研究分类",
+    "expandVoicesCategories": "展开观点分类",
+    "collapseVoicesCategories": "收起观点分类",
     "switchToAsia": "切换到美国"
   },
   "locale": {
@@ -46,6 +58,7 @@
     "copy": "复制",
     "copied": "已复制",
     "all": "全部",
+    "article": "文章",
     "opinion": "观点",
     "decibels": "分贝",
     "exchange": "交易所",
@@ -60,7 +73,24 @@
     "defi": "DeFi",
     "nft": "NFT",
     "web3": "Web3",
-    "more": "更多"
+    "more": "更多",
+    "insights": "洞察",
+    "voices": "观点",
+    "loading": "加载中...",
+    "loadMore": "加载更多",
+    "noMoreArticles": "没有更多文章了",
+    "noArticlesFound": "未找到文章",
+    "browseAllArticles": "浏览所有文章",
+    "pagePrefix": "第",
+    "pageSuffix": "页"
+  },
+  "categories": {
+    "politics": "政治",
+    "economy": "经济",
+    "society": "社会",
+    "climate": "气候",
+    "technology": "技术",
+    "markets": "市场"
   },
   "pages": {
     "articles": "文章",
@@ -69,7 +99,9 @@
     "collectionsTitle": "我的收藏 | deTake",
     "collectionsDescription": "在 deTake 浏览精心整理的加密洞察、研究与资讯收藏集。",
     "learnTitle": "学习 | 模范 | deTake",
-    "learnDescription": "通过我们全面的术语词典学习加密货币和区块链术语"
+    "learnDescription": "通过我们全面的术语词典学习加密货币和区块链术语",
+    "topicNoArticlesPrefix": "当前没有标记为\"",
+    "topicNoArticlesSuffix": "\"的文章。请尝试浏览其他主题或稍后再查看。"
   },
   "learn": {
     "glossary": "术语",
@@ -88,6 +120,7 @@
     "aboutAuthor": "关于作者",
     "subscribe": "订阅",
     "recentResearch": "最新研究",
+    "recentResearchTitle": "Fusaka分叉成型，Pectra进入最后阶段",
     "by": "作者",
     "tableOfContents": "目录",
     "bonusDistribution": "奖励分布",
@@ -108,12 +141,29 @@
     "holders": "持有者",
     "views": "浏览量",
     "volume24h": "24小时成交量",
-    "articles": "文章"
+    "articles": "文章",
+    "collectionsLabel": "合集",
+    "shareUrlPlaceholder": "https://xxxxxxxxx",
+    "copyIconAlt": "复制图标"
   },
   "author": {
     "followers": "关注者",
     "articles": "文章",
     "subscribe": "订阅",
+    "subscribing": "订阅中...",
+    "followOnX": "在 X 上关注",
+    "sendEmail": "发送邮件",
+    "tabs": {
+      "articles": "文章",
+      "tweets": "推文",
+      "analytics": "分析",
+      "tweetsComingSoon": "推文内容即将上线...",
+      "analyticsComingSoon": "分析内容即将上线..."
+    },
+    "subscribeMissingId": "作者ID缺失，无法订阅，请刷新页面后重试",
+    "subscribeFailed": "订阅失败，请稍后重试",
+    "articlesCountSuffix": "篇文章",
+    "moreCountSuffix": "个",
     "subscribePlaceholder": "订阅功能将与认证系统集成实现",
     "noArticles": "暂无文章",
     "loadMore": "加载更多",

@@ -4,7 +4,7 @@ import { createTranslator } from '@/lib/i18n'
 import { MULTI_SOURCE_CONFIG } from '@/config/constants'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import Image from '@/components/common/astro/ImageSSR.astro'
-import {formatDate} from '@/utils/util'
+import { formatDate, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util'
 
 interface Props {
   article: ApiArticle
@@ -23,6 +23,8 @@ interface Props {
 const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, userId, collection } = Astro.props
 
 const t = createTranslator(locale)
+const categoryLabel = getArticleCategoryLabel(article)
+const subcategoryLabel = getArticleSubcategoryLabel(article)
 
 // Get current site's source language
 const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
@@ -32,7 +34,7 @@ const baseArticlePath = collection
   : userId
   ? `/u/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
   : `/article/${category.toLowerCase()}/${slugWithPromote}`
-const collectionLabel = locale === 'us' ? 'Collections' : '合集'
+const collectionLabel = t('article.collectionsLabel')
 const collectionTitle = collection?.title || collection?.id
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
   { code: 'zh', label: '中' },
@@ -48,14 +50,23 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
    <!-- Article Header -->
    <header class="mb-4">
     <nav class="flex items-center justify-between text-sm text-muted-foreground mb-2">
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-2 truncate">
         {collection ? (
           <>
             <a href={`/collections`} class="hover:text-primary">{collectionLabel}</a>
             <span>/</span>
             <a href={`/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
             <span>/</span>
-            <a href="javascript:;" class="text-primary">{article.category_name}</a>
+            <a href="javascript:;" class="text-primary">{categoryLabel}</a>
+            {
+              subcategoryLabel && (
+                <>
+                  <span>/</span>
+                  <a href="javascript:;" class="text-primary truncate">{subcategoryLabel}</a>
+                </>
+              )
+            }
+            
           </>
         ) : (
           <>
@@ -63,7 +74,15 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
             <span>/</span>
             <a href={`/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
             <span>/</span>
-            <a href="javascript:;" class="text-primary">{article.category_name}</a>
+            <a href="javascript:;" class="text-primary">{categoryLabel}</a>
+            {
+              subcategoryLabel && (
+                <>
+                  <span>/</span>
+                  <a href="javascript:;" class="text-primary truncate">{subcategoryLabel}</a>
+                </>
+              )
+            }
           </>
         )}
       </div>

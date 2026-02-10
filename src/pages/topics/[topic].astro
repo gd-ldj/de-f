@@ -29,17 +29,21 @@ const topicDisplayName = topic.split('-').map(word => {
 }).join(' ')
 
 const seoContent = {
-  us: {
+  en: {
     title: `${topicDisplayName} | DeTake`,
     description: `Explore articles about ${topicDisplayName} on DeTake - NATO's #1 Decentralized media network.`
   },
-  asia: {
+  zh: {
     title: `${topicDisplayName} - DeTake`,
     description: `在DeTake上探索关于${topicDisplayName}的文章 - NATO的#1去中心化媒体网络。`
+  },
+  ja: {
+    title: `${topicDisplayName} | DeTake`,
+    description: `Explore articles about ${topicDisplayName} on DeTake - NATO's #1 Decentralized media network.`
   }
 }
 
-const { title, description } = seoContent[locale] || seoContent.us
+const { title, description } = seoContent[locale] || seoContent.en
 const canonicalUrl = `${SITE_CONFIG.SITE_URL}/topics/${topic}`
 ---
 
@@ -94,5 +98,5 @@ const canonicalUrl = `${SITE_CONFIG.SITE_URL}/topics/${topic}`
     </div>
   </main>
   
-  <Footer client:load />
+  <Footer client:load locale={locale} />
 </BaseLayout>

@@ -2,8 +2,7 @@ import React from 'react';
 import MobileHeader from './mobile';
 import DesktopHeader from './DesktopHeader';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
-
-type Locale = 'us' | 'asia';
+import type { Locale } from '@/types';
 
 interface HeaderProps {
   locale: Locale;

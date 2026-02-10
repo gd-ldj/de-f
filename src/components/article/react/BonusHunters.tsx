@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Locale } from '@/types';
+import { createTranslator } from '@/lib/i18n';
 
 interface BonusHunter {
   id: number;
@@ -64,10 +65,11 @@ const BonusHunters: React.FC<BonusHuntersProps> = ({
     }
   ]
 }) => {
+  const t = createTranslator(locale);
   return (
     <div className="">
       {/* Title */}
-      <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Bonus Hunters' : '奖励猎人'}</h3>
+      <h3 className="text-lg font-medium text-foreground mb-6">{t('article.bonusHunters')}</h3>
 
       {/* Hunters List */}
       <div className="space-y-4">

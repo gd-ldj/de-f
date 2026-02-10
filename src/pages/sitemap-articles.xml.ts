@@ -4,11 +4,12 @@ import { fetchHomePageData } from '@/api/articles';
 import { fetchLearnItems } from '@/api/learn';
 import { fetchCollections, fetchCollectionArticles } from '@/api/collections';
 import { generateSitemapEntry } from '@/utils/seo';
+import { getArticleBusinessPath } from '@/utils/util';
 
-const SUPPORTED_LOCALES: Locale[] = ['us', 'asia'];
+const SUPPORTED_LOCALES: Locale[] = ['en', 'zh', 'ja'];
 const TRANSLATION_LANGS = ['en', 'zh', 'ar', 'ru', 'ja'] as const;
 
-const getDefaultLang = (locale: Locale) => (locale === 'asia' ? 'zh' : 'en');
+const getDefaultLang = (locale: Locale) => (locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en');
 const getAlternateLangs = (locale: Locale) => TRANSLATION_LANGS.filter((lang) => lang !== getDefaultLang(locale));
 const appendLangParam = (url: string, lang: string) => `${url}${url.includes('?') ? '&' : '?'}lang=${lang}`;
 
@@ -45,7 +46,7 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
     const allHomeArticles: Array<HomeNewsArticle | HomeLatestArticle | HomeMostReadArticle> = [...(homeData.lastest || []), ...(homeData.mostread || []), ...(homeData.news_all || []), ...(homeData.news?.flatMap((group) => group.data) || []), ...(homeData.insights || []), ...(homeData.research || [])];
 
     for (const article of allHomeArticles) {
-      const category = (article as any).business_type_name || 'news';
+      const category = getArticleBusinessPath(article as any);
       const createdAt = (article as any).created_at || nowIso;
       const entry = generateSitemapEntry(
         {

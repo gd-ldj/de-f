@@ -12,8 +12,10 @@ export interface ApiArticle {
   author_avatar?: string;
   created_at: string;
   updated_at: string;
-  category_name: string;
-  business_type_name: string;
+  category_names: string[];
+  subcategory_names: string[];
+  category_name?: string;
+  business_type_name?: string;
   tags: string[];
   img_url?: string;
   language?: string;
@@ -113,10 +115,9 @@ export interface ArticlesResponse {
 }
 
 /**
- * Supported locales (legacy - will be deprecated)
- * @deprecated Use SourceLanguage for new implementations
+ * Supported locales (aligned with source languages)
  */
-export type Locale = 'us' | 'asia';
+export type Locale = 'en' | 'zh' | 'ja';
 
 /**
  * Source language codes (site-level language)

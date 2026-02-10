@@ -9,12 +9,12 @@ export const DEFAULT_TIMEZONE = 'America/New_York';
 /**
  * Format date with timezone support
  * @param dateString - ISO date string or Date object
- * @param locale - Locale for formatting ('asia' or 'us')
+ * @param locale - Locale for formatting ('en' | 'zh' | 'ja')
  * @param timezone - Target timezone (defaults to DEFAULT_TIMEZONE for SSR)
  * @param isClient - Whether this is running on client side
  * @returns Formatted date string
  */
-export function formatDateWithTimezone(dateString: string | Date, locale: 'asia' | 'us' = 'us', timezone: string = DEFAULT_TIMEZONE, isClient: boolean = false): string {
+export function formatDateWithTimezone(dateString: string | Date, locale: 'en' | 'zh' | 'ja' = 'en', timezone: string = DEFAULT_TIMEZONE, isClient: boolean = false): string {
   try {
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
 
@@ -24,7 +24,7 @@ export function formatDateWithTimezone(dateString: string | Date, locale: 'asia'
     }
 
     // Determine locale string based on region
-    const localeString = locale === 'asia' ? 'zh-CN' : 'en-US';
+    const localeString = locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : 'en-US';
 
     // Format options
     const options: Intl.DateTimeFormatOptions = {
@@ -34,7 +34,7 @@ export function formatDateWithTimezone(dateString: string | Date, locale: 'asia'
       day: 'numeric',
       //   hour: '2-digit',
       //   minute: '2-digit',
-      //   hour12: locale === 'us'
+      //   hour12: locale === 'en'
     };
 
     return new Intl.DateTimeFormat(localeString, options).format(date);
@@ -73,7 +73,7 @@ export function isTimezoneDifferent(userTimezone?: string): boolean {
  * @param locale - Locale for formatting
  * @returns Formatted date string with default timezone
  */
-export function formatDateSSR(dateString: string | Date, locale: 'asia' | 'us' = 'us'): string {
+export function formatDateSSR(dateString: string | Date, locale: 'en' | 'zh' | 'ja' = 'en'): string {
   return formatDateWithTimezone(dateString, locale, DEFAULT_TIMEZONE, false);
 }
 
@@ -84,7 +84,7 @@ export function formatDateSSR(dateString: string | Date, locale: 'asia' | 'us' =
  * @param userTimezone - User's timezone (optional, will detect if not provided)
  * @returns Formatted date string with user's timezone
  */
-export function formatDateClient(dateString: string | Date, locale: 'asia' | 'us' = 'us', userTimezone?: string): string {
+export function formatDateClient(dateString: string | Date, locale: 'en' | 'zh' | 'ja' = 'en', userTimezone?: string): string {
   const timezone = userTimezone || getUserTimezone();
   return formatDateWithTimezone(dateString, locale, timezone, true);
 }
@@ -94,7 +94,7 @@ export function formatDateClient(dateString: string | Date, locale: 'asia' | 'us
  * @param dateString - ISO date string or Date object
  * @returns Object with formatted date and data attributes
  */
-export function createTimezoneData(dateString: string | Date, locale: 'asia' | 'us' = 'us') {
+export function createTimezoneData(dateString: string | Date, locale: 'en' | 'zh' | 'ja' = 'en') {
   const isoString = typeof dateString === 'string' ? dateString : dateString.toISOString();
 
   return {
@@ -128,7 +128,7 @@ export function updatePageTimezones(): void {
 
   dateElements.forEach((element) => {
     const dateString = element.getAttribute('data-date');
-    const locale = (element.getAttribute('data-locale') as 'asia' | 'us') || 'us';
+    const locale = (element.getAttribute('data-locale') as 'en' | 'zh' | 'ja') || 'en';
 
     if (dateString) {
       try {

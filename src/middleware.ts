@@ -1,6 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 import { getSourceLanguageFromUrl, getSourceLanguageFromRequest, extractTranslationLanguageFromPath, shouldRedirectToSourceVersion, removeTranslationPrefix, isTranslationPath } from '@/lib/language-utils';
-import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { MULTI_SOURCE_CONFIG, IS_DEV_ENV } from '@/config/constants';
 
 // HTML comment removal function
 function removeHTMLComments(html: string): string {
@@ -24,13 +24,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const { url, redirect } = context;
   const { pathname, search, hash } = url;
   const hostname = url.hostname;
-  const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
-
   // Step 1: Check for language redirect
-  if (!isLocalHost && isTranslationPath(pathname)) {
+  if (!IS_DEV_ENV && isTranslationPath(pathname)) {
     const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
     const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`)) || /^(en|zh|ja)\./.test(hostname);
-    const sourceLanguage = isLocalHost ? getSourceLanguageFromRequest(context.request, hostname) : isKnownDomain ? getSourceLanguageFromUrl(url) : getSourceLanguageFromRequest(context.request, hostname);
+    const sourceLanguage = isKnownDomain ? getSourceLanguageFromUrl(url) : getSourceLanguageFromRequest(context.request, hostname);
     const translationLanguage = extractTranslationLanguageFromPath(pathname);
 
     // Redirect if translation language matches source language
@@ -45,15 +43,19 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const response = await next();
 
   // Step 3: HTML minification (only for HTML responses)
-  if (response.headers.get('content-type')?.includes('text/html')) {
-    const html = await response.text();
-    const minifiedHtml = removeHTMLComments(html);
+  if (!IS_DEV_ENV && response.headers.get('content-type')?.includes('text/html')) {
+    try {
+      const html = await response.text();
+      const minifiedHtml = removeHTMLComments(html);
 
-    return new Response(minifiedHtml, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-    });
+      return new Response(minifiedHtml, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      });
+    } catch (error) {
+      return response;
+    }
   }
 
   return response;

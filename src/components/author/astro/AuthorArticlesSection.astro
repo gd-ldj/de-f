@@ -20,19 +20,25 @@ const t = createTranslator(locale);
 function formatDate(dateString: string, locale: Locale): string {
   try {
     const date = new Date(dateString);
-    if (locale === 'us') {
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
-      });
-    } else {
+    if (locale === 'zh') {
       return date.toLocaleDateString('zh-CN', { 
         year: 'numeric', 
         month: 'short', 
         day: 'numeric' 
       });
     }
+    if (locale === 'ja') {
+      return date.toLocaleDateString('ja-JP', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
   } catch (error) {
     return dateString;
   }

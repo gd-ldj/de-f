@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type { HomeNewsArticle, Locale } from '@/types';
-import { formatDate } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
@@ -16,7 +16,6 @@ interface NewsGridProps {
 interface NewsCategory {
   key: string;
   name: string;
-  category_name?: string;
   active?: boolean;
 }
 
@@ -33,7 +32,6 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
     const categories = newsData.map((item) => ({
       key: item.tag.toLowerCase(),
       name: item.tag,
-      category_name: item.tag.toLowerCase(),
     }));
     return categories;
   }, [newsData]);
@@ -50,15 +48,13 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
   // Handle category switching with new data structure
   const handleCategoryChange = async (categoryKey: string) => {
-    console.log('🚀 ~ handleCategoryChange ~ categoryKey:', categoryKey, activeCategory);
     if (categoryKey === activeCategory) return;
 
     setActiveCategory(categoryKey);
 
     const categoryData = newsData.find((item) => item.tag.toLowerCase() === categoryKey);
-    console.log('🚀 ~ handleCategoryChange ~ categoryData:', categoryData);
     setArticles(categoryData?.data || []);
-    
+
     // Reset scroll progress when category changes
     setScrollProgress(0);
     if (scrollContainerRef.current) {
@@ -108,7 +104,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                   <div className="flex">
                     {/* Article image */}
                     <div className="relative flex-shrink-0">
-                      <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block">
+                      <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block">
                         <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-20 h-20 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                       </ArticleLink>
                     </div>
@@ -116,12 +112,13 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                     <div className="flex-1 pl-3 py-1">
                       {/* Category label */}
                       <div className="flex flex-wrap gap-2 mb-1">
-                        <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
+                        <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleCategoryLabel(article)}</button>
+                        {/* {getArticleSubcategoryLabel(article) && <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleSubcategoryLabel(article)}</button>} */}
                       </div>
 
                       {/* Article title */}
                       <h3 className="text-foreground text-sm leading-tight line-clamp-2 mb-2">
-                        <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
+                        <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
                           {article.title}
                         </ArticleLink>
                       </h3>
@@ -159,7 +156,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
               <div className="flex flex-col h-full">
                 {/* Article image */}
                 <div className="relative w-full">
-                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="block overflow-hidden">
+                  <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block overflow-hidden">
                     <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                   </ArticleLink>
                 </div>
@@ -167,12 +164,13 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                 <div className="flex flex-col py-4 h-full">
                   {/* Category label - clickable to enter category page */}
                   <div className="flex flex-wrap gap-2 mb-2">
-                    <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.category_name}</button>
+                    <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleCategoryLabel(article)}</button>
+                    {/* {getArticleSubcategoryLabel(article) && <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleSubcategoryLabel(article)}</button>} */}
                   </div>
 
                   {/* Article title - clickable to enter details */}
                   <h3 className="text-foreground mt-1 mb-2 leading-tight line-clamp-2">
-                    <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name || 'news'} className="hover:text-primary transition-colors">
+                    <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
                       {article.title}
                     </ArticleLink>
                   </h3>

@@ -1,5 +1,5 @@
 export const headerTexts = {
-  us: {
+  en: {
     navigation: {
       news: 'News',
       social: 'Research',
@@ -78,7 +78,7 @@ export const headerTexts = {
       tutorialsItems: ['Glossary', 'Prompting', 'Playbooks', 'Workflows', 'Vibe Coding'],
     },
   },
-  asia: {
+  zh: {
     navigation: {
       news: '新闻',
       social: '研究',
@@ -156,7 +156,86 @@ export const headerTexts = {
       tutorialsItems: ['术语表', '提示工程', '操作手册', '工作流', '氛围编程'],
     },
   },
+  ja: {
+    navigation: {
+      news: 'ニュース',
+      social: 'リサーチ',
+      explore: 'インサイト',
+      technology: 'ボイス',
+      trending: 'トレンド',
+      learn: 'チュートリアル',
+      allCategories: 'すべてのカテゴリ',
+      collections: 'コレクション',
+      myCollections: 'マイコレクション',
+      categories: {
+        news: 'ニュース',
+        insights: 'インサイト',
+        research: 'リサーチ',
+        voices: 'ボイス',
+      },
+    },
+    locale: {
+      northAmerica: '北米',
+      asia: 'アジア',
+      region: '地域',
+      switchToAsia: 'アジアに切り替え',
+    },
+    actions: {
+      search: '検索',
+      switchLanguage: '言語を切り替え',
+      openMenu: 'メニューを開く',
+      closeMenu: 'メニューを閉じる',
+      expandNews: 'ニュースを展開',
+      collapseNews: 'ニュースを折りたたむ',
+      expandResearch: 'リサーチを展開',
+      collapseResearch: 'リサーチを折りたたむ',
+      expandInsights: 'インサイトを展開',
+      collapseInsights: 'インサイトを折りたたむ',
+      expandVoices: 'ボイスを展開',
+      collapseVoices: 'ボイスを折りたたむ',
+      expandCollections: 'コレクションを展開',
+      collapseCollections: 'コレクションを折りたたむ',
+      expandTutorials: 'チュートリアルを展開',
+      collapseTutorials: 'チュートリアルを折りたたむ',
+    },
+    user: {
+      dashboard: 'ダッシュボード',
+    },
+    messages: {
+      pleaseLoginFirst: 'アクセスするにはログインしてください',
+    },
+    dropdown: {
+      internationalEdition: 'インターナショナル版',
+      article: '記事',
+      newsGroups: [
+        {
+          key: 'technology',
+          name: 'テクノロジー',
+          items: ['新規リリース', '機能更新', 'モデル', 'エージェント', 'ツール', 'スキル'],
+        },
+        {
+          key: 'business',
+          name: 'ビジネス',
+          items: ['プレスリリース', '資金調達', 'レポート', '企業導入'],
+        },
+        {
+          key: 'hardware',
+          name: 'ハードウェア',
+          items: ['チップ', '軍事', 'ロボティクス', 'ドローン', 'エネルギー'],
+        },
+        {
+          key: 'policy',
+          name: '政策',
+          items: ['規制', '安全と倫理', '地政学'],
+        },
+      ],
+      researchItems: ['ベンチマーク', 'ブレークスルー', 'コンテキスト', 'RAG', '研究所'],
+      insightsItems: ['競争', '採用', '新規プレイヤー', 'トレンドウォッチ'],
+      voicesItems: ['トーク', 'ブログ'],
+      tutorialsItems: ['用語集', 'プロンプト', 'プレイブック', 'ワークフロー', 'バイブコーディング'],
+    },
+  },
 };
 export const HEADER_LOGO_BLACK_URL = 'https://cdn.detake.com/icons/favicon-green.svg';
 
-export type HeaderTexts = typeof headerTexts.us;
+export type HeaderTexts = typeof headerTexts.en;

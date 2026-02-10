@@ -47,7 +47,7 @@ const hasUsers = followUsers.length > 0;
                       <!-- Follow button will be enhanced with client-side functionality -->
                       <FollowButton 
                         userId={user.user_id}
-                        locale={locale || 'us'}
+                        locale={locale || 'en'}
                         className="p-1.5 hover:bg-accent rounded transition-colors"
                         aria-label={`Follow ${user.name}`}
                         client:load
@@ -88,7 +88,7 @@ const hasUsers = followUsers.length > 0;
                     </svg>
                     <FollowButton 
                     userId={user.user_id}
-                    locale={locale || 'us'}
+                    locale={locale || 'en'}
                     text={t('common.subscribe')}
                     className="text-white bg-primary absolute right-0 top-0 w-0 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 group-hover:w-[104px]"
                     client:load

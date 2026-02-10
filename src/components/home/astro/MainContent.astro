@@ -3,7 +3,7 @@
 import type { Locale, HomeNewsArticle } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
-import {formatDate} from '@/utils/util'
+import { formatDate, getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util'
 import { createTranslator } from '@/lib/i18n'
 
 // Get locale and newsAll from props
@@ -12,7 +12,7 @@ interface Props {
   newsAll?: HomeNewsArticle[];
 }
 
-const { locale = 'us' as Locale, newsAll = [] } = Astro.props as Props
+const { locale = 'en' as Locale, newsAll = [] } = Astro.props as Props
 
 // Translation helper function
 const t = createTranslator(locale)
@@ -64,10 +64,10 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
         <h3 class="font-medium text-foreground mb-4">{t('common.highlights')}</h3>
         <p class="text-[12px] text-primary font-medium uppercase mb-2">
           <a 
-            href={`/${featuredArticle.business_type_name.toLowerCase()}`}
+            href={`/${getArticleBusinessPath(featuredArticle)}`}
             class="hover:text-primary/80 transition-colors"
           >
-            {featuredArticle.business_type_name}
+            {getArticleBusinessPath(featuredArticle)}
           </a>
         </p>
 
@@ -75,7 +75,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           <ArticleLink 
             slug={featuredArticle.slug}
             locale={locale}
-            business="news"
+            business={getArticleBusinessPath(featuredArticle)}
           >
             {featuredArticle.title}
           </ArticleLink>
@@ -98,7 +98,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           <ArticleLink 
             slug={featuredArticle.slug}
             locale={locale}
-            business="news"
+            business={getArticleBusinessPath(featuredArticle)}
           >
             <img
               src={featuredArticle.img_url || '/placeholder.svg'}
@@ -117,17 +117,17 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
       <div class="bg-white mb-6">
         <div class="flex items-center justify-between mb-2">
           <a 
-            href={`/${article.business_type_name.toLowerCase()}`}
+            href={`/${getArticleBusinessPath(article)}`}
             class="text-sm text-primary font-medium uppercase hover:text-primary/80 transition-colors"
           >
-            {article.business_type_name}
+            {getArticleBusinessPath(article)}
           </a>
         </div>
         <h3 class="text-base md:text-lg font-medium text-foreground mb-2 line-clamp-2">
           <ArticleLink 
             slug={article.slug}
             locale={locale}
-            business="news"
+            business={getArticleBusinessPath(article)}
           >
             {article.title}
           </ArticleLink>
@@ -136,7 +136,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
          <div class="flex items-center space-x-1 text-sm text-muted-foreground">
           <span 
             data-date={article.created_at}
-            data-locale={locale === 'asia' ? 'asia' : 'us'}
+            data-locale={locale}
           >
             {formatDate(article.created_at, locale)}
           </span>

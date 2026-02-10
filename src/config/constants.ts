@@ -45,6 +45,8 @@ export const SITE_CONFIG = {
   },
 } as const;
 
+export const IS_DEV_ENV = ['development', 'dev'].includes((import.meta.env.MODE || process.env.NODE_ENV || '').toLowerCase());
+
 /**
  * Multi-source site configuration
  * Determines the source language of the current site based on domain or environment
@@ -60,18 +62,19 @@ export const MULTI_SOURCE_CONFIG = {
     ja: ['ja.detake.com', 'ja.detake.news'],
   } as Record<SourceLanguage, string[]>,
 
-  // Language to locale mapping (for backward compatibility with legacy code)
+  // Language to locale mapping
   LANGUAGE_TO_LOCALE_MAP: {
-    en: 'us',
-    zh: 'asia',
-    ja: 'us', // Default to 'us' locale for Japanese
-  } as Record<SourceLanguage, 'us' | 'asia'>,
+    en: 'en',
+    zh: 'zh',
+    ja: 'ja',
+  } as Record<SourceLanguage, 'en' | 'zh' | 'ja'>,
 
-  // Locale to language mapping (for backward compatibility)
+  // Locale to language mapping
   LOCALE_TO_LANGUAGE_MAP: {
-    us: 'en',
-    asia: 'zh',
-  } as Record<'us' | 'asia', SourceLanguage>,
+    en: 'en',
+    zh: 'zh',
+    ja: 'ja',
+  } as Record<'en' | 'zh' | 'ja', SourceLanguage>,
 
   /**
    * Get source language from hostname
@@ -97,20 +100,20 @@ export const MULTI_SOURCE_CONFIG = {
   },
 
   /**
-   * Convert source language to legacy locale (for backward compatibility)
+   * Convert source language to locale
    * @param language - Source language code
    * @returns Legacy locale code
    */
-  languageToLocale(language: SourceLanguage): 'us' | 'asia' {
-    return this.LANGUAGE_TO_LOCALE_MAP[language] || 'us';
+  languageToLocale(language: SourceLanguage): 'en' | 'zh' | 'ja' {
+    return this.LANGUAGE_TO_LOCALE_MAP[language] || 'en';
   },
 
   /**
-   * Convert legacy locale to source language
-   * @param locale - Legacy locale code
+   * Convert locale to source language
+   * @param locale - Locale code
    * @returns Source language code
    */
-  localeToLanguage(locale: 'us' | 'asia'): SourceLanguage {
+  localeToLanguage(locale: 'en' | 'zh' | 'ja'): SourceLanguage {
     return this.LOCALE_TO_LANGUAGE_MAP[locale] || 'en';
   },
 } as const;

@@ -6,12 +6,12 @@ import { generateHreflangAlternates } from '@/lib/language-utils';
 
 import '../styles/global.css'
 
-import type { SourceLanguage, TranslationLanguage } from '@/types';
+import type { Locale, SourceLanguage, TranslationLanguage } from '@/types';
 
 export interface Props {
   title: string
   description?: string
-  locale: 'us' | 'asia'
+  locale: Locale
   canonicalUrl?: string
   // SEO and social sharing optimization
   ogImage?: string
@@ -58,13 +58,13 @@ const rawCanonicalUrl = canonicalUrl ? new URL(canonicalUrl) : Astro.url
 const currentUrl = new URL(`${currentOrigin}${rawCanonicalUrl.pathname}${rawCanonicalUrl.search}${rawCanonicalUrl.hash}`).href
 
 // 页面整体语言仍然跟随站点 locale（导航、Footer 等文案），而正文可使用 section 级 lang 区分
-const htmlLang = locale === 'asia' ? 'zh' : 'en'
+const htmlLang = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en'
 
 // Open Graph 语言也采用站点级区域语言
-const ogLocale = locale === 'asia' ? 'zh_CN' : 'en_US'
+const ogLocale = locale === 'zh' ? 'zh_CN' : locale === 'ja' ? 'ja_JP' : 'en_US'
 
 // 仅在正文语言未显式指定，或与站点默认语言一致时输出 region 级别的 hreflang，避免误标其他语言内容
-const regionDefaultLang: ArticleLanguageCode = locale === 'asia' ? 'zh' : 'en'
+const regionDefaultLang: ArticleLanguageCode = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en'
 const shouldEmitRegionAlternates = !pageLang || pageLang === regionDefaultLang
 
 // Default OG image

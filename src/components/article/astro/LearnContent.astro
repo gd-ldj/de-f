@@ -1,5 +1,5 @@
 ---
-import type { Locale } from '@/types'
+import type { Locale, SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 import { formatDate } from '@/utils/util'
 import type { LearnDetailItem } from '@/api/learn'
@@ -9,9 +9,10 @@ interface Props {
   locale: Locale
   learnLang?: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
   slugWithPromote?: string
+  sourceLanguage: SourceLanguage
 }
 
-const { learnItem, locale, learnLang = 'en', slugWithPromote } = Astro.props as Props
+const { learnItem, locale, learnLang = 'en', slugWithPromote, sourceLanguage } = Astro.props as Props
 
 const t = createTranslator(locale)
 
@@ -46,6 +47,13 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
   { code: 'ru', label: t('learn.languageShort.ru') },
   { code: 'ja', label: t('learn.languageShort.ja') },
 ]
+const buildLearnHref = (code: string) => {
+  const targetPath = code === sourceLanguage ? baseLearnPath : `/${code}${baseLearnPath}`
+  if (code === 'zh') {
+    return `${targetPath}${targetPath.includes('?') ? '&' : '?'}lang=zh`
+  }
+  return targetPath
+}
 
 ---
 
@@ -57,7 +65,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
       </a>
       <span>/</span>
       <a href="javascript:;" class="text-primary">
-        {learnItem.slug}
+        Glossary
       </a>
     </nav>
 
@@ -76,7 +84,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
           {languageButtons.map(({ code, label }) => (
             <a
-              href={code === learnLang ? baseLearnPath : `/${code}${baseLearnPath}`}
+              href={buildLearnHref(code)}
               class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
                 learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
               }`}
@@ -96,7 +104,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
     <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
       {languageButtons.map(({ code, label }) => (
         <a
-          href={code === learnLang ? baseLearnPath : `/${code}${baseLearnPath}`}
+          href={buildLearnHref(code)}
           class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
             learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
           }`}

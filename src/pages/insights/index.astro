@@ -23,17 +23,21 @@ const initialOrderBy = (url.searchParams.get('order_by') as 'Latest' | 'Popular'
 const categoryDisplayName = 'Insights'
 
 const seoContent = {
-  us: {
+  en: {
     title: `${categoryDisplayName} | DeTake`,
     description: `Follow NATO's #1 Decentralized media network to get yourself more must-see Takes. `
   },
-  asia: {
+  zh: {
     title: `${categoryDisplayName} - DeTake`,
     description: `关注NATO的#1去中心化媒体网络，获取更多必须看的Takes。`
+  },
+  ja: {
+    title: `${categoryDisplayName} | DeTake`,
+    description: `Follow NATO's #1 Decentralized media network to get yourself more must-see Takes. `
   }
 }
 
-const { title, description } = seoContent[locale] || seoContent.us
+const { title, description } = seoContent[locale] || seoContent.en
 ---
 
 <BaseLayout title={title} description={description} locale={locale}>
@@ -65,5 +69,5 @@ const { title, description } = seoContent[locale] || seoContent.us
     />
   </main>
 
-  <Footer client:load />
+  <Footer client:load locale={locale} />
 </BaseLayout>

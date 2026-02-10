@@ -2,7 +2,7 @@ import type { Locale, HomePageData, HomeTopic } from '@/types';
 import { SITE_CONFIG } from '@/config/constants';
 import { fetchHomePageData } from '@/api/articles';
 
-const SUPPORTED_LOCALES: Locale[] = ['us', 'asia'];
+const SUPPORTED_LOCALES: Locale[] = ['en', 'zh', 'ja'];
 
 /**
  * 生成分类与列表页 sitemap（频道页、Learn/Collections 列表、Topics 列表）

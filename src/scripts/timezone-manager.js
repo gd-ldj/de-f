@@ -9,10 +9,11 @@ const TIMEZONE_CONFIG = {
   DEFAULT_TIMEZONE: 'America/New_York',
   SELECTOR: '[data-date]',
   LOCALE_MAPPING: {
-    'asia': 'zh-CN',
-    'us': 'en-US'
+    'zh': 'zh-CN',
+    'ja': 'ja-JP',
+    'en': 'en-US'
   },
-  DEFAULT_LOCALE: 'us'
+  DEFAULT_LOCALE: 'en'
 };
 
 /**
@@ -40,7 +41,7 @@ function isTimezoneDifferent(userTimezone) {
 /**
  * Format date with user's timezone
  * @param {string} dateString - ISO date string
- * @param {string} locale - Locale for formatting ('asia' or 'us')
+ * @param {string} locale - Locale for formatting ('en', 'zh', or 'ja')
  * @param {string} timezone - Target timezone
  * @returns {string} Formatted date string
  */
@@ -66,7 +67,7 @@ function formatDateWithUserTimezone(dateString, locale, timezone) {
       // Uncomment if you need time display
       // hour: '2-digit',
       // minute: '2-digit',
-      // hour12: locale === 'us'
+      // hour12: locale === 'en'
     };
 
     return new Intl.DateTimeFormat(localeString, options).format(date);

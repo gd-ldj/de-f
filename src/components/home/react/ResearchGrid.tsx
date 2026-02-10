@@ -1,6 +1,6 @@
 import React from 'react';
 import type { HomeMostReadArticle, Locale } from '@/types';
-import { formatDate } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
@@ -74,7 +74,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               {/* Category and tags */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {/* Category label - clickable to enter category page */}
-                <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{article.business_type_name}</button>
+                <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleCategoryLabel(article)}</button>
               </div>
 
               {/* Article content */}

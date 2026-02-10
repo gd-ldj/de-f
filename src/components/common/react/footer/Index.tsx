@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { footerTexts } from './constants';
-import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import type { Locale } from '@/types';
 
 // Import social media icons from locale assets
 import TwitterIcon from './assets/twitter.svg?url';
@@ -10,32 +9,12 @@ import DiscordIcon from './assets/discord.svg?url';
 import YoutubeIcon from './assets/youtube.svg?url';
 import RSSIcon from './assets/RSS.svg?url';
 
-type Locale = 'us' | 'asia';
-
 interface FooterProps {
-  // No props needed - locale extracted from URL
+  locale: Locale;
 }
 
-/**
- * Extract locale from current URL pathname
- * @returns Current locale from URL or default 'us'
- */
-function getLocaleFromURL(): Locale {
-  if (typeof window === 'undefined') return 'us';
-  const hostname = window.location.hostname;
-  const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
-  return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
-}
-
-export default function Footer({}: FooterProps) {
-  const [locale, setLocale] = useState<Locale>('us');
-
-  // Extract locale from URL on mount
-  useEffect(() => {
-    setLocale(getLocaleFromURL());
-  }, []);
-
-  const texts = footerTexts[locale] || footerTexts.us;
+export default function Footer({ locale }: FooterProps) {
+  const texts = footerTexts[locale] || footerTexts.en;
 
   return (
     <footer className="bg-[#031712] text-white">

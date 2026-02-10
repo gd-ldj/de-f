@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
-import { STORAGE_KEYS, TRACKING_EVENTS, MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { STORAGE_KEYS, TRACKING_EVENTS, MULTI_SOURCE_CONFIG, IS_DEV_ENV } from '@/config/constants';
 import { toast } from '@/components/common/react/Toast';
-import type { CollectionItem, SourceLanguage } from '@/types';
+import type { CollectionItem, Locale, SourceLanguage } from '@/types';
 import { fetchCollections } from '@/api/collections';
 import { removeTranslationPrefix } from '@/lib/language-utils';
 
@@ -11,8 +11,6 @@ import DownIcon from './assets/down.svg?url';
 import DownWhiteIcon from './assets/down_white.svg?url';
 import CountryIcon from './assets/country.svg?url';
 import SearchIcon from './assets/search.svg?url';
-
-type Locale = 'us' | 'asia';
 
 interface DesktopHeaderProps {
   locale: Locale;
@@ -40,9 +38,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const [voicesDropdownOpen, setVoicesDropdownOpen] = React.useState(false);
   const [tutorialsDropdownOpen, setTutorialsDropdownOpen] = React.useState(false);
   const [currentSourceLanguage, setCurrentSourceLanguage] = React.useState<SourceLanguage>('en');
-  const [isLocalHost, setIsLocalHost] = React.useState(false);
-  const localeForTexts = isLocalHost ? MULTI_SOURCE_CONFIG.languageToLocale(currentSourceLanguage) : locale;
-  const texts = headerTexts[localeForTexts] || headerTexts.us;
+  const texts = headerTexts[locale] || headerTexts.en;
 
   const pathSegments = currentPath.split('/');
   const collectionsIndex = pathSegments.indexOf('collections');
@@ -87,12 +83,11 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     }
     const hostname = window.location.hostname;
     const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
-    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+    const isKnownDomain = !IS_DEV_ENV && allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
     const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
     const supportedLanguages: SourceLanguage[] = ['en', 'zh', 'ja'];
     const isStoredLanguageValid = storedLanguage ? supportedLanguages.includes(storedLanguage) : false;
     const detectedLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
-    setIsLocalHost(!isKnownDomain);
     if (!isKnownDomain && isStoredLanguageValid) {
       setCurrentSourceLanguage(storedLanguage as SourceLanguage);
     } else {

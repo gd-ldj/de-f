@@ -1,5 +1,5 @@
 export const footerTexts = {
-  us: {
+  en: {
     newsletter: {
       title: 'NEWSLETTER',
       subtitle: 'Stay up to News with DeTake',
@@ -39,7 +39,7 @@ export const footerTexts = {
       rss: 'Subscribe to our RSS feed',
     },
   },
-  asia: {
+  zh: {
     newsletter: {
       title: '新闻通讯',
       subtitle: '与 DeTake 一起了解新闻',
@@ -79,6 +79,46 @@ export const footerTexts = {
       rss: '订阅我们的 RSS 源',
     },
   },
+  ja: {
+    newsletter: {
+      title: 'ニュースレター',
+      subtitle: 'DeTakeで最新ニュースをチェック',
+      description: '数千人の投資家が市場を理解するのに役立つデイリーニュースレターを入手しましょう。',
+      emailPlaceholder: 'メールアドレス',
+      subscribeButton: '登録する',
+    },
+    disclosure: {
+      title: '開示とポリシー',
+      content: 'DeTakeはNATO No.1の分散型メディアネットワークであり、必見のTakesを提供し、広告とインフルエンスの主要ベンダーとして運営されています。メディアや商業的なパートナーシップに積極的ですが、編集作業は完全に独立しています。潜在的な利益相反はすべて開示され、読者との透明性と信頼を確保しています。',
+    },
+    navigation: {
+      news: 'ニュース',
+      podcasts: 'ポッドキャスト',
+      newsletters: 'ニュースレター',
+      events: 'イベント',
+      roundtables: 'ラウンドテーブル',
+      analytics: 'アナリティクス',
+      sitemap: 'サイトマップ',
+      about: '私たちについて',
+      manageCookies: 'Cookie設定',
+      careers: '採用情報',
+      termsOfService: '利用規約',
+      privacyPolicy: 'プライバシーポリシー',
+      contactUs: 'お問い合わせ',
+    },
+    company: {
+      logo: 'LOGO',
+      copyright: '© DETAKE LLC',
+    },
+    social: {
+      twitter: 'Twitterでフォロー',
+      telegram: 'Telegramに参加',
+      github: 'GitHubを見る',
+      discord: 'Discordに参加',
+      youtube: 'YouTubeを登録',
+      rss: 'RSSフィードを購読',
+    },
+  },
 };
 
-export type FooterTexts = typeof footerTexts.us;
+export type FooterTexts = typeof footerTexts.en;

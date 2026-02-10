@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import type { Locale, ApiArticle } from '@/types';
 import { fetchArticles } from '@/api/articles';
 import Image from '@/components/common/react/Image';
+import { createTranslator } from '@/lib/i18n';
+import { getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
 
 interface AuthorArticlesSectionProps {
   articles: ApiArticle[];
@@ -20,30 +22,36 @@ interface ArticleCardProps {
  * Individual article card component
  */
 const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
+  const t = createTranslator(locale);
   const formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
-      if (locale === 'us') {
-        return date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
-      } else {
-        return date.toLocaleDateString('zh-CN', { 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric' 
+      if (locale === 'zh') {
+        return date.toLocaleDateString('zh-CN', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
         });
       }
+      if (locale === 'ja') {
+        return date.toLocaleDateString('ja-JP', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+      }
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
     } catch (error) {
       return dateString;
     }
   };
 
   const getArticleUrl = (): string => {
-    const category = article.business_type_name.toLowerCase();
-    return `/article/${category}/${article.slug}`;
+    return `/article/${getArticleBusinessPath(article)}/${article.slug}`;
   };
 
   return (
@@ -51,11 +59,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
       {/* Article Image */}
       <div className="flex-shrink-0">
         <a href={getArticleUrl()}>
-          <Image
-            src={article.img_url || '/api/placeholder/120/80'}
-            alt={article.title}
-            className="w-30 h-20 object-cover rounded-lg border border-gray-200"
-          />
+          <Image src={article.img_url || '/api/placeholder/120/80'} alt={article.title} className="w-30 h-20 object-cover rounded-lg border border-gray-200" />
         </a>
       </div>
 
@@ -63,26 +67,18 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
       <div className="flex-1 min-w-0">
         {/* Category and Date */}
         <div className="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
-          <span className="px-2 py-1 bg-secondary/50 rounded-full text-xs font-medium">
-            {article.business_type_name}
-          </span>
+          <span className="px-2 py-1 bg-secondary/50 rounded-full text-xs font-medium">{getArticleBusinessPath(article)}</span>
           <span>•</span>
           <time>{formatDate(article.created_at)}</time>
         </div>
 
         {/* Title */}
         <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2 hover:text-primary transition-colors">
-          <a href={getArticleUrl()}>
-            {article.title}
-          </a>
+          <a href={getArticleUrl()}>{article.title}</a>
         </h3>
 
         {/* Subtitle/Excerpt */}
-        {article.sub_title && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-            {article.sub_title}
-          </p>
-        )}
+        {article.sub_title && <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{article.sub_title}</p>}
 
         {/* Tags */}
         {article.tags && article.tags.length > 0 && (
@@ -93,7 +89,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
               </span>
             ))}
             {article.tags.length > 3 && (
-              <span className="text-xs text-muted-foreground">+{article.tags.length - 3} {locale === 'us' ? 'more' : '个'}</span>
+              <span className="text-xs text-muted-foreground">
+                +{article.tags.length - 3}
+                {t('author.moreCountSuffix')}
+              </span>
             )}
           </div>
         )}
@@ -148,15 +147,16 @@ const AuthorArticlesSection: React.FC<AuthorArticlesSectionProps> = ({
     }
   };
 
+  const t = createTranslator(locale);
+
   return (
     <div>
       {/* Section Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-foreground">
-          {locale === 'us' ? 'Articles' : '文章'}
-        </h2>
+        <h2 className="text-xl font-semibold text-foreground">{t('author.articles')}</h2>
         <div className="text-sm text-muted-foreground">
-          {articles.length} {locale === 'us' ? 'articles' : '篇文章'}
+          {articles.length}
+          {t('author.articlesCountSuffix')}
         </div>
       </div>
 
@@ -164,11 +164,7 @@ const AuthorArticlesSection: React.FC<AuthorArticlesSectionProps> = ({
       {articles.length > 0 ? (
         <div className="space-y-0">
           {articles.map((article) => (
-            <ArticleCard
-              key={article.entry_id}
-              article={article}
-              locale={locale}
-            />
+            <ArticleCard key={article.entry_id} article={article} locale={locale} />
           ))}
         </div>
       ) : (
@@ -178,30 +174,24 @@ const AuthorArticlesSection: React.FC<AuthorArticlesSectionProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <p className="text-muted-foreground">
-            {locale === 'us' ? 'No articles found' : '暂无文章'}
-          </p>
+          <p className="text-muted-foreground">{t('author.noArticles')}</p>
         </div>
       )}
 
       {/* Load More Button */}
       {hasMore && articles.length > 0 && (
         <div className="text-center mt-8">
-          <button
-            onClick={loadMoreArticles}
-            disabled={loading}
-            className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-          >
+          <button onClick={loadMoreArticles} disabled={loading} className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
             {loading ? (
               <div className="flex items-center space-x-2">
                 <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>{locale === 'us' ? 'Loading...' : '加载中...'}</span>
+                <span>{t('author.loading')}</span>
               </div>
             ) : (
-              <span>{locale === 'us' ? 'Load More' : '加载更多'}</span>
+              <span>{t('author.loadMore')}</span>
             )}
           </button>
         </div>

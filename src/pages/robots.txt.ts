@@ -30,17 +30,7 @@ function generateRobots(): string {
   const isProductionEnv = env === 'web2' || env === 'web3';
 
   if (!isProductionEnv) {
-    return [
-      '# DeTake Website - Robots.txt',
-      '# Block all crawlers in non-production environments',
-      '',
-      'User-agent: *',
-      // 'Disallow: /',
-      'Allow: /', // TODO: Temporarily clearing the index requires
-      '',
-      '# No sitemap for non-production environments',
-      '',
-    ].join('\n');
+    return ['# DeTake Website - Robots.txt', '# Block all crawlers in non-production environments', '', 'User-agent: *', 'Disallow: /', '', '# No sitemap for non-production environments', ''].join('\n');
   }
 
   return [

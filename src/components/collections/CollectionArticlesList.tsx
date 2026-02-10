@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ApiArticle, Locale } from '@/types';
 import { fetchCollectionArticles } from '@/api/collections';
-import { formatDate } from '@/utils/util';
+import { formatDate, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 import { useAtom } from 'jotai';
 import { persistedPromoteCodeAtom } from '@/stores';
@@ -84,10 +84,10 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12px] font-medium text-white uppercase truncate">{[article.category_name, ...(article.tags ? article.tags.slice(0, 2) : [])].join('  ')}</div>
+                      <div className="text-[12px] font-medium text-white uppercase truncate">{[getArticleCategoryLabel(article) || getArticleSubcategoryLabel(article), ...(article.tags ? article.tags.slice(0, 2) : [])].filter(Boolean).join('  ')}</div>
                     </div>
                     <div className="text-[11px] text-white/80 whitespace-nowrap">
-                      {new Date(article.created_at).toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })} <span className="">{`/ ${t('article.by')} `}</span> <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
+                      {new Date(article.created_at).toLocaleDateString(locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })} <span className="">{`/ ${t('article.by')} `}</span> <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
                     </div>
                   </div>
                 </div>
@@ -113,7 +113,8 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 </div>
                 <div className="flex-1 flex flex-col">
                   <div className="flex flex-wrap gap-1 md:gap-2">
-                    <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{article.category_name}</span>
+                    <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleCategoryLabel(article)}</span>
+                    {/* {getArticleSubcategoryLabel(article) && <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleSubcategoryLabel(article)}</span>} */}
                     {article.tags && article.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {article.tags.slice(0, 1).map((tag) => (
@@ -148,18 +149,18 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
         )}
       </div>
       <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center text-xs text-muted-foreground md:hidden">
-        <span className="h-10 mt-4">{loading && (locale === 'us' ? 'Loading...' : '加载中...')}</span>
-        {!hasMore && !loading && articles.length > 0 && <span className="ml-2">{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>}
+        <span className="h-10 mt-4">{loading && t('common.loading')}</span>
+        {!hasMore && !loading && articles.length > 0 && <span className="ml-2">{t('common.noMoreArticles')}</span>}
       </div>
 
       {articles.length > 0 && (
         <div className="hidden md:flex items-center justify-center mt-8 mb-2">
           {hasMore && (
             <button type="button" onClick={loadMoreArticles} disabled={loading} className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-[2px] hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors text-[14px]">
-              {loading ? (locale === 'us' ? 'Loading...' : '加载中...') : locale === 'us' ? 'Load More' : '加载更多'}
+              {loading ? t('common.loading') : t('common.loadMore')}
             </button>
           )}
-          {/* {!hasMore && !loading && <span className="text-xs text-muted-foreground">{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>} */}
+          {/* {!hasMore && !loading && <span className="text-xs text-muted-foreground">{t('common.noMoreArticles')}</span>} */}
         </div>
       )}
     </section>

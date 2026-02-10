@@ -154,7 +154,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         };
 
         const response = await fetchArticles(locale, currentFilters.page, itemsPerPage, options);
-        console.log('🚀 ~ CategoryPage ~ response:', response);
         if (response) {
           if (append) {
             // Mobile infinite scroll: append new articles
@@ -402,14 +401,14 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       {/* No Results */}
       {!loading && articles.length === 0 && (
         <div className="text-center py-12 px-4 md:px-0">
-          <p className="text-muted-foreground">{locale === 'us' ? 'No articles found' : '未找到文章'}</p>
+          <p className="text-muted-foreground">{locale === 'zh' ? '未找到文章' : 'No articles found'}</p>
         </div>
       )}
 
       {/* Mobile Infinite Scroll Sentinel and Loading Indicator */}
       <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center text-xs text-muted-foreground md:hidden">
-        {loading && articles.length > 0 && <span>{locale === 'us' ? 'Loading...' : '加载中...'}</span>}
-        {!hasMore && !loading && articles.length > 0 && <span>{locale === 'us' ? 'No more articles' : '没有更多文章了'}</span>}
+        {loading && articles.length > 0 && <span>{locale === 'zh' ? '加载中...' : 'Loading...'}</span>}
+        {!hasMore && !loading && articles.length > 0 && <span>{locale === 'zh' ? '没有更多文章了' : 'No more articles'}</span>}
       </div>
 
       {/* Desktop Pagination - Hidden on mobile */}

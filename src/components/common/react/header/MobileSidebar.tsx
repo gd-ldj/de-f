@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
 import type { Locale, CollectionItem, SourceLanguage } from '@/types';
 import { fetchCollections } from '@/api/collections';
-import { MULTI_SOURCE_CONFIG, STORAGE_KEYS } from '@/config/constants';
+import { MULTI_SOURCE_CONFIG, STORAGE_KEYS, IS_DEV_ENV } from '@/config/constants';
 import { removeTranslationPrefix } from '@/lib/language-utils';
 
 import CountryIcon from './assets/country.svg?url';
@@ -29,9 +29,8 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
   const [isLocaleExpanded, setIsLocaleExpanded] = useState(false);
   const [headerCollectionItems, setHeaderCollectionItems] = useState<CollectionItem[]>([]);
   const [currentSourceLanguage, setCurrentSourceLanguage] = useState<SourceLanguage>('en');
-  const [isLocalHost, setIsLocalHost] = useState(false);
-  const localeForTexts: Locale = isLocalHost ? MULTI_SOURCE_CONFIG.languageToLocale(currentSourceLanguage) : locale;
-  const texts = headerTexts[localeForTexts] || headerTexts.us;
+  const localeForTexts: Locale = IS_DEV_ENV ? MULTI_SOURCE_CONFIG.languageToLocale(currentSourceLanguage) : locale;
+  const texts = headerTexts[localeForTexts] || headerTexts.en;
 
   const languageOptions: { code: SourceLanguage; label: string }[] = [
     { code: 'en', label: 'English' },
@@ -68,16 +67,16 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
     }
 
     const hostname = window.location.hostname;
+    const NODE_ENV = import.meta.env.NODE_ENV;
+    const isNonProduction = NODE_ENV === 'dev' || NODE_ENV === 'test';
     const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
-    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+    const isKnownDomain = !IS_DEV_ENV && allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
     const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
     const supportedLanguages: SourceLanguage[] = ['en', 'zh', 'ja'];
     const isStoredLanguageValid = storedLanguage ? supportedLanguages.includes(storedLanguage) : false;
     const detectedLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
 
-    setIsLocalHost(!isKnownDomain);
-
-    if (!isKnownDomain && isStoredLanguageValid) {
+    if ((isNonProduction || !isKnownDomain) && isStoredLanguageValid) {
       setCurrentSourceLanguage(storedLanguage as SourceLanguage);
     } else {
       setCurrentSourceLanguage(detectedLanguage);
@@ -109,7 +108,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
     const { protocol, hostname, port, search, hash } = window.location;
     const subdomainMatch = hostname.match(/^(en|zh|ja)\.(.+)$/);
     const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
-    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+    const isKnownDomain = !IS_DEV_ENV && allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
 
     const persistLanguage = (language: SourceLanguage) => {
       localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, language);

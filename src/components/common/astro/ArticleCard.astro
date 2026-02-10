@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../../../types/index.ts';
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
+import { getArticleBusinessPath, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util'
 import { createTranslator } from '@/lib/i18n'
 
 export interface Props {
@@ -28,6 +29,8 @@ const {
 const t = createTranslator(locale)
 
 const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
+const categoryLabel = getArticleCategoryLabel(article)
+const subcategoryLabel = getArticleSubcategoryLabel(article)
 
 /**
  * Format date based on locale
@@ -50,7 +53,7 @@ function formatDate(dateString: string, locale: Locale): string {
       day: 'numeric'
     };
     
-    return date.toLocaleDateString(locale === 'us' ? 'en-US' : 'zh-CN', options);
+    return date.toLocaleDateString(locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : 'en-US', options);
   } catch {
     return dateString;
   }
@@ -69,9 +72,7 @@ function formatDate(dateString: string, locale: Locale): string {
 function getArticleUrl(article: any, locale: Locale): string {
   if (article.url) return article.url;
   if (article.slug) {
-    const businessSegment = (article.business_type || article.business_type_name || 'article')
-      .toString()
-      .toLowerCase();
+    const businessSegment = getArticleBusinessPath(article);
 
     // If article has user_id, it's a regular user article
     if (article.user_id) {
@@ -124,11 +125,12 @@ const imageClasses = imageSizeClasses[imageSize];
     </a>
 
     <!-- Categories -->
-    {article.category_name && (
+    {categoryLabel && (
       <div class="space-x-2 mt-4 line-clamp-1">
          <span class="text-xs font-medium text-primary uppercase tracking-wide">
-            {article.category_name}
+            {categoryLabel}
           </span>
+          {subcategoryLabel && <span class="text-xs font-medium text-primary uppercase tracking-wide">{subcategoryLabel}</span>}
         <!-- Tags -->
           {showTags && tags.length > 0 && 
             tags.map((tag: string) => (
@@ -188,11 +190,12 @@ const imageClasses = imageSizeClasses[imageSize];
     <div class="flex-1 min-w-0">
       <!-- Category and Date -->
       <div class="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
-        {article.category_name && (
+        {categoryLabel && (
           <span class="px-2 py-1 bg-secondary/50 rounded-full text-xs font-medium">
-            {article.category_name}
+            {categoryLabel}
           </span>
         )}
+        {subcategoryLabel && <span class="px-2 py-1 bg-secondary/50 rounded-full text-xs font-medium">{subcategoryLabel}</span>}
         {article.created_at && (
           <>
             <span>•</span>

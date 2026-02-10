@@ -59,7 +59,7 @@ function getFirstLetterFromTitle(title: string): string {
 // Fetch all learn items from backend API (type=learn)
 export async function fetchLearnItems(locale: Locale): Promise<LearnItemsResponse> {
   try {
-    const localeParam = locale === 'us' ? 'en' : 'zh';
+    const localeParam = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en';
     const queryParts: string[] = [];
     queryParts.push(`type=learn`);
     queryParts.push(`locale=${encodeURIComponent(localeParam)}`);
@@ -148,7 +148,7 @@ export async function fetchLearnItemsByLetter(locale: Locale): Promise<LearnItem
 // 获取单条 Learn 详情，并将 ApiArticle 映射为 LearnDetailItem
 export async function fetchLearnItem(locale: Locale, slug: string): Promise<LearnDetailItem | null> {
   try {
-    const localeParam = locale === 'us' ? 'en' : 'zh';
+    const localeParam = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en';
     const queryParts: string[] = [];
     queryParts.push(`type=learn`);
     queryParts.push(`slug=${encodeURIComponent(slug)}`);

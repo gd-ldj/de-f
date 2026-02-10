@@ -3,7 +3,7 @@ import type { HomeTopic, HomeMostReadArticle, Locale } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
-import {formatDate} from '@/utils/util'
+import { formatDate, getArticleBusinessPath } from '@/utils/util'
 
 interface Props {
   locale?: Locale
@@ -67,7 +67,7 @@ const topics = rawTopics.map(topic => ({
         <div class="border-b border-border pb-4 last:border-b-0 last:pb-0">
           <ArticleLink
             slug={article.slug}
-            business={article.business_type_name}
+            business={getArticleBusinessPath(article)}
             locale={locale}
             class="flex items-start justify-between group"
           >

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Locale } from '@/types';
+import { createTranslator } from '@/lib/i18n';
 
 interface BonusDistributionProps {
   locale: Locale;
@@ -18,6 +19,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
   bonusRate = "117.35",
   views = "1K"
 }) => {
+  const t = createTranslator(locale);
   // Generate progress bar segments (20 total segments)
   const totalSegments = 20;
   const filledSegments = Math.floor((currentProgress / 100) * totalSegments);
@@ -25,7 +27,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
   return (
     <div className="">
       {/* Title */}
-      <h3 className="text-lg font-medium text-foreground mb-6">{locale === 'us' ? 'Bonus Distribution' : '奖励分布'}</h3>
+      <h3 className="text-lg font-medium text-foreground mb-6">{t('article.bonusDistribution')}</h3>
 
       <div className="flex items-center justify-between">
         {/* Left side - Progress section */}
@@ -34,7 +36,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 rounded-full bg-primary" />
-              <span className="text-sm font-medium text-primary">{locale === 'us' ? 'Ongoing' : '进行中'}</span>
+              <span className="text-sm font-medium text-primary">{t('article.ongoing')}</span>
             </div>
             <span className="text-sm font-medium text-foreground">{currentProgress}%</span>
           </div>
@@ -49,7 +51,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
 
         {/* Right side - Bonus rate info */}
         <div className="ml-8 text-right">
-          <div className="text-xs text-muted-foreground mb-1">{locale === 'us' ? 'Realtime Bonus Rate' : '实时奖励率'}</div>
+          <div className="text-xs text-muted-foreground mb-1">{t('article.realtimeBonusRate')}</div>
           <div className="flex items-center justify-end space-x-1">
             <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
               <svg className="w-3 h-3 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
@@ -57,7 +59,7 @@ const BonusDistribution: React.FC<BonusDistributionProps> = ({
               </svg>
             </div>
             <span className="text-sm font-medium text-foreground">
-              {bonusRate} / {views} views
+              {bonusRate} / {views} {t('article.views')}
             </span>
           </div>
         </div>

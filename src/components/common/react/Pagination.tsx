@@ -1,4 +1,5 @@
 import type { Locale } from '@/types';
+import { createTranslator } from '@/lib/i18n';
 
 interface PaginationProps {
   currentPage: number;
@@ -11,6 +12,7 @@ interface PaginationProps {
 }
 
 export default function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange, locale, onlyNext = false, hasMore = false }: PaginationProps) {
+  const t = createTranslator(locale);
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Don't render if there's only one page (unless using onlyNext mode)
@@ -113,12 +115,12 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
           ${currentPage === 1 ? 'text-[#909399] border-[#D3D3D5] cursor-not-allowed' : 'text-primary border-[#D3D3D5] hover:border-primary'}
           ${hidePrevNextOnMobile ? 'hidden sm:flex' : ''}
         `}
-        aria-label={locale === 'us' ? 'Previous page' : '上一页'}
+        aria-label={t('common.prev')}
       >
         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        {locale === 'us' ? 'Prev' : '上一页'}
+        {t('common.prev')}
       </button>
 
       {/* Page Numbers - only show in full pagination mode */}
@@ -144,7 +146,7 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
                     flex items-center justify-center px-2 py-2 text-sm font-medium rounded-md min-w-[40px] cursor-pointer
                     ${isCurrentPage ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
                   `}
-                  aria-label={`${locale === 'us' ? 'Page' : '第'} ${pageNumber} ${locale === 'us' ? '' : '页'}`}
+                  aria-label={`${t('common.pagePrefix')}${pageNumber}${t('common.pageSuffix')}`}
                   aria-current={isCurrentPage ? 'page' : undefined}
                 >
                   {pageNumber}
@@ -173,7 +175,7 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
                     flex items-center justify-center px-2 sm:px-3 py-2 text-sm font-medium rounded-md min-w-[40px] cursor-pointer
                     ${isCurrentPage ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent hover:text-accent-foreground'}
                   `}
-                  aria-label={`${locale === 'us' ? 'Page' : '第'} ${pageNumber} ${locale === 'us' ? '' : '页'}`}
+                  aria-label={`${t('common.pagePrefix')}${pageNumber}${t('common.pageSuffix')}`}
                   aria-current={isCurrentPage ? 'page' : undefined}
                 >
                   {pageNumber}
@@ -193,9 +195,9 @@ export default function Pagination({ currentPage, totalItems, itemsPerPage, onPa
           ${(onlyNext ? !hasMore : currentPage === totalPages) ? 'text-[#909399] border-[#D3D3D5] cursor-not-allowed' : 'text-primary border-[#D3D3D5] hover:border-primary'}
           ${hidePrevNextOnMobile ? 'hidden sm:flex' : ''}
         `}
-        aria-label={locale === 'us' ? 'Next' : '下一页'}
+        aria-label={t('common.next')}
       >
-        {locale === 'us' ? 'Next' : '下一页'}
+        {t('common.next')}
         <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>

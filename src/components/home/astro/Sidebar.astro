@@ -3,7 +3,7 @@ import type { Locale, HomeLatestArticle } from '@/types'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
 import { createTranslator } from '@/lib/i18n'
-import {formatDate, formatRelativeTime} from '@/utils/util'
+import { formatDate, formatRelativeTime, getArticleBusinessPath } from '@/utils/util'
 
 interface Props {
   locale?: Locale
@@ -45,7 +45,7 @@ const isWithin12Hours = (createdAt: string) => {
           <div class="flex-shrink-0 w-64">
             <ArticleLink
               slug={article.slug}
-              business={article.business_type_name}
+              business={getArticleBusinessPath(article)}
               locale={locale}
               class="block p-4 pr-6 group transition-colors border border-gray-200 rounded relative h-full"
             >
@@ -80,7 +80,7 @@ const isWithin12Hours = (createdAt: string) => {
           <div class="relative">
             <ArticleLink
               slug={article.slug}
-              business={article.business_type_name}
+              business={getArticleBusinessPath(article)}
               locale={locale}
               class="flex items-start space-x-3 py-5 group transition-colors"
             >

@@ -22,21 +22,23 @@ export async function fetchArticles(
   options?: {
     category?: string;
     business_type_name?: string;
+    category_names?: string;
     category_name?: string;
+    subcategory_names?: string;
     subcategory_name?: string;
     tag?: string;
     author_name?: string;
     order_by?: 'Latest' | 'Popular' | 'Trending';
     cursor?: string;
     page?: number;
-  }
+  },
 ): Promise<ArticlesResponse | null> {
   try {
     // Build query parameters manually to avoid encoding commas in tag parameter
     const queryParts: string[] = [];
 
     // Add locale parameter
-    const localeParam = locale === 'us' ? 'en' : 'zh';
+    const localeParam = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en';
     queryParts.push(`locale=${encodeURIComponent(localeParam)}`);
 
     // Add limit
@@ -50,12 +52,15 @@ export async function fetchArticles(
     if (options?.business_type_name) {
       queryParts.push(`business_type_name=${encodeURIComponent(options.business_type_name)}`);
     }
-    if (options?.category_name) {
-      // Don't encode commas in category_name parameter to preserve comma-separated values
-      queryParts.push(`category_name=${options.category_name}`);
+    if (options?.category_names) {
+      queryParts.push(`category_names=${options.category_names}`);
+    } else if (options?.category_name) {
+      queryParts.push(`category_names=${options.category_name}`);
     }
-    if (options?.subcategory_name) {
-      queryParts.push(`subcategory_name=${options.subcategory_name}`);
+    if (options?.subcategory_names) {
+      queryParts.push(`subcategory_names=${options.subcategory_names}`);
+    } else if (options?.subcategory_name) {
+      queryParts.push(`subcategory_names=${options.subcategory_name}`);
     }
     if (options?.tag) {
       // Don't encode commas in tag parameter to preserve comma-separated values
@@ -156,6 +161,7 @@ interface TranslatedArticlePayload {
 export async function fetchTranslatedArticle(entryId: string, language: string): Promise<TranslatedArticlePayload | null> {
   try {
     const params = new URLSearchParams();
+    console.log('🚀 ~ fetchTranslatedArticle ~ params:', params);
     params.set('entry_id', entryId);
     params.set('language', language);
 
@@ -294,7 +300,7 @@ export async function fetchArticleSubcategories(): Promise<ArticleSubcategory[]>
  */
 export async function fetchHomePageData(locale: Locale): Promise<HomePageData | null> {
   try {
-    const localeParam = locale === 'us' ? 'en' : 'zh';
+    const localeParam = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en';
     const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles/home?locale=${encodeURIComponent(localeParam)}`, {
       headers: {
         'Content-Type': 'application/json',

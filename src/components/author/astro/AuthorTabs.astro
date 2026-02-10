@@ -1,6 +1,7 @@
 ---
 import AuthorArticlesSection from './AuthorArticlesSection.astro';
 import type { Locale } from '../../../types/index.ts';
+import { createTranslator } from '@/lib/i18n';
 
 export interface Props {
   articles: any[];
@@ -11,6 +12,7 @@ export interface Props {
 }
 
 const { articles, authorName, locale, hasMore, nextCursor } = Astro.props;
+const t = createTranslator(locale);
 ---
 
 <div class="author-tabs">
@@ -22,21 +24,21 @@ const { articles, authorName, locale, hasMore, nextCursor } = Astro.props;
         data-tab="articles"
         type="button"
       >
-        Articles
+        {t('author.tabs.articles')}
       </button>
       <button 
         class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" 
         data-tab="tweets"
         type="button"
       >
-        Tweets
+        {t('author.tabs.tweets')}
       </button>
       <button 
         class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" 
         data-tab="analytics"
         type="button"
       >
-        Analytics
+        {t('author.tabs.analytics')}
       </button>
     </nav>
   </div>
@@ -57,14 +59,14 @@ const { articles, authorName, locale, hasMore, nextCursor } = Astro.props;
     <!-- Tweets Tab -->
     <div id="tweets-tab" class="tab-pane hidden">
       <div class="text-center py-12">
-        <p class="text-gray-500">Tweets content coming soon...</p>
+        <p class="text-gray-500">{t('author.tabs.tweetsComingSoon')}</p>
       </div>
     </div>
 
     <!-- Analytics Tab -->
     <div id="analytics-tab" class="tab-pane hidden">
       <div class="text-center py-12">
-        <p class="text-gray-500">Analytics content coming soon...</p>
+        <p class="text-gray-500">{t('author.tabs.analyticsComingSoon')}</p>
       </div>
     </div>
   </div>

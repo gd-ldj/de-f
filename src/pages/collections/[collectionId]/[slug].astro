@@ -10,13 +10,14 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import AuthMount from '@/components/common/react/AuthMount';
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro';
 import ArticleContent from '@/components/article/astro/ArticleContent.astro';
-import { fetchArticle } from '@/api/articles';
+import { fetchArticle, fetchTranslatedArticle } from '@/api/articles';
 import { fetchCollections } from '@/api/collections';
-import type { SourceLanguage } from '@/types';
+import type { SourceLanguage, TranslationLanguage } from '@/types';
 import Footer from '@/components/common/react/footer/Index';
 import RecentResearch from '@/components/article/astro/RecentResearch.astro';
 import { SITE_CONFIG, MULTI_SOURCE_CONFIG } from '@/config/constants';
-import { getSourceLanguageFromRequest } from '@/lib/language-utils';
+import { getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
+import { buildCollectionUrl, getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils';
 
 export const prerender = false;
 
@@ -40,11 +41,28 @@ if (slugParts.length > 1) {
 
 const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug;
 
-// Fetch article
-const article = await fetchArticle(actualSlug, locale);
+const requestedLang = Astro.url.searchParams.get('lang');
+const translationLanguage = requestedLang && isValidTranslationLanguage(requestedLang) ? (requestedLang as TranslationLanguage) : null;
 
-if (!article) {
+const baseArticle = await fetchArticle(actualSlug, locale);
+
+if (!baseArticle) {
   return Astro.redirect('/404');
+}
+
+let article = baseArticle;
+
+if ((translationLanguage && translationLanguage !== sourceLanguage) || (translationLanguage === null && sourceLanguage !== 'en')) {
+  const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage || sourceLanguage);
+  if (translated) {
+    article = {
+      ...baseArticle,
+      title: translated.title,
+      sub_title: translated.sub_title,
+      body: translated.body,
+      language: translated.language,
+    };
+  }
 }
 
 // Resolve collection title
@@ -60,14 +78,13 @@ const resolveCollectionTitle = async (id: string) => {
 
 const collectionTitle = await resolveCollectionTitle(collectionId);
 
-const categoryDisplayName = article.business_type_name
-  ? `${article.business_type_name[0].toUpperCase()}${article.business_type_name.slice(1)}`
-  : 'News';
+const categoryDisplayName = getArticleBusinessPath(article) || 'News';
 
 // SEO metadata
 const title = `${article.title} | ${categoryDisplayName} | deTake`;
 const description = article.sub_title;
-const canonicalUrl = `${Astro.url.origin}/collections/${collectionId}/${actualSlug}`;
+const collectionPath = buildCollectionUrl(collectionId, actualSlug, sourceLanguage, translationLanguage);
+const canonicalUrl = `${Astro.url.origin}${collectionPath}`;
 
 const ogImageParams = new URLSearchParams({
   title: article.title,
@@ -85,7 +102,7 @@ const keywords = article.tags || [];
 const publishedTime = article.created_at;
 const modifiedTime = article.updated_at;
 const author = article?.author?.name || article.author_name;
-const articleLang = article.language || sourceLanguage;
+const articleLang = article.language || translationLanguage || sourceLanguage;
 ---
 
 <BaseLayout
@@ -128,7 +145,7 @@ const articleLang = article.language || sourceLanguage;
           <ArticleContent
             article={article}
             locale={locale}
-            category={article.business_type_name}
+            category={getArticleBusinessPath(article)}
             slugWithPromote={slugWithPromote}
             articleLang={articleLang}
             collection={{ id: collectionId, title: collectionTitle }}
@@ -146,5 +163,5 @@ const articleLang = article.language || sourceLanguage;
       </div>
     </div>
   </main>
-  <Footer client:load />
+  <Footer client:load locale={locale} />
 </BaseLayout>

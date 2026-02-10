@@ -1,6 +1,6 @@
 import type { ApiArticle, Locale } from '@/types';
 import ArticleLink from './ArticleLink';
-import { formatDate } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 
 interface ArticleGridProps {
@@ -19,7 +19,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
           <div className="flex gap-3 md:block">
             {/* Article Image */}
             <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
-              <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="block group w-full h-full overflow-hidden">
+              <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block group w-full h-full overflow-hidden">
                 <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
               </ArticleLink>
             </div>
@@ -29,8 +29,9 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
               {/* Category and Tags */}
               <div className="flex flex-wrap gap-1 md:gap-2">
                 {/* Category Badge */}
-                <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{article.category_name}</span>
-
+                <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleCategoryLabel(article)}</span>
+                {/* Category Badge */}
+                {/* {getArticleSubcategoryLabel(article) && <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleSubcategoryLabel(article)}</span>} */}
                 {/* Tags */}
                 {article.tags && article.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
@@ -46,7 +47,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
               {/* Article Content */}
               <div className="pt-1">
                 <h3 className="text-[16px] md:text-2xl font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
-                  <ArticleLink slug={article.slug} locale={locale} business={article.business_type_name} className="hover:text-primary transition-colors">
+                  <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
                 </h3>

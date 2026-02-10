@@ -9,6 +9,7 @@ import type { Locale, SourceLanguage, TranslationLanguage } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { SITE_CONFIG } from '@/config/constants'
 import { buildArticleUrl } from '@/lib/language-utils'
+import { getArticleBusinessPath } from '@/utils/util'
 
 interface Props {
   locale: Locale
@@ -52,8 +53,8 @@ if (!baseArticle) {
 let article = baseArticle
 
 // Fetch translation if needed
-if (translationLanguage && translationLanguage !== sourceLanguage) {
-  const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage)
+if ((translationLanguage && translationLanguage !== sourceLanguage) || (translationLanguage === null && sourceLanguage !== 'en')) {
+  const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage || sourceLanguage)
   if (translated) {
     article = {
       ...baseArticle,
@@ -68,7 +69,7 @@ if (translationLanguage && translationLanguage !== sourceLanguage) {
 // The effective language being displayed
 const articleLang = translationLanguage || sourceLanguage
 
-const categoryDisplayName = category ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News'
+const categoryDisplayName = getArticleBusinessPath(article) || (category ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News')
 
 const title = `${article.title} | ${categoryDisplayName} | deTake`
 const description = article.sub_title
@@ -155,5 +156,5 @@ const author = article?.author?.name || article.author_name
       </div>
     </div>
   </main>
-  <Footer client:load />
+  <Footer client:load locale={locale} />
 </BaseLayout>

@@ -3,6 +3,7 @@ import { fetchArticles } from '@/api/articles';
 import type { ApiArticle, Locale } from '@/types';
 import ArticleGrid from '@/components/common/react/ArticleGrid';
 import PaginationReact from '@/components/common/react/Pagination';
+import { createTranslator } from '@/lib/i18n';
 
 interface TopicPageProps {
   locale: Locale;
@@ -16,6 +17,7 @@ interface TopicPageProps {
  * Simple display without filtering functionality, only pagination
  */
 export default function TopicPage({ locale, topic, topicSlug, initialPage }: TopicPageProps) {
+  const t = createTranslator(locale);
   const [articles, setArticles] = useState<ApiArticle[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -105,10 +107,14 @@ export default function TopicPage({ locale, topic, topicSlug, initialPage }: Top
       {!loading && articles.length === 0 && (
         <div className="text-center py-12 px-4 md:px-0">
           <div className="max-w-md mx-auto">
-            <h3 className="text-lg font-medium text-foreground mb-2">{locale === 'us' ? 'No articles found' : '未找到文章'}</h3>
-            <p className="text-muted-foreground mb-4">{locale === 'us' ? `No articles are currently tagged with "${topic}". Try browsing other topics or check back later.` : `当前没有标记为"${topic}"的文章。请尝试浏览其他主题或稍后再查看。`}</p>
+            <h3 className="text-lg font-medium text-foreground mb-2">{t('common.noArticlesFound')}</h3>
+            <p className="text-muted-foreground mb-4">
+              {t('pages.topicNoArticlesPrefix')}
+              {topic}
+              {t('pages.topicNoArticlesSuffix')}
+            </p>
             <a href="/" className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
-              {locale === 'us' ? 'Browse All Articles' : '浏览所有文章'}
+              {t('common.browseAllArticles')}
             </a>
           </div>
         </div>

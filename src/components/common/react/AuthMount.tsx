@@ -46,10 +46,10 @@ interface AuthMountProps {
 
 /**
  * Extract locale from current URL pathname
- * Fallback to 'us' when running on server or unexpected path
+ * Fallback to 'en' when running on server or unexpected path
  */
 function getLocaleFromURL(): Locale {
-  if (typeof window === 'undefined') return 'us';
+  if (typeof window === 'undefined') return 'en';
   const hostname = window.location.hostname;
   const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
   return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
@@ -119,7 +119,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   const [shareMobileEl, setShareMobileEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
   // Track locale for children that require it (Login, WalletPopover)
-  const [locale, setLocale] = useState<Locale>('us');
+  const [locale, setLocale] = useState<Locale>('en');
 
   // Read global authentication state from jotai store
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
@@ -270,7 +270,7 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
   const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
-  const [locale, setLocale] = useState<Locale>('us');
+  const [locale, setLocale] = useState<Locale>('en');
   const [privyMounted, setPrivyMounted] = useState(false);
 
   // Read global authentication state from jotai store

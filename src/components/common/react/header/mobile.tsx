@@ -5,13 +5,12 @@ import { isValidSourceLanguage } from '@/lib/language-utils';
 import MobileSidebar from './MobileSidebar';
 import MobileCategoryPage from './MobileCategoryPage';
 import { HEADER_LOGO_BLACK_URL } from './constants';
+import type { Locale } from '@/types';
 
 // Import icons from local assets
 import SearchIcon from './assets/search.svg?url';
 import MenuIcon from './assets/menu.svg?url';
 import BackIcon from './assets/back.svg?url';
-
-type Locale = 'us' | 'asia';
 
 interface MobileHeaderProps {
   locale?: Locale;
@@ -29,7 +28,7 @@ function getLocaleFromURL(): Locale {
     const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
     return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
   }
-  return 'us';
+  return 'en';
 }
 
 /**
@@ -45,7 +44,7 @@ function isHomePage(path: string, locale: Locale): boolean {
  */
 const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocaleSwitch, currentPath }) => {
   const locale = propLocale || getLocaleFromURL();
-  const texts = headerTexts[locale];
+  const texts = headerTexts[locale] || headerTexts.en;
 
   // Get current path
   const getCurrentPath = (): string => {

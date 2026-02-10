@@ -1,6 +1,6 @@
 import React from 'react';
 import type { HomeMostReadArticle, Locale } from '@/types';
-import { formatDate } from '@/utils/util';
+import { formatDate, getArticleBusinessPath } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
@@ -33,7 +33,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
             <article key={article.entry_id} className="space-y-3">
               {/* Top: Image */}
               <div className="w-full h-48 relative overflow-hidden rounded">
-                <ArticleLink slug={article.slug} business="news" locale={locale} className="block h-full">
+                <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="block h-full">
                   <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                 </ArticleLink>
               </div>
@@ -41,7 +41,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
               {/* Bottom: Content */}
               <div className="space-y-2">
                 <h4 className="line-clamp-2">
-                  <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
+                  <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
                 </h4>
@@ -63,7 +63,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
             <article className="flex space-x-3 p-4 border border-border rounded">
               {/* Left side: Image */}
               <div className="flex-shrink-0 w-22 h-22 relative overflow-hidden rounded">
-                <ArticleLink slug={articles[2].slug} business="news" locale={locale} className="block h-full">
+                <ArticleLink slug={articles[2].slug} business={getArticleBusinessPath(articles[2])} locale={locale} className="block h-full">
                   <img src={articles[2].img_url || '/placeholder.svg'} alt={articles[2].title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                 </ArticleLink>
               </div>
@@ -71,7 +71,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
               {/* Right side: Content */}
               <div className="flex-1 py-1 flex flex-col justify-between">
                 <h4 className="">
-                  <ArticleLink slug={articles[2].slug} business="news" locale={locale} className="hover:text-primary transition-colors">
+                  <ArticleLink slug={articles[2].slug} business={getArticleBusinessPath(articles[2])} locale={locale} className="hover:text-primary transition-colors">
                     {articles[2].title}
                   </ArticleLink>
                 </h4>
@@ -92,7 +92,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
             articles.slice(3, 5).map((article, index) => (
               <article key={article.entry_id} className={`space-y-2 py-3 ${index < articles.slice(3, 5).length - 1 ? 'border-b border-border' : ''}`}>
                 <h4 className="line-clamp-2">
-                  <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
+                  <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
                 </h4>
@@ -118,7 +118,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                 <article key={article.entry_id} className="h-[186px] relative overflow-hidden bg-white text-white flex group">
                   {/* Left side: Image */}
                   <div className="w-[330px] flex-none h-full relative overflow-hidden">
-                    <ArticleLink slug={article.slug} business="news" locale={locale} className="block w-full h-full">
+                    <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="block w-full h-full">
                       <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </ArticleLink>
                   </div>
@@ -127,7 +127,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   <div className="pl-5 bg-white text-foreground flex flex-col justify-between pb-2">
                     <div>
                       <h4 className="font-medium text-[20px] leading-tight mb-3 line-clamp-2">
-                        <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
+                        <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="hover:text-primary transition-colors">
                           {article.title}
                         </ArticleLink>
                       </h4>
@@ -158,7 +158,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                 <div className="relative overflow-hidden rounded text-white flex">
                   {/* Left side: Image */}
                   <div className="w-[274px] flex-none h-full relative overflow-hidden">
-                    <ArticleLink slug={articles[2].slug} business="news" locale={locale} className="block h-full">
+                    <ArticleLink slug={articles[2].slug} business={getArticleBusinessPath(articles[2])} locale={locale} className="block h-full">
                       <img src={articles[2].img_url || '/placeholder.svg'} alt={articles[2].title} className="w-full h-[154px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </ArticleLink>
                   </div>
@@ -167,7 +167,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   <div className="w-2/3 pl-5 bg-white text-foreground flex flex-col justify-between pb-1">
                     <div>
                       <h4 className="font-medium text-xl leading-tight mb-2 line-clamp-2">
-                        <ArticleLink slug={articles[2].slug} business="news" locale={locale} className="hover:text-primary transition-colors">
+                        <ArticleLink slug={articles[2].slug} business={getArticleBusinessPath(articles[2])} locale={locale} className="hover:text-primary transition-colors">
                           {articles[2].title}
                         </ArticleLink>
                       </h4>
@@ -196,7 +196,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   <article key={article.entry_id} className="transition-colors duration-300">
                     <div className="space-y-2">
                       <h4 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
-                        <ArticleLink slug={article.slug} business="news" locale={locale} className="hover:text-primary transition-colors">
+                        <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="hover:text-primary transition-colors">
                           {article.title}
                         </ArticleLink>
                       </h4>

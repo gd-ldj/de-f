@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Locale } from '@/types';
+import { createTranslator } from '@/lib/i18n';
 
 interface PoolInfoItem {
   label: string;
@@ -33,23 +34,24 @@ const PoolInfo: React.FC<PoolInfoProps> = ({
     liquidity: "$14k"
   }
 }) => {
+  const t = createTranslator(locale);
   const poolInfoItems: PoolInfoItem[] = [
     {
-      label: locale === 'us' ? 'Pair created' : '交易对创建',
+      label: t('article.pairCreated'),
       value: data.pairCreated
     },
     {
-      label: locale === 'us' ? 'Pooled Token' : '池化代币',
+      label: t('article.pooledToken'),
       value: data.pooledToken
     },
     {
-      label: locale === 'us' ? 'Pooled $SOL' : '池化$SOL',
+      label: t('article.pooledSol'),
       value: data.pooledSol,
       address: data.pooledSolAddress,
       showCopyIcon: true
     },
     {
-      label: locale === 'us' ? 'Liquidity' : '流动性',
+      label: t('article.liquidity'),
       value: data.liquidity
     }
   ];
