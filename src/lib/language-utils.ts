@@ -24,22 +24,29 @@ export function isValidSourceLanguage(lang: string): lang is SourceLanguage {
  * Get source language from request hostname (SSR)
  *
  * Strategy:
- * - Production/Test environments: Always use domain
- * - Local development (IS_DEV_ENV): Use cookie if valid, otherwise use domain/env
+ * - localhost: Use cookie if valid, otherwise use domain/env (allows manual switching)
+ * - Non-localhost (test/production): Always use domain (ignores cookie)
  *
  * This allows local testing with language switching while ensuring production
  * sites always reflect their domain language.
  *
  * @param request - The HTTP request object
  * @param hostname - The hostname to check (optional, will extract from request if not provided)
- * @returns The source language based on domain or cookie (dev mode only)
+ * @returns The source language based on domain or cookie (localhost only)
  */
 export function getSourceLanguageFromRequest(request: Request, hostname?: string): SourceLanguage {
   // Extract hostname if not provided
   const effectiveHostname = hostname || request.headers.get('host') || '';
 
-  // For local development, check cookie first to allow manual language switching
-  if (import.meta.env.DEV) {
+  // Check if this is localhost
+  const isLocalhost =
+    effectiveHostname === 'localhost' ||
+    effectiveHostname.startsWith('localhost:') ||
+    effectiveHostname === '127.0.0.1' ||
+    effectiveHostname.startsWith('127.0.0.1:');
+
+  // For localhost, check cookie first to allow manual language switching
+  if (isLocalhost) {
     const cookieHeader = request.headers.get('cookie') || '';
     const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${STORAGE_KEYS.SOURCE_LANGUAGE}=([^;]+)`));
     const cookieValue = match?.[1] ? decodeURIComponent(match[1]) : null;
@@ -49,7 +56,7 @@ export function getSourceLanguageFromRequest(request: Request, hostname?: string
     }
   }
 
-  // For all environments (including dev fallback), use domain detection
+  // For all environments (including localhost fallback), use domain detection
   if (effectiveHostname) {
     return MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(effectiveHostname);
   }

@@ -21,13 +21,11 @@ interface MobileHeaderProps {
 function getLocaleFromURL(): Locale {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
+    const isLocalhost = hostname === 'localhost' || hostname.startsWith('localhost:') || hostname === '127.0.0.1';
     let sourceLanguage: SourceLanguage;
 
-    // Check if running in development mode
-    const isDev = import.meta.env.DEV;
-
-    if (isDev) {
-      // Local development: Allow localStorage to override for testing different languages
+    if (isLocalhost && import.meta.env.DEV) {
+      // Localhost in dev mode: Allow localStorage to override for testing different languages
       const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE);
       if (storedLanguage && isValidSourceLanguage(storedLanguage)) {
         sourceLanguage = storedLanguage;
@@ -35,11 +33,13 @@ function getLocaleFromURL(): Locale {
         sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
       }
     } else {
-      // Production/Test environments: Always use domain, ignore localStorage
+      // Production/Test environments (non-localhost): Always use domain, ignore localStorage
       sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
 
-      // Update localStorage to match current domain (prevents confusion on next local dev)
-      localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, sourceLanguage);
+      // Update localStorage to match current domain (prevents stale data)
+      if (!isLocalhost) {
+        localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, sourceLanguage);
+      }
     }
 
     return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);

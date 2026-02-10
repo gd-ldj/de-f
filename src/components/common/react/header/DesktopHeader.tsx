@@ -37,7 +37,35 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const [insightsDropdownOpen, setInsightsDropdownOpen] = React.useState(false);
   const [voicesDropdownOpen, setVoicesDropdownOpen] = React.useState(false);
   const [tutorialsDropdownOpen, setTutorialsDropdownOpen] = React.useState(false);
-  const [currentSourceLanguage, setCurrentSourceLanguage] = React.useState<SourceLanguage>('en');
+  // Initialize source language from domain (for non-localhost environments)
+  const getInitialSourceLanguage = (): SourceLanguage => {
+    if (typeof window === 'undefined') {
+      return MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE;
+    }
+
+    const hostname = window.location.hostname;
+    const isLocalhost = hostname === 'localhost' || hostname.startsWith('localhost:') || hostname === '127.0.0.1';
+
+    if (isLocalhost && IS_DEV_ENV) {
+      // Localhost: Use localStorage if available
+      const stored = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
+      if (stored && ['en', 'zh', 'ja'].includes(stored)) {
+        return stored;
+      }
+    }
+
+    // Non-localhost: Always use domain
+    const domainLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+
+    // Update localStorage to match domain (prevents stale data)
+    if (!isLocalhost) {
+      localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, domainLanguage);
+    }
+
+    return domainLanguage;
+  };
+
+  const [currentSourceLanguage, setCurrentSourceLanguage] = React.useState<SourceLanguage>(getInitialSourceLanguage);
   const texts = headerTexts[locale] || headerTexts.en;
 
   const pathSegments = currentPath.split('/');
@@ -76,32 +104,8 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     };
   }, []);
 
-  React.useEffect(() => {
-    if (typeof window === 'undefined') {
-      setCurrentSourceLanguage(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE);
-      return;
-    }
-
-    const hostname = window.location.hostname;
-    let finalLanguage: SourceLanguage;
-
-    if (IS_DEV_ENV) {
-      // Local development: Allow localStorage to override for testing different languages
-      const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
-      const supportedLanguages: SourceLanguage[] = ['en', 'zh', 'ja'];
-      const isStoredValid = storedLanguage && supportedLanguages.includes(storedLanguage);
-
-      finalLanguage = isStoredValid ? storedLanguage : MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
-    } else {
-      // Production/Test environments: Always use domain, ignore localStorage
-      finalLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
-
-      // Update localStorage to match current domain (prevents confusion on next local dev)
-      localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, finalLanguage);
-    }
-
-    setCurrentSourceLanguage(finalLanguage);
-  }, []);
+  // Note: currentSourceLanguage is initialized correctly in useState above
+  // No need for additional useEffect to set it
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
