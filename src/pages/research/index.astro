@@ -16,6 +16,7 @@ const { url } = Astro
 const initialPage = parseInt(url.searchParams.get('page') || '1', 10)
 const initialCategoryName = url.searchParams.get('category_name') || ''
 const initialAuthorName = url.searchParams.get('author_name') || ''
+const initialSubcategoryName = url.searchParams.get('subcategory_name') || ''
 const initialTag = url.searchParams.get('tag') || ''
 const initialOrderBy = (url.searchParams.get('order_by') as 'Latest' | 'Popular' | 'Trending') || 'Latest'
 
@@ -58,6 +59,7 @@ const { title, description } = seoContent[locale] || seoContent.us
       initialPage={initialPage}
       initialCategoryName={initialCategoryName}
       initialAuthorName={initialAuthorName}
+      initialSubcategoryName={initialSubcategoryName}
       initialTag={initialTag}
       initialOrderBy={initialOrderBy}
     />

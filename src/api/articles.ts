@@ -1,4 +1,4 @@
-import type { ApiArticle, ArticlesResponse, Locale, ArticleCategory, ArticleBusinessType, ArticleTag, HomePageResponse, HomePageData } from '../types';
+import type { ApiArticle, ArticlesResponse, Locale, ArticleCategory, ArticleBusinessType, ArticleTag, ArticleSubcategory, HomePageResponse, HomePageData } from '../types';
 import { SITE_CONFIG } from '../config/constants';
 import { ssrFetch } from '@/lib/serverFetch';
 
@@ -23,6 +23,7 @@ export async function fetchArticles(
     category?: string;
     business_type_name?: string;
     category_name?: string;
+    subcategory_name?: string;
     tag?: string;
     author_name?: string;
     order_by?: 'Latest' | 'Popular' | 'Trending';
@@ -52,6 +53,9 @@ export async function fetchArticles(
     if (options?.category_name) {
       // Don't encode commas in category_name parameter to preserve comma-separated values
       queryParts.push(`category_name=${options.category_name}`);
+    }
+    if (options?.subcategory_name) {
+      queryParts.push(`subcategory_name=${options.subcategory_name}`);
     }
     if (options?.tag) {
       // Don't encode commas in tag parameter to preserve comma-separated values
@@ -258,6 +262,28 @@ export async function fetchArticleTags(): Promise<ArticleTag[]> {
     }
   } catch (error) {
     console.error('Error fetching tags:', error);
+    return [];
+  }
+}
+
+export async function fetchArticleSubcategories(): Promise<ArticleSubcategory[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/articles/subcategories`, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch subcategories: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    if (result.code === 2000 && Array.isArray(result.data)) {
+      return result.data;
+    } else {
+      throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`);
+    }
+  } catch (error) {
+    console.error('Error fetching subcategories:', error);
     return [];
   }
 }

@@ -71,6 +71,7 @@ export interface ArticleCategory {
   id: string;
   name: string;
   description: string;
+  business_type_name?: string;
 }
 
 /**
@@ -89,6 +90,14 @@ export interface ArticleTag {
   id: string;
   name: string;
   description: string;
+}
+
+export interface ArticleSubcategory {
+  id: string;
+  name: string;
+  description: string;
+  parent_category_id: string;
+  parent_category_name: string;
 }
 
 /**

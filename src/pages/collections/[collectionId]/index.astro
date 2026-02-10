@@ -79,28 +79,23 @@ const keywords = ['collections', collection.name, 'crypto', 'blockchain', 'resea
   <main class="min-h-screen mt-[56px] md:mt-[97px]">
     <div class="max-w-[1440px] mx-auto">
       <div class="grid layout-two-column-fixed-1440">
-        <div class="pt-5 md:py-5 px-4 md:px-0 border border-t-0 border-border">
+        <div class="pt-5 md:pt-8 md:py-5 border border-t-0 border-border">
           <!-- Collection hero section -->
-          <section class="md:px-6 mb-6">
-            <div class="flex items-start gap-4">
-              {collection.logo_url && (
-                <div class="w-12 h-12 md:w-16 md:h-16 rounded-[2px] overflow-hidden bg-black flex-shrink-0">
-                  <img src={collection.logo_url} alt={collection.name} loading="lazy" class="w-full h-full object-cover" />
-                </div>
-              )}
-              <div class="flex-1">
-                <h1 class="text-[28px] md:text-[40px] font-medium text-[#052019] mb-2">
-                  {collection.name}
-                </h1>
-                <p class="text-[14px] md:text-[16px] text-[#6E6F79] mb-4">
-                  {collection.description}
-                </p>
-                <div class="flex flex-wrap gap-4 text-[12px] md:text-[14px] text-[#6E6F79]">
-                  <span>{collection.hunters_count} {t('collections.hunters')}</span>
-                  <span>{collection.bonus_amt} {t('collections.bonus')}</span>
-                  <span>{collection.views_count} Views</span>
-                </div>
-              </div>
+          <section class="md:px-6 px-4 mb-5 pb-5 border-b border-border">
+            <div class="flex-1">
+              <nav class="text-[14px] text-muted-foreground">
+                <a href="/" class="hover:text-foreground">
+                  {t('navigation.collections')}
+                </a>
+                <span class="mx-[2px]">/</span>
+                <span class="text-primary">{collection.name}</span>
+              </nav>
+              <h1 class="text-[48px] font-medium text-[#052019]">
+                {collection.name}
+              </h1>
+              <p class="text-[14px] md:text-[20px] text-muted-foreground max-w-[720px]">
+                {collection.description}
+              </p>
             </div>
           </section>
 

@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import type { Locale } from '@/types';
+import type { Locale, ArticleSubcategory, ArticleTag } from '@/types';
 import MultiSelectBase from './MultiSelectBase';
 import type { FilterSection } from './FilterDropdown';
-import { fetchArticleTags } from '@/api/articles';
+import { fetchArticleSubcategories, fetchArticleTags } from '@/api/articles';
 import { createTranslator } from '@/lib/i18n';
 
 export interface TopicMultiSelectProps {
   locale: Locale;
   initialValues?: string | string[];
   placeholder?: string;
+  parentCategoryName?: string | string[];
+  mode?: 'subcategory' | 'tag';
   /** Callback to notify parent when dropdown open state changes */
   onOpenChange?: (isOpen: boolean) => void;
+  onOptionsChange?: (info: { optionsCount: number; selectedCount: number }) => void;
 }
 
 /**
@@ -18,7 +21,7 @@ export interface TopicMultiSelectProps {
  * Loads tag options from backend API and renders via shared MultiSelectBase.
  * Falls back to a small set of defaults if the API fails.
  */
-export default function TopicMultiSelect({ locale, initialValues, placeholder, onOpenChange }: TopicMultiSelectProps) {
+export default function TopicMultiSelect({ locale, initialValues, placeholder, parentCategoryName, mode = 'subcategory', onOpenChange, onOptionsChange }: TopicMultiSelectProps) {
   const t = createTranslator(locale);
   const normalizeSelectedValues = (values?: string | string[]) => {
     if (!values) return [];
@@ -27,92 +30,101 @@ export default function TopicMultiSelect({ locale, initialValues, placeholder, o
   };
   const mergeMissingOptions = (options: { id: string; label: string; checked: boolean }[], selectedValues: string[]) => {
     const existingLabels = new Set(options.map((option) => option.label));
-    const missingOptions = selectedValues
-      .filter((value) => !existingLabels.has(value))
-      .map((value) => ({ id: `custom-${value}`, label: value, checked: true }));
+    const missingOptions = selectedValues.filter((value) => !existingLabels.has(value)).map((value) => ({ id: `custom-${value}`, label: value, checked: true }));
     return missingOptions.length > 0 ? [...options, ...missingOptions] : options;
   };
   const [sections, setSections] = useState<FilterSection[]>([
     {
-      id: 'topics',
-      title: t('common.topics'),
+      id: mode === 'tag' ? 'tags' : 'subcategories',
+      title: mode === 'tag' ? t('common.topics') : t('common.subcategories'),
       options: [],
     },
   ]);
+  const [allSubcategories, setAllSubcategories] = useState<ArticleSubcategory[]>([]);
+  const [allTags, setAllTags] = useState<ArticleTag[]>([]);
 
-  /**
-   * Map API tag payload into UI filter options shape
-   * @param tags - Tag data from API
-   * @param selectedValues - Array of initially selected tag names
-   */
-  const mapTagsToOptions = (tags: { id: string; name: string }[], selectedValues: string[] = []) => {
-    const mappedOptions = tags.map((t) => ({
-      id: t.id,
-      label: t.name,
-      checked: selectedValues.includes(t.name),
+  const normalizeParentCategories = (value?: string | string[]) => {
+    if (!value) return [];
+    const rawValues = Array.isArray(value) ? value : value.split(',').map((v) => v.trim());
+    return rawValues.filter((item) => item);
+  };
+  const mapTagsToOptions = (tags: ArticleTag[], selectedValues: string[] = []) => {
+    const mappedOptions = tags.map((item) => ({
+      id: item.id,
+      label: item.name,
+      checked: selectedValues.includes(item.name),
     }));
     return mergeMissingOptions(mappedOptions, selectedValues);
   };
+  const mapSubcategoriesToOptions = (subcategories: ArticleSubcategory[], selectedValues: string[] = [], allowMissing: boolean = true) => {
+    const mappedOptions = subcategories.map((item) => ({
+      id: item.id,
+      label: item.name,
+      checked: selectedValues.includes(item.name),
+    }));
+    return allowMissing ? mergeMissingOptions(mappedOptions, selectedValues) : mappedOptions;
+  };
 
-  /**
-   * Fetch tags on mount and update sections state
-   */
   useEffect(() => {
     let mounted = true;
-    fetchArticleTags()
-      .then((tags) => {
-        if (!mounted) return;
-        if (Array.isArray(tags) && tags.length > 0) {
-          // Parse initial values into array format
-          const selectedValues = normalizeSelectedValues(initialValues);
-
-          setSections([
-            {
-              id: 'topics',
-              title: t('common.topics'),
-              options: mapTagsToOptions(tags, selectedValues),
-            },
-          ]);
-        } else {
-          // Fallback defaults when API returns empty
-          const selectedValues = normalizeSelectedValues(initialValues);
-          const fallbackOptions = [
-            { id: 'blockchain', label: t('common.blockchain'), checked: false },
-            { id: 'defi', label: t('common.defi'), checked: false },
-            { id: 'nft', label: t('common.nft'), checked: false },
-            { id: 'web3', label: t('common.web3'), checked: false },
-          ];
-          setSections([
-            {
-              id: 'topics',
-              title: t('common.topics'),
-              options: mergeMissingOptions(fallbackOptions, selectedValues),
-            },
-          ]);
-        }
-      })
-      .catch(() => {
-        // Network error -> fallback defaults
-        const selectedValues = normalizeSelectedValues(initialValues);
-        const fallbackOptions = [
-          { id: 'blockchain', label: t('common.blockchain'), checked: false },
-          { id: 'defi', label: t('common.defi'), checked: false },
-          { id: 'nft', label: t('common.nft'), checked: false },
-          { id: 'web3', label: t('common.web3'), checked: false },
-        ];
-        setSections([
-          {
-            id: 'topics',
-            title: t('common.topics'),
-            options: mergeMissingOptions(fallbackOptions, selectedValues),
-          },
-        ]);
-      });
+    if (mode === 'tag') {
+      fetchArticleTags()
+        .then((tags) => {
+          if (!mounted) return;
+          if (Array.isArray(tags) && tags.length > 0) {
+            setAllTags(tags);
+          }
+        })
+        .catch(() => {
+          setAllTags([]);
+        });
+    } else {
+      fetchArticleSubcategories()
+        .then((subcategories) => {
+          if (!mounted) return;
+          if (Array.isArray(subcategories) && subcategories.length > 0) {
+            setAllSubcategories(subcategories);
+          }
+        })
+        .catch(() => {
+          setAllSubcategories([]);
+        });
+    }
     return () => {
       mounted = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mode]);
 
-  return <MultiSelectBase locale={locale} sections={sections} onSectionsChange={setSections} changedEventName="filter:changed" clearEventNames={['filter:clear-all']} placeholder={placeholder} onOpenChange={onOpenChange} />;
+  useEffect(() => {
+    const selectedValues = normalizeSelectedValues(initialValues);
+    if (mode === 'tag') {
+      const options = mapTagsToOptions(allTags, selectedValues);
+      setSections([
+        {
+          id: 'tags',
+          title: t('common.topics'),
+          options,
+        },
+      ]);
+      onOptionsChange?.({ optionsCount: options.length, selectedCount: selectedValues.length });
+    } else {
+      const parentCategories = normalizeParentCategories(parentCategoryName);
+      const filteredSubcategories = parentCategories.length > 0 ? allSubcategories.filter((item) => parentCategories.includes(item.parent_category_name)) : allSubcategories;
+      const allowMissing = parentCategories.length === 0;
+      const options = mapSubcategoriesToOptions(filteredSubcategories, selectedValues, allowMissing);
+      setSections([
+        {
+          id: 'subcategories',
+          title: t('common.subcategories'),
+          options,
+        },
+      ]);
+      onOptionsChange?.({ optionsCount: options.length, selectedCount: selectedValues.length });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allSubcategories, allTags, parentCategoryName, mode]);
+
+  const changedEventName = mode === 'tag' ? 'tag:changed' : 'subcategory:changed';
+  return <MultiSelectBase locale={locale} sections={sections} onSectionsChange={setSections} changedEventName={changedEventName} clearEventNames={['filter:clear-all']} placeholder={placeholder} onOpenChange={onOpenChange} />;
 }

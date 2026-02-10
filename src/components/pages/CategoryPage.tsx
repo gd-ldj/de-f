@@ -11,6 +11,7 @@ interface CategoryPageProps {
   initialPage: number;
   initialCategoryName: string;
   initialAuthorName: string;
+  initialSubcategoryName: string;
   initialTag: string;
   initialOrderBy: 'Latest' | 'Popular' | 'Trending';
 }
@@ -19,11 +20,12 @@ interface FilterState {
   page: number;
   categoryName: string | string[];
   authorName: string;
+  subcategoryName: string | string[];
   tag: string | string[];
   orderBy: 'Latest' | 'Popular' | 'Trending';
 }
 
-export default function CategoryPage({ locale, category, initialPage, initialCategoryName, initialAuthorName, initialTag, initialOrderBy }: CategoryPageProps) {
+export default function CategoryPage({ locale, category, initialPage, initialCategoryName, initialAuthorName, initialSubcategoryName, initialTag, initialOrderBy }: CategoryPageProps) {
   // Helper function to parse comma-separated values from URL parameters
   const parseCommaSeparatedValue = (value: string): string | string[] => {
     if (!value) return '';
@@ -57,6 +59,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     page: initialPage,
     categoryName: parseCommaSeparatedValue(initialCategoryName),
     authorName: initialAuthorName,
+    subcategoryName: parseCommaSeparatedValue(initialSubcategoryName),
     tag: parseCommaSeparatedValue(initialTag),
     orderBy: initialOrderBy,
   });
@@ -65,6 +68,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     page: initialPage,
     categoryName: parseCommaSeparatedValue(initialCategoryName),
     authorName: initialAuthorName,
+    subcategoryName: parseCommaSeparatedValue(initialSubcategoryName),
     tag: parseCommaSeparatedValue(initialTag),
     orderBy: initialOrderBy,
   });
@@ -96,7 +100,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       newSearchParams.set('order_by', newFilters.orderBy);
     }
 
-    // Build the final URL manually to handle tag and category_name parameters without encoding
+    // Build the final URL manually to handle subcategory_name, tag and category_name parameters without encoding
     let finalUrl = `${url.origin}${url.pathname}`;
     const searchParamsString = newSearchParams.toString();
 
@@ -106,11 +110,15 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       manualParams.push(`category_name=${categoryValue}`);
     }
 
+    if (newFilters.subcategoryName) {
+      const subcategoryValue = Array.isArray(newFilters.subcategoryName) ? newFilters.subcategoryName.join(',') : newFilters.subcategoryName;
+      manualParams.push(`subcategory_name=${subcategoryValue}`);
+    }
     if (newFilters.tag) {
       const tagValue = Array.isArray(newFilters.tag) ? newFilters.tag.join(',') : newFilters.tag;
       manualParams.push(`tag=${tagValue}`);
     }
-    if (!newFilters.categoryName && !newFilters.tag) {
+    if (!newFilters.categoryName && !newFilters.subcategoryName && !newFilters.tag) {
       manualParams.length = 0;
     }
     const allParams = [];
@@ -129,7 +137,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     window.history.replaceState({}, '', finalUrl);
   }, []);
 
-
   // Fetch articles based on current filters
   const fetchArticlesData = useCallback(
     async (currentFilters: FilterState, append = false) => {
@@ -140,6 +147,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
           business_type_name: category,
           category_name: Array.isArray(currentFilters.categoryName) ? currentFilters.categoryName.join(',') : currentFilters.categoryName || undefined,
           author_name: currentFilters.authorName || undefined,
+          subcategory_name: Array.isArray(currentFilters.subcategoryName) ? currentFilters.subcategoryName.join(',') : currentFilters.subcategoryName || undefined,
           tag: Array.isArray(currentFilters.tag) ? currentFilters.tag.join(',') : currentFilters.tag || undefined,
           order_by: currentFilters.orderBy,
           page: currentFilters.page,
@@ -182,7 +190,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         loadingRef.current = false;
       }
     },
-    [locale, category, itemsPerPage, articles.length]
+    [locale, category, itemsPerPage, articles.length],
   );
 
   // Load more articles for mobile infinite scroll
@@ -210,7 +218,9 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         case 'author':
           newFilters.authorName = value;
           break;
-        case 'topic':
+        case 'subcategory':
+          newFilters.subcategoryName = value;
+          break;
         case 'tag':
           newFilters.tag = value;
           break;
@@ -226,18 +236,19 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       }
 
       const isSameCategory = areFilterValuesEqual(newFilters.categoryName, filters.categoryName);
+      const isSameSubcategory = areFilterValuesEqual(newFilters.subcategoryName, filters.subcategoryName);
       const isSameTag = areFilterValuesEqual(newFilters.tag, filters.tag);
       const isSameAuthor = newFilters.authorName === filters.authorName;
       const isSameOrder = newFilters.orderBy === filters.orderBy;
       const isSamePage = newFilters.page === filters.page;
-      if (isSameCategory && isSameTag && isSameAuthor && isSameOrder && isSamePage) {
+      if (isSameCategory && isSameSubcategory && isSameTag && isSameAuthor && isSameOrder && isSamePage) {
         return;
       }
 
       setFilters(newFilters);
       updateURL(newFilters);
     },
-    [filters, updateURL]
+    [filters, updateURL],
   );
 
   // Handle page change
@@ -248,7 +259,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       setFilters(newFilters);
       updateURL(newFilters);
     },
-    [filters, updateURL]
+    [filters, updateURL],
   );
 
   // Handle clear all filters
@@ -257,6 +268,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       page: 1,
       categoryName: '',
       authorName: '',
+      subcategoryName: '',
       tag: '',
       orderBy: 'Latest' as const,
     };
@@ -281,12 +293,18 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       handleFilterChange('author', query || '');
     };
 
-    const handleTopicChange = (e: Event) => {
+    const handleSubcategoryChange = (e: Event) => {
       const customEvent = e as CustomEvent;
       const { selectedValues } = customEvent.detail;
       // Pass the entire selectedValues array for multi-select support
-      const tag = Array.isArray(selectedValues) && selectedValues.length > 0 ? selectedValues : '';
-      handleFilterChange('tag', tag);
+      const subcategoryName = Array.isArray(selectedValues) && selectedValues.length > 0 ? selectedValues : '';
+      handleFilterChange('subcategory', subcategoryName);
+    };
+    const handleTagChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const { selectedValues } = customEvent.detail;
+      const tagValue = Array.isArray(selectedValues) && selectedValues.length > 0 ? selectedValues : '';
+      handleFilterChange('tag', tagValue);
     };
 
     const handleClearAllEvent = () => {
@@ -299,14 +317,16 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     // Add event listeners
     document.addEventListener('category:changed', handleCategoryChange);
     document.addEventListener('author:search', handleAuthorSearch);
-    document.addEventListener('filter:changed', handleTopicChange);
+    document.addEventListener('subcategory:changed', handleSubcategoryChange);
+    document.addEventListener('tag:changed', handleTagChange);
     document.addEventListener('filter:clear-all', handleClearAllEvent);
 
     return () => {
       // Cleanup event listeners
       document.removeEventListener('category:changed', handleCategoryChange);
       document.removeEventListener('author:search', handleAuthorSearch);
-      document.removeEventListener('filter:changed', handleTopicChange);
+      document.removeEventListener('subcategory:changed', handleSubcategoryChange);
+      document.removeEventListener('tag:changed', handleTagChange);
       document.removeEventListener('filter:clear-all', handleClearAllEvent);
     };
   }, [handleFilterChange, handleClearAll]);
@@ -321,6 +341,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       page: filters.page,
       categoryName: normalizeFilterValues(filters.categoryName),
       authorName: filters.authorName,
+      subcategoryName: normalizeFilterValues(filters.subcategoryName),
       tag: normalizeFilterValues(filters.tag),
       orderBy: filters.orderBy,
     });
@@ -353,7 +374,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         root: null,
         rootMargin: '200px',
         threshold: 0.1,
-      }
+      },
     );
 
     observer.observe(sentinel);
@@ -366,7 +387,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   return (
     <main className="max-w-[1440px] mx-auto py-4">
       {/* Filter Bar */}
-      <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialTag={filters.tag} />
+      <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialSubcategoryName={filters.subcategoryName} initialTag={filters.tag} businessTypeName={category} />
 
       {/* Loading State - Only show for initial load or desktop pagination */}
       {loading && articles.length === 0 && (

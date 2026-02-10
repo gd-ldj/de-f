@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
-import type { Locale, CollectionItem } from '@/types';
+import type { Locale, CollectionItem, SourceLanguage } from '@/types';
 import { fetchCollections } from '@/api/collections';
+import { MULTI_SOURCE_CONFIG, STORAGE_KEYS } from '@/config/constants';
+import { removeTranslationPrefix } from '@/lib/language-utils';
 
 import CountryIcon from './assets/country.svg?url';
 
@@ -26,7 +28,16 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
   const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false);
   const [isLocaleExpanded, setIsLocaleExpanded] = useState(false);
   const [headerCollectionItems, setHeaderCollectionItems] = useState<CollectionItem[]>([]);
-  const texts = headerTexts[locale] || headerTexts.us;
+  const [currentSourceLanguage, setCurrentSourceLanguage] = useState<SourceLanguage>('en');
+  const [isLocalHost, setIsLocalHost] = useState(false);
+  const localeForTexts: Locale = isLocalHost ? MULTI_SOURCE_CONFIG.languageToLocale(currentSourceLanguage) : locale;
+  const texts = headerTexts[localeForTexts] || headerTexts.us;
+
+  const languageOptions: { code: SourceLanguage; label: string }[] = [
+    { code: 'en', label: 'English' },
+    { code: 'zh', label: '中文' },
+    { code: 'ja', label: '日本語' },
+  ];
 
   useEffect(() => {
     let isMounted = true;
@@ -50,6 +61,29 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
     };
   }, [isOpen, headerCollectionItems.length]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      setCurrentSourceLanguage(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE);
+      return;
+    }
+
+    const hostname = window.location.hostname;
+    const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
+    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+    const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
+    const supportedLanguages: SourceLanguage[] = ['en', 'zh', 'ja'];
+    const isStoredLanguageValid = storedLanguage ? supportedLanguages.includes(storedLanguage) : false;
+    const detectedLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+
+    setIsLocalHost(!isKnownDomain);
+
+    if (!isKnownDomain && isStoredLanguageValid) {
+      setCurrentSourceLanguage(storedLanguage as SourceLanguage);
+    } else {
+      setCurrentSourceLanguage(detectedLanguage);
+    }
+  }, []);
+
   if (!isOpen) return null;
 
   /**
@@ -61,14 +95,60 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
     onClose();
   };
 
-  /**
-   * Handle locale switch
-   * @param newLocale - Target locale
-   */
-  const handleLocaleSwitch = (newLocale: Locale) => {
-    onLocaleSwitch(newLocale);
-    setIsLocaleExpanded(false);
-    onClose();
+  const handleLanguageSwitch = (targetLanguage: SourceLanguage) => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (targetLanguage === currentSourceLanguage) {
+      setIsLocaleExpanded(false);
+      onClose();
+      return;
+    }
+
+    const { protocol, hostname, port, search, hash } = window.location;
+    const subdomainMatch = hostname.match(/^(en|zh|ja)\.(.+)$/);
+    const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
+    const isKnownDomain = allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
+
+    const persistLanguage = (language: SourceLanguage) => {
+      localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, language);
+      document.cookie = `${STORAGE_KEYS.SOURCE_LANGUAGE}=${language}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    };
+
+    persistLanguage(targetLanguage);
+
+    let targetHost = hostname;
+
+    if (subdomainMatch) {
+      const rootDomain = subdomainMatch[2];
+      targetHost = `${targetLanguage}.${rootDomain}`;
+    } else if (isKnownDomain) {
+      const targetDomains = MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS[targetLanguage] || [];
+      if (targetDomains.length > 0) {
+        targetHost = targetDomains[0];
+      }
+    } else {
+      setCurrentSourceLanguage(targetLanguage);
+      setIsLocaleExpanded(false);
+      onClose();
+      const currentPathname = window.location.pathname;
+      const nextPath = removeTranslationPrefix(currentPathname);
+      const portPart = port ? `:${port}` : '';
+      const nextUrl = `${protocol}//${hostname}${portPart}${nextPath}${search}${hash}`;
+      if (nextUrl !== window.location.href) {
+        window.location.href = nextUrl;
+      } else {
+        window.location.href = window.location.href;
+      }
+      return;
+    }
+
+    const portPart = port ? `:${port}` : '';
+    const currentPathname = window.location.pathname;
+    const nextPath = removeTranslationPrefix(currentPathname);
+    const newUrl = `${protocol}//${targetHost}${portPart}${nextPath}${search}${hash}`;
+    window.location.href = newUrl;
   };
 
   if (typeof document === 'undefined') return null;
@@ -117,7 +197,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
                       {/* Group items */}
                       <div className="mt-1 space-y-1 pl-3">
                         {group.items.map((item) => (
-                          <button key={item} onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(group.name)}&tag=${encodeURIComponent(item)}`)} className="block w-full py-1.5 px-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md">
+                          <button key={item} onClick={() => handleNavigation(`/news?category_name=${encodeURIComponent(group.name)}&subcategory_name=${encodeURIComponent(item)}`)} className="block w-full py-1.5 px-2 text-left text-sm text-gray-600 hover:bg-gray-50 rounded-md">
                             {item}
                           </button>
                         ))}
@@ -254,10 +334,10 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
 
           {/* Location and User Settings */}
           <div className="space-y-1">
-            {/* North America / Asia with globe icon */}
+            {/* International edition language switcher with globe icon */}
             <div>
               <button onClick={() => setIsLocaleExpanded(!isLocaleExpanded)} className="flex items-center justify-between w-full py-3 text-left">
-                <span className="text-lg text-gray-900">{texts.locale.region}</span>
+                <span className="text-lg text-gray-900">{texts.dropdown.internationalEdition}</span>
                 <div className="flex items-center space-x-2">
                   <img src={CountryIcon} alt="DeTake" className="h-5" />
                   <svg className={`w-5 h-5 text-gray-400 transition-transform ${isLocaleExpanded ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,15 +346,14 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
                 </div>
               </button>
 
-              {/* Locale submenu */}
+              {/* Language submenu */}
               {isLocaleExpanded && (
                 <div className="mt-2 space-y-1">
-                  <button onClick={() => handleLocaleSwitch('us')} className={`block w-full py-2 px-3 text-left text-base rounded transition-colors ${locale === 'us' ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-50'}`}>
-                    {texts.locale.northAmerica}
-                  </button>
-                  <button onClick={() => handleLocaleSwitch('asia')} className={`block w-full py-2 px-3 text-left text-base rounded transition-colors ${locale === 'asia' ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-50'}`}>
-                    {texts.locale.asia}
-                  </button>
+                  {languageOptions.map((option) => (
+                    <button key={option.code} onClick={() => handleLanguageSwitch(option.code)} className={`block w-full py-2 px-3 text-left text-base rounded transition-colors ${currentSourceLanguage === option.code ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-50'}`}>
+                      {option.label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>

@@ -26,7 +26,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const [collectionsDropdownOpen, setCollectionsDropdownOpen] = React.useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
-  const [selectedCategoryTag, setSelectedCategoryTag] = React.useState<string | null>(null);
+  const [selectedSubcategoryName, setSelectedSubcategoryName] = React.useState<string | null>(null);
   const [headerCollectionItems, setHeaderCollectionItems] = React.useState<CollectionItem[]>([]);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const collectionsDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -104,9 +104,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const categoryName = params.get('category_name');
-    const categoryTag = params.get('tag');
+    const categoryTag = params.get('subcategory_name');
     setSelectedCategoryName(categoryName);
-    setSelectedCategoryTag(categoryTag);
+    setSelectedSubcategoryName(categoryTag);
   }, [currentPath]);
 
   // 从后端加载 header 中使用的合集列表
@@ -338,12 +338,12 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                               </a>
                               <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                                 {group.items.map((category) => {
-                                  const isSubcategoryActive = currentCategoryTypeKey === 'news' && selectedCategoryName === group.name && selectedCategoryTag === category;
+                                  const isSubcategoryActive = currentCategoryTypeKey === 'news' && selectedCategoryName === group.name && selectedSubcategoryName === category;
 
                                   return (
                                     <a
                                       key={category}
-                                      href={`${getCategoryFilterUrl('news', group.name)}&tag=${encodeURIComponent(category)}`}
+                                      href={`${getCategoryFilterUrl('news', group.name)}&subcategory_name=${encodeURIComponent(category)}`}
                                       className={`whitespace-nowrap hover:text-primary ${isSubcategoryActive ? 'text-primary font-medium' : ''}`}
                                       onClick={() => {
                                         setCategoriesDropdownOpen(false);
