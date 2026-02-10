@@ -60,6 +60,12 @@ const ogImageUrl = collection.image_url
   : `${SITE_CONFIG.SITE_URL}/api/og/collections.svg?${ogImageParams.toString()}`
 
 const keywords = ['collections', collection.name, 'crypto', 'blockchain', 'research', 'insights']
+
+const categoryName = Astro.url.searchParams.get('category_name')
+const subcategoryName = Astro.url.searchParams.get('subcategory_name')
+const tag = Astro.url.searchParams.get('tag')
+
+
 ---
 
 <BaseLayout
@@ -106,6 +112,9 @@ const keywords = ['collections', collection.name, 'crypto', 'blockchain', 'resea
             collectionId={collectionId}
             initialArticles={initialArticles}
             hasMore={hasMore}
+            filterCategory={categoryName || undefined}
+            filterSubCategory={subcategoryName || undefined}
+            filterTag={tag || undefined}
           />
         </div>
 

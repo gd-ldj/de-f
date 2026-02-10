@@ -21,21 +21,40 @@ export function isValidSourceLanguage(lang: string): lang is SourceLanguage {
 }
 
 /**
- * Get source language from request cookies (SSR) with hostname fallback
+ * Get source language from request hostname (SSR)
+ *
+ * Strategy:
+ * - Production/Test environments: Always use domain
+ * - Local development (IS_DEV_ENV): Use cookie if valid, otherwise use domain/env
+ *
+ * This allows local testing with language switching while ensuring production
+ * sites always reflect their domain language.
+ *
+ * @param request - The HTTP request object
+ * @param hostname - The hostname to check (optional, will extract from request if not provided)
+ * @returns The source language based on domain or cookie (dev mode only)
  */
 export function getSourceLanguageFromRequest(request: Request, hostname?: string): SourceLanguage {
-  const cookieHeader = request.headers.get('cookie') || '';
-  const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${STORAGE_KEYS.SOURCE_LANGUAGE}=([^;]+)`));
-  const cookieValue = match?.[1] ? decodeURIComponent(match[1]) : null;
+  // Extract hostname if not provided
+  const effectiveHostname = hostname || request.headers.get('host') || '';
 
-  if (cookieValue && isValidSourceLanguage(cookieValue)) {
-    return cookieValue;
+  // For local development, check cookie first to allow manual language switching
+  if (import.meta.env.DEV) {
+    const cookieHeader = request.headers.get('cookie') || '';
+    const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${STORAGE_KEYS.SOURCE_LANGUAGE}=([^;]+)`));
+    const cookieValue = match?.[1] ? decodeURIComponent(match[1]) : null;
+
+    if (cookieValue && isValidSourceLanguage(cookieValue)) {
+      return cookieValue;
+    }
   }
 
-  if (hostname) {
-    return MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+  // For all environments (including dev fallback), use domain detection
+  if (effectiveHostname) {
+    return MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(effectiveHostname);
   }
 
+  // Final fallback to environment variable
   return MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE;
 }
 

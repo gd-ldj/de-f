@@ -56,10 +56,33 @@ export const MULTI_SOURCE_CONFIG = {
   SOURCE_LANGUAGE: (import.meta.env.PUBLIC_SOURCE_LANGUAGE as SourceLanguage) || 'en',
 
   // Supported source languages and their domain patterns
+  // Matches all environments: production (.com), beta (.dev), and alternative (.news)
   SOURCE_LANGUAGE_DOMAINS: {
-    en: ['en.detake.com', 'en.detake.news', 'detake.com', 'detake.news'],
-    zh: ['zh.detake.com', 'zh.detake.news'],
-    ja: ['ja.detake.com', 'ja.detake.news'],
+    en: [
+      // Production
+      'en.detake.com', 'detake.com',
+      // Beta/Dev
+      'en.dev.detake.com', 'dev.detake.com',
+      'en.beta.detake.com', 'beta.detake.com',
+      // Alternative domains
+      'en.detake.news', 'detake.news',
+    ],
+    zh: [
+      // Production
+      'zh.detake.com',
+      // Beta/Dev
+      'zh.dev.detake.com', 'zh.beta.detake.com',
+      // Alternative domains
+      'zh.detake.news',
+    ],
+    ja: [
+      // Production
+      'ja.detake.com',
+      // Beta/Dev
+      'ja.dev.detake.com', 'ja.beta.detake.com',
+      // Alternative domains
+      'ja.detake.news',
+    ],
   } as Record<SourceLanguage, string[]>,
 
   // Language to locale mapping
@@ -78,21 +101,39 @@ export const MULTI_SOURCE_CONFIG = {
 
   /**
    * Get source language from hostname
-   * @param hostname - The hostname to check (e.g., 'ja.detake.com')
+   * IMPORTANT: Always determines language from domain, never from cookies/localStorage
+   * @param hostname - The hostname to check (e.g., 'ja.dev.detake.com', 'ja.detake.com')
    * @returns The detected source language or default from environment
    */
   getSourceLanguageFromDomain(hostname: string): SourceLanguage {
-    // Check each source language's domains
+    // Normalize hostname (remove port if present)
+    const normalizedHostname = hostname.split(':')[0].toLowerCase();
+
+    // First, check for exact domain match in configuration
     for (const [lang, domains] of Object.entries(this.SOURCE_LANGUAGE_DOMAINS)) {
-      if (domains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`))) {
+      if (domains.includes(normalizedHostname)) {
         return lang as SourceLanguage;
       }
     }
 
-    // Check for language subdomain pattern (e.g., ja.detake.com)
-    const match = hostname.match(/^(en|zh|ja)\./);
-    if (match) {
-      return match[1] as SourceLanguage;
+    // Second, check for language subdomain pattern at the start
+    // Matches: en.*, zh.*, ja.* (regardless of what follows)
+    const subdomainMatch = normalizedHostname.match(/^(en|zh|ja)\./);
+    if (subdomainMatch) {
+      return subdomainMatch[1] as SourceLanguage;
+    }
+
+    // Third, check if hostname contains detake.com/detake.news without language prefix
+    // These default to 'en'
+    if (
+      normalizedHostname === 'detake.com' ||
+      normalizedHostname === 'detake.news' ||
+      normalizedHostname === 'dev.detake.com' ||
+      normalizedHostname === 'beta.detake.com' ||
+      normalizedHostname.endsWith('.detake.com') ||
+      normalizedHostname.endsWith('.detake.news')
+    ) {
+      return 'en';
     }
 
     // Fallback to environment variable or default

@@ -11,6 +11,9 @@ interface CollectionArticlesListProps {
   collectionId: string;
   initialArticles: ApiArticle[];
   hasMore: boolean;
+  filterCategory?: string;
+  filterSubCategory?: string;
+  filterTag?: string;
 }
 
 const ITEMS_PER_PAGE = 11;
@@ -18,7 +21,7 @@ const ITEMS_PER_PAGE = 11;
 /**
  * 合集文章列表组件（移动端支持滚动触底自动加载）
  */
-const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale, collectionId, initialArticles, hasMore: initialHasMore }) => {
+const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale, collectionId, initialArticles, hasMore: initialHasMore, filterCategory, filterSubCategory, filterTag }) => {
   const [articles, setArticles] = useState<ApiArticle[]>(initialArticles || []);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -113,15 +116,10 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 </div>
                 <div className="flex-1 flex flex-col">
                   <div className="flex flex-wrap gap-1 md:gap-2">
-                    <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleCategoryLabel(article)}</span>
-                    {/* {getArticleSubcategoryLabel(article) && <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleSubcategoryLabel(article)}</span>} */}
+                    <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{filterCategory?.split(',').find((c) => getArticleCategoryLabel(article).includes(c)) || filterCategory?.split(',')[0] || filterSubCategory?.split(',').find((c) => getArticleSubcategoryLabel(article).includes(c)) || filterSubCategory?.split(',')[0] || getArticleCategoryLabel(article)}</span>
                     {article.tags && article.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {article.tags.slice(0, 1).map((tag) => (
-                          <span key={tag} className="text-muted-foreground text-[10px] md:text-xs uppercase">
-                            {tag}
-                          </span>
-                        ))}
+                        <span className="text-muted-foreground text-[10px] md:text-xs uppercase">{article.tags.find((tag) => filterTag?.split(',').includes(tag)) || article.tags[0]}</span>
                       </div>
                     )}
                   </div>

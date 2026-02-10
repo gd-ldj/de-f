@@ -67,20 +67,24 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
     }
 
     const hostname = window.location.hostname;
-    const NODE_ENV = import.meta.env.NODE_ENV;
-    const isNonProduction = NODE_ENV === 'dev' || NODE_ENV === 'test';
-    const allConfiguredDomains = Object.values(MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS).flat();
-    const isKnownDomain = !IS_DEV_ENV && allConfiguredDomains.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
-    const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
-    const supportedLanguages: SourceLanguage[] = ['en', 'zh', 'ja'];
-    const isStoredLanguageValid = storedLanguage ? supportedLanguages.includes(storedLanguage) : false;
-    const detectedLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+    let finalLanguage: SourceLanguage;
 
-    if ((isNonProduction || !isKnownDomain) && isStoredLanguageValid) {
-      setCurrentSourceLanguage(storedLanguage as SourceLanguage);
+    if (IS_DEV_ENV) {
+      // Local development: Allow localStorage to override for testing different languages
+      const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE) as SourceLanguage | null;
+      const supportedLanguages: SourceLanguage[] = ['en', 'zh', 'ja'];
+      const isStoredValid = storedLanguage && supportedLanguages.includes(storedLanguage);
+
+      finalLanguage = isStoredValid ? storedLanguage : MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
     } else {
-      setCurrentSourceLanguage(detectedLanguage);
+      // Production/Test environments: Always use domain, ignore localStorage
+      finalLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+
+      // Update localStorage to match current domain (prevents confusion on next local dev)
+      localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, finalLanguage);
     }
+
+    setCurrentSourceLanguage(finalLanguage);
   }, []);
 
   if (!isOpen) return null;

@@ -5,7 +5,7 @@ import { isValidSourceLanguage } from '@/lib/language-utils';
 import MobileSidebar from './MobileSidebar';
 import MobileCategoryPage from './MobileCategoryPage';
 import { HEADER_LOGO_BLACK_URL } from './constants';
-import type { Locale } from '@/types';
+import type { Locale, SourceLanguage } from '@/types';
 
 // Import icons from local assets
 import SearchIcon from './assets/search.svg?url';
@@ -20,12 +20,28 @@ interface MobileHeaderProps {
 
 function getLocaleFromURL(): Locale {
   if (typeof window !== 'undefined') {
-    const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE);
-    if (storedLanguage && isValidSourceLanguage(storedLanguage)) {
-      return MULTI_SOURCE_CONFIG.languageToLocale(storedLanguage);
-    }
     const hostname = window.location.hostname;
-    const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+    let sourceLanguage: SourceLanguage;
+
+    // Check if running in development mode
+    const isDev = import.meta.env.DEV;
+
+    if (isDev) {
+      // Local development: Allow localStorage to override for testing different languages
+      const storedLanguage = localStorage.getItem(STORAGE_KEYS.SOURCE_LANGUAGE);
+      if (storedLanguage && isValidSourceLanguage(storedLanguage)) {
+        sourceLanguage = storedLanguage;
+      } else {
+        sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+      }
+    } else {
+      // Production/Test environments: Always use domain, ignore localStorage
+      sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+
+      // Update localStorage to match current domain (prevents confusion on next local dev)
+      localStorage.setItem(STORAGE_KEYS.SOURCE_LANGUAGE, sourceLanguage);
+    }
+
     return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
   }
   return 'en';
