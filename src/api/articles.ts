@@ -31,6 +31,7 @@ export async function fetchArticles(
     order_by?: 'Latest' | 'Popular' | 'Trending';
     cursor?: string;
     page?: number;
+    signal?: AbortSignal;
   },
 ): Promise<ArticlesResponse | null> {
   try {
@@ -85,6 +86,7 @@ export async function fetchArticles(
       headers: {
         'Content-Type': 'application/json',
       },
+      signal: options?.signal,
       endpointName: 'fetchArticles',
     });
 

@@ -55,6 +55,8 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
   const hasMoreRef = useRef(true);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
   const filtersRef = useRef<FilterState>({
     page: initialPage,
     categoryName: parseCommaSeparatedValue(initialCategoryName),
@@ -140,6 +142,19 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   // Fetch articles based on current filters
   const fetchArticlesData = useCallback(
     async (currentFilters: FilterState, append = false) => {
+      // Cancel previous request if exists
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      // Create new AbortController for this request
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
+      // Increment request ID to track request order
+      requestIdRef.current += 1;
+      const currentRequestId = requestIdRef.current;
+
       setLoading(true);
       loadingRef.current = true;
       try {
@@ -151,9 +166,17 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
           tag: Array.isArray(currentFilters.tag) ? currentFilters.tag.join(',') : currentFilters.tag || undefined,
           order_by: currentFilters.orderBy,
           page: currentFilters.page,
+          signal: abortController.signal,
         };
 
         const response = await fetchArticles(locale, currentFilters.page, itemsPerPage, options);
+
+        // Check if this request was cancelled or superseded by a newer request
+        if (abortController.signal.aborted || currentRequestId !== requestIdRef.current) {
+          console.log('[fetchArticlesData] Request cancelled or superseded, ignoring response');
+          return;
+        }
+
         if (response) {
           if (append) {
             // Mobile infinite scroll: append new articles
@@ -178,6 +201,18 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
           hasMoreRef.current = false;
         }
       } catch (error) {
+        // Ignore abort errors
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log('[fetchArticlesData] Request aborted');
+          return;
+        }
+
+        // Check if this request was superseded
+        if (currentRequestId !== requestIdRef.current) {
+          console.log('[fetchArticlesData] Request superseded, ignoring error');
+          return;
+        }
+
         if (!append) {
           setArticles([]);
           setTotal(0);
@@ -185,8 +220,11 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         setHasMore(false);
         hasMoreRef.current = false;
       } finally {
-        setLoading(false);
-        loadingRef.current = false;
+        // Only update loading state if this is still the latest request
+        if (currentRequestId === requestIdRef.current) {
+          setLoading(false);
+          loadingRef.current = false;
+        }
       }
     },
     [locale, category, itemsPerPage, articles.length],
