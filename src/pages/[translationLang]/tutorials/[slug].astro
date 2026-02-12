@@ -75,6 +75,15 @@ const ogImageParams = new URLSearchParams({
 })
 const ogImageUrl = `${url.origin}/api/og/learn.svg?${ogImageParams.toString()}`
 const keywords = learnItem.tags || []
+
+// Get available translations for hreflang
+// TODO: Fetch actual available translations from API
+// For now, assume all tutorials support these languages
+const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'ar', 'ru']
+
+const publishedTime = learnItem.created_at
+const modifiedTime = learnItem.updated_at
+const author = learnItem?.author?.name || learnItem.author_name || 'DeTake'
 ---
 
 <BaseLayout
@@ -88,6 +97,13 @@ const keywords = learnItem.tags || []
   twitterCard="summary_large_image"
   keywords={keywords}
   pageLang={learnLang}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={translationLanguage}
+  availableTranslations={availableTranslations}
+  author={author}
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
+  articleSection="Tutorials"
 >
   <HeaderWithFallback locale={locale} />
   <AuthMount client:load shareSection={{ locale, title, url: canonicalUrl }} />

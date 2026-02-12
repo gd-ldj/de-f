@@ -103,6 +103,11 @@ const publishedTime = article.created_at;
 const modifiedTime = article.updated_at;
 const author = article?.author?.name || article.author_name;
 const articleLang = article.language || translationLanguage || sourceLanguage;
+
+// Get available translations for hreflang
+// TODO: Fetch actual available translations from API
+// For now, assume all collection articles support these languages
+const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'ar', 'ru'];
 ---
 
 <BaseLayout
@@ -120,6 +125,9 @@ const articleLang = article.language || translationLanguage || sourceLanguage;
   keywords={keywords}
   articleSection={categoryDisplayName}
   pageLang={articleLang}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={translationLanguage}
+  availableTranslations={availableTranslations}
 >
   <HeaderWithFallback locale={locale} />
   <AuthMount
