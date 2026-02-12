@@ -95,12 +95,17 @@ const keywords = article.tags || []
 const publishedTime = article.created_at
 const modifiedTime = article.updated_at
 const author = article?.author?.name || article.author_name
+
+// Get available translations for hreflang
+// TODO: Fetch actual available translations from API
+// For now, assume all articles support these languages
+const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'ar', 'ru']
 ---
 
-<BaseLayout 
-  title={title} 
-  description={description} 
-  locale={locale} 
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
   canonicalUrl={canonicalUrl}
   ogImage={ogImageUrl}
   ogImageAlt={`${article.title} - ${categoryDisplayName} article on DeTake`}
@@ -112,6 +117,9 @@ const author = article?.author?.name || article.author_name
   keywords={keywords}
   articleSection={categoryDisplayName}
   pageLang={articleLang}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={translationLanguage}
+  availableTranslations={availableTranslations}
 >
   <HeaderWithFallback locale={locale} />
   <AuthMount 

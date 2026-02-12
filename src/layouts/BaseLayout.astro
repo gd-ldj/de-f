@@ -57,11 +57,17 @@ const currentOrigin = Astro.url.origin
 const rawCanonicalUrl = canonicalUrl ? new URL(canonicalUrl) : Astro.url
 const currentUrl = new URL(`${currentOrigin}${rawCanonicalUrl.pathname}${rawCanonicalUrl.search}${rawCanonicalUrl.hash}`).href
 
-// 页面整体语言仍然跟随站点 locale（导航、Footer 等文案），而正文可使用 section 级 lang 区分
-const htmlLang = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en'
+// Page language: use sourceLanguage for multi-source architecture, fallback to locale
+const effectiveLanguage = sourceLanguage || (locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en')
+const htmlLang = effectiveLanguage
 
-// Open Graph 语言也采用站点级区域语言
-const ogLocale = locale === 'zh' ? 'zh_CN' : locale === 'ja' ? 'ja_JP' : 'en_US'
+// Open Graph locale based on source language
+const ogLocaleMap: Record<string, string> = {
+  en: 'en_US',
+  zh: 'zh_CN',
+  ja: 'ja_JP',
+}
+const ogLocale = ogLocaleMap[effectiveLanguage] || 'en_US'
 
 // 仅在正文语言未显式指定，或与站点默认语言一致时输出 region 级别的 hreflang，避免误标其他语言内容
 const regionDefaultLang: ArticleLanguageCode = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en'
@@ -83,6 +89,23 @@ const robotsContent = isProductionSite
 const hreflangAlternates = sourceLanguage && availableTranslations
   ? generateHreflangAlternates(Astro.url, sourceLanguage, availableTranslations)
   : null
+
+// Generate og:locale:alternate values
+const ogLocaleAlternates = availableTranslations ? availableTranslations.map((lang) => {
+  const ogLocaleMapForAlternates: Record<string, string> = {
+    en: 'en_US',
+    zh: 'zh_CN',
+    ja: 'ja_JP',
+    fr: 'fr_FR',
+    ar: 'ar_AR',
+    ru: 'ru_RU',
+    de: 'de_DE',
+    es: 'es_ES',
+    ko: 'ko_KR',
+  };
+  const alternateLang = ogLocaleMapForAlternates[lang] || `${lang}_${lang.toUpperCase()}`;
+  return alternateLang !== ogLocale ? alternateLang : null;
+}).filter(Boolean) : []
 ---
 
 <!DOCTYPE html>
@@ -110,7 +133,12 @@ const hreflangAlternates = sourceLanguage && availableTranslations
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="800" />
     <meta property="og:locale" content={ogLocale} />
-    
+
+    {/* og:locale:alternate for available translations */}
+    {ogLocaleAlternates.map((alternateLang) => (
+      <meta property="og:locale:alternate" content={alternateLang} />
+    ))}
+
     {/* Article-specific Open Graph tags */}
     {ogType === 'article' && (
       <>

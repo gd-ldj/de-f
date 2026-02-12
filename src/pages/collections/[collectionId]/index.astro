@@ -112,9 +112,9 @@ const tag = Astro.url.searchParams.get('tag')
             collectionId={collectionId}
             initialArticles={initialArticles}
             hasMore={hasMore}
-            filterCategory={categoryName || undefined}
-            filterSubCategory={subcategoryName || undefined}
-            filterTag={tag || undefined}
+            filterCategory={categoryName ?? undefined}
+            filterSubCategory={subcategoryName ?? undefined}
+            filterTag={tag ?? undefined}
           />
         </div>
 
