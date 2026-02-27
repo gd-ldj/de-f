@@ -1,0 +1,10 @@
+
+# AI Agent Rules
+
+This project uses a unified set of rules and guides stored in the `.agents/` directory.
+
+Please refer to the following files for specific guidelines:
+
+- **Astro on Vercel**: `.agents/astro-vercel-guide.md`
+
+When answering questions about these topics, ALWAYS read and prioritize the information in these files.

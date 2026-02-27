@@ -25,7 +25,5 @@ pnpm-debug.log*
 
 .vercel/
 
-.claude/
-
 .vscode/
 .vercel
