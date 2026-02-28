@@ -104,7 +104,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                   <div className="flex">
                     {/* Article image */}
                     <div className="relative flex-shrink-0">
-                      <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block">
+                      <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} article={article} className="block">
                         <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-20 h-20 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                       </ArticleLink>
                     </div>
@@ -118,7 +118,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
                       {/* Article title */}
                       <h3 className="text-foreground text-sm leading-tight line-clamp-2 mb-2">
-                        <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
+                        <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} article={article} className="hover:text-primary transition-colors">
                           {article.title}
                         </ArticleLink>
                       </h3>
@@ -156,7 +156,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
               <div className="flex flex-col h-full">
                 {/* Article image */}
                 <div className="relative w-full">
-                  <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block overflow-hidden">
+                  <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} article={article} className="block overflow-hidden">
                     <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                   </ArticleLink>
                 </div>
@@ -170,7 +170,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
                   {/* Article title - clickable to enter details */}
                   <h3 className="text-foreground mt-1 mb-2 leading-tight line-clamp-2">
-                    <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
+                    <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} article={article} className="hover:text-primary transition-colors">
                       {article.title}
                     </ArticleLink>
                   </h3>

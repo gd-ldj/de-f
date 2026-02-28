@@ -47,7 +47,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
               {/* Article Content */}
               <div className="pt-1">
                 <h3 className="text-[16px] md:text-2xl font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
-                  <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
+                  <ArticleLink slug={article.slug} locale={locale} article={article} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
                 </h3>

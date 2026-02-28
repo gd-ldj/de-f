@@ -277,10 +277,13 @@ export interface HomeNewsArticle {
   img_url: string;
   created_at: string;
   business_type_name: string;
+  user_id?: string; // User ID for regular user articles (not present for admin/system articles)
   author: {
+    id?: string;
     name: string;
     avatar_url: string;
     bio: string;
+    role?: string; // Role field to distinguish user articles (role === "Authors") from admin articles
   };
   body: string;
 }

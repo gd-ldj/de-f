@@ -25,6 +25,7 @@ const featuredArticle = news_all[0]
 // Get the rest for the sidebar articles
 const sidebarArticles = news_all.slice(1, 3)
 
+
 /**
  * Extract plain text from rich text content and truncate to specified length
  * @param richText - Rich text content that may contain HTML tags
@@ -72,10 +73,11 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
         </p>
 
         <h2 class="text-xl md:text-2xl font-medium text-foreground mb-4 line-clamp-2">
-          <ArticleLink 
+          <ArticleLink
             slug={featuredArticle.slug}
             locale={locale}
             business={getArticleBusinessPath(featuredArticle)}
+            article={featuredArticle}
           >
             {featuredArticle.title}
           </ArticleLink>
@@ -95,10 +97,11 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
         </div>
 
         <div class="relative">
-          <ArticleLink 
+          <ArticleLink
             slug={featuredArticle.slug}
             locale={locale}
             business={getArticleBusinessPath(featuredArticle)}
+            article={featuredArticle}
           >
             <img
               src={featuredArticle.img_url || '/placeholder.svg'}
@@ -124,10 +127,11 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
           </a>
         </div>
         <h3 class="text-base md:text-lg font-medium text-foreground mb-2 line-clamp-2">
-          <ArticleLink 
+          <ArticleLink
             slug={article.slug}
             locale={locale}
             business={getArticleBusinessPath(article)}
+            article={article}
           >
             {article.title}
           </ArticleLink>

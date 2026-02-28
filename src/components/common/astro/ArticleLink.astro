@@ -7,12 +7,13 @@ interface Props {
   locale: Locale
   business: string
   userId?: string // User ID for regular user articles
+  article?: any // Article object to extract user_id from author info
   children?: any
   class?: string
   onClick?: string
 }
 
-const { slug, locale, business, userId, class: className = '', onClick } = Astro.props
+const { slug, locale, business, userId, article, class: className = '', onClick } = Astro.props
 
 /**
  * Generate article URL with promote code from cookies (SSR-friendly)
@@ -28,9 +29,24 @@ const getArticleUrl = (slug: string) => {
   const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
   const businessPath = business.toLowerCase()
 
+  // Determine userId from multiple sources
+  let finalUserId = userId
+
+  // If article object is provided, extract userId from it
+  if (!finalUserId && article) {
+    // Check user_id field first
+    if (article.user_id) {
+      finalUserId = article.user_id
+    }
+    // If author.role is "Authors", use author.id as userId
+    else if (article.author?.role === "Authors" && article.author?.id) {
+      finalUserId = article.author.id
+    }
+  }
+
   // If userId exists, it's a regular user article (numeric ID)
-  if (userId) {
-    return `/${userId}/article/${businessPath}/${slug}-${promoteCode}`
+  if (finalUserId) {
+    return `/${finalUserId}/article/${businessPath}/${slug}-${promoteCode}`
   }
 
   // Otherwise, it's an admin/system article

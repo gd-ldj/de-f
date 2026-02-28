@@ -52,7 +52,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
 
   const getArticleUrl = (): string => {
     const businessPath = getArticleBusinessPath(article);
-
+console.log('🚀 ~ getArticleUrl ~ article.author:', article.author);
     // Determine user_id based on author.role or existing user_id field
     // User articles have author.role === "Authors" or have a user_id field
     let userId = article.user_id;
