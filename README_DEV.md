@@ -14,28 +14,30 @@ pnpm dev
 
 # 2. 修改代码...
 
-# 3. 开发完成，一键测试并提交
-./dev-commit.sh feat "你的功能描述"
+# 3. 开发完成，一键测试并提交 (提交信息必须用英语)
+./dev-commit.sh feat "your feature description"
 
 # 4. 推送到远程
 git push
 ```
 
+**⚠️ 重要**: 所有提交信息必须使用英语 (All commit messages must be in English)
+
 **就这么简单！** ✅
 
 ---
 
-## 📝 提交类型速查
+## 📝 提交类型速查 (Commit message must be in English)
 
 | 类型 | 说明 | 示例 |
 |------|------|------|
-| `feat` | 新功能 | `./dev-commit.sh feat "添加用户头像"` |
-| `fix` | Bug修复 | `./dev-commit.sh fix "修复登录问题"` |
-| `docs` | 文档 | `./dev-commit.sh docs "更新API文档"` |
-| `style` | 格式 | `./dev-commit.sh style "格式化代码"` |
-| `refactor` | 重构 | `./dev-commit.sh refactor "重构用户模块"` |
-| `test` | 测试 | `./dev-commit.sh test "添加单元测试"` |
-| `chore` | 构建 | `./dev-commit.sh chore "更新依赖"` |
+| `feat` | 新功能 | `./dev-commit.sh feat "add user avatar"` |
+| `fix` | Bug修复 | `./dev-commit.sh fix "fix login issue"` |
+| `docs` | 文档 | `./dev-commit.sh docs "update API documentation"` |
+| `style` | 格式 | `./dev-commit.sh style "format code"` |
+| `refactor` | 重构 | `./dev-commit.sh refactor "refactor user module"` |
+| `test` | 测试 | `./dev-commit.sh test "add unit tests"` |
+| `chore` | 构建 | `./dev-commit.sh chore "update dependencies"` |
 
 ---
 
@@ -88,14 +90,14 @@ pnpm build              # 构建项目
 
 ## 🤖 AI 开发流程
 
-当你请 AI 帮你开发时：
+当你请 AI 帮你开发时 (AI 提交信息将使用英语)：
 
 ```
 你: "请添加一个搜索功能"
    ↓
 AI: [开发代码...]
    ↓
-AI: [自动运行 ./dev-commit.sh feat "添加搜索功能"]
+AI: [自动运行 ./dev-commit.sh feat "add search feature"]
    ↓
 AI: ✅ 测试通过，代码已提交
    ↓

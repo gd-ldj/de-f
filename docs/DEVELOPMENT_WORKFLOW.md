@@ -35,6 +35,8 @@ pnpm dev
 pnpm commit <type> "<message>"
 ```
 
+**⚠️ 重要**: 所有提交信息必须使用英语 (All commit messages must be in English)
+
 **提交类型**:
 - `feat` - 新功能 (new feature for the user)
 - `fix` - Bug 修复 (bug fix for the user)
@@ -44,11 +46,11 @@ pnpm commit <type> "<message>"
 - `test` - 测试相关 (adding missing tests, refactoring tests)
 - `chore` - 构建/工具 (updating grunt tasks, etc)
 
-**示例**:
+**示例** (commit message must be in English):
 ```bash
-./dev-commit.sh feat "添加用户头像显示功能"
-./dev-commit.sh fix "修复首页图片加载问题"
-./dev-commit.sh docs "更新 API 文档"
+./dev-commit.sh feat "add user avatar display feature"
+./dev-commit.sh fix "fix homepage image loading issue"
+./dev-commit.sh docs "update API documentation"
 ```
 
 这个脚本会自动：
@@ -122,10 +124,10 @@ AI 会：
 
 ### 步骤 3: AI 自动测试和提交
 
-开发完成后，AI 会自动运行：
+开发完成后，AI 会自动运行 (使用英语提交信息)：
 
 ```bash
-./dev-commit.sh feat "添加首页搜索框功能"
+./dev-commit.sh feat "add homepage search box"
 ```
 
 这会触发：
@@ -134,7 +136,7 @@ AI 会：
 3. ✅ 项目构建验证
 4. ✅ E2E 测试（确保没破坏现有功能）
 5. ✅ 自动清理测试产物
-6. ✅ **自动 Git 提交**（格式：`feat: 添加首页搜索框功能`）
+6. ✅ **自动 Git 提交**（格式：`feat: add homepage search box`）
 
 ### 步骤 4: 报告结果
 
@@ -146,7 +148,7 @@ AI 会告诉你：
 - Build: Success
 - E2E Tests: 10/10 passed
 - 中间产物已自动清理
-- Git Commit: feat: 添加首页搜索框功能
+- Git Commit: feat: add homepage search box
 
 可以推送到远程: git push
 ```

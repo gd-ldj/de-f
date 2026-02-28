@@ -21,10 +21,10 @@ if [ $# -lt 2 ]; then
     echo "  test     - 测试相关 (adding missing tests, refactoring tests)"
     echo "  chore    - 构建/工具 (updating grunt tasks, etc)"
     echo ""
-    echo "示例:"
-    echo "  ./dev-commit.sh feat \"添加用户头像显示功能\""
-    echo "  ./dev-commit.sh fix \"修复首页图片加载问题\""
-    echo "  ./dev-commit.sh docs \"更新 API 文档\""
+    echo "示例 (Examples - commit message must be in English):"
+    echo "  ./dev-commit.sh feat \"add user avatar display\""
+    echo "  ./dev-commit.sh fix \"fix homepage image loading issue\""
+    echo "  ./dev-commit.sh docs \"update API documentation\""
     exit 1
 fi
 

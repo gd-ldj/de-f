@@ -40,12 +40,18 @@
    - 构建与本地预览：`pnpm build`、`pnpm preview`（或按项目脚本使用）。  
    - 如果后续补充 Lint / Test / Git Hooks，视为第一层「强制执行层」规则。
 
-5. **注释与多语言约定**  
-   - 代码注释以英文为基础说明，但对**复杂或核心函数**，可以额外补充简体中文解释，帮助人类快速理解。  
-   - HTML / Astro 模板中的注释使用英文。  
+5. **注释与多语言约定**
+   - 代码注释以英文为基础说明，但对**复杂或核心函数**，可以额外补充简体中文解释，帮助人类快速理解。
+   - HTML / Astro 模板中的注释使用英文。
    - 与用户对话一律使用简体中文。
 
-6. **前端开发规范&注意事项**  
+6. **Git 提交规范 (重要!)**
+   - **所有 Git 提交信息必须使用英语** (All commit messages must be in English)
+   - 遵循 Conventional Commits 格式: `<type>: <description>`
+   - 使用自动化脚本提交: `./dev-commit.sh <type> "<message in English>"`
+   - 示例: `./dev-commit.sh feat "add search feature"`, `./dev-commit.sh fix "fix image loading"`
+
+7. **前端开发规范&注意事项**  
    - 提交代码前必须保证编译无错误。  
    - 统一使用 pnpm 管理依赖（非极端情况不使用 npm/yarn）。  
    - 必须避免单词拼写错误。  
