@@ -63,7 +63,7 @@ function updateAllArticleLinks() {
       
       if (slug && locale) {
         const oldHref = link.href;
-        const prefix = authorId ? `/u/${authorId}/article` : `/article`;
+        const prefix = authorId ? `/${authorId}/article` : `/article`;
         const newUrl = `${prefix}/${business}/${slug}-${currentPromoteCode}`;
         link.href = newUrl;
         

@@ -32,7 +32,7 @@ const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.reques
 const baseArticlePath = collection
   ? `/collections/${collection.id}/${slugWithPromote}`
   : userId
-  ? `/u/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
+  ? `/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
   : `/article/${category.toLowerCase()}/${slugWithPromote}`
 const collectionLabel = t('article.collectionsLabel')
 const collectionTitle = collection?.title || collection?.id
