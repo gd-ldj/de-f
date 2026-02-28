@@ -100,18 +100,20 @@ export default function Footer({ locale }: FooterProps) {
               <a href="https://t.me/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.telegram}>
                 <img src={TelegramIcon} alt="Telegram" className="w-6 h-6" />
               </a>
-              <a href="https://github.com/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.github}>
+              {/* GitHub icon hidden as requested */}
+              {/* <a href="https://github.com/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.github}>
                 <img src={GithubIcon} alt="GitHub" className="w-6 h-6" />
-              </a>
+              </a> */}
               <a href="https://discord.gg/detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.discord}>
                 <img src={DiscordIcon} alt="Discord" className="w-6 h-6" />
               </a>
               <a href="https://youtube.com/@detake" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.youtube}>
                 <img src={YoutubeIcon} alt="YouTube" className="w-6 h-6" />
               </a>
-              <a href="/rss" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.rss}>
+              {/* RSS icon hidden as requested */}
+              {/* <a href="/rss" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-200" aria-label={texts.social.rss}>
                 <img src={RSSIcon} alt="RSS" className="w-6 h-6" />
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
