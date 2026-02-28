@@ -13,7 +13,17 @@
     "type-check": "astro check",
     "check:no-chinese-us": "node check-no-chinese-us.js",
     "check:spelling": "cspell --config package.json --no-progress \"src/**/*.{ts,tsx,js,jsx,astro}\"",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project='Mobile Chrome' --project='Mobile Safari'",
+    "test:report": "playwright show-report",
+    "dev-test": "./dev-test.sh",
+    "commit": "./dev-commit.sh"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -28,6 +38,7 @@
     "@radix-ui/react-dropdown-menu": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.0",
     "@radix-ui/react-toast": "^1.0.0",
+    "@sentry/astro": "^10.33.0",
     "@solana/kit": "^3.0.2",
     "@solana/spl-token": "^0.4.13",
     "@tailwindcss/vite": "^4.1.11",
@@ -61,10 +72,10 @@
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2",
     "vite-plugin-node-polyfills": "^0.24.0",
-    "zod": "^3.22.4",
-    "@sentry/astro": "^10.33.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@rollup/plugin-inject": "^5.0.5",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.0.0",
