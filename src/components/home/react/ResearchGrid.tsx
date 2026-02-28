@@ -94,7 +94,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                       {formatDate(article.created_at, locale)}
                     </span>
                     <span>/ {t('article.by')} </span>
-                    <span className="text-foreground uppercase truncate">{article.author.name}</span>
+                    <span className="text-foreground uppercase truncate">{article.author?.name || article.author.name}</span>
                   </div>
                 </div>
               </div>
