@@ -75,9 +75,16 @@ function getArticleUrl(article: any, locale: Locale): string {
   if (article.slug) {
     const businessSegment = getArticleBusinessPath(article);
 
-    // If article has user_id, it's a regular user article (numeric ID)
-    if (article.user_id) {
-      return `/${article.user_id}/article/${businessSegment}/${article.slug}-${promoteCode}`;
+    // Determine user_id based on author.role or existing user_id field
+    // User articles have author.role === "Authors" or have a user_id field
+    let userId = article.user_id;
+    if (!userId && article.author?.role === "Authors" && article.author?.id) {
+      userId = article.author.id;
+    }
+
+    // If we have a userId, it's a user article (numeric ID distinguishes from language codes)
+    if (userId) {
+      return `/${userId}/article/${businessSegment}/${article.slug}-${promoteCode}`;
     }
 
     // Otherwise, it's an admin/system article

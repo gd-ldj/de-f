@@ -36,6 +36,7 @@ export interface ApiArticle {
     name: string;
     avatar_url?: string;
     bio?: string;
+    role?: string; // Role field to distinguish user articles (role === "Authors") from admin articles
   };
 }
 
