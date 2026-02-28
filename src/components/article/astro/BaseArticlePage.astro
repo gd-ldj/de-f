@@ -44,7 +44,7 @@ const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlu
 
 // Determine which language to display
 // If translationLanguage is provided and different from source, fetch translation
-const baseArticle = await fetchArticle(actualSlug, locale, category)
+const baseArticle = await fetchArticle(actualSlug, locale, category, userId)
 
 if (!baseArticle) {
   return Astro.redirect('/404')

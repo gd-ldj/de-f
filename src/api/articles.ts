@@ -120,10 +120,16 @@ export async function fetchArticle(
   slug: string,
   locale?: Locale,
   category?: string,
+  userId?: string,
 ): Promise<ApiArticle | null> {
   try {
     const params = new URLSearchParams();
     params.set('slug', slug);
+
+    // Add userId parameter if provided (for user-generated articles)
+    if (userId) {
+      params.set('user_id', userId);
+    }
 
     const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles/info?${params.toString()}`, {
       headers: {
