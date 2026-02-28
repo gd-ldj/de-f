@@ -51,7 +51,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
   };
 
   const getArticleUrl = (): string => {
-    return `/article/${getArticleBusinessPath(article)}/${article.slug}`;
+    const businessPath = getArticleBusinessPath(article);
+    // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
+    if (article.user_id) {
+      return `/${article.user_id}/article/${businessPath}/${article.slug}`;
+    }
+    return `/article/${businessPath}/${article.slug}`;
   };
 
   return (

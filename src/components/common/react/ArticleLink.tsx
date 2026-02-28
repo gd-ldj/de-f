@@ -17,8 +17,9 @@ const ArticleLink: React.FC<ArticleLinkProps> = ({ slug, locale, business, userI
     const promoteCode = (typeof window !== 'undefined' ? localStorage.getItem('promote_code') : null) || DEFAULT_PROMOTE_CODE;
     const businessPath = business.toLowerCase();
 
+    // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
     if (userId) {
-      return `/u/${userId}/article/${businessPath}/${slug}-${promoteCode}`;
+      return `/${userId}/article/${businessPath}/${slug}-${promoteCode}`;
     }
 
     return `/article/${businessPath}/${slug}-${promoteCode}`;

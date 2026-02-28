@@ -36,8 +36,9 @@ export function formatDate(date: Date | string, locale: string = 'en-US'): strin
  * @returns Article URL with promote code parameter
  *
  * URL formats:
- * - Admin/System articles: /{locale}/{business}/{slug}-{promoteCode}
- * - User articles: /{locale}/{userId}/{business}/{slug}-{promoteCode}
+ * - Admin/System articles: /article/{business}/{slug}-{promoteCode}
+ * - User articles: /{userId}/article/{business}/{slug}-{promoteCode}
+ *   (userId is numeric, distinguishable from language codes)
  */
 export const getArticleUrl = (
   slug: string,
@@ -49,8 +50,9 @@ export const getArticleUrl = (
   const finalPromoteCode = promoteCode || DEFAULT_PROMOTE_CODE
   const businessPath = business.toLowerCase()
 
+  // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
   if (userId) {
-    return `/u/${userId}/article/${businessPath}/${slug}-${finalPromoteCode}`
+    return `/${userId}/article/${businessPath}/${slug}-${finalPromoteCode}`
   }
 
   return `/article/${businessPath}/${slug}-${finalPromoteCode}`

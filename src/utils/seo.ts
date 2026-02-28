@@ -11,12 +11,19 @@ import { SITE_CONFIG } from '@/config/constants';
  * @param locale Current locale
  * @param promoteCode Optional promote code (defaults to DEFAULT_PROMOTE_CODE)
  * @returns Canonical article URL
+ *
+ * URL formats:
+ * - Admin/System articles: /article/{category}/{slug}
+ * - User articles: /{userId}/article/{category}/{slug}
+ *   (userId is numeric, distinguishable from language codes)
  */
 export function getCanonicalArticleUrl(slug: string, locale: Locale, category: string = 'news', promoteCode?: string, userId?: string): string {
   const normalizedCategory = category.toLowerCase();
   const normalizedSlug = promoteCode ? `${slug}-${promoteCode}` : slug;
+
+  // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
   if (userId) {
-    return `/u/${userId}/article/${normalizedCategory}/${normalizedSlug}`;
+    return `/${userId}/article/${normalizedCategory}/${normalizedSlug}`;
   }
   return `/article/${normalizedCategory}/${normalizedSlug}`;
 }
