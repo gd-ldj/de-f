@@ -67,16 +67,17 @@ function formatDate(dateString: string, locale: Locale): string {
  *
  * URL formats:
  * - Admin/System articles: /article/{business}/{slug}-{promoteCode}
- * - User articles: /u/{userId}/article/{business}/{slug}-{promoteCode}
+ * - User articles: /{userId}/article/{business}/{slug}-{promoteCode}
+ *   (userId is numeric, distinguishable from language codes)
  */
 function getArticleUrl(article: any, locale: Locale): string {
   if (article.url) return article.url;
   if (article.slug) {
     const businessSegment = getArticleBusinessPath(article);
 
-    // If article has user_id, it's a regular user article
+    // If article has user_id, it's a regular user article (numeric ID)
     if (article.user_id) {
-      return `/u/${article.user_id}/article/${businessSegment}/${article.slug}-${promoteCode}`;
+      return `/${article.user_id}/article/${businessSegment}/${article.slug}-${promoteCode}`;
     }
 
     // Otherwise, it's an admin/system article

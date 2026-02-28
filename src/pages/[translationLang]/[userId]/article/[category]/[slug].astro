@@ -1,16 +1,18 @@
 ---
 /**
- * Translated user article route with /u/ prefix
- * URL pattern: /{translationLang}/u/{userId}/article/{category}/{slug}
- * Example: ja.detake.com/fr/u/user123/article/news/my-crypto-analysis
+ * Translated user article route (without /u/ prefix)
+ * URL pattern: /{translationLang}/{userId}/article/{category}/{slug}
+ * Example: ja.detake.com/fr/10/article/news/author-create-cbe4
  *
  * This route serves translated versions of user-generated articles.
- * The /u/ prefix distinguishes user routes from other dynamic routes.
+ * Route disambiguation:
+ * - First segment is 2-letter language code (en, zh, ja, fr, etc.)
+ * - Second segment is numeric user ID
  */
 import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro';
 import type { SourceLanguage, TranslationLanguage } from '@/types';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
-import { getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils';
+import { getSourceLanguageFromRequest, isValidTranslationLanguage, isNumericUserId } from '@/lib/language-utils';
 
 const { translationLang, userId, category, slug } = Astro.params as {
   translationLang: string;
@@ -21,6 +23,11 @@ const { translationLang, userId, category, slug } = Astro.params as {
 
 // Validate translation language
 if (!isValidTranslationLanguage(translationLang)) {
+  return Astro.redirect('/404');
+}
+
+// Validate that userId is numeric to ensure proper routing
+if (!isNumericUserId(userId)) {
   return Astro.redirect('/404');
 }
 

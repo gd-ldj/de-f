@@ -74,12 +74,45 @@ export function getSourceLanguageFromUrl(url: URL): SourceLanguage {
 }
 
 /**
+ * Check if a string is a numeric user ID
+ */
+export function isNumericUserId(value: string): boolean {
+  return /^\d+$/.test(value);
+}
+
+/**
+ * Check if the first path segment is a language code (2 letters) or user ID (numeric)
+ * @returns 'language' | 'userId' | 'other'
+ */
+export function detectFirstPathSegmentType(pathname: string): 'language' | 'userId' | 'other' {
+  const match = pathname.match(/^\/([^/]+)/);
+  if (!match || !match[1]) {
+    return 'other';
+  }
+
+  const segment = match[1];
+
+  // Check if it's a numeric user ID
+  if (isNumericUserId(segment)) {
+    return 'userId';
+  }
+
+  // Check if it's a 2-letter language code
+  if (/^[a-z]{2}$/.test(segment) && isValidTranslationLanguage(segment)) {
+    return 'language';
+  }
+
+  return 'other';
+}
+
+/**
  * Extract translation language from pathname
  * Returns null if no translation language is detected in the path
  *
  * @example
  * extractTranslationLanguageFromPath('/fr/article/news/example') // 'fr'
  * extractTranslationLanguageFromPath('/article/news/example') // null
+ * extractTranslationLanguageFromPath('/10/article/news/example') // null (user ID, not language)
  */
 export function extractTranslationLanguageFromPath(pathname: string): TranslationLanguage | null {
   // Match pattern: /{lang}/...
@@ -87,7 +120,10 @@ export function extractTranslationLanguageFromPath(pathname: string): Translatio
 
   if (match && match[1]) {
     const lang = match[1];
-    return isValidTranslationLanguage(lang) ? lang : null;
+    // Make sure it's a valid translation language and not a numeric user ID
+    if (isValidTranslationLanguage(lang) && !isNumericUserId(lang)) {
+      return lang;
+    }
   }
 
   return null;
@@ -167,8 +203,8 @@ export function shouldRedirectToSourceVersion(sourceLanguage: SourceLanguage, tr
  */
 export function buildArticleUrl(category: string, slug: string, sourceLanguage: SourceLanguage, translationLanguage: TranslationLanguage | null = null, userId?: string): string {
   // Base path without language
-  // User articles use /u/{userId}/ prefix to avoid conflict with translation language routes
-  const basePath = userId ? `/u/${userId}/article/${category}/${slug}` : `/article/${category}/${slug}`;
+  // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
+  const basePath = userId ? `/${userId}/article/${category}/${slug}` : `/article/${category}/${slug}`;
 
   // If translation language is null or same as source, return source version
   if (!translationLanguage || translationLanguage === sourceLanguage) {
