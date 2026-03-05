@@ -13,7 +13,7 @@ export const SITE_CONFIG = {
   // Current site environment (beta | production)
   ENVIRONMENT: import.meta.env.PUBLIC_SITE_ENV || 'beta',
 
-  // API domain templates by environment (language prefix will be prepended)
+  // API domain templates by environment (language prefix will be prepended with `-`)
   API_DOMAINS: {
     beta: 'beta-api.detake.com',
     web2: 'beta-api.detake.com',
@@ -21,7 +21,7 @@ export const SITE_CONFIG = {
     beta_dev: 'preview-api.detake.com',
   },
 
-  // SSR API domain templates by environment (language prefix will be prepended)
+  // SSR API domain templates by environment (language prefix will be prepended with `-`)
   SSR_API_DOMAINS: {
     beta: 'beta-ssr-api.detake.com',
     web2: 'beta-ssr-api.detake.com',
@@ -38,21 +38,21 @@ export const SITE_CONFIG = {
   },
 
   // Get current API base URL based on environment and language
-  // e.g. https://en.beta-api.detake.com, https://zh.api.detake.com
+  // e.g. https://en-beta-api.detake.com, https://zh-api.detake.com
   get API_BASE_URL() {
     const env = this.ENVIRONMENT as keyof typeof this.API_DOMAINS;
     const domain = this.API_DOMAINS[env] || this.API_DOMAINS.beta;
     const lang = (import.meta.env.PUBLIC_SOURCE_LANGUAGE as string) || 'en';
-    return `https://${lang}.${domain}`;
+    return `https://${lang}-${domain}`;
   },
 
   // Get current SSR API base URL based on environment and language
-  // e.g. https://en.beta-ssr-api.detake.com, https://ja.ssr-api.detake.com
+  // e.g. https://en-beta-ssr-api.detake.com, https://ja-ssr-api.detake.com
   get SSR_API_BASE_URL() {
     const env = this.ENVIRONMENT as keyof typeof this.SSR_API_DOMAINS;
     const domain = this.SSR_API_DOMAINS[env] || this.SSR_API_DOMAINS.beta;
     const lang = (import.meta.env.PUBLIC_SOURCE_LANGUAGE as string) || 'en';
-    return `https://${lang}.${domain}`;
+    return `https://${lang}-${domain}`;
   },
 
   // Get current site URL based on environment
