@@ -13,16 +13,21 @@ export const SITE_CONFIG = {
   // Current site environment (beta | production)
   ENVIRONMENT: import.meta.env.PUBLIC_SITE_ENV || 'beta',
 
-  // API base URLs based on environment
-  API_ENDPOINTS: {
-    beta: 'https://beta-api.detake.com',
-    web2: 'https://beta-api.detake.com',
-    web3: 'https://api.detake.com',
-    beta_dev: 'https://preview-api.detake.com',
+  // API domain templates by environment (language prefix will be prepended)
+  API_DOMAINS: {
+    beta: 'beta-api.detake.com',
+    web2: 'beta-api.detake.com',
+    web3: 'api.detake.com',
+    beta_dev: 'preview-api.detake.com',
   },
 
-  // Dedicated SSR API base URL (used only on server-side rendering)
-  SSR_API_BASE_URL: 'https://beta-ssr-api.detake.com',
+  // SSR API domain templates by environment (language prefix will be prepended)
+  SSR_API_DOMAINS: {
+    beta: 'beta-ssr-api.detake.com',
+    web2: 'beta-ssr-api.detake.com',
+    web3: 'ssr-api.detake.com',
+    beta_dev: 'preview-ssr-api.detake.com',
+  },
 
   // Site URLs based on environment
   SITE_URLS: {
@@ -32,10 +37,22 @@ export const SITE_CONFIG = {
     beta_dev: 'https://detake.news',
   },
 
-  // Get current API base URL based on environment
+  // Get current API base URL based on environment and language
+  // e.g. https://en.beta-api.detake.com, https://zh.api.detake.com
   get API_BASE_URL() {
-    const env = this.ENVIRONMENT as keyof typeof this.API_ENDPOINTS;
-    return this.API_ENDPOINTS[env] || this.API_ENDPOINTS.beta;
+    const env = this.ENVIRONMENT as keyof typeof this.API_DOMAINS;
+    const domain = this.API_DOMAINS[env] || this.API_DOMAINS.beta;
+    const lang = (import.meta.env.PUBLIC_SOURCE_LANGUAGE as string) || 'en';
+    return `https://${lang}.${domain}`;
+  },
+
+  // Get current SSR API base URL based on environment and language
+  // e.g. https://en.beta-ssr-api.detake.com, https://ja.ssr-api.detake.com
+  get SSR_API_BASE_URL() {
+    const env = this.ENVIRONMENT as keyof typeof this.SSR_API_DOMAINS;
+    const domain = this.SSR_API_DOMAINS[env] || this.SSR_API_DOMAINS.beta;
+    const lang = (import.meta.env.PUBLIC_SOURCE_LANGUAGE as string) || 'en';
+    return `https://${lang}.${domain}`;
   },
 
   // Get current site URL based on environment
