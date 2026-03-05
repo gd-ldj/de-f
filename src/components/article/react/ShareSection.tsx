@@ -11,6 +11,7 @@ interface ShareSectionProps {
   locale: Locale;
   title: string;
   url: string;
+  articleId?: string;
   onClose?: () => void;
 }
 
@@ -19,7 +20,7 @@ interface ShareSectionProps {
  * Features a clean input field with copy functionality and close button
  * Shows login prompt when user is not authenticated
  */
-const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose }) => {
+const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, articleId, onClose }) => {
   const t = createTranslator(locale);
   const [copied, setCopied] = useState(false);
   const { isEffectivelyLoggedIn, login } = useAuth();
@@ -252,6 +253,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, onClose
                 if (typeof window !== 'undefined' && (window as any).detakeAnalytics) {
                   (window as any).detakeAnalytics.trackEvent(TRACKING_EVENTS.ARTICLE_SHARE, {
                     platform: 'twitter',
+                    articleId,
                     articleTitle: title,
                     articleUrl: shareUrl,
                     shareUrl: twitterShareUrl,

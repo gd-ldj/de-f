@@ -27,6 +27,7 @@ interface AuthMountProps {
     locale: Locale;
     title: string;
     url: string;
+    articleId?: string;
   };
   // The DOM id where AuthorSection should be mounted, optional
   authorTargetId?: string;
@@ -226,14 +227,14 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
 
   const sharePortal = useMemo(() => {
     if (!shareEl || !shareSection || !ready) return null;
-    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} />, shareEl);
+    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} articleId={shareSection.articleId} />, shareEl);
   }, [shareEl, shareSection, ready]);
 
   // Mobile share portal - renders ShareSection to mobile container
   const shareMobilePortal = useMemo(() => {
     
     if (!shareMobileEl || !shareSection || !ready) return null;
-    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} />, shareMobileEl);
+    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} articleId={shareSection.articleId} />, shareMobileEl);
   }, [shareMobileEl, shareSection, ready]);
 
   const authorPortal = useMemo(() => {

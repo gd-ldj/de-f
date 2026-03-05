@@ -196,12 +196,11 @@ const ogLocaleAlternates = availableTranslations ? availableTranslations.map((la
       <slot />
     </div>
     
-    <!-- SSR-to-client analytics bridge examples -->
+    <!-- SSR-to-client analytics bridge: preloaded events queue consumed by AnalyticsProvider -->
     <script is:inline>
-      // Example A: Preloaded events queue. Declared by SSR, executed in browser, consumed by AnalyticsProvider.
-      window.__ANALYTICS_PRELOADED_EVENTS = (window.__ANALYTICS_PRELOADED_EVENTS || []).concat([
-        { type: 'PAGE_VIEW', data: { url: window.location.href, title: document.title, source: 'ssr-preload' } }
-      ]);
+      // page_view is already fired by analytics.initialize(), so no need to duplicate here.
+      // This queue remains available for other SSR-declared events if needed.
+      window.__ANALYTICS_PRELOADED_EVENTS = window.__ANALYTICS_PRELOADED_EVENTS || [];
     </script>
     <div style="display:none" data-analytics-event='{"type":"USER_ENGAGEMENT","data":{"source":"ssr-dom","ts":0}}'></div>
 

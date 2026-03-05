@@ -124,7 +124,7 @@ const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'a
   <HeaderWithFallback locale={locale} />
   <AuthMount 
     client:load 
-    shareSection={{ locale, title: article.title, url: canonicalUrl }}
+    shareSection={{ locale, title: article.title, url: canonicalUrl, articleId: article.entry_id }}
     authorSection={{
       author: {
         id: article?.author?.id,
@@ -138,6 +138,11 @@ const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'a
     }}
   />
   
+  <!-- Inject article data for page_view analytics enrichment -->
+  <script is:inline define:vars={{ articleId: article.entry_id, authorId: article.author?.id || '', promoteCode: promoteCode || '' }}>
+    window.__ANALYTICS_PAGE_DATA = { articleId: articleId, authorId: authorId, promoteCode: promoteCode };
+  </script>
+
   <main class="min-h-screen mt-[56px] md:mt-[97px]">
     <div class="max-w-[1440px] mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-[1000px_440px]">

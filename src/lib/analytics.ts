@@ -76,11 +76,13 @@ export class AnalyticsManager {
       this.isInitialized = true;
       console.log('[Analytics] System initialized successfully');
 
-      // Track initial page view
+      // Track initial page view, merge article-specific data if available
+      const pageData = (window as any).__ANALYTICS_PAGE_DATA || {};
       this.trackEvent(TRACKING_EVENTS.PAGE_VIEW, {
         url: window.location.href,
         title: document.title,
         referrer: document.referrer,
+        ...pageData,
       });
     } catch (error) {
       console.error('[Analytics] Initialization failed:', error);
@@ -436,11 +438,14 @@ export class AnalyticsManager {
         ...(this.visitorData.userFingerprint && { user_fingerprint: this.visitorData.userFingerprint }),
       };
 
-      // Page view (already supported)
+      // Page view - enriched with article data on article pages
       if (type === TRACKING_EVENTS.PAGE_VIEW) {
         window.gtag('event', 'page_view', {
           page_title: data.title,
           page_location: data.url,
+          article_id: data.articleId || undefined,
+          author_id: data.authorId || undefined,
+          promote_code: data.promoteCode || undefined,
           ...commonParams,
         });
       }
@@ -475,24 +480,12 @@ export class AnalyticsManager {
       // Additional key interactions mapping to GA4
       // NOTE: We use GA4 recommended names where applicable; otherwise, custom events are used.
       // This aims to keep reports meaningful while avoiding double-counting with enhanced measurement.
-      if (type === TRACKING_EVENTS.ARTICLE_VIEW) {
-        // Map article view to GA4 view_item with items array
-        window.gtag('event', 'view_item', {
-          items: [
-            {
-              item_id: (data as any).articleId,
-              item_name: (data as any).title,
-              item_category: (data as any).category || undefined,
-              content_type: 'article',
-            },
-          ],
-          ...commonParams,
-        });
-      } else if (type === TRACKING_EVENTS.ARTICLE_SHARE) {
-        // Map share action to GA4 share event
-        window.gtag('event', TRACKING_EVENTS.ARTICLE_SHARE, {
-          event_category: 'social_share',
-          value: 1,
+      if (type === TRACKING_EVENTS.ARTICLE_SHARE) {
+        // Map share action to GA4 recommended 'share' event with article info
+        window.gtag('event', 'share', {
+          method: (data as any).platform || 'unknown',
+          content_type: 'article',
+          item_id: (data as any).articleId || (data as any).articleUrl || undefined,
           ...commonParams,
         });
       } else if (type === TRACKING_EVENTS.SCROLL_DEPTH) {
@@ -543,18 +536,6 @@ export class AnalyticsManager {
     }
 
     // console.log('[Analytics] Event tracked:', event)
-  }
-
-  /**
-   * Track article-specific events
-   */
-  trackArticleView(articleId: string, title: string, category?: string): void {
-    this.trackEvent(TRACKING_EVENTS.ARTICLE_VIEW, {
-      articleId,
-      title,
-      category,
-      timestamp: Date.now(),
-    });
   }
 
   /**
