@@ -26,11 +26,11 @@ export default function Header({ locale, currentPath, userComponent }: HeaderPro
   };
 
   return (
-    <div data-header-loaded>
-      <div className="md:hidden">
+    <div data-header-loaded role="banner">
+      <div className="md:hidden" aria-hidden={false}>
         <MobileHeader locale={locale} currentPath={currentPath} onLocaleSwitch={handleLocaleSwitch} />
       </div>
-      <div className="hidden md:block">
+      <div className="hidden md:block" aria-hidden={false}>
         <DesktopHeader locale={locale} currentPath={currentPath} onLocaleSwitch={handleLocaleSwitch} userComponent={userComponent} />
       </div>
     </div>

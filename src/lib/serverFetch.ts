@@ -8,7 +8,21 @@ export interface SsrFetchOptions extends RequestInit {
 }
 
 export async function ssrFetch(input: string | URL, init?: SsrFetchOptions): Promise<Response> {
-  const response = await fetch(input, init);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
+
+  let response: Response;
+  try {
+    response = await fetch(input, { ...init, signal: controller.signal });
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      const url = typeof input === 'string' ? input : input.toString();
+      throw new Error(`SSR fetch timed out after 10s: ${url}`);
+    }
+    throw error;
+  }
+  clearTimeout(timeoutId);
 
   if (isServer && isProdEnv && !response.ok) {
     try {

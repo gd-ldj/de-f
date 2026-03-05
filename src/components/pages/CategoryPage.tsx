@@ -422,7 +422,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   }, [loadMoreArticles]);
 
   return (
-    <main className="max-w-[1440px] mx-auto py-4">
+    <div className="max-w-[1440px] mx-auto py-4">
       {/* Filter Bar */}
       <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialSubcategoryName={filters.subcategoryName} initialTag={filters.tag} businessTypeName={category} />
 
@@ -455,6 +455,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
           <PaginationReact currentPage={filters.page} totalItems={total} itemsPerPage={itemsPerPage} onPageChange={handlePageChange} locale={locale} />
         </div>
       )}
-    </main>
+    </div>
   );
 }

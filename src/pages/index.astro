@@ -44,10 +44,11 @@ const { title, description } = seoContent[locale] || seoContent.en
 
 <BaseLayout title={title} description={description} locale={locale}>
   <HeaderWithFallback locale={locale} />
+  <main>
   {isMobileUserAgent && (
     <div class="md:hidden mt-[56px]">
-      <MobileLayout 
-        locale={locale} 
+      <MobileLayout
+        locale={locale}
         latestNews={homeData?.lastest || []}
         newsAll={homeData?.news_all || []}
         whoToFollow={homeData?.who_to_follow || []}
@@ -77,5 +78,6 @@ const { title, description } = seoContent[locale] || seoContent.en
       <ResearchSection locale={locale} articles={homeData?.research || []} />
     </div>
   </div>
+  </main>
   <Footer client:load locale={locale} />
 </BaseLayout>
