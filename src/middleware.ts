@@ -1,4 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
+import TurndownService from 'turndown';
 import { getSourceLanguageFromUrl, getSourceLanguageFromRequest, extractTranslationLanguageFromPath, shouldRedirectToSourceVersion, removeTranslationPrefix, isTranslationPath } from '@/lib/language-utils';
 import { MULTI_SOURCE_CONFIG, IS_DEV_ENV } from '@/config/constants';
 
@@ -14,6 +15,12 @@ function removeHTMLComments(html: string): string {
       .trim()
   );
 }
+
+const turndownService = new TurndownService();
+turndownService.addRule('stripNonContent', {
+  filter: ['script', 'style', 'nav', 'footer'],
+  replacement: () => '',
+});
 
 /**
  * Middleware processing order:
@@ -46,12 +53,27 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (!IS_DEV_ENV && response.headers.get('content-type')?.includes('text/html')) {
     try {
       const html = await response.text();
+      const acceptHeader = context.request.headers.get('accept') || '';
+      const wantsMarkdown = acceptHeader.includes('text/markdown');
+      const headers = new Headers(response.headers);
+
+      if (wantsMarkdown) {
+        const markdown = turndownService.turndown(html);
+        headers.set('content-type', 'text/markdown; charset=utf-8');
+        headers.delete('content-length');
+        return new Response(markdown, {
+          status: response.status,
+          statusText: response.statusText,
+          headers,
+        });
+      }
+
       const minifiedHtml = removeHTMLComments(html);
 
       return new Response(minifiedHtml, {
         status: response.status,
         statusText: response.statusText,
-        headers: response.headers,
+        headers,
       });
     } catch (error) {
       return response;
