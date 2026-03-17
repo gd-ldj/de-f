@@ -1,22 +1,18 @@
 ---
-import placeholderImg from '@/assets/imgs/placeholder.svg';
-
 export interface Props {
   src: string;
   alt: string;
-  fallbackSrc?: string;
   class?: string;
   loading?: 'lazy' | 'eager';
   width?: number;
   height?: number;
   style?: string;
-  [key: string]: any; // Allow other HTML attributes
+  [key: string]: any;
 }
 
 const {
   src,
   alt,
-  fallbackSrc,
   class: cssClass = '',
   loading = 'lazy',
   width,
@@ -24,27 +20,10 @@ const {
   style,
   ...props
 } = Astro.props;
-
-// Determine the fallback image path
-let defaultFallbackPath: string;
-
-if (fallbackSrc) {
-  defaultFallbackPath = fallbackSrc;
-} else if (placeholderImg && typeof placeholderImg === 'object' && 'src' in placeholderImg) {
-  defaultFallbackPath = (placeholderImg as { src: string }).src;
-} else if (typeof placeholderImg === 'string') {
-  defaultFallbackPath = placeholderImg;
-} else {
-  defaultFallbackPath = '/placeholder.svg';
-}
-
-// Generate unique ID for this image instance
-const imageId = `astro-img-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
 <img
   {...props}
-  id={imageId}
   src={src}
   alt={alt}
   class={`astro-image ${cssClass}`.trim()}
@@ -52,113 +31,10 @@ const imageId = `astro-img-${Math.random().toString(36).substr(2, 9)}`;
   width={width}
   height={height}
   style={style}
-  data-fallback={defaultFallbackPath}
-  data-original-src={src}
 />
-
-<script define:vars={{ imageId, defaultFallbackPath, src }}>
-  /**
-   * Image error handling for Astro SSR component
-   * Handles network errors including net::ERR_CONNECTION_CLOSED
-   */
-  
-  function initImageForId(id, fallback, originalSrc) {
-    const img = document.getElementById(id);
-    if (!img || !(img instanceof HTMLImageElement)) return;
-    
-    let hasError = false;
-    let loadTimeout = null;
-    
-    const handleLoad = () => {
-      if (loadTimeout) {
-        clearTimeout(loadTimeout);
-        loadTimeout = null;
-      }
-      img.classList.remove('image-loading');
-      img.classList.add('image-loaded');
-    };
-    
-    const handleError = () => {
-      if (loadTimeout) {
-        clearTimeout(loadTimeout);
-        loadTimeout = null;
-      }
-      
-      console.log("❌ Astro Image failed to load:", img.src, "hasError:", hasError);
-      img.classList.remove('image-loading');
-      
-      if (!hasError && img.src !== fallback) {
-        console.log("🔄 Astro Switching to fallback:", fallback);
-        hasError = true;
-        img.src = fallback;
-        img.classList.add('image-fallback');
-      } else {
-        console.log("⚠️ Astro Fallback also failed or already in error state");
-      }
-    };
-    
-    const setupTimeout = () => {
-      if (loadTimeout) {
-        clearTimeout(loadTimeout);
-      }
-      
-      loadTimeout = setTimeout(() => {
-        console.log("⏰ Astro Image load timeout - possibly net::ERR_CONNECTION_CLOSED");
-        if (!hasError && img.src !== fallback) {
-          console.log("🔄 Astro Switching to fallback due to timeout:", fallback);
-          hasError = true;
-          img.src = fallback;
-          img.classList.remove('image-loading');
-          img.classList.add('image-fallback');
-        }
-      }, 10000); // 10 second timeout
-    };
-    
-    // Add loading state
-    img.classList.add('image-loading');
-    
-    // Set up event listeners
-    img.addEventListener('load', handleLoad);
-    img.addEventListener('error', handleError);
-    
-    // Set up timeout for network errors
-    setupTimeout();
-    
-    // Handle already loaded images (from cache)
-    if (img.complete) {
-      if (img.naturalWidth > 0) {
-        handleLoad();
-      } else {
-        handleError();
-      }
-    }
-  }
-  
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      initImageForId(imageId, defaultFallbackPath, src);
-    });
-  } else {
-    initImageForId(imageId, defaultFallbackPath, src);
-  }
-</script>
 
 <style>
   .astro-image {
     transition: opacity 0.3s ease;
-  }
-  
-  .astro-image.image-loading {
-    opacity: 0.8;
-  }
-  
-  .astro-image.image-loaded {
-    opacity: 1;
-  }
-  
-  .astro-image.image-fallback {
-    opacity: 1;
-    filter: grayscale(0.1);
   }
 </style>
