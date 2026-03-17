@@ -147,6 +147,9 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
      <!-- Excerpt -->
      <p class="text-[14px] md:text-xl text-muted-foreground leading-relaxed mb-[10px] md:mb-4">
        {article.sub_title}
+       {article.entry_id && (
+         <span class="text-[14px] md:text-xl"> – {article.entry_id}</span>
+       )}
      </p>
 
       <!-- Tags - Mobile: below stats -->
