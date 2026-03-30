@@ -433,6 +433,8 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialSubcategoryName={filters.subcategoryName} initialTag={filters.tag} businessTypeName={category} />
       */}
 
+      <hr className="border-border mb-4" />
+
       {/* Loading State - Only show for initial load or desktop pagination */}
       {loading && articles.length === 0 && (
         <div className="flex justify-center items-center py-12">
