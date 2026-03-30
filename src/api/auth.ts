@@ -1,4 +1,4 @@
-import type { WalletLoginRequest, WalletLoginResponse, WalletLoginData } from '../types'
+import type { WalletLoginRequest, WalletLoginResponse, WalletLoginData, ClerkAuthRequest, ClerkAuthResponse, ClerkAuthData } from '../types'
 import { SITE_CONFIG } from '../config/constants'
 
 /**
@@ -50,6 +50,48 @@ export async function loginWithWallet(
     }
   } catch (error) {
     console.error('Error during wallet login:', error);
+    return null;
+  }
+}
+
+/**
+ * Clerk login function
+ * Exchanges a Clerk JWT token for a backend access token
+ * @param clerkToken - JWT token from Clerk
+ * @returns Promise with login response data
+ */
+export async function loginWithClerk(
+  clerkToken: string
+): Promise<ClerkAuthData | null> {
+  try {
+    const requestBody: ClerkAuthRequest = {
+      token: clerkToken,
+    };
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/clerk`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Invalid Clerk token');
+      }
+      throw new Error(`Failed to login with Clerk: ${response.statusText}`);
+    }
+
+    const result: ClerkAuthResponse = await response.json();
+
+    if (result.code === 2000 || result.code === 2001) {
+      return result.data;
+    } else {
+      throw new Error(`API Error: ${result.msg.en}`);
+    }
+  } catch (error) {
+    console.error('Error during Clerk login:', error);
     return null;
   }
 }

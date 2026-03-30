@@ -17,7 +17,7 @@ const AUTH_CONFIG = {
     LOGOUT: 'ac=q'
   },
   WALLET_PREFIXES: {
-    PRIVY: 'privy:',
+    CLERK: 'clerk:',
     APPKIT: '@appkit/'
   }
 };
@@ -34,11 +34,11 @@ function clearAuthData(includeWalletData = true) {
     });
 
     if (includeWalletData) {
-      // Clear Privy wallet plugin data
-      const privyKeys = Object.keys(localStorage).filter(key => 
-        key.startsWith(AUTH_CONFIG.WALLET_PREFIXES.PRIVY)
+      // Clear Clerk auth data
+      const clerkKeys = Object.keys(localStorage).filter(key =>
+        key.startsWith(AUTH_CONFIG.WALLET_PREFIXES.CLERK) || key.startsWith('__clerk')
       );
-      privyKeys.forEach(key => localStorage.removeItem(key));
+      clerkKeys.forEach(key => localStorage.removeItem(key));
       
       // Clear AppKit wallet connection data
       const appkitKeys = Object.keys(localStorage).filter(key => 

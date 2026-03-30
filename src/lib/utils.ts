@@ -119,9 +119,9 @@ export function handleLogoutFromURL(): boolean {
       localStorage.removeItem(STORAGE_KEYS.WALLET_ADDRESS);
       localStorage.removeItem(STORAGE_KEYS.PROMOTE_CODE);
       
-      // Clear Privy wallet plugin data
-      const privyKeys = Object.keys(localStorage).filter(key => key.startsWith('privy:'));
-      privyKeys.forEach(key => localStorage.removeItem(key));
+      // Clear Clerk auth data
+      const clerkKeys = Object.keys(localStorage).filter(key => key.startsWith('clerk:') || key.startsWith('__clerk'));
+      clerkKeys.forEach(key => localStorage.removeItem(key));
       
       // Clear AppKit wallet connection data
       const appkitKeys = Object.keys(localStorage).filter(key => key.startsWith('@appkit/'));

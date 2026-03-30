@@ -170,7 +170,7 @@ export interface NavItem {
 }
 
 /**
- * User data from Privy authentication
+ * User data from authentication
  */
 export interface User {
   id: string;
@@ -179,6 +179,34 @@ export interface User {
     address: string;
     chainType: string;
   };
+}
+
+/**
+ * Clerk authentication request interface
+ */
+export interface ClerkAuthRequest {
+  token: string;
+}
+
+/**
+ * Clerk authentication response data interface
+ */
+export interface ClerkAuthData {
+  type: string;
+  user_id: string;
+  access_token: string;
+}
+
+/**
+ * API response interface for Clerk authentication
+ */
+export interface ClerkAuthResponse {
+  code: number;
+  msg: {
+    en: string;
+    zh: string;
+  };
+  data: ClerkAuthData;
 }
 
 /**

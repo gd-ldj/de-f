@@ -186,8 +186,8 @@ export const DEFAULT_PROMOTE_CODE = 'xG0zT';
  * Authentication related constants
  */
 export const AUTH_CONFIG = {
-  // Privy initialization timeout (5 seconds)
-  PRIVY_TIMEOUT_MS: 5000,
+  // Clerk initialization timeout (5 seconds)
+  CLERK_TIMEOUT_MS: 5000,
 } as const;
 
 /**

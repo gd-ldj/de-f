@@ -2,9 +2,9 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Login from '@/components/home/react/Login';
 import { IdentityProvider } from '@/components/common/react/IdentityProvider';
+import { ClerkApiTokenSync } from '@/components/common/react/ClerkApiTokenSync';
 import type { Locale } from '@/types';
 import { WalletPopover } from '@/components/common/react/WalletPopover';
-import { Wallet } from '@/components/common/react/ConnectWallet';
 import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
 import { accessTokenAtom } from '@/stores';
@@ -13,7 +13,7 @@ import { MULTI_SOURCE_CONFIG } from '@/config/constants';
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
 import { ToastContainer } from '@/components/common/react/Toast';
-import { usePrivy } from '@privy-io/react-auth';
+import { useAuth } from '@clerk/clerk-react';
 
 interface AuthMountProps {
   // User button mount point (User avatar button in Header)
@@ -22,7 +22,7 @@ interface AuthMountProps {
   // The DOM id where ShareSection should be mounted, optional
   shareTargetId?: string;
   shareMobileTargetId?: string;
-  // Props used to render ShareSection under PrivyProvider
+  // Props used to render ShareSection under ClerkProvider
   shareSection?: {
     locale: Locale;
     title: string;
@@ -31,7 +31,7 @@ interface AuthMountProps {
   };
   // The DOM id where AuthorSection should be mounted, optional
   authorTargetId?: string;
-  // Props used to render AuthorSection under PrivyProvider
+  // Props used to render AuthorSection under ClerkProvider
   authorSection?: {
     author: {
       id?: string; // optional author id for follow/subscribe API
@@ -57,7 +57,7 @@ function getLocaleFromURL(): Locale {
 }
 
 /**
- * 占位用户按钮 - 在钱包未就绪时显示
+ * Placeholder user button - shown while Clerk is loading
  */
 const PlaceholderUserButton: React.FC = () => (
   <button className="p-1 hover:bg-gray-100 rounded-md transition-colors opacity-50 cursor-not-allowed" disabled>
@@ -67,7 +67,7 @@ const PlaceholderUserButton: React.FC = () => (
 
 /**
  * Placeholder Login Component
- * Shows a static login interface during wallet initialization
+ * Shows a static login interface during Clerk initialization
  */
 const PlaceholderLogin: React.FC<{ locale: Locale }> = ({ locale }) => {
   return (
@@ -81,7 +81,6 @@ const PlaceholderLogin: React.FC<{ locale: Locale }> = ({ locale }) => {
 
 /**
  * Placeholder ShareSection Component
- * Shows a static share interface during wallet initialization
  */
 const PlaceholderShareSection: React.FC<{ title: string; url: string; locale: Locale }> = ({ title, url, locale }) => {
   return (
@@ -95,7 +94,6 @@ const PlaceholderShareSection: React.FC<{ title: string; url: string; locale: Lo
 
 /**
  * Placeholder AuthorSection Component
- * Shows a static author interface during wallet initialization
  */
 const PlaceholderAuthorSection: React.FC<{ author: any; locale: Locale }> = ({ author, locale }) => {
   return (
@@ -110,8 +108,8 @@ const PlaceholderAuthorSection: React.FC<{ author: any; locale: Locale }> = ({ a
 };
 
 /**
- * AuthMountContent - Inner component that uses Privy hooks
- * This component is rendered inside IdentityProvider to access Privy context
+ * AuthMountContent - Inner component that uses Clerk hooks
+ * This component is rendered inside IdentityProvider to access Clerk context
  */
 const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareMobileTargetId, shareSection, authorTargetId = 'author-section-root', authorSection }) => {
   const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
@@ -126,8 +124,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
 
-  // Get Privy ready state to determine when to show real components
-  const { ready } = usePrivy();
+  // Get Clerk ready state to determine when to show real components
+  const { isLoaded: ready } = useAuth();
 
   // Memoize DOM element queries to avoid repeated lookups
   const domElements = useMemo(() => {
@@ -169,15 +167,13 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
           const mobileContainer = document.getElementById(shareMobileTargetId);
-          
+
           if (mobileContainer && !shareMobileEl) {
-            // Container appeared - set it
             setShareMobileEl(mobileContainer);
             if (import.meta.env.DEV) {
               console.log('[AuthMount] Mobile share container found via MutationObserver');
             }
           } else if (!mobileContainer && shareMobileEl) {
-            // Container disappeared - reset it
             setShareMobileEl(null);
             if (import.meta.env.DEV) {
               console.log('[AuthMount] Mobile share container removed');
@@ -207,7 +203,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   }, [shareMobileTargetId, shareMobileEl]);
 
   // Memoize portals to prevent unnecessary re-renders
-  // Only show real components when Privy is ready
+  // Only show real components when Clerk is ready
   const userButtonPortal = useMemo(() => {
     if (!userButtonEl || !ready) return null;
     return createPortal(
@@ -232,7 +228,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
 
   // Mobile share portal - renders ShareSection to mobile container
   const shareMobilePortal = useMemo(() => {
-    
+
     if (!shareMobileEl || !shareSection || !ready) return null;
     return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} articleId={shareSection.articleId} />, shareMobileEl);
   }, [shareMobileEl, shareSection, ready]);
@@ -247,16 +243,15 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
       <span style={{ display: 'none' }} data-auth-island="true" />
 
+      {/* Clerk API Token Sync - exchanges Clerk token for backend token */}
+      <ClerkApiTokenSync />
+
       {/* Render memoized portals */}
       {userButtonPortal}
       {loginPortal}
       {sharePortal}
       {shareMobilePortal}
       {authorPortal}
-
-      {/* Global Toasts */}
-      {/* Removed duplicate ToastContainer to avoid multiple portal mounts */}
-      {/* <ToastContainer /> */}
     </>
   );
 };
@@ -272,7 +267,7 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
   const [locale, setLocale] = useState<Locale>('en');
-  const [privyMounted, setPrivyMounted] = useState(false);
+  const [clerkMounted, setClerkMounted] = useState(false);
 
   // Read global authentication state from jotai store
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
@@ -307,39 +302,39 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     }
   }, [domElements]);
 
-  // Track when Privy provider is mounted to switch from placeholder to real components
+  // Track when Clerk provider is mounted to switch from placeholder to real components
   useEffect(() => {
-    setPrivyMounted(true);
+    setClerkMounted(true);
   }, []);
 
   // Memoize placeholder portals
   const placeholderUserButtonPortal = useMemo(() => {
-    if (!userButtonEl || privyMounted) return null;
+    if (!userButtonEl || clerkMounted) return null;
     return createPortal(<PlaceholderUserButton />, userButtonEl);
-  }, [userButtonEl, privyMounted]);
+  }, [userButtonEl, clerkMounted]);
 
   const placeholderLoginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated || privyMounted) return null;
+    if (!loginEl || isAuthenticated || clerkMounted) return null;
     return createPortal(<PlaceholderLogin locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale, privyMounted]);
+  }, [loginEl, isAuthenticated, locale, clerkMounted]);
 
   const placeholderSharePortal = useMemo(() => {
-    if (!shareEl || !shareSection || privyMounted) return null;
+    if (!shareEl || !shareSection || clerkMounted) return null;
     return createPortal(<PlaceholderShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} />, shareEl);
-  }, [shareEl, shareSection, privyMounted]);
+  }, [shareEl, shareSection, clerkMounted]);
 
   const placeholderAuthorPortal = useMemo(() => {
-    if (!authorEl || !authorSection || privyMounted) return null;
+    if (!authorEl || !authorSection || clerkMounted) return null;
     return createPortal(<PlaceholderAuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
-  }, [authorEl, authorSection, privyMounted]);
+  }, [authorEl, authorSection, clerkMounted]);
 
   return (
     <>
       {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
       <span style={{ display: 'none' }} data-auth-island="true" />
 
-      {/* Show placeholder components immediately while Privy is loading */}
-      {!privyMounted && (
+      {/* Show placeholder components immediately while Clerk is loading */}
+      {!clerkMounted && (
         <>
           {placeholderUserButtonPortal}
           {placeholderLoginPortal}
@@ -348,8 +343,8 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
         </>
       )}
 
-      {/* Mount Privy provider and real components */}
-      {privyMounted && (
+      {/* Mount Clerk provider and real components */}
+      {clerkMounted && (
         <IdentityProvider>
           <AuthMountContent {...props} />
         </IdentityProvider>
