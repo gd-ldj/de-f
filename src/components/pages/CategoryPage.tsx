@@ -247,27 +247,33 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   const handleFilterChange = useCallback(
     (filterType: string, value: any) => {
       let newFilters = { ...filters };
+      let didValueChange = false;
 
       switch (filterType) {
         case 'category':
+          didValueChange = !areFilterValuesEqual(value, filters.categoryName);
           newFilters.categoryName = value;
           break;
         case 'author':
+          didValueChange = value !== filters.authorName;
           newFilters.authorName = value;
           break;
         case 'subcategory':
+          didValueChange = !areFilterValuesEqual(value, filters.subcategoryName);
           newFilters.subcategoryName = value;
           break;
         case 'tag':
+          didValueChange = !areFilterValuesEqual(value, filters.tag);
           newFilters.tag = value;
           break;
         case 'orderBy':
+          didValueChange = value !== filters.orderBy;
           newFilters.orderBy = value;
           break;
       }
 
-      // Reset to page 1 when filters change (except for page change)
-      if (filterType !== 'page') {
+      // Keep the SSR page when child filters emit their initial sync event.
+      if (filterType !== 'page' && didValueChange) {
         newFilters.page = 1;
         setHasMore(true); // Reset hasMore when filters change
       }

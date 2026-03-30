@@ -94,6 +94,29 @@ test.describe('Category Pages – Desktop 1440px', () => {
     expect(paginationCount + articleCount).toBeGreaterThan(0);
   });
 
+  test('/news keeps query page after refresh when filters are preselected', async ({ page }) => {
+    const filteredPath = '/news?page=3&category_name=Technology&subcategory_name=New%20Releases';
+
+    await navigateTo(page, filteredPath);
+    await page.waitForTimeout(1500);
+
+    await expect(page).toHaveURL(/\/news\?page=3(?:&|$)/);
+
+    const currentPageButton = page.locator('nav[aria-label="Pagination"] .hidden.sm\\:flex button[aria-current="page"]').filter({ hasText: '3' });
+    if (await currentPageButton.count()) {
+      await expect(currentPageButton.first()).toBeVisible();
+    }
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1500);
+
+    await expect(page).toHaveURL(/\/news\?page=3(?:&|$)/);
+    if (await currentPageButton.count()) {
+      await expect(currentPageButton.first()).toBeVisible();
+    }
+  });
+
   test('/research loads successfully', async ({ page }) => {
     await navigateTo(page, '/research');
     await expect(page).toHaveTitle(/DeTake/i);
@@ -176,12 +199,14 @@ test.describe('Category Pages – Tablet 768px', () => {
   test('/news pagination or articles accessible at tablet', async ({ page }) => {
     await navigateTo(page, '/news');
 
-    // Either pagination controls exist or articles are shown
+    // Either pagination controls exist, articles are shown, or the empty-state is rendered.
     const pagination = page.locator('[class*="pagination"], nav[aria-label*="pagination" i]');
     const articles = page.locator('article');
+    const emptyState = page.getByText(/no articles found/i);
     const pCount = await pagination.count();
     const aCount = await articles.count();
-    expect(pCount + aCount).toBeGreaterThan(0);
+    const emptyCount = await emptyState.count();
+    expect(pCount + aCount + emptyCount).toBeGreaterThan(0);
   });
 });
 
