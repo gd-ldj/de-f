@@ -576,13 +576,8 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
               )}
             </div>
 
-            {/* User Component */}
+            {/* User Component - AuthMount portal renders WalletPopover here */}
             <div id="user-button-root">
-              {userComponent || (
-                <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">
-                  <img src="/me.svg" alt="logo" className="w-5 h-5" />
-                </button>
-              )}
             </div>
           </div>
         </div>
