@@ -429,8 +429,9 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
   return (
     <div className="max-w-[1440px] mx-auto py-4">
-      {/* Filter Bar */}
+      {/* Filter Bar - temporarily hidden
       <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialSubcategoryName={filters.subcategoryName} initialTag={filters.tag} businessTypeName={category} />
+      */}
 
       {/* Loading State - Only show for initial load or desktop pagination */}
       {loading && articles.length === 0 && (
