@@ -386,15 +386,14 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             </div>
 
             {/* Dashboard with user icon */}
-            {/* <button onClick={() => handleNavigation(`/${locale}/dashboard`)} className="flex items-center justify-between w-full py-3 text-left">
-              <span className="text-lg text-gray-900">{texts.user.dashboard}</span>
+            <button onClick={() => window.open('https://caaaeee.vercel.app/' + locale, '_blank')} className="flex items-center justify-between w-full py-3 text-left">
+              <span className="text-lg text-gray-900">{texts.user?.dashboard || 'Dashboard'}</span>
               <div className="flex items-center space-x-2">
-                <img src={MeIcon} alt="DeTake" className="h-5" />
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
-            </button> */}
+            </button>
           </div>
         </div>
       </div>

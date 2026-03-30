@@ -9,6 +9,7 @@ import NewsSection from '@/components/home/astro/NewsSection.astro';
 import TrendingSection from '@/components/home/astro/TrendingSection.astro';
 import ResearchSection from '@/components/home/astro/ResearchSection.astro';
 import Footer from '@/components/common/react/footer/Index';
+import AuthMount from '@/components/common/react/AuthMount';
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro';
 import { fetchHomePageData } from '@/api/articles';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
@@ -70,6 +71,11 @@ const { title, description } = seoContent[locale] || seoContent.en
           <MainContent locale={locale} newsAll={homeData?.news_all || []} />
         </div>
         <div class="col-span-3 space-y-6 py-5 border border-t-0 border-l-0 border-border">
+          <div id="login-root"></div>
+          <AuthMount
+            client:load
+            loginTargetId="login-root"
+          />
           <RightSidebar locale={locale} topics={homeData?.topics || []} mostRead={homeData?.mostread || []} />
         </div>
       </div>
