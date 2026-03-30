@@ -21,7 +21,7 @@ export const useWalletAuth = () => {
   const [userId, setUserId] = useAtom(userIdAtom)
   const [isAuthenticated] = useAtom(isAuthenticatedAtom)
   const [walletAddress, setWalletAddress] = useAtom(persistedWalletAddressAtom)
-  const [, setPromoteCode] = useAtom(persistedPromoteCodeAtom)
+  const [promoteCode, setPromoteCode] = useAtom(persistedPromoteCodeAtom)
 
   /**
    * Clear all authentication state
@@ -48,6 +48,7 @@ export const useWalletAuth = () => {
     accessToken,
     userId,
     walletAddress,
+    promoteCode,
 
     clearError: () => {},
     getValidAccessToken,
