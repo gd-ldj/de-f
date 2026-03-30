@@ -9,6 +9,7 @@ import {
   setWalletAuthDataAtom,
 } from '../stores'
 import { DEFAULT_PROMOTE_CODE } from '../config/constants'
+import { getAnonymousPromoteCode } from './fingerprint'
 
 /**
  * Simplified wallet auth hook
@@ -31,7 +32,7 @@ export const useWalletAuth = () => {
     setAccessToken(null)
     setUserId(null)
     setWalletAddress(null)
-    setPromoteCode(DEFAULT_PROMOTE_CODE)
+    getAnonymousPromoteCode().then((code) => setPromoteCode(code))
   }, [setWalletAuthData, setAccessToken, setUserId, setWalletAddress, setPromoteCode])
 
   /**

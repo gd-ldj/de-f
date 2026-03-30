@@ -11,6 +11,7 @@ import {
 import { loginWithClerk } from '@/api/auth';
 import { fetchUserPersonalInfo } from '@/api/users';
 import { DEFAULT_PROMOTE_CODE } from '@/config/constants';
+import { getAnonymousPromoteCode } from '@/lib/fingerprint';
 
 /**
  * ClerkApiTokenSync - Syncs Clerk authentication with backend API
@@ -32,12 +33,14 @@ export function ClerkApiTokenSync() {
       if (!isLoaded) return;
 
       try {
-        // User signed out - clear all auth state
+        // User signed out - clear auth state, restore anonymous promote code
         if (!isSignedIn) {
           setAccessToken(null);
           setUserId(null);
           setWalletAddress(null);
-          setPromoteCode(DEFAULT_PROMOTE_CODE);
+          getAnonymousPromoteCode().then((code) => {
+            if (!isCancelled) setPromoteCode(code);
+          });
           return;
         }
 

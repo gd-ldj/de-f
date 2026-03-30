@@ -152,14 +152,22 @@ export const persistedPromoteCodeAtom = atom(
         .split('; ')
         .find(row => row.startsWith(`${STORAGE_KEYS.PROMOTE_CODE}=`))
         ?.split('=')[1]
-      
+
       if (cookieValue) {
         // Sync cookie value to localStorage
         localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, cookieValue)
         return cookieValue
       }
-      
-      // If no stored value exists, initialize both localStorage and cookie with default value
+
+      // Fallback to anonymous fingerprint-based promote code
+      const anonCode = localStorage.getItem('anonymous_promote_code')
+      if (anonCode) {
+        localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, anonCode)
+        document.cookie = `${STORAGE_KEYS.PROMOTE_CODE}=${anonCode}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+        return anonCode
+      }
+
+      // Final fallback: use default value
       localStorage.setItem(STORAGE_KEYS.PROMOTE_CODE, currentValue)
       document.cookie = `${STORAGE_KEYS.PROMOTE_CODE}=${currentValue}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
       return currentValue

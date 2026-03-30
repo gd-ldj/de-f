@@ -7,7 +7,8 @@
 // Configuration constants
 const ARTICLE_LINK_CONFIG = {
   STORAGE_KEY_PROMOTE_CODE: 'promote_code',
-  DEFAULT_PROMOTE_CODE: 'detake',
+  ANON_CODE_KEY: 'anonymous_promote_code',
+  DEFAULT_PROMOTE_CODE: 'xG0zT',
   UPDATE_THROTTLE: 100, // ms
   SELECTOR: '[data-article-link="true"]'
 };
@@ -22,7 +23,8 @@ let lastUpdateTime = 0;
  */
 function getCurrentPromoteCode() {
   try {
-    return localStorage.getItem(ARTICLE_LINK_CONFIG.STORAGE_KEY_PROMOTE_CODE) || 
+    return localStorage.getItem(ARTICLE_LINK_CONFIG.STORAGE_KEY_PROMOTE_CODE) ||
+           localStorage.getItem(ARTICLE_LINK_CONFIG.ANON_CODE_KEY) ||
            ARTICLE_LINK_CONFIG.DEFAULT_PROMOTE_CODE;
   } catch (error) {
     console.warn('[ArticleLink] Failed to access localStorage:', error);
