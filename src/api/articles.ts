@@ -54,14 +54,14 @@ export async function fetchArticles(
       queryParts.push(`business_type_name=${encodeURIComponent(options.business_type_name)}`);
     }
     if (options?.category_names) {
-      queryParts.push(`category_names=${options.category_names}`);
+      queryParts.push(`category_names=${encodeURIComponent(options.category_names)}`);
     } else if (options?.category_name) {
-      queryParts.push(`category_names=${options.category_name}`);
+      queryParts.push(`category_names=${encodeURIComponent(options.category_name)}`);
     }
     if (options?.subcategory_names) {
-      queryParts.push(`subcategory_names=${options.subcategory_names}`);
+      queryParts.push(`subcategory_names=${encodeURIComponent(options.subcategory_names)}`);
     } else if (options?.subcategory_name) {
-      queryParts.push(`subcategory_names=${options.subcategory_name}`);
+      queryParts.push(`subcategory_names=${encodeURIComponent(options.subcategory_name)}`);
     }
     if (options?.tag) {
       // Don't encode commas in tag parameter to preserve comma-separated values
