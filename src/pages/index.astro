@@ -64,13 +64,13 @@ const { title, description } = seoContent[locale] || seoContent.en
   <div class="min-h-screen bg-white mt-[97px] md:block hidden">
     <div class="max-w-[1440px] mx-auto">
       <div class="grid grid-cols-12">
-        <div class="col-span-3 py-5 border border-t-0 border-r-0 border-border">
+        <div class="col-span-3 py-5">
           <Sidebar locale={locale} latestNews={homeData?.lastest || []} />
         </div>
-        <div class="col-span-6 border border-t-0 border-border py-5 px-6">
+        <div class="col-span-6 border-x border-border py-5 px-6">
           <MainContent locale={locale} newsAll={homeData?.news_all || []} />
         </div>
-        <div class="col-span-3 space-y-6 py-5 border border-t-0 border-l-0 border-border">
+        <div class="col-span-3 space-y-6 py-5">
           <div id="login-root"></div>
           <AuthMount
             client:load
