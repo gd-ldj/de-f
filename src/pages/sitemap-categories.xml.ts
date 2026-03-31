@@ -34,8 +34,8 @@ async function buildCategoriesSitemapXml(origin: string): Promise<string> {
     addEntry(`${prefix}/voices`, nowIso);
 
     // Tutorials 列表、Collections 列表
-    addEntry(`${prefix}/tutorials?mask=detake`, nowIso);
-    addEntry(`${prefix}/collections?mask=detake`, nowIso);
+    addEntry(`${prefix}/tutorials`, nowIso);
+    addEntry(`${prefix}/collections`, nowIso);
 
     // Topics 列表页：根据首页 topics 数据生成
     const homeData = (await fetchHomePageData(locale)) as HomePageData | null;

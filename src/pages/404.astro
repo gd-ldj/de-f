@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
 import Footer from '@/components/common/react/footer/Index'
 import type { Locale } from '@/types'
 
@@ -17,6 +18,7 @@ const description = 'Sorry, we couldn\'t find this page. But don\'t worry, you c
 <BaseLayout title={title} description={description} locale={locale}>
   <!-- React Header - Independent loading -->
   <HeaderWithFallback />
+  <AuthMount client:load />
   <main class="min-h-screen mt-[56px] md:mt-[97px] flex items-center justify-center bg-white">
     <div class="max-w-md mx-auto px-4 text-center">
       <!-- 404 Icon -->

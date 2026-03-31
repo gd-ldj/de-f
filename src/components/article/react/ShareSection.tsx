@@ -5,7 +5,8 @@ import { useAuth } from '@/lib/useAuth';
 import { useWalletAuth } from '@/lib/useWalletAuth';
 import { createTranslator } from '@/lib/i18n';
 import { motion } from 'framer-motion';
-import { TRACKING_EVENTS } from '@/config/constants';
+import { TRACKING_EVENTS, DEFAULT_PROMOTE_CODE } from '@/config/constants';
+import { getAnonymousPromoteCode, getCachedAnonymousPromoteCode } from '@/lib/fingerprint';
 
 interface ShareSectionProps {
   locale: Locale;
@@ -96,6 +97,42 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
     setShareUrl(normalizeShareUrl(nextUrl));
   }, [url]);
 
+  // Auto-apply user's promote code to share URL when it becomes available
+  useEffect(() => {
+    if (!myPromoteCode) return;
+    // Skip if URL already contains a promo code (path-based or mask param)
+    const existingPromo = getPromoCodeFromUrl(shareUrl);
+    const hasMask = (() => {
+      try {
+        return new URL(shareUrl).searchParams.has('mask');
+      } catch {
+        return /[?&]mask=/.test(shareUrl);
+      }
+    })();
+    if (existingPromo || hasMask) return;
+
+    // For non-article pages (no slug in path), use ?mask= param
+    // For article pages (slug in path), append -code to last segment
+    const normalized = normalizeShareUrl(shareUrl);
+    try {
+      const urlObj = new URL(normalized);
+      const pathSegments = urlObj.pathname.split('/').filter(Boolean);
+      const lastSeg = pathSegments[pathSegments.length - 1] || '';
+      // Heuristic: article slugs contain hyphens and are long; listing pages are short single words
+      const isArticlePath = lastSeg.includes('-') || /^[a-f0-9]{8,}$/.test(lastSeg);
+      if (isArticlePath) {
+        setShareUrl(replaceLastPromoCodeInUrl(normalized, myPromoteCode));
+      } else {
+        urlObj.searchParams.set('mask', myPromoteCode);
+        setShareUrl(urlObj.toString());
+      }
+    } catch {
+      // Fallback: just append mask param
+      const sep = shareUrl.includes('?') ? '&' : '?';
+      setShareUrl(`${normalized}${sep}mask=${myPromoteCode}`);
+    }
+  }, [myPromoteCode]);
+
   // Local state for controlling the prompt visibility so we can update it right after actions.
   const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(() => evaluateShouldShowPrompt(shareUrl, myPromoteCode, isEffectivelyLoggedIn));
 
@@ -131,8 +168,9 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
    * Using the locally stored promo code ensures the prompt condition re-evaluates
    * and hides itself when the link already contains the user's code.
    */
-  const handleGenerateMyCode = () => {
-    const targetCode = myPromoteCode || 'detake';
+  const handleGenerateMyCode = async () => {
+    // Use user's promote code, or fingerprint-based anonymous code, or system default
+    const targetCode = myPromoteCode || getCachedAnonymousPromoteCode() || await getAnonymousPromoteCode() || DEFAULT_PROMOTE_CODE;
     const hasMaskParam = (() => {
       try {
         const urlObj = new URL(shareUrl, typeof window === 'undefined' ? 'https://detake.news' : window.location.href);

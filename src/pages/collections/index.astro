@@ -18,7 +18,7 @@ const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
 const t = createTranslator(locale)
 const title = t('pages.collectionsTitle')
 const description = t('pages.collectionsDescription')
-const canonicalUrl = `${SITE_CONFIG.SITE_URL}/collections?mask=detake`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/collections`
 
 const ogImageParams = new URLSearchParams({
   title: title,

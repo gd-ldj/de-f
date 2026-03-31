@@ -37,7 +37,7 @@ const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAU
 // SEO optimization
 const title = t('pages.learnTitle')
 const description = t('pages.learnDescription')
-const canonicalUrl = `${SITE_CONFIG.SITE_URL}/tutorials?mask=detake`
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/tutorials`
 
 // Generate OG image
 const ogImageParams = new URLSearchParams({

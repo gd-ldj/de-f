@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
 import Footer from '@/components/common/react/footer/Index'
 import CategoryPage from '@/components/pages/CategoryPage'
 import type { Locale, SourceLanguage } from '@/types'
@@ -41,6 +42,7 @@ const { title, description } = seoContent[locale] || seoContent.en
 
 <BaseLayout title={title} description={description} locale={locale}>
   <HeaderWithFallback locale={locale} />
+  <AuthMount client:load />
 
   <main class="flex-1 bg-background mt-[56px] md:mt-[97px]">
     <div id="category-breadcrumb-title" class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block"></div>

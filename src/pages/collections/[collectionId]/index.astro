@@ -13,7 +13,14 @@ import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 
 export const prerender = false
 
-const { collectionId } = Astro.params as { collectionId: string }
+const { collectionId: rawCollectionId } = Astro.params as { collectionId: string }
+
+// Strip promote code suffix from collectionId (e.g. "17-zgDsS2yF" → "17")
+let collectionId = rawCollectionId
+const dashIdx = rawCollectionId.indexOf('-')
+if (dashIdx !== -1) {
+  collectionId = rawCollectionId.slice(0, dashIdx)
+}
 
 const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
 const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
