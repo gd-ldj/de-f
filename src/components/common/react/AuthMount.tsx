@@ -60,7 +60,7 @@ function getLocaleFromURL(): Locale {
  * Placeholder user button - shown while Clerk is loading
  */
 const PlaceholderUserButton: React.FC = () => (
-  <button className="p-1 hover:bg-gray-100 rounded-md transition-colors opacity-50 cursor-not-allowed" disabled>
+  <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none opacity-50 cursor-not-allowed" disabled>
     <img src="/me.svg" alt="logo" className="w-5 h-5" />
   </button>
 );
@@ -208,7 +208,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     if (!userButtonEl || !ready) return null;
     return createPortal(
       <WalletPopover locale={locale}>
-        <button className="p-1 hover:bg-gray-100 rounded-md transition-colors">
+        <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none">
           <img src="/me.svg" alt="logo" className="w-5 h-5" />
         </button>
       </WalletPopover>,

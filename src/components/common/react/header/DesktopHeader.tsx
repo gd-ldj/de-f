@@ -521,7 +521,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             {/* User Component - AuthMount portal renders WalletPopover here */}
             {/* Default avatar shown immediately; auto-hidden via CSS when portal content appears */}
             <div id="user-button-root">
-              <button className="p-1 hover:bg-gray-100 rounded-md transition-colors [&:not(:only-child)]:hidden" aria-label="User menu">
+              <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none [&:not(:only-child)]:hidden" aria-label="User menu">
                 <img src="/me.svg" alt="User" className="w-5 h-5" />
               </button>
             </div>

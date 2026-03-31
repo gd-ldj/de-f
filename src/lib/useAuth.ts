@@ -14,9 +14,31 @@ export const useAuth = () => {
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
 
   // Open Clerk sign-in modal
+  // Blur the trigger element when the modal closes to prevent unwanted focus ring
   const handleLogin = async () => {
     try {
+      const trigger = document.activeElement as HTMLElement | null;
       clerk.openSignIn();
+
+      // Watch for Clerk modal removal and blur the trigger to avoid focus ring
+      if (trigger) {
+        const observer = new MutationObserver(() => {
+          const modal = document.querySelector('.cl-modalBackdrop, .cl-rootBox .cl-signIn-root');
+          if (!modal) {
+            observer.disconnect();
+            // Use requestAnimationFrame to blur after Clerk restores focus
+            requestAnimationFrame(() => {
+              if (document.activeElement === trigger) {
+                trigger.blur();
+              }
+            });
+          }
+        });
+        // Start observing after a short delay to allow Clerk to mount
+        setTimeout(() => {
+          observer.observe(document.body, { childList: true, subtree: true });
+        }, 500);
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }
