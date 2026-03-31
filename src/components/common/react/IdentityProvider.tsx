@@ -14,11 +14,14 @@ const clerkAppearance = {
   },
   elements: {
     formButtonPrimary: {
-      backgroundColor: '#052019',
+      backgroundColor: '#6b7280',
       color: '#ffffff',
+      border: 'none !important',
+      boxShadow: 'none !important',
+      outline: 'none !important',
     },
     formButtonPrimary__hover: {
-      backgroundColor: '#0a3d2f',
+      backgroundColor: '#052019',
     },
   },
 };
