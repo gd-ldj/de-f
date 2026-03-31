@@ -56,8 +56,9 @@ export function formatRelativeTime(isoString: string, locale = 'en'): string {
 }
 
 /**
- * Extract category names from article data and validate against taxonomy dictionary.
- * Only returns names that exist in CATEGORY_MAP to prevent invalid/tag data from leaking in.
+ * Extract the first valid category name from article data.
+ * Only returns names that exist in CATEGORY_MAP; takes the first match only
+ * (API data is unreliable and may return multiple unrelated categories).
  */
 export function getArticleCategoryNames(article: Record<string, any>): string[] {
   let raw: string[] = [];
@@ -66,12 +67,13 @@ export function getArticleCategoryNames(article: Record<string, any>): string[] 
   } else if (article?.category_name) {
     raw = [article.category_name];
   }
-  return raw.filter((name) => name in CATEGORY_MAP);
+  const first = raw.find((name) => name in CATEGORY_MAP);
+  return first ? [first] : [];
 }
 
 /**
- * Extract subcategory names from article data and validate against taxonomy dictionary.
- * Only returns names that exist in SUBCATEGORY_MAP to prevent tag data from appearing in breadcrumbs.
+ * Extract subcategory names whose parentCategoryName matches the article's
+ * first valid category. Prevents unrelated subcategories from leaking into breadcrumbs.
  */
 export function getArticleSubcategoryNames(article: Record<string, any>): string[] {
   let raw: string[] = [];
@@ -80,7 +82,16 @@ export function getArticleSubcategoryNames(article: Record<string, any>): string
   } else if (article?.subcategory_name) {
     raw = [article.subcategory_name];
   }
-  return raw.filter((name) => name in SUBCATEGORY_MAP);
+
+  const validCategories = getArticleCategoryNames(article);
+  if (validCategories.length === 0) return [];
+
+  const primaryCategory = validCategories[0];
+  return raw.filter(
+    (name) =>
+      name in SUBCATEGORY_MAP &&
+      SUBCATEGORY_MAP[name].parentCategoryName === primaryCategory,
+  );
 }
 
 export function getArticleCategoryLabel(article: Record<string, any>): string {
