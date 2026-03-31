@@ -9,6 +9,7 @@ import { createTranslator } from '@/lib/i18n'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { SITE_CONFIG, DEFAULT_PROMOTE_CODE, STORAGE_KEYS, MULTI_SOURCE_CONFIG } from '@/config/constants'
+import { headerTexts } from '@/components/common/react/header/constants'
 export const prerender = false
 
 const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
@@ -16,7 +17,15 @@ const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
 const { url } = Astro
 
 const t = createTranslator(locale)
-const currentCategoryName = url.searchParams.get('category_name') || t('learn.glossary')
+
+// Map English category_name param to localized label using header translations
+const rawCategoryName = url.searchParams.get('category_name')
+const enTutorialsItems = headerTexts.en.dropdown.tutorialsItems
+const localizedTutorialsItems = headerTexts[sourceLanguage]?.dropdown.tutorialsItems ?? enTutorialsItems
+const enIndex = rawCategoryName ? enTutorialsItems.indexOf(rawCategoryName) : -1
+const currentCategoryName = enIndex >= 0
+  ? (localizedTutorialsItems[enIndex] ?? rawCategoryName)
+  : (rawCategoryName || t('learn.glossary'))
 
 // Fetch learn items grouped by letter
 let learnItemsByLetter: { [letter: string]: any[] } = {}
