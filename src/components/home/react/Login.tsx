@@ -1,8 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Wallet } from '@/components/common/react/ConnectWallet';
-import { EmailLogin } from '@/components/common/react/EmailLogin';
-import { TRACKING_EVENTS } from '@/config/constants';
 import type { Locale } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 
@@ -26,14 +24,8 @@ export default function Login({ locale }: LoginProps) {
         </p>
 
         <div className="space-y-4">
-          {/* Wallet connection button */}
           <div>
             <Wallet locale={locale} />
-          </div>
-
-          {/* Email login button */}
-          <div>
-            <EmailLogin locale={locale} />
           </div>
         </div>
       </div>

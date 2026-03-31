@@ -124,8 +124,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
 
-  // Get Clerk ready state to determine when to show real components
-  const { isLoaded: ready } = useAuth();
+  // Get Clerk ready state and sign-in status to determine when to show real components
+  const { isLoaded: ready, isSignedIn } = useAuth();
 
   // Memoize DOM element queries to avoid repeated lookups
   const domElements = useMemo(() => {
@@ -217,9 +217,9 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
   }, [userButtonEl, ready, locale]);
 
   const loginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated || !ready || accessToken) return null;
+    if (!loginEl || isAuthenticated || !ready || accessToken || isSignedIn) return null;
     return createPortal(<Login locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale, ready, accessToken]);
+  }, [loginEl, isAuthenticated, locale, ready, accessToken, isSignedIn]);
 
   const sharePortal = useMemo(() => {
     if (!shareEl || !shareSection || !ready) return null;
