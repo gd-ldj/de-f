@@ -153,14 +153,11 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
         {!hasMore && !loading && articles.length > 0 && <span className="ml-2">{t('common.noMoreArticles')}</span>}
       </div>
 
-      {articles.length > 0 && (
+      {articles.length > 0 && hasMore && (
         <div className="hidden md:flex items-center justify-center mt-8 mb-2">
-          {hasMore && (
-            <button type="button" onClick={loadMoreArticles} disabled={loading} className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-[2px] hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors text-[14px]">
-              {loading ? t('common.loading') : t('common.loadMore')}
-            </button>
-          )}
-          {/* {!hasMore && !loading && <span className="text-xs text-muted-foreground">{t('common.noMoreArticles')}</span>} */}
+          <button type="button" onClick={loadMoreArticles} disabled={loading} className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-[2px] hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors text-[14px]">
+            {loading ? t('common.loading') : t('common.loadMore')}
+          </button>
         </div>
       )}
     </section>
