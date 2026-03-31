@@ -1,9 +1,11 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { fetchArticles } from '@/api/articles';
 import type { ApiArticle, Locale } from '@/types';
 import FilterBarReact from '@/components/common/react/FilterBar';
 import ArticleGrid from '@/components/common/react/ArticleGrid';
 import PaginationReact from '@/components/common/react/Pagination';
+import { getBusinessTypeLabel, getCategoryLabel, getSubcategoryLabel as getSubcategoryLocalizedLabel } from '@/config/article-taxonomy';
 
 interface CategoryPageProps {
   locale: Locale;
@@ -427,8 +429,85 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     };
   }, [loadMoreArticles]);
 
+  // Build dynamic breadcrumb and page title based on current filters
+  // Use locale as SourceLanguage for taxonomy label lookups (types are compatible)
+  const lang = locale as 'en' | 'zh' | 'ja';
+
+  const breadcrumbData = useMemo(() => {
+    const singleCategory = typeof filters.categoryName === 'string' && filters.categoryName
+      ? filters.categoryName
+      : Array.isArray(filters.categoryName) && filters.categoryName.length === 1
+        ? filters.categoryName[0]
+        : '';
+
+    const singleSubcategory = typeof filters.subcategoryName === 'string' && filters.subcategoryName
+      ? filters.subcategoryName
+      : Array.isArray(filters.subcategoryName) && filters.subcategoryName.length === 1
+        ? filters.subcategoryName[0]
+        : '';
+
+    const businessTypeLabel = getBusinessTypeLabel(category, lang);
+
+    // Determine the page title (last level)
+    if (singleSubcategory) {
+      return {
+        title: getSubcategoryLocalizedLabel(singleSubcategory, lang),
+        crumbs: [
+          { label: businessTypeLabel, href: `/${category.toLowerCase()}` },
+          ...(singleCategory ? [{ label: getCategoryLabel(singleCategory, lang), href: `/${category.toLowerCase()}?category_name=${singleCategory}` }] : []),
+          { label: getSubcategoryLocalizedLabel(singleSubcategory, lang), href: '' },
+        ],
+      };
+    }
+
+    if (singleCategory) {
+      return {
+        title: getCategoryLabel(singleCategory, lang),
+        crumbs: [
+          { label: businessTypeLabel, href: `/${category.toLowerCase()}` },
+          { label: getCategoryLabel(singleCategory, lang), href: '' },
+        ],
+      };
+    }
+
+    // Top-level: no breadcrumb, title is the business type itself
+    return {
+      title: businessTypeLabel,
+      crumbs: [],
+    };
+  }, [category, filters.categoryName, filters.subcategoryName, lang]);
+
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const el = document.getElementById('category-breadcrumb-title');
+    if (el) setPortalContainer(el);
+  }, []);
+
+  const breadcrumbTitleContent = (
+    <>
+      {breadcrumbData.crumbs.length > 0 && (
+        <nav className="text-sm text-muted-foreground mb-2">
+          {breadcrumbData.crumbs.map((crumb, index) => (
+            <span key={crumb.label}>
+              {index > 0 && <span className="mx-1">/</span>}
+              {crumb.href ? (
+                <a href={crumb.href} className="hover:text-foreground">{crumb.label}</a>
+              ) : (
+                <span className="text-primary">{crumb.label}</span>
+              )}
+            </span>
+          ))}
+        </nav>
+      )}
+      <h1 className="text-4xl md:text-5xl font-medium text-foreground">{breadcrumbData.title}</h1>
+    </>
+  );
+
   return (
     <div className="max-w-[1440px] mx-auto py-4">
+      {/* Portal breadcrumb + title into Astro container */}
+      {portalContainer && createPortal(breadcrumbTitleContent, portalContainer)}
+
       {/* Filter Bar - temporarily hidden
       <FilterBarReact locale={locale} viewMode="grid" authorName={filters.authorName} initialCategoryName={filters.categoryName} initialSubcategoryName={filters.subcategoryName} initialTag={filters.tag} businessTypeName={category} />
       */}

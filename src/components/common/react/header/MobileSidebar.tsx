@@ -141,22 +141,14 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
       setCurrentSourceLanguage(targetLanguage);
       setIsLocaleExpanded(false);
       onClose();
-      const currentPathname = window.location.pathname;
-      const nextPath = removeTranslationPrefix(currentPathname);
       const portPart = port ? `:${port}` : '';
-      const nextUrl = `${protocol}//${hostname}${portPart}${nextPath}${search}${hash}`;
-      if (nextUrl !== window.location.href) {
-        window.location.href = nextUrl;
-      } else {
-        window.location.href = window.location.href;
-      }
+      const nextUrl = `${protocol}//${hostname}${portPart}/`;
+      window.location.href = nextUrl;
       return;
     }
 
     const portPart = port ? `:${port}` : '';
-    const currentPathname = window.location.pathname;
-    const nextPath = removeTranslationPrefix(currentPathname);
-    const newUrl = `${protocol}//${targetHost}${portPart}${nextPath}${search}${hash}`;
+    const newUrl = `${protocol}//${targetHost}${portPart}/`;
     window.location.href = newUrl;
   };
 

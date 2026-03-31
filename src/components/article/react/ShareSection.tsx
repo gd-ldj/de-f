@@ -23,7 +23,7 @@ interface ShareSectionProps {
 const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, articleId, onClose }) => {
   const t = createTranslator(locale);
   const [copied, setCopied] = useState(false);
-  const { isEffectivelyLoggedIn, login } = useAuth();
+  const { isEffectivelyLoggedIn, isLoading: isAuthLoading, authenticated: isSignedIn, login } = useAuth();
   const [shareUrl, setShareUrl] = useState(url);
   const { promoteCode: myPromoteCode } = useWalletAuth();
 
@@ -231,7 +231,17 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
         <div className="flex items-center justify-between">
           {/* URL Input with Copy Button */}
           <div className="relative flex-1">
-            <input type="text" value={shareUrl} readOnly className="w-full px-4 py-3 pr-12 border border-border rounded text-sm text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder={t('article.shareUrlPlaceholder')} />
+            <input
+              type="text"
+              value={shareUrl}
+              readOnly
+              tabIndex={-1}
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseEnter={(e) => e.currentTarget.classList.add('ring-2', 'ring-primary', 'border-transparent')}
+              onMouseLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-primary', 'border-transparent')}
+              className="w-full px-4 py-3 pr-12 border border-border rounded text-sm text-muted-foreground outline-none transition-shadow"
+              placeholder={t('article.shareUrlPlaceholder')}
+            />
             <button onClick={handleCopyLink} className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md transition-all duration-200 ${copied ? 'text-green-600 bg-green-50' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}`} title={t('article.copyLink')}>
               {copied ? (
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -274,7 +284,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
         </div>
 
         {/* Additional login prompt below input for unauthenticated users */}
-        {!isEffectivelyLoggedIn && (
+        {!isAuthLoading && !isSignedIn && !isEffectivelyLoggedIn && (
           <div className="text-xs text-muted-foreground">
             <span onClick={handleLoginClick} className="text-primary hover:underline cursor-pointer">
               {t('article.loginNow')}

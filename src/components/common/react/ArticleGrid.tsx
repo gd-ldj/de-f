@@ -1,6 +1,7 @@
 import type { ApiArticle, Locale } from '@/types';
 import ArticleLink from './ArticleLink';
-import { formatDate, getArticleBusinessPath, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedTagLabel } from '@/utils/util';
+import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 
 interface ArticleGridProps {
@@ -10,6 +11,7 @@ interface ArticleGridProps {
 
 export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
   const t = createTranslator(locale);
+  const lang = locale as SourceLanguage;
 
   return (
     <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-1 md:mb-12 mt-5 md:mt-6 px-4 md:px-6">
@@ -29,7 +31,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
               {/* Category and Tags */}
               <div className="flex flex-wrap gap-1 md:gap-2">
                 {/* Category Badge */}
-                <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleCategoryLabel(article)}</span>
+                <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getLocalizedCategoryLabel(article, lang)}</span>
                 {/* Category Badge */}
                 {/* {getArticleSubcategoryLabel(article) && <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleSubcategoryLabel(article)}</span>} */}
                 {/* Tags */}
@@ -37,7 +39,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                   <div className="flex flex-wrap gap-1">
                     {article.tags.slice(0, 1).map((tag, index) => (
                       <span key={index} className="text-muted-foreground text-[10px] md:text-xs uppercase">
-                        {tag}
+                        {getLocalizedTagLabel(tag, lang)}
                       </span>
                     ))}
                   </div>

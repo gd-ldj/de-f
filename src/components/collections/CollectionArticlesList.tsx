@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ApiArticle, Locale } from '@/types';
 import { fetchCollectionArticles } from '@/api/collections';
-import { formatDate, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util';
+import { formatDate, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util';
+import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import { useAtom } from 'jotai';
 import { persistedPromoteCodeAtom } from '@/stores';
@@ -28,6 +29,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
   const [loading, setLoading] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const t = createTranslator(locale);
+  const lang = locale as SourceLanguage;
   const [promoteCode, _] = useAtom(persistedPromoteCodeAtom);
   /**
    * 加载更多合集文章（用于移动端无限滚动）
@@ -87,7 +89,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12px] font-medium text-white uppercase truncate">{[getArticleCategoryLabel(article) || getArticleSubcategoryLabel(article), ...(article.tags ? article.tags.slice(0, 2) : [])].filter(Boolean).join('  ')}</div>
+                      <div className="text-[12px] font-medium text-white uppercase truncate">{[getLocalizedCategoryLabel(article, lang) || getLocalizedSubcategoryLabel(article, lang), ...(article.tags ? article.tags.slice(0, 2).map((tag: string) => getLocalizedTagLabel(tag, lang)) : [])].filter(Boolean).join('  ')}</div>
                     </div>
                     <div className="text-[11px] text-white/80 whitespace-nowrap">
                       {new Date(article.created_at).toLocaleDateString(locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })} <span className="">{`/ ${t('article.by')} `}</span> <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
@@ -116,10 +118,10 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 </div>
                 <div className="flex-1 flex flex-col">
                   <div className="flex flex-wrap gap-1 md:gap-2">
-                    <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{filterCategory?.split(',').find((c) => getArticleCategoryLabel(article).includes(c)) || filterCategory?.split(',')[0] || filterSubCategory?.split(',').find((c) => getArticleSubcategoryLabel(article).includes(c)) || filterSubCategory?.split(',')[0] || getArticleCategoryLabel(article)}</span>
+                    <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getLocalizedCategoryLabel(article, lang) || getLocalizedSubcategoryLabel(article, lang)}</span>
                     {article.tags && article.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        <span className="text-muted-foreground text-[10px] md:text-xs uppercase">{article.tags.find((tag) => filterTag?.split(',').includes(tag)) || article.tags[0]}</span>
+                        <span className="text-muted-foreground text-[10px] md:text-xs uppercase">{getLocalizedTagLabel(article.tags.find((tag: string) => filterTag?.split(',').includes(tag)) || article.tags[0], lang)}</span>
                       </div>
                     )}
                   </div>

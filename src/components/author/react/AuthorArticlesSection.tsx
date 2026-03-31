@@ -3,7 +3,8 @@ import type { Locale, ApiArticle } from '@/types';
 import { fetchArticles } from '@/api/articles';
 import Image from '@/components/common/react/Image';
 import { createTranslator } from '@/lib/i18n';
-import { getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
+import { getArticleBusinessPath, getLocalizedBusinessTypeLabel, getLocalizedTagLabel } from '@/utils/util';
+import type { SourceLanguage } from '@/types';
 
 interface AuthorArticlesSectionProps {
   articles: ApiArticle[];
@@ -23,6 +24,7 @@ interface ArticleCardProps {
  */
 const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
   const t = createTranslator(locale);
+  const lang = locale as SourceLanguage;
   const formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -80,7 +82,7 @@ console.log('🚀 ~ getArticleUrl ~ article.author:', article.author);
       <div className="flex-1 min-w-0">
         {/* Category and Date */}
         <div className="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
-          <span className="px-2 py-1 bg-secondary/50 rounded-full text-xs font-medium">{getArticleBusinessPath(article)}</span>
+          <span className="px-2 py-1 bg-secondary/50 rounded-full text-xs font-medium">{getLocalizedBusinessTypeLabel(article, lang)}</span>
           <span>•</span>
           <time>{formatDate(article.created_at)}</time>
         </div>
@@ -98,7 +100,7 @@ console.log('🚀 ~ getArticleUrl ~ article.author:', article.author);
           <div className="flex flex-wrap gap-1">
             {article.tags.slice(0, 3).map((tag, index) => (
               <span key={index} className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md">
-                {tag}
+                {getLocalizedTagLabel(tag, lang)}
               </span>
             ))}
             {article.tags.length > 3 && (

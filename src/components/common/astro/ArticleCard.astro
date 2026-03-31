@@ -1,7 +1,9 @@
 ---
 import type { Locale } from '../../../types/index.ts';
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
-import { getArticleBusinessPath, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util'
+import { getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import type { SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 
 export interface Props {
@@ -28,9 +30,10 @@ const {
 
 const t = createTranslator(locale)
 
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
 const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE
-const categoryLabel = getArticleCategoryLabel(article)
-const subcategoryLabel = getArticleSubcategoryLabel(article)
+const categoryLabel = getLocalizedCategoryLabel(article, sourceLanguage)
+const subcategoryLabel = getLocalizedSubcategoryLabel(article, sourceLanguage)
 
 /**
  * Format date based on locale
@@ -141,10 +144,10 @@ const imageClasses = imageSizeClasses[imageSize];
           </span>
           {subcategoryLabel && <span class="text-xs font-medium text-primary uppercase tracking-wide">{subcategoryLabel}</span>}
         <!-- Tags -->
-          {showTags && tags.length > 0 && 
+          {showTags && tags.length > 0 &&
             tags.map((tag: string) => (
               <span class="text-muted-foreground text-[10px] md:text-xs uppercase">
-                {tag}
+                {getLocalizedTagLabel(tag, sourceLanguage)}
               </span>
             ))
           }
@@ -240,7 +243,7 @@ const imageClasses = imageSizeClasses[imageSize];
         <div class="flex flex-wrap gap-1">
           {tags.slice(0, 3).map((tag: string) => (
             <span class="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md">
-              {tag}
+              {getLocalizedTagLabel(tag, sourceLanguage)}
             </span>
           ))}
           {tags.length > 3 && (

@@ -55,24 +55,32 @@ export function formatRelativeTime(isoString: string, locale = 'en'): string {
   // }
 }
 
+/**
+ * Extract category names from article data and validate against taxonomy dictionary.
+ * Only returns names that exist in CATEGORY_MAP to prevent invalid/tag data from leaking in.
+ */
 export function getArticleCategoryNames(article: Record<string, any>): string[] {
+  let raw: string[] = [];
   if (Array.isArray(article?.category_names) && article.category_names.length > 0) {
-    return article.category_names;
+    raw = article.category_names;
+  } else if (article?.category_name) {
+    raw = [article.category_name];
   }
-  if (article?.category_name) {
-    return [article.category_name];
-  }
-  return [];
+  return raw.filter((name) => name in CATEGORY_MAP);
 }
 
+/**
+ * Extract subcategory names from article data and validate against taxonomy dictionary.
+ * Only returns names that exist in SUBCATEGORY_MAP to prevent tag data from appearing in breadcrumbs.
+ */
 export function getArticleSubcategoryNames(article: Record<string, any>): string[] {
+  let raw: string[] = [];
   if (Array.isArray(article?.subcategory_names) && article.subcategory_names.length > 0) {
-    return article.subcategory_names;
+    raw = article.subcategory_names;
+  } else if (article?.subcategory_name) {
+    raw = [article.subcategory_name];
   }
-  if (article?.category_name) {
-    return [article.category_name];
-  }
-  return [];
+  return raw.filter((name) => name in SUBCATEGORY_MAP);
 }
 
 export function getArticleCategoryLabel(article: Record<string, any>): string {
@@ -86,4 +94,52 @@ export function getArticleSubcategoryLabel(article: Record<string, any>): string
 export function getArticleBusinessPath(article: Record<string, any>): string {
   const primary = article?.business_type_name || article?.business_type || 'news';
   return primary.toLowerCase();
+}
+
+// ---------------------------------------------------------------------------
+// Localized label helpers (use taxonomy dictionary for i18n)
+// ---------------------------------------------------------------------------
+
+import {
+  CATEGORY_MAP,
+  SUBCATEGORY_MAP,
+  getBusinessTypeLabel,
+  getCategoryLabel as getTaxonomyCategoryLabel,
+  getSubcategoryLabel as getTaxonomySubcategoryLabel,
+  getTagLabel as getTaxonomyTagLabel,
+} from '@/config/article-taxonomy';
+import type { SourceLanguage } from '@/types';
+
+/**
+ * Get localized category label(s) for an article.
+ * Maps each raw English category name through the taxonomy dictionary.
+ */
+export function getLocalizedCategoryLabel(article: Record<string, any>, lang: SourceLanguage): string {
+  return getArticleCategoryNames(article)
+    .map((name) => getTaxonomyCategoryLabel(name, lang))
+    .join(' ');
+}
+
+/**
+ * Get localized subcategory label(s) for an article.
+ */
+export function getLocalizedSubcategoryLabel(article: Record<string, any>, lang: SourceLanguage): string {
+  return getArticleSubcategoryNames(article)
+    .map((name) => getTaxonomySubcategoryLabel(name, lang))
+    .join(' ');
+}
+
+/**
+ * Get localized tag label.
+ */
+export function getLocalizedTagLabel(tag: string, lang: SourceLanguage): string {
+  return getTaxonomyTagLabel(tag, lang);
+}
+
+/**
+ * Get localized business type label for an article.
+ */
+export function getLocalizedBusinessTypeLabel(article: Record<string, any>, lang: SourceLanguage): string {
+  const primary = article?.business_type_name || article?.business_type || 'News';
+  return getBusinessTypeLabel(primary, lang);
 }

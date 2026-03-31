@@ -3,7 +3,9 @@
 import type { Locale, HomeNewsArticle } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
-import { formatDate, getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util'
+import { formatDate, getArticleBusinessPath, getLocalizedBusinessTypeLabel } from '@/utils/util'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import type { SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 
 // Get locale and newsAll from props
@@ -16,6 +18,7 @@ const { locale = 'en' as Locale, newsAll = [] } = Astro.props as Props
 
 // Translation helper function
 const t = createTranslator(locale)
+const sourceLanguage: SourceLanguage = locale as SourceLanguage
 
 // Use news data passed from parent component
 const news_all: HomeNewsArticle[] = newsAll
@@ -64,11 +67,11 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
       <div class="mb-6">
         <h3 class="font-medium text-foreground mb-4">{t('common.highlights')}</h3>
         <p class="text-[12px] text-primary font-medium uppercase mb-2">
-          <a 
+          <a
             href={`/${getArticleBusinessPath(featuredArticle)}`}
             class="hover:text-primary/80 transition-colors"
           >
-            {getArticleBusinessPath(featuredArticle)}
+            {getLocalizedBusinessTypeLabel(featuredArticle, sourceLanguage)}
           </a>
         </p>
 
@@ -119,11 +122,11 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
     {sidebarArticles.map((article: HomeNewsArticle) => (
       <div class="bg-white mb-6">
         <div class="flex items-center justify-between mb-2">
-          <a 
+          <a
             href={`/${getArticleBusinessPath(article)}`}
             class="text-sm text-primary font-medium uppercase hover:text-primary/80 transition-colors"
           >
-            {getArticleBusinessPath(article)}
+            {getLocalizedBusinessTypeLabel(article, sourceLanguage)}
           </a>
         </div>
         <h3 class="text-base md:text-lg font-medium text-foreground mb-2 line-clamp-2">

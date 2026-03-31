@@ -2,8 +2,7 @@ import * as React from 'react';
 import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
 import { STORAGE_KEYS, TRACKING_EVENTS, MULTI_SOURCE_CONFIG, IS_DEV_ENV } from '@/config/constants';
 import { toast } from '@/components/common/react/Toast';
-import type { CollectionItem, Locale, SourceLanguage } from '@/types';
-import { fetchCollections } from '@/api/collections';
+import type { Locale, SourceLanguage } from '@/types';
 import { removeTranslationPrefix } from '@/lib/language-utils';
 
 // Import icons from local assets
@@ -21,13 +20,11 @@ interface DesktopHeaderProps {
 
 export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, userComponent }: DesktopHeaderProps) {
   const [localeDropdownOpen, setLocaleDropdownOpen] = React.useState(false);
-  const [collectionsDropdownOpen, setCollectionsDropdownOpen] = React.useState(false);
+
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
   const [selectedSubcategoryName, setSelectedSubcategoryName] = React.useState<string | null>(null);
-  const [headerCollectionItems, setHeaderCollectionItems] = React.useState<CollectionItem[]>([]);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
-  const collectionsDropdownRef = React.useRef<HTMLDivElement>(null);
   const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
   const researchDropdownRef = React.useRef<HTMLDivElement>(null);
   const insightsDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -70,8 +67,6 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const enTexts = headerTexts.en;
 
   const pathSegments = currentPath.split('/');
-  const collectionsIndex = pathSegments.indexOf('collections');
-  const activeCollectionId = collectionsIndex >= 0 && pathSegments.length > collectionsIndex + 1 ? pathSegments[collectionsIndex + 1] : null;
 
   // Handle click outside to close dropdowns
   React.useEffect(() => {
@@ -79,9 +74,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setLocaleDropdownOpen(false);
       }
-      if (collectionsDropdownRef.current && !collectionsDropdownRef.current.contains(event.target as Node)) {
-        setCollectionsDropdownOpen(false);
-      }
+
       if (categoriesDropdownRef.current && !categoriesDropdownRef.current.contains(event.target as Node)) {
         setCategoriesDropdownOpen(false);
       }
@@ -117,26 +110,6 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     setSelectedSubcategoryName(categoryTag);
   }, [currentPath]);
 
-  // 从后端加载 header 中使用的合集列表
-  React.useEffect(() => {
-    let isMounted = true;
-
-    const loadHeaderCollections = async () => {
-      try {
-        const { items } = await fetchCollections(1, 10);
-        if (!isMounted) return;
-        setHeaderCollectionItems(items);
-      } catch (error) {
-        console.error('Failed to fetch header collections:', error);
-      }
-    };
-
-    loadHeaderCollections();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const toggleCategoriesDropdown = () => {
     setCategoriesDropdownOpen(!categoriesDropdownOpen);
@@ -238,29 +211,17 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
     } else {
       setCurrentSourceLanguage(targetLanguage);
       setLocaleDropdownOpen(false);
-      const currentPathname = window.location.pathname;
-      const nextPath = removeTranslationPrefix(currentPathname);
       const portPart = port ? `:${port}` : '';
-      const nextUrl = `${protocol}//${hostname}${portPart}${nextPath}${search}${hash}`;
-      if (nextUrl !== window.location.href) {
-        window.location.href = nextUrl;
-      } else {
-        window.location.href = window.location.href;
-      }
+      const nextUrl = `${protocol}//${hostname}${portPart}/`;
+      window.location.href = nextUrl;
       return;
     }
 
     const portPart = port ? `:${port}` : '';
-    const newUrl = `${protocol}//${targetHost}${portPart}${currentPath}${search}${hash}`;
+    const newUrl = `${protocol}//${targetHost}${portPart}/`;
     window.location.href = newUrl;
   };
 
-  /**
-   * Toggle collections dropdown
-   */
-  const toggleCollectionsDropdown = () => {
-    setCollectionsDropdownOpen(!collectionsDropdownOpen);
-  };
 
   // Categories dropdown items
   const categoriesItems = [
@@ -297,12 +258,6 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const isNewsRouteActive = currentPath === `/news` || currentPath.startsWith(`/news/`) || currentPath.startsWith(`/news?`) || normalizedArticleCategoryKey === 'news';
   const isTutorialsRouteActive = currentPath === `/tutorials` || currentPath.startsWith(`/tutorials/`) || currentPath.startsWith(`/tutorials?`);
 
-  const handleCollectionsClick = () => {
-    setCollectionsDropdownOpen(false);
-    if (typeof window !== 'undefined') {
-      window.location.href = `/collections`;
-    }
-  };
 
   const getCategoryFilterUrl = (typeKey: string, categoryLabel: string) => {
     const typeItem = categoriesItems.find((item) => item.key === typeKey);
@@ -328,6 +283,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             >
               <button onClick={handleCategoriesRootClick} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${categoriesDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.news} aria-expanded={categoriesDropdownOpen}>
                 <span className={`${categoriesDropdownOpen ? 'text-white' : isNewsRouteActive ? 'text-primary' : 'text-gray-600'}`}>{texts.navigation.news}</span>
+                <img src={categoriesDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${categoriesDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Categories Dropdown Menu */}
@@ -342,7 +298,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
                           return (
                             <div key={group.key} className="min-w-[160px]">
-                              <a href={getCategoryFilterUrl('news', enGroup.name)} className={`block text-sm font-medium mb-2 text-foreground hover:text-primary cursor-pointer ${isGroupActive ? 'text-primary' : ''}`} onClick={() => setCategoriesDropdownOpen(false)}>
+                              <a href={getCategoryFilterUrl('news', enGroup.name)} className={`block text-base font-medium mb-3 text-foreground hover:text-primary cursor-pointer ${isGroupActive ? 'text-primary' : ''}`} onClick={() => setCategoriesDropdownOpen(false)}>
                                 {group.name}
                               </a>
                               <div className="flex flex-col gap-2 text-sm text-muted-foreground">
@@ -379,8 +335,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
               if (item.key === 'research') {
                 return (
                   <div key={item.key} className="relative" ref={researchDropdownRef} onMouseEnter={() => setResearchDropdownOpen(true)} onMouseLeave={() => setResearchDropdownOpen(false)}>
-                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${researchDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                    <a href={item.href} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${researchDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
                       {item.name}
+                      <img src={researchDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${researchDropdownOpen ? 'rotate-180' : ''}`} />
                     </a>
                     {researchDropdownOpen && (
                       <div className="absolute -left-1 z-50 px-1">
@@ -409,8 +366,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
               if (item.key === 'insights') {
                 return (
                   <div key={item.key} className="relative" ref={insightsDropdownRef} onMouseEnter={() => setInsightsDropdownOpen(true)} onMouseLeave={() => setInsightsDropdownOpen(false)}>
-                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${insightsDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                    <a href={item.href} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${insightsDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
                       {item.name}
+                      <img src={insightsDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${insightsDropdownOpen ? 'rotate-180' : ''}`} />
                     </a>
                     {insightsDropdownOpen && (
                       <div className="absolute -left-1 z-50 px-1">
@@ -439,8 +397,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
               if (item.key === 'voices') {
                 return (
                   <div key={item.key} className="relative" ref={voicesDropdownRef} onMouseEnter={() => setVoicesDropdownOpen(true)} onMouseLeave={() => setVoicesDropdownOpen(false)}>
-                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${voicesDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                    <a href={item.href} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${voicesDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
                       {item.name}
+                      <img src={voicesDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${voicesDropdownOpen ? 'rotate-180' : ''}`} />
                     </a>
                     {voicesDropdownOpen && (
                       <div className="absolute -left-1 z-50 px-1">
@@ -483,28 +442,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
           {/* Right Navigation & Actions */}
           <div className="flex items-center space-x-6 flex-1 justify-end">
-            {/* Collections Dropdown */}
-            <div className="relative" ref={collectionsDropdownRef} onMouseEnter={() => setCollectionsDropdownOpen(true)} onMouseLeave={() => setCollectionsDropdownOpen(false)}>
-              <button onClick={handleCollectionsClick} className={`flex items-center cursor-pointer space-x-1  text-sm px-3 h-12  transition-colors hover:bg-gray-100 ${collectionsDropdownOpen ? '!bg-primary/80' : ''}`} aria-label={texts.navigation.collections} aria-expanded={collectionsDropdownOpen}>
-                <span className={`${collectionsDropdownOpen ? 'text-white' : isCollectionsRouteActive ? 'text-primary' : 'text-gray-600'}`}>{texts.navigation.collections}</span>
-                <img src={collectionsDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${collectionsDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {/* Collections Dropdown Menu */}
-              {collectionsDropdownOpen && (
-                <div className="absolute -right-1 z-50 px-1">
-                  <div className="mt-1 bg-white border border-gray-200 rounded-md shadow-lg min-w-[192px] w-max">
-                    <div className="py-1">
-                      {headerCollectionItems.map((item) => (
-                        <a key={item.id} href={`/collections/${item.id}`} className={`block px-4 py-2 text-sm hover:bg-gray-50 transition-colors whitespace-nowrap ${activeCollectionId === item.id ? 'text-primary font-medium bg-gray-50' : 'text-gray-600'}`} onClick={() => setCollectionsDropdownOpen(false)}>
-                          {item.name}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Collections Link */}
+            <a href="/collections" className={`text-sm px-3 h-12 flex items-center transition-colors hover:bg-gray-100 rounded ${isCollectionsRouteActive ? 'text-primary' : 'text-gray-600'}`}>
+              {texts.navigation.collections}
+            </a>
 
             {/* Right Navigation Items */}
             {navigation.right.map((item) => {
@@ -513,8 +454,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
               if (item.key === 'tutorials') {
                 return (
                   <div key={item.key} className="relative" ref={tutorialsDropdownRef} onMouseEnter={() => setTutorialsDropdownOpen(true)} onMouseLeave={() => setTutorialsDropdownOpen(false)}>
-                    <a href={item.href} className={`flex items-center text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${tutorialsDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
+                    <a href={item.href} className={`flex items-center space-x-1 text-sm px-3 h-12 rounded transition-colors hover:bg-gray-100 ${tutorialsDropdownOpen ? '!bg-primary/80 text-white' : isActive ? 'text-primary' : 'text-gray-600'}`}>
                       {item.name}
+                      <img src={tutorialsDropdownOpen ? DownWhiteIcon : DownIcon} alt="dropdown" className={`w-4 h-4 transition-transform duration-200 ${tutorialsDropdownOpen ? 'rotate-180' : ''}`} />
                     </a>
                     {tutorialsDropdownOpen && (
                       <div className="absolute right-0 z-50 px-1">

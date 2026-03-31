@@ -4,7 +4,8 @@ import { createTranslator } from '@/lib/i18n'
 import { MULTI_SOURCE_CONFIG } from '@/config/constants'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import Image from '@/components/common/astro/ImageSSR.astro'
-import { formatDate, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util'
+import { formatDate, getArticleCategoryNames, getArticleSubcategoryNames } from '@/utils/util'
+import { getBusinessTypeLabel, getCategoryLabel as getCategoryLocalizedLabel, getSubcategoryLabel as getSubcategoryLocalizedLabel, getTagLabel as getTagLocalizedLabel } from '@/config/article-taxonomy'
 
 interface Props {
   article: ApiArticle
@@ -23,11 +24,22 @@ interface Props {
 const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, userId, collection } = Astro.props
 
 const t = createTranslator(locale)
-const categoryLabel = getArticleCategoryLabel(article)
-const subcategoryLabel = getArticleSubcategoryLabel(article)
+
+// Get raw category/subcategory name arrays from article data
+const categoryNames = getArticleCategoryNames(article)
+const subcategoryNames = getArticleSubcategoryNames(article)
 
 // Get current site's source language
 const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+
+// Localized breadcrumb labels — translate each name individually
+const businessTypeLocalizedLabel = getBusinessTypeLabel(category, sourceLanguage)
+const categoryLocalizedLabels = categoryNames.map((name: string) => getCategoryLocalizedLabel(name, sourceLanguage))
+const subcategoryLocalizedLabels = subcategoryNames.map((name: string) => getSubcategoryLocalizedLabel(name, sourceLanguage))
+
+// For URL params, keep raw English names
+const categoryLabelForUrl = categoryNames.join(',')
+
 
 const baseArticlePath = collection
   ? `/collections/${collection.id}/${slugWithPromote}`
@@ -56,33 +68,34 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
             <a href={`/collections`} class="hover:text-primary">{collectionLabel}</a>
             <span>/</span>
             <a href={`/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
-            <span>/</span>
-            <a href="javascript:;" class="text-primary">{categoryLabel}</a>
-            {
-              subcategoryLabel && (
-                <>
-                  <span>/</span>
-                  <a href="javascript:;" class="text-primary truncate">{subcategoryLabel}</a>
-                </>
-              )
-            }
-            
+            {categoryLocalizedLabels.map((label: string) => (
+              <>
+                <span>/</span>
+                <a href="javascript:;" class="text-primary">{label}</a>
+              </>
+            ))}
+            {subcategoryLocalizedLabels.map((label: string) => (
+              <>
+                <span>/</span>
+                <a href="javascript:;" class="text-primary truncate">{label}</a>
+              </>
+            ))}
           </>
         ) : (
           <>
-            <a href={`/`} class="hover:text-primary">{t('article.articles')}</a>
-            <span>/</span>
-            <a href={`/${category.toLowerCase()}`} class="hover:text-primary">{categoryDisplayName}</a>
-            <span>/</span>
-            <a href="javascript:;" class="text-primary">{categoryLabel}</a>
-            {
-              subcategoryLabel && (
-                <>
-                  <span>/</span>
-                  <a href="javascript:;" class="text-primary truncate">{subcategoryLabel}</a>
-                </>
-              )
-            }
+            <a href={`/${category.toLowerCase()}`} class="hover:text-primary">{businessTypeLocalizedLabel}</a>
+            {categoryLocalizedLabels.map((label: string, i: number) => (
+              <>
+                <span>/</span>
+                <a href={`/${category.toLowerCase()}?category_name=${encodeURIComponent(categoryNames[i])}`} class="hover:text-primary">{label}</a>
+              </>
+            ))}
+            {subcategoryLocalizedLabels.map((label: string) => (
+              <>
+                <span>/</span>
+                <span class="text-primary truncate">{label}</span>
+              </>
+            ))}
           </>
         )}
       </div>
@@ -162,7 +175,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
                  href="javascript:;"
                  class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
                >
-                 {tag}
+                 {getTagLocalizedLabel(tag, sourceLanguage)}
                </a>
              ))}
            </div>
@@ -195,7 +208,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
                   href="javascript:;"
                   class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
                 >
-                  {tag}
+                  {getTagLocalizedLabel(tag, sourceLanguage)}
                 </a>
               ))}
             </div>

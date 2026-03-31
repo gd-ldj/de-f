@@ -379,8 +379,34 @@ export const TAG_MAP: Record<string, TaxonomyItem> = {
 };
 
 // ---------------------------------------------------------------------------
+// Business Types (top-level categories)
+// ---------------------------------------------------------------------------
+
+export const BUSINESS_TYPE_MAP: Record<string, TaxonomyItem> = {
+  News: { id: '1', labels: { en: 'News', zh: '新闻', ja: 'ニュース' } },
+  Research: { id: '2', labels: { en: 'Research', zh: '研究', ja: 'リサーチ' } },
+  Insights: { id: '3', labels: { en: 'Insights', zh: '洞察', ja: 'インサイト' } },
+  Voices: { id: '4', labels: { en: 'Voices', zh: '观点', ja: 'ボイス' } },
+  Tutorials: { id: '5', labels: { en: 'Tutorials', zh: '教程', ja: 'チュートリアル' } },
+  Collections: { id: '6', labels: { en: 'Collections', zh: '合集', ja: 'コレクション' } },
+};
+
+// ---------------------------------------------------------------------------
 // Helper functions
 // ---------------------------------------------------------------------------
+
+/**
+ * Get the localized label for a business type (top-level category).
+ * Falls back to the English name if no match is found.
+ */
+export function getBusinessTypeLabel(name: string, lang: SourceLanguage): string {
+  // Try exact match first, then case-insensitive match (URL params may be lowercase)
+  const item = BUSINESS_TYPE_MAP[name]
+    ?? Object.values(BUSINESS_TYPE_MAP).find(
+      (v) => v.labels.en.toLowerCase() === name.toLowerCase(),
+    );
+  return item?.labels[lang] ?? name;
+}
 
 /**
  * Get the localized label for a category.

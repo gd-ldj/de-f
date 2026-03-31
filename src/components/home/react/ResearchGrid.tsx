@@ -1,6 +1,7 @@
 import React from 'react';
 import type { HomeMostReadArticle, Locale } from '@/types';
-import { formatDate, getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel } from '@/utils/util';
+import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
@@ -11,6 +12,7 @@ interface ResearchGridProps {
 
 export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
   const t = createTranslator(locale);
+  const lang = locale as SourceLanguage;
   const researchArticles = articles.slice(0, 4); // Only show first 4 articles
 
   return (
@@ -74,7 +76,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               {/* Category and tags */}
               <div className="flex flex-wrap gap-2 mb-3">
                 {/* Category label - clickable to enter category page */}
-                <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleCategoryLabel(article)}</button>
+                <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getLocalizedCategoryLabel(article, lang)}</button>
               </div>
 
               {/* Article content */}

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type { HomeNewsArticle, Locale } from '@/types';
-import { formatDate, getArticleBusinessPath, getArticleCategoryLabel, getArticleSubcategoryLabel } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel } from '@/utils/util';
+import { getCategoryLabel as getTaxonomyCategoryLabel } from '@/config/article-taxonomy';
+import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
 
@@ -21,6 +23,7 @@ interface NewsCategory {
 
 export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
   const t = createTranslator(locale);
+  const lang = locale as SourceLanguage;
 
   const [articles, setArticles] = useState<any[]>(newsData[0]?.data || []);
   const [activeCategory, setActiveCategory] = useState(newsData[0]?.tag.toLowerCase() || '');
@@ -31,10 +34,10 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
   const newsCategories: NewsCategory[] = useMemo(() => {
     const categories = newsData.map((item) => ({
       key: item.tag.toLowerCase(),
-      name: item.tag,
+      name: getTaxonomyCategoryLabel(item.tag, lang),
     }));
     return categories;
-  }, [newsData]);
+  }, [newsData, lang]);
 
   // Handle scroll progress calculation for mobile horizontal scroll
   const handleScroll = () => {
@@ -112,7 +115,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                     <div className="flex-1 pl-3 py-1">
                       {/* Category label */}
                       <div className="flex flex-wrap gap-2 mb-1">
-                        <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleCategoryLabel(article)}</button>
+                        <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getLocalizedCategoryLabel(article, lang)}</button>
                         {/* {getArticleSubcategoryLabel(article) && <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleSubcategoryLabel(article)}</button>} */}
                       </div>
 
@@ -164,7 +167,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                 <div className="flex flex-col py-4 h-full">
                   {/* Category label - clickable to enter category page */}
                   <div className="flex flex-wrap gap-2 mb-2">
-                    <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleCategoryLabel(article)}</button>
+                    <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getLocalizedCategoryLabel(article, lang)}</button>
                     {/* {getArticleSubcategoryLabel(article) && <button className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">{getArticleSubcategoryLabel(article)}</button>} */}
                   </div>
 
