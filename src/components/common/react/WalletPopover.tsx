@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 import { useAuth } from '@/lib/useAuth';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
 import type { Locale } from '@/types';
@@ -34,16 +35,41 @@ const getAdminDashboardUrl = (locale: Locale): string => {
   return `https://${adminDomain}/${locale}`;
 };
 
+/**
+ * Build the SSO bridge URL for auto-login on admin.
+ * Falls back to direct admin URL if no Clerk token is available.
+ */
+const buildAdminSsoUrl = (adminUrl: string, clerkToken: string, locale: Locale): string => {
+  // Strip trailing locale segment (e.g. /en) to get the admin origin
+  const adminOrigin = adminUrl.replace(/\/[a-z]{2}$/, '');
+  return `${adminOrigin}/api/auth/sso?token=${encodeURIComponent(clerkToken)}&locale=${locale}`;
+};
+
 export const WalletPopover: React.FC<WalletPopoverProps> = ({ className = '', children, locale }) => {
   const { isEffectivelyLoggedIn, login } = useAuth();
+  const { getToken } = useClerkAuth();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!isEffectivelyLoggedIn) {
       login();
       return;
     }
-    // Logged in: navigate directly to Dashboard
-    window.open(getAdminDashboardUrl(locale), '_blank');
+
+    const adminUrl = getAdminDashboardUrl(locale);
+
+    try {
+      const clerkToken = await getToken();
+      if (clerkToken) {
+        // SSO bridge: auto-login on admin via sign-in token
+        window.open(buildAdminSsoUrl(adminUrl, clerkToken, locale), '_blank');
+      } else {
+        // Fallback: direct navigation (manual login required)
+        window.open(adminUrl, '_blank');
+      }
+    } catch {
+      // Fallback: direct navigation on error
+      window.open(adminUrl, '_blank');
+    }
   };
 
   return (
