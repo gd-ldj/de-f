@@ -68,10 +68,10 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
             <a href={`/collections`} class="hover:text-primary">{collectionLabel}</a>
             <span>/</span>
             <a href={`/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
-            {categoryLocalizedLabels.map((label: string) => (
+             {subcategoryLocalizedLabels.map((label: string) => (
               <>
                 <span>/</span>
-                <a href="javascript:;" class="text-primary">{label}</a>
+                <a href="javascript:;" class="text-primary truncate">{label}</a>
               </>
             ))}
           </>
@@ -82,6 +82,12 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
               <>
                 <span>/</span>
                 <a href={`/${category.toLowerCase()}?category_name=${encodeURIComponent(categoryNames[i])}`} class="hover:text-primary">{label}</a>
+              </>
+            ))}
+            {subcategoryLocalizedLabels.map((label: string) => (
+              <>
+                <span>/</span>
+                <span class="text-primary truncate">{label}</span>
               </>
             ))}
           </>
