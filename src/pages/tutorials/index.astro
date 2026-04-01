@@ -7,7 +7,6 @@ import type { Locale, SourceLanguage } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { createTranslator } from '@/lib/i18n'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
-import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { SITE_CONFIG, DEFAULT_PROMOTE_CODE, STORAGE_KEYS, MULTI_SOURCE_CONFIG } from '@/config/constants'
 import { headerTexts } from '@/components/common/react/header/constants'
 export const prerender = false
@@ -258,9 +257,6 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
         <div class="">
           <div class="sticky top-8">
             <div id="share-section-root" class=""></div>
-            <div class="px-6 p-5">
-              <RecentResearch locale={locale} />
-            </div>
           </div>
         </div>
       </div>

@@ -4,7 +4,6 @@ import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.ast
 import AuthMount from '@/components/common/react/AuthMount'
 import type { Locale, SourceLanguage, CollectionItem } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
-import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { SITE_CONFIG, MULTI_SOURCE_CONFIG } from '@/config/constants'
 import { fetchCollections } from '@/api/collections'
 import { createTranslator } from '@/lib/i18n'
@@ -161,9 +160,6 @@ try {
         <div class="">
           <div class="sticky top-8">
             <div id="share-section-root" class=""></div>
-            <div class="px-6 p-5">
-              <RecentResearch locale={locale} />
-            </div>
           </div>
         </div>
       </div>

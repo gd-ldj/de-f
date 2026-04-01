@@ -3,7 +3,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import AuthMount from '@/components/common/react/AuthMount'
 import Footer from '@/components/common/react/footer/Index'
-import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import CollectionArticlesList from '@/components/collections/CollectionArticlesList'
 import { MULTI_SOURCE_CONFIG, SITE_CONFIG } from '@/config/constants'
 import { fetchCollections, fetchCollectionArticles } from '@/api/collections'
@@ -128,9 +127,6 @@ const tag = Astro.url.searchParams.get('tag')
         <div class="">
           <div class="sticky top-8">
             <div id="share-section-root" class=""></div>
-            <div class="px-6 p-5">
-              <RecentResearch locale={locale} />
-            </div>
           </div>
         </div>
       </div>
