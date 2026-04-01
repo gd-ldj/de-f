@@ -2,8 +2,7 @@
 import { fetchArticles, fetchRecommendedArticles } from '../../../api/articles';
 import type { ApiArticle, Locale } from '../../../types';
 import { createTranslator } from '@/lib/i18n';
-import { formatDate, getArticleBusinessPath } from '@/utils/util';
-import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants';
+import ArticleCard from '../../common/astro/ArticleCard.astro';
 
 interface Props {
   locale: Locale;
@@ -51,75 +50,25 @@ if (currentEntryId) {
 
 articles = articles.slice(0, limit);
 
-const getMetaLabel = (article: ApiArticle) => {
-  if (article.tags?.[0]) return article.tags[0];
-  if (article.subcategory_names?.[0]) return article.subcategory_names[0];
-  if (article.category_names?.[0]) return article.category_names[0];
-  return article.business_type_name || 'Research';
-};
-
-const promoteCode = Astro.cookies.get(STORAGE_KEYS.PROMOTE_CODE)?.value || DEFAULT_PROMOTE_CODE;
-
-const getArticleUrl = (article: ApiArticle) => {
-  const businessSegment = getArticleBusinessPath(article);
-  let userId = article.user_id;
-
-  if (!userId && article.author?.role === 'Authors' && article.author?.id) {
-    userId = article.author.id;
-  }
-
-  if (userId) {
-    return `/${userId}/article/${businessSegment}/${article.slug}-${promoteCode}`;
-  }
-
-  return `/article/${businessSegment}/${article.slug}-${promoteCode}`;
-};
-
 ---
-{articles.length > 0 && (
-  <section class="border-t border-border pt-6" data-testid="recent-research">
-    <div class="mb-5">
-      <h3 class="text-[28px] leading-[1.1] md:text-[30px] font-medium text-foreground">
-        {t('common.recentResearch')}
-      </h3>
-    </div>
+<div class="" data-testid="recent-research">
+  <h3 class="text-lg font-medium text-foreground mb-6">
+    {t('common.recentResearch')}
+  </h3>
 
-    <div class="space-y-3">
-      {articles.map((article, index) => (
-        <a
-          href={getArticleUrl(article)}
-          class="group block rounded-lg border border-border bg-background p-3 transition-colors duration-200 hover:bg-accent"
-        >
-          <article class="grid grid-cols-[88px_minmax(0,1fr)] gap-3 md:grid-cols-[104px_minmax(0,1fr)]" data-testid={`recent-research-item-${index + 1}`}>
-            <div class="relative overflow-hidden rounded-md bg-secondary">
-              <img
-                src={article.img_url || '/placeholder.svg'}
-                alt={article.title}
-                class="h-[88px] w-full object-cover transition-transform duration-300 group-hover:scale-105 md:h-[104px]"
-                loading="lazy"
-              />
-            </div>
-
-            <div class="min-w-0">
-              <div class="mb-2 flex items-center gap-2">
-                <span class="inline-flex rounded-full bg-primary/10 px-2 py-1 text-[11px] leading-none text-primary">
-                  {getMetaLabel(article)}
-                </span>
-                <span class="text-[11px] text-muted-foreground">{formatDate(article.created_at, locale)}</span>
-              </div>
-
-              <h4 class="line-clamp-3 text-base leading-[1.35] text-foreground transition-colors duration-200 group-hover:text-primary">
-                {article.title}
-              </h4>
-
-              <div class="mt-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                <span class="truncate uppercase">{article.author?.name || article.author_name || 'DeTake'}</span>
-                <span class="shrink-0 text-foreground/70">{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
-              </div>
-            </div>
-          </article>
-        </a>
-      ))}
-    </div>
-  </section>
-)}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+    {articles.map((article, index) => (
+      <div data-testid={`recent-research-item-${index + 1}`}>
+        <ArticleCard
+          article={article}
+          locale={locale}
+          layout="vertical"
+          showAuthor={true}
+          showDescription={true}
+          showTags={true}
+          imageSize="medium"
+        />
+      </div>
+    ))}
+  </div>
+</div>

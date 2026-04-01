@@ -52,9 +52,10 @@ test.describe('Recent Research recommendations', () => {
 
     const firstItem = items.first();
     const beforeUrl = page.url();
-    const firstTitle = (await firstItem.locator('h4').textContent())?.trim();
+    const firstTitle = (await firstItem.locator('h4').first().textContent())?.trim();
+    const firstLink = firstItem.locator('a[href*="/article/"]').first();
 
-    await firstItem.click();
+    await firstLink.click();
     await page.waitForLoadState('networkidle');
 
     expect(page.url()).not.toBe(beforeUrl);
