@@ -55,6 +55,8 @@ test.describe('Recent Research recommendations', () => {
     const firstTitle = (await firstItem.locator('h4').first().textContent())?.trim();
     const firstLink = firstItem.locator('a[href*="/article/"]').first();
 
+    await expect(firstItem).not.toContainText('[object Object]');
+
     await firstLink.click();
     await page.waitForLoadState('networkidle');
 

@@ -107,8 +107,8 @@ const articleUrl = getArticleUrl(article, locale);
 // Determine description
 const description = article.description || article.sub_title;
 
-// Determine author
-const author = article.author || article.author_name;
+// Prefer the normalized author name; fall back to legacy flat field.
+const author = article.author?.name || article.author_name;
 
 // Determine tags
 const tags = article.tags || [];
