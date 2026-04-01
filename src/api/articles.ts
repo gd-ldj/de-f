@@ -116,6 +116,43 @@ export async function fetchArticles(
   }
 }
 
+/**
+ * Fetch article recommendations based on a current article entry id.
+ * Falls back to null on API failure so callers can decide their own fallback UI.
+ */
+export async function fetchRecommendedArticles(
+  entryId: string,
+  limit: number = 4,
+): Promise<ApiArticle[] | null> {
+  try {
+    const params = new URLSearchParams();
+    params.set('entry_id', entryId);
+    params.set('limit', limit.toString());
+
+    const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles/recommend?${params.toString()}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      endpointName: 'fetchRecommendedArticles',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch recommendations: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    if (result.code === 2000 && result.data?.list) {
+      return Array.isArray(result.data.list) ? result.data.list : [];
+    }
+
+    throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`);
+  } catch (error) {
+    console.error('Error fetching recommended articles:', error);
+    return null;
+  }
+}
+
 export async function fetchArticle(
   slug: string,
   locale?: Locale,
