@@ -141,7 +141,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
           {/* Right - Search Icon (only on homepage) or Back Arrow */}
           <div className="w-8 h-8 flex items-center justify-center">
             {isHome && (
-              <button className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900 transition-colors" aria-label="Search" onClick={() => setSearchOpen(true)} data-testid="mobile-search-btn">
+              <button className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900 transition-colors" aria-label="Search" onClick={() => setSearchOpen((prev) => !prev)} data-testid="mobile-search-btn">
                 <img src={SearchIcon} alt="deTake" className="h-6 w-auto" />
               </button>
             )}

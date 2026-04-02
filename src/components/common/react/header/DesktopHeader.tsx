@@ -493,7 +493,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             })}
 
             {/* Search Icon */}
-            <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search} onClick={() => setSearchOpen(true)} data-testid="desktop-search-btn">
+            <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search} onClick={() => setSearchOpen((prev) => !prev)} data-testid="desktop-search-btn">
               <img src={SearchIcon} alt="SearchIcon" className="w-4 h-4" />
             </button>
 

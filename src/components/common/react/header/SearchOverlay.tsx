@@ -48,17 +48,18 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
     }
   }, [isOpen]);
 
-  // Lock body scroll when open
+  // Lock body scroll when open; reset search state when closed externally
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      reset();
     }
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ESC to close
   React.useEffect(() => {
