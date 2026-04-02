@@ -1,0 +1,135 @@
+---
+import AuthorArticlesSection from './AuthorArticlesSection.astro';
+import type { Locale } from '../../../types/index.ts';
+import { createTranslator } from '@/lib/i18n';
+
+export interface Props {
+  articles: any[];
+  authorName: string;
+  locale: Locale;
+  hasMore: boolean;
+  nextCursor?: string;
+}
+
+const { articles, authorName, locale, hasMore, nextCursor } = Astro.props;
+const t = createTranslator(locale);
+---
+
+<div class="author-tabs">
+  <!-- Tab Navigation -->
+  <div class="border-b border-border">
+    <nav class="flex space-x-8" aria-label="Tabs">
+      <button 
+        class="tab-button active border-b-2 border-primary py-2 px-1 text-sm font-medium text-primary" 
+        data-tab="articles"
+        type="button"
+      >
+        {t('author.tabs.articles')}
+      </button>
+      <button 
+        class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" 
+        data-tab="tweets"
+        type="button"
+      >
+        {t('author.tabs.tweets')}
+      </button>
+      <button 
+        class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" 
+        data-tab="analytics"
+        type="button"
+      >
+        {t('author.tabs.analytics')}
+      </button>
+    </nav>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content mt-6">
+    <!-- Articles Tab -->
+    <div id="articles-tab" class="tab-pane active">
+      <AuthorArticlesSection
+        articles={articles}
+        authorName={authorName}
+        locale={locale}
+        hasMore={hasMore}
+        nextCursor={nextCursor}
+      />
+    </div>
+
+    <!-- Tweets Tab -->
+    <div id="tweets-tab" class="tab-pane hidden">
+      <div class="text-center py-12">
+        <p class="text-gray-500">{t('author.tabs.tweetsComingSoon')}</p>
+      </div>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div id="analytics-tab" class="tab-pane hidden">
+      <div class="text-center py-12">
+        <p class="text-gray-500">{t('author.tabs.analyticsComingSoon')}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .tab-button.active {
+    color: rgb(var(--color-primary));
+    border-bottom-color: rgb(var(--color-primary));
+  }
+  
+  .tab-pane {
+    display: block;
+  }
+  
+  .tab-pane.hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  // Tab switching functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    /**
+     * Handle tab switching when user clicks on tab buttons
+     * @param {Event} event - Click event from tab button
+     */
+    function handleTabClick(event: Event) {
+      const button = event.target as HTMLButtonElement;
+      const targetTab = button.getAttribute('data-tab');
+      
+      if (!targetTab) return;
+
+      // Remove active class from all buttons
+      tabButtons.forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.add('border-transparent', 'text-gray-500');
+        btn.classList.remove('border-primary', 'text-primary');
+      });
+
+      // Add active class to clicked button
+      button.classList.add('active');
+      button.classList.remove('border-transparent', 'text-gray-500');
+      button.classList.add('border-primary', 'text-primary');
+
+      // Hide all tab panes
+      tabPanes.forEach(pane => {
+        pane.classList.add('hidden');
+      });
+
+      // Show target tab pane
+      const targetPane = document.getElementById(`${targetTab}-tab`);
+      if (targetPane) {
+        targetPane.classList.remove('hidden');
+      }
+    }
+
+    // Add click event listeners to all tab buttons
+    tabButtons.forEach(button => {
+      button.addEventListener('click', handleTabClick);
+    });
+  });
+</script>

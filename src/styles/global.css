@@ -1,0 +1,283 @@
+@import "tailwindcss";
+
+/* Load Sequel Sans font files from public/fonts
+   We map Roman to weight 400 and Medium to weight 500 so we can switch by font-weight. */
+@font-face {
+  font-family: "Sequel Sans";
+  src: url('https://cdn.detake.com/fonts/Sequel-Sans-Roman-Disp.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sequel Sans";
+  src: url('https://cdn.detake.com/fonts/Sequel-Sans-Medium-Disp.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #052019; /* Custom black */
+  --color-white: #ffffff;
+  --color-white-foreground: #052019; /* Custom black */
+  --color-popover: #ffffff;
+  --color-popover-foreground: #052019; /* Custom black */
+  --color-primary: #06A17E; /* Custom theme color */
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #052019; /* Custom black */
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #909399; /* Custom gray */
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #052019; /* Custom black */
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #fefefe;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #06A17E; /* Custom theme color */
+  --radius: 2px;
+  /* Preferred global font family with Sequel Sans at top */
+  --font-sans: "Sequel Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Override Tailwind v4 letter-spacing tokens so utilities like
+     tracking-tight/wide/tighter/etc resolve to zero spacing. */
+  --tracking-tighter: 0px;
+  --tracking-tight: 0px;
+  --tracking-normal: 0px;
+  --tracking-wide: 0px;
+  --tracking-wider: 0px;
+  --tracking-widest: 0px;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  html, body {
+    /* Apply global font and default to Medium weight (500) so most text uses Medium */
+    font-family: var(--font-sans);
+    font-weight: 400; /* Medium uses 500 */
+    line-height: 1.4;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    overflow-x: hidden;
+  }
+}
+
+/* Typography rules for color-based font selection
+   - Gray texts (e.g., secondary/muted content) should use Roman (weight 400)
+   - Everything else defaults to Medium (weight 500 from the base rule above) */
+.text-gray-400,
+.text-gray-500,
+.text-gray-600,
+.text-gray-700,
+.text-muted-foreground {
+  font-weight: 400; /* Roman uses 400 */
+}
+
+/* Also apply Roman to placeholders and disabled, which are typically gray */
+::placeholder {
+  font-weight: 400;
+}
+:disabled,
+[aria-disabled="true"] {
+  font-weight: 400;
+}
+
+/* Custom utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.container {
+  @apply mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8;
+}
+
+#login-root {
+  margin: 0;
+}
+
+/* Hide scrollbar for horizontal scrolling on mobile filters */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+.layout-two-column-fixed-1440 {
+  grid-template-columns: minmax(0, 2fr);
+}
+
+@media (min-width: 1024px) {
+  .layout-two-column-fixed-1440 {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .layout-two-column-fixed-1440 {
+    grid-template-columns: 1000px 440px;
+  }
+}
+
+/* Global prose styles - 确保在所有设备上都能正常工作 */
+.prose {
+  color: #052019cc;
+  font-weight: 400;
+  max-width: none;
+  font-family: var(--font-sans);
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: #111827;
+  font-weight: 600;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-family: inherit;
+}
+
+.prose h1 {
+  font-size: 36px;
+  line-height: 40px;
+}
+
+.prose h2 {
+  font-size: 30px;
+  line-height: 36px;
+}
+
+.prose h3 {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.prose p {
+  margin-bottom: 24px;
+  line-height: 1.75;
+  color: inherit;
+  font-size: 16px;
+}
+
+.prose a {
+  color: #0d9488;
+  text-decoration: none;
+}
+
+.prose a:hover {
+  text-decoration: underline;
+}
+
+.prose blockquote {
+  border-left: 4px solid #0d9488;
+  padding-left: 24px;
+  font-style: italic;
+  color: #6b7280;
+  margin: 32px 0;
+}
+
+.prose code {
+  background-color: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #dc2626;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.prose pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 24px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 32px 0;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.prose ul, .prose ol {
+  margin: 24px 0;
+  padding-left: 32px;
+}
+
+.prose li {
+  margin: 8px 0;
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.prose img {
+  margin: 32px 0;
+  border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Image error fallback */
+.image-error-fallback {
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+  background: #E8E8E8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+
+.image-error-fallback svg {
+  width: 25%;
+  max-width: 120px;
+  min-width: 48px;
+  height: auto;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .prose {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .prose h1 {
+    font-size: 30px;
+    line-height: 36px;
+  }
+  
+  .prose h2 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+  
+  .prose p {
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  
+  .prose h1, .prose h2, .prose h3 {
+    margin-top: 24px;
+    margin-bottom: 12px;
+  }
+}

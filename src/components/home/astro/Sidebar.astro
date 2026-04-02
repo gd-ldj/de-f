@@ -1,0 +1,116 @@
+---
+import type { Locale, HomeLatestArticle } from '@/types'
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import { getLocaleFromPath } from '@/lib/utils'
+import { createTranslator } from '@/lib/i18n'
+import { formatDate, formatRelativeTime, getArticleBusinessPath } from '@/utils/util'
+
+interface Props {
+  locale?: Locale
+  latestNews?: HomeLatestArticle[]
+}
+
+// Get locale and latestNews from props or extract from URL
+const { locale: propsLocale, latestNews = [] } = Astro.props as Props
+const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
+
+// Use custom translation function for server-side rendering
+const t = createTranslator(locale)
+
+/**
+ * Use latest news data passed from parent component
+ * Avoids duplicate API calls for better performance
+ */
+
+// Check if article is within 12 hours for time display
+const isWithin12Hours = (createdAt: string) => {
+  const now = new Date().getTime()
+  const twelveHoursAgo = now - 12 * 60 * 60 * 1000
+  const articleTime = new Date(createdAt).getTime()
+  return articleTime >= twelveHoursAgo
+}
+---
+
+<!-- Sidebar Component - 100% accurate mobile UI restoration -->
+<div class="pl-4 md:px-6">
+  <div>
+    <!-- Latest section title - responsive typography -->
+    <h3 class="font-medium text-foreground mb-4 md:mb-0">{t('common.latest')}</h3>
+    
+    <!-- Articles list - mobile horizontal scroll, desktop vertical -->
+    <div class="md:space-y-0 overflow-x-auto md:overflow-x-visible">
+      <!-- Mobile: Horizontal scrollable container -->
+      <div class="md:hidden flex space-x-3 pb-2">
+        {latestNews.map((article, index) => (
+          <div class="flex-shrink-0 w-64">
+            <ArticleLink
+              slug={article.slug}
+              business={getArticleBusinessPath(article)}
+              locale={locale}
+              class="block p-4 pr-6 group transition-colors border border-gray-200 rounded relative h-full"
+            >
+              <!-- Mobile: Time indicator in top right corner -->
+              <div class="absolute top-0 right-0">
+                {isWithin12Hours(article.created_at) ? (
+                  <div class="flex items-center space-x-1 text-xs bg-primary p-1 rounded">
+                    <span class="text-white" >{formatRelativeTime(article.created_at, locale)}</span>
+                  </div>
+                ) : (
+                   <div class="flex items-center space-x-1 text-xs bg-primary p-1 rounded">
+                    <span class="text-white" >12H</span>
+                  </div>
+                )}
+              </div>
+              
+              <!-- Article content container -->
+              <div class="pr-3">
+                <!-- Article title - mobile optimized -->
+                <h4 class="font-medium text-foreground text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                  {article.title}
+                </h4>
+              </div>
+            </ArticleLink>
+          </div>
+        ))}
+      </div>
+      
+      <!-- Desktop: Vertical layout -->
+      <div class="hidden md:block space-y-0">
+        {latestNews.map((article, index) => (
+          <div class="relative">
+            <ArticleLink
+              slug={article.slug}
+              business={getArticleBusinessPath(article)}
+              locale={locale}
+              class="flex items-start space-x-3 py-5 group transition-colors"
+            >
+              <!-- Article content container -->
+              <div class="flex-1 min-w-0 flex">
+                <!-- Desktop: Show timestamp for recent articles -->
+                {isWithin12Hours(article.created_at) ? (
+                  <div class="flex-none text-[12px] mr-[10px] text-primary">
+                    <span>{formatRelativeTime(article.created_at, locale)}</span>
+                  </div>
+                ) : (
+                  <div class="flex-none text-[12px] mr-[10px] text-primary">
+                    <span>12H</span>
+                  </div>
+                )}
+                
+                <!-- Article title - desktop layout -->
+                <h4 class="font-medium text-foreground text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                  {article.title}
+                </h4>
+              </div>
+            </ArticleLink>
+            
+            <!-- Desktop separator line -->
+            {index < latestNews.length - 1 && (
+              <div class="border-b border-border"></div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

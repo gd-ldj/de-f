@@ -1,0 +1,34 @@
+---
+/**
+ * Source language user article route (without /u/ prefix)
+ * URL pattern: /{userId}/article/{category}/{slug}
+ * Example: ja.detake.com/10/article/news/author-create-cbe4
+ *
+ * This route serves user-generated articles in the source language of the current site.
+ * The numeric userId distinguishes user routes from language translation routes.
+ * Language routes use 2-letter codes (en, zh, ja, fr, etc.) while user IDs are purely numeric.
+ */
+import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro';
+import type { SourceLanguage } from '@/types';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { getSourceLanguageFromRequest, isNumericUserId } from '@/lib/language-utils';
+
+const { userId, category, slug } = Astro.params as { userId: string; category: string; slug: string };
+
+// Validate that userId is numeric to ensure proper routing
+if (!isNumericUserId(userId)) {
+  return Astro.redirect('/404');
+}
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname);
+const locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+---
+
+<BaseArticlePage
+  locale={locale}
+  category={category}
+  slug={slug}
+  userId={userId}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={null}
+/>

@@ -1,0 +1,116 @@
+---
+// Header skeleton component - Used for SSR display to avoid white screen
+import type { Locale } from '@/types'
+
+interface Props {
+  locale?: Locale
+}
+
+const { locale = 'en' } = Astro.props
+---
+
+<!-- Header Skeleton - Matches real Header height and structure -->
+<header data-header-skeleton class="border-b border-gray-200 fixed w-screen top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95 bg-white/95">
+  <div class="max-w-[1440px] mx-auto pl-4 pr-6">
+    <!-- Desktop Skeleton -->
+    <div class="hidden md:flex items-center h-[96px]">
+      <!-- Left Navigation -->
+      <div class="flex items-center space-x-8 flex-1">
+        <!-- Categories Dropdown -->
+        <div class="flex items-center space-x-1 px-3 h-12">
+          <div class="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        
+        <!-- Navigation Items -->
+        <div class="w-12 h-4 bg-gray-200 rounded animate-pulse"></div>
+        <div class="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+        <div class="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+      
+      <!-- Logo - Center -->
+      <div class="flex items-center justify-center flex-shrink-0">
+        <div class="w-32 h-8 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+      
+      <!-- Right Navigation & Actions -->
+      <div class="flex items-center space-x-6 flex-1 justify-end">
+        <!-- Collections Dropdown -->
+        <div class="flex items-center space-x-1 px-3 h-12">
+          <div class="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        
+        <!-- Right Navigation Items -->
+        <div class="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+        <div class="w-12 h-4 bg-gray-200 rounded animate-pulse"></div>
+        
+        <!-- Search Icon -->
+        <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+        
+        <!-- Locale Switcher -->
+        <div class="flex items-center space-x-2 px-2 h-12">
+          <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div class="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+          <div class="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+
+        <!-- User Avatar -->
+        <div class="p-1">
+          <img src="/me.svg" alt="User" class="w-5 h-5" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile Skeleton -->
+    <div class="md:hidden flex items-center justify-between px-4 py-3 h-14">
+      <!-- Left - Menu/Back Button -->
+      <div class="w-8 h-8 flex items-center justify-center">
+        <div class="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+      
+      <!-- Center - Logo -->
+      <div class="flex-1 flex justify-center">
+        <div class="w-24 h-6 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+      
+      <!-- Right - Search Button -->
+      <div class="w-8 h-8 flex items-center justify-center">
+        <div class="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Ensure skeleton height matches real Header */
+  header {
+    min-height: 96px; /* Desktop: h-[96px] */
+  }
+  
+  @media (max-width: 767px) {
+    header {
+      min-height: 56px; /* Mobile: h-14 = 56px */
+    }
+  }
+  
+  /* Smooth pulse animation with subtle effect */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Ensure backdrop blur effect matches real header */
+  [data-header-skeleton] {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+export interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  className?: string;
+  loading?: 'lazy' | 'eager';
+  width?: number;
+  height?: number;
+  style?: string;
+}
+
+const {
+  src,
+  alt,
+  class: cssClass = '',
+  className = '',
+  loading = 'lazy',
+  width,
+  height,
+  style,
+  ...props
+} = Astro.props;
+
+const finalClass = `${cssClass} ${className}`.trim();
+---
+
+<img
+  {...props}
+  src={src}
+  alt={alt}
+  class={`astro-image-ssr ${finalClass}`}
+  loading={loading}
+  width={width}
+  height={height}
+  style={style}
+/>
+
+<style>
+  .astro-image-ssr {
+    transition: opacity 0.3s ease;
+  }
+</style>

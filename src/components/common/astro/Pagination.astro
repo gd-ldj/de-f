@@ -1,0 +1,154 @@
+---
+import type { Locale } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+
+interface Props {
+  currentPage: number
+  totalItems: number
+  itemsPerPage: number
+  locale: Locale
+  baseUrl: string
+}
+
+const { currentPage, totalItems, itemsPerPage, locale, baseUrl } = Astro.props
+
+// Use custom translation function for server-side rendering
+const t = createTranslator(locale)
+
+/**
+ * Calculate pagination data based on current state
+ * @param current - Current page number
+ * @param total - Total number of items
+ * @param perPage - Items per page
+ * @returns Pagination metadata
+ */
+const calculatePagination = (current: number, total: number, perPage: number) => {
+  const totalPages = Math.ceil(total / perPage)
+  const hasNextPage = current < totalPages
+  const hasPrevPage = current > 1
+  
+  // Generate visible page numbers (show max 5 pages)
+  const getVisiblePages = () => {
+    const delta = 2
+    const range = []
+    const rangeWithDots = []
+    
+    for (let i = Math.max(2, current - delta); i <= Math.min(totalPages - 1, current + delta); i++) {
+      range.push(i)
+    }
+    
+    if (current - delta > 2) {
+      rangeWithDots.push(1, '...')
+    } else {
+      rangeWithDots.push(1)
+    }
+    
+    rangeWithDots.push(...range)
+    
+    if (current + delta < totalPages - 1) {
+      rangeWithDots.push('...', totalPages)
+    } else if (totalPages > 1) {
+      rangeWithDots.push(totalPages)
+    }
+    
+    return rangeWithDots.filter((item, index, arr) => arr.indexOf(item) === index)
+  }
+  
+  return {
+    totalPages,
+    hasNextPage,
+    hasPrevPage,
+    visiblePages: totalPages > 1 ? getVisiblePages() : []
+  }
+}
+
+const pagination = calculatePagination(currentPage, totalItems, itemsPerPage)
+
+// Don't render pagination if total items <= itemsPerPage
+if (totalItems <= itemsPerPage) {
+  // Return empty component
+}
+
+/**
+ * Generate URL for specific page
+ * @param page - Target page number
+ * @returns URL string
+ */
+const getPageUrl = (page: number) => {
+  const url = new URL(baseUrl, Astro.url.origin)
+  if (page > 1) {
+    url.searchParams.set('page', page.toString())
+  }
+  return url.pathname + url.search
+}
+---
+
+{totalItems > itemsPerPage && (
+  <div class="flex items-center justify-center space-x-1">
+    <!-- Previous Button -->
+    {pagination.hasPrevPage ? (
+      <a 
+        href={getPageUrl(currentPage - 1)}
+        class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        {t('common.prev')}
+      </a>
+    ) : (
+      <button 
+        disabled
+        class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-muted-foreground rounded cursor-not-allowed opacity-50"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        {t('common.prev')}
+      </button>
+    )}
+    
+    <!-- Page Numbers -->
+    <div class="flex items-center space-x-1">
+      {pagination.visiblePages.map((page) => (
+        page === '...' ? (
+          <span class="px-2 text-muted-foreground text-sm">...</span>
+        ) : page === currentPage ? (
+          <span class="w-8 h-8 text-sm bg-primary text-primary-foreground rounded font-medium flex items-center justify-center">
+            {page}
+          </span>
+        ) : (
+          <a 
+            href={getPageUrl(page as number)}
+            class="w-8 h-8 text-sm text-foreground hover:bg-accent rounded transition-colors flex items-center justify-center"
+          >
+            {page}
+          </a>
+        )
+      ))}
+    </div>
+    
+    <!-- Next Button -->
+    {pagination.hasNextPage ? (
+      <a 
+        href={getPageUrl(currentPage + 1)}
+        class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-primary hover:border-primary rounded transition-colors"
+      >
+        {t('common.next')}
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    ) : (
+      <button 
+        disabled
+        class="flex items-center justify-center w-[92px] h-8 border border-border text-sm text-muted-foreground rounded cursor-not-allowed opacity-50"
+      >
+        {t('common.next')}
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    )}
+  </div>
+)}

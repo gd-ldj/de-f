@@ -1,0 +1,74 @@
+---
+import { fetchArticles, fetchRecommendedArticles } from '../../../api/articles';
+import type { ApiArticle, Locale } from '../../../types';
+import { createTranslator } from '@/lib/i18n';
+import ArticleCard from '../../common/astro/ArticleCard.astro';
+
+interface Props {
+  locale: Locale;
+  currentEntryId?: string;
+  limit?: number;
+}
+
+const { locale, currentEntryId, limit = 2 } = Astro.props as Props;
+const t = createTranslator(locale);
+
+/**
+ * Fetch research articles from API with fallback
+ */
+let articles: ApiArticle[] = [];
+
+if (currentEntryId) {
+  const recommendedArticles = await fetchRecommendedArticles(currentEntryId, limit);
+  if (recommendedArticles && recommendedArticles.length > 0) {
+    articles = recommendedArticles.filter((article) => article.entry_id !== currentEntryId);
+  }
+}
+
+if (articles.length === 0) {
+  const fetchLimit = currentEntryId ? limit * 2 : limit;
+
+  try {
+    const data = await fetchArticles(locale, 1, fetchLimit, {
+      business_type_name: 'Research',
+      order_by: 'Latest',
+    });
+
+    if (data && data.articles && data.articles.length > 0) {
+      articles = data.articles;
+    } else {
+      throw new Error('No research articles found');
+    }
+  } catch (err) {
+    console.error('Failed to fetch research data:', err);
+  }
+}
+
+if (currentEntryId) {
+  articles = articles.filter((article) => article.entry_id !== currentEntryId);
+}
+
+articles = articles.slice(0, limit);
+
+---
+<div class="" data-testid="recent-research">
+  <h3 class="text-lg font-medium text-foreground mb-6">
+    {t('common.recentResearch')}
+  </h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+    {articles.map((article, index) => (
+      <div data-testid={`recent-research-item-${index + 1}`}>
+        <ArticleCard
+          article={article}
+          locale={locale}
+          layout="vertical"
+          showAuthor={true}
+          showDescription={true}
+          showTags={true}
+          imageSize="medium"
+        />
+      </div>
+    ))}
+  </div>
+</div>

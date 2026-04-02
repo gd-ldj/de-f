@@ -1,0 +1,130 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
+import LearnContent from '@/components/article/astro/LearnContent.astro'
+import Footer from '@/components/common/react/footer/Index'
+import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import type { Locale, SourceLanguage, TranslationLanguage } from '@/types'
+import { fetchLearnItem } from '@/api/learn'
+import { fetchTranslatedArticle } from '@/api/articles'
+import { getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils'
+import { MULTI_SOURCE_CONFIG } from '@/config/constants'
+
+export const prerender = false
+
+const { slug, translationLang } = Astro.params as { slug: string; translationLang: string }
+const { url } = Astro
+
+if (!isValidTranslationLanguage(translationLang)) {
+  return Astro.redirect('/404')
+}
+
+const translationLanguage = translationLang as TranslationLanguage
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
+
+let actualSlug = slug
+let promoteCode: string | null = null
+const slugParts = slug.split('-')
+if (slugParts.length > 1) {
+  const lastPart = slugParts[slugParts.length - 1]
+  if (lastPart && lastPart.length >= 5) {
+    promoteCode = lastPart
+    actualSlug = slugParts.slice(0, -1).join('-')
+  }
+}
+
+const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug
+
+const baseLearnItem = await fetchLearnItem(locale, actualSlug)
+if (!baseLearnItem) {
+  return Astro.redirect('/404')
+}
+let learnItem = baseLearnItem
+
+const translated = await fetchTranslatedArticle(baseLearnItem.entry_id, translationLanguage)
+if (translated) {
+  learnItem = {
+    ...baseLearnItem,
+    title: translated.title,
+    sub_title: translated.sub_title,
+    body: translated.body,
+    language: translated.language,
+    description: translated.sub_title,
+    content: translated.body,
+  }
+}
+
+type LearnLang = 'zh' | 'en' | 'ar' | 'ru' | 'ja'
+const learnLangCandidates: LearnLang[] = ['zh', 'en', 'ar', 'ru', 'ja']
+const learnLang: LearnLang = learnLangCandidates.includes(translationLanguage as LearnLang)
+  ? (translationLanguage as LearnLang)
+  : sourceLanguage === 'zh'
+    ? 'zh'
+    : 'en'
+
+const title = `${learnItem.title} | DeTake`
+const description = learnItem.description || learnItem.sub_title
+const canonicalUrl = `${url.origin}/${translationLanguage}/tutorials/${actualSlug}`
+
+const ogImageParams = new URLSearchParams({
+  title: learnItem.title,
+  description: description || '',
+  type: 'learn',
+})
+const ogImageUrl = `${url.origin}/api/og/learn.svg?${ogImageParams.toString()}`
+const keywords = learnItem.tags || []
+
+// Get available translations for hreflang
+// TODO: Fetch actual available translations from API
+// For now, assume all tutorials support these languages
+const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'ar', 'ru']
+
+const publishedTime = learnItem.created_at
+const modifiedTime = learnItem.updated_at
+const author = learnItem?.author?.name || learnItem.author_name || 'DeTake'
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt={`${learnItem.title} - Learn on DeTake`}
+  ogType="article"
+  twitterCard="summary_large_image"
+  keywords={keywords}
+  pageLang={learnLang}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={translationLanguage}
+  availableTranslations={availableTranslations}
+  author={author}
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
+  articleSection="Tutorials"
+>
+  <HeaderWithFallback locale={locale} />
+  <AuthMount client:load shareSection={{ locale, title, url: canonicalUrl }} />
+
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid layout-two-column-fixed-1440">
+        <div class="pt-5 md:pt-8 md:py-5 border-r border-border">
+  <LearnContent learnItem={learnItem} locale={locale} learnLang={learnLang} slugWithPromote={slugWithPromote} sourceLanguage={sourceLanguage} />
+        </div>
+        <div class="">
+          <div class="sticky top-8">
+            <div id="share-section-root" class=""></div>
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer client:load locale={locale} />
+</BaseLayout>

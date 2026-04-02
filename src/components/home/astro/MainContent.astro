@@ -1,0 +1,156 @@
+---
+// Astro component script (runs at build time)
+import type { Locale, HomeNewsArticle } from '@/types'
+import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import { formatDate, getArticleBusinessPath, getLocalizedBusinessTypeLabel } from '@/utils/util'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import type { SourceLanguage } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+
+// Get locale and newsAll from props
+interface Props {
+  locale?: Locale;
+  newsAll?: HomeNewsArticle[];
+}
+
+const { locale = 'en' as Locale, newsAll = [] } = Astro.props as Props
+
+// Translation helper function
+const t = createTranslator(locale)
+const sourceLanguage: SourceLanguage = locale as SourceLanguage
+
+// Use news data passed from parent component
+const news_all: HomeNewsArticle[] = newsAll
+
+// Get the main featured article (first one)
+const featuredArticle = news_all[0]
+// Get the rest for the sidebar articles
+const sidebarArticles = news_all.slice(1, 3)
+
+
+/**
+ * Extract plain text from rich text content and truncate to specified length
+ * @param richText - Rich text content that may contain HTML tags
+ * @param maxLength - Maximum number of characters to return (default: 200)
+ * @returns Plain text string truncated to maxLength
+ */
+const extractPlainText = (richText: string, maxLength: number = 200): string => {
+  if (!richText) return ''
+  
+  // Remove HTML tags using regex
+  const plainText = richText
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+    .replace(/&amp;/g, '&') // Replace &amp; with &
+    .replace(/&lt;/g, '<') // Replace &lt; with <
+    .replace(/&gt;/g, '>') // Replace &gt; with >
+    .replace(/&quot;/g, '"') // Replace &quot; with "
+    .replace(/&#39;/g, "'") // Replace &#39; with '
+    .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
+    .trim() // Remove leading/trailing whitespace
+  
+  // Truncate to maxLength and add ellipsis if needed
+  if (plainText.length <= maxLength) {
+    return plainText
+  }
+  
+  return plainText.substring(0, maxLength).trim() + '...'
+}
+
+---
+
+<div class="space-y-0">
+  {/* Featured Article */}
+  {featuredArticle && (
+    <div class="bg-white">
+      <div class="mb-6">
+        <h3 class="font-medium text-foreground mb-4">{t('common.highlights')}</h3>
+        <p class="text-[12px] text-primary font-medium uppercase mb-2">
+          <a
+            href={`/${getArticleBusinessPath(featuredArticle)}`}
+            class="hover:text-primary/80 transition-colors"
+          >
+            {getLocalizedBusinessTypeLabel(featuredArticle, sourceLanguage)}
+          </a>
+        </p>
+
+        <h2 class="text-xl md:text-2xl font-medium text-foreground mb-4 line-clamp-2">
+          <ArticleLink
+            slug={featuredArticle.slug}
+            locale={locale}
+            business={getArticleBusinessPath(featuredArticle)}
+            article={featuredArticle}
+          >
+            {featuredArticle.title}
+          </ArticleLink>
+        </h2>
+
+        <p class=" text-muted-foreground mb-2 leading-relaxed line-clamp-3">{extractPlainText(featuredArticle.body, 200)}</p>
+
+        <div class="flex items-center space-x-1 text-sm text-muted-foreground mb-6">
+          <span 
+            data-date={featuredArticle.created_at}
+            data-locale={locale}
+          >
+            {formatDate(featuredArticle.created_at, locale)}
+          </span>
+         <span class="text-muted-foreground">/ {t('article.by')} </span>
+          <span class='text-foreground uppercase'>{featuredArticle.author.name}</span>
+        </div>
+
+        <div class="relative">
+          <ArticleLink
+            slug={featuredArticle.slug}
+            locale={locale}
+            business={getArticleBusinessPath(featuredArticle)}
+            article={featuredArticle}
+          >
+            <img
+              src={featuredArticle.img_url || '/placeholder.svg'}
+              alt={featuredArticle.title}
+              class="w-full h-48 md:h-84 object-cover rounded hover:opacity-90 transition-opacity"
+            />
+          </ArticleLink>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {/* Sidebar Articles */}
+  <div class="space-y-4">
+    {sidebarArticles.map((article: HomeNewsArticle) => (
+      <div class="bg-white mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <a
+            href={`/${getArticleBusinessPath(article)}`}
+            class="text-sm text-primary font-medium uppercase hover:text-primary/80 transition-colors"
+          >
+            {getLocalizedBusinessTypeLabel(article, sourceLanguage)}
+          </a>
+        </div>
+        <h3 class="text-base md:text-lg font-medium text-foreground mb-2 line-clamp-2">
+          <ArticleLink
+            slug={article.slug}
+            locale={locale}
+            business={getArticleBusinessPath(article)}
+            article={article}
+          >
+            {article.title}
+          </ArticleLink>
+        </h3>
+        <p class=" text-muted-foreground mb-2 leading-relaxed line-clamp-3">{extractPlainText(article.body, 200)}</p>
+         <div class="flex items-center space-x-1 text-sm text-muted-foreground">
+          <span 
+            data-date={article.created_at}
+            data-locale={locale}
+          >
+            {formatDate(article.created_at, locale)}
+          </span>
+          <span class="text-muted-foreground">/ {t('article.by')}</span>
+          <span class='text-foreground uppercase'>{article.author.name}</span>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

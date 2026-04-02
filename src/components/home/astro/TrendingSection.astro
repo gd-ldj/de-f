@@ -1,0 +1,25 @@
+---
+import type { Locale, HomeMostReadArticle } from '@/types'
+import TrendingGrid from '@/components/home/react/TrendingGrid'
+import { getLocaleFromPath } from '@/lib/utils'
+
+interface Props {
+  locale?: Locale
+  articles?: HomeMostReadArticle[]
+}
+
+const { locale: propsLocale, articles = [] } = Astro.props as Props
+const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
+
+/**
+ * Use articles data passed from parent component
+ * Uses mostread articles from the API
+ */
+const trendingArticles = articles
+---
+
+<TrendingGrid 
+  articles={trendingArticles} 
+  locale={locale}
+  client:load
+/>

@@ -1,0 +1,51 @@
+---
+/**
+ * Translated article route (with language prefix)
+ * URL pattern: /{translationLang}/article/{category}/{slug}
+ * Example: ja.detake.com/fr/article/news/japan-crypto-regulation
+ *
+ * This route serves translated versions of articles.
+ * The translation language is specified in the URL path.
+ */
+import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro';
+import type { SourceLanguage, TranslationLanguage } from '@/types';
+import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { getSourceLanguageFromRequest, isValidTranslationLanguage, isNumericUserId } from '@/lib/language-utils';
+
+const { translationLang, category, slug } = Astro.params as {
+  translationLang: string;
+  category: string;
+  slug: string;
+};
+
+// Check if first segment is numeric (userId) instead of language code
+// Due to Astro route collision, this route might match /[userId]/article/... URLs
+// In that case, treat translationLang as userId and handle it as a user article
+const isUserArticleRoute = isNumericUserId(translationLang);
+
+let userId: string | undefined;
+let translationLanguage: TranslationLanguage | null = null;
+
+if (isUserArticleRoute) {
+  // This is actually a user article route, not a translated article
+  userId = translationLang;
+} else {
+  // Normal translated article route - validate translation language
+  if (!isValidTranslationLanguage(translationLang)) {
+    return Astro.redirect('/404');
+  }
+  translationLanguage = translationLang as TranslationLanguage;
+}
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname);
+const locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+---
+
+<BaseArticlePage
+  locale={locale}
+  category={category}
+  slug={slug}
+  userId={userId}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={translationLanguage}
+/>

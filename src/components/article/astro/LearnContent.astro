@@ -1,0 +1,121 @@
+---
+import type { Locale, SourceLanguage } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+import { formatDate } from '@/utils/util'
+import type { LearnDetailItem } from '@/api/learn'
+
+interface Props {
+  learnItem: LearnDetailItem
+  locale: Locale
+  learnLang?: 'zh' | 'en' | 'ar' | 'ru' | 'ja'
+  slugWithPromote?: string
+  sourceLanguage: SourceLanguage
+}
+
+const { learnItem, locale, learnLang = 'en', slugWithPromote, sourceLanguage } = Astro.props as Props
+
+const t = createTranslator(locale)
+
+function getContent(item: LearnDetailItem): string {
+  if (item.content && item.content.trim().length > 0) {
+    return item.content
+  }
+
+
+  return '';
+}
+
+function formatLearnContent(raw: string): string {
+  return raw
+    .replace(/## (.*)/g, '<h2 class="text-[32px] md:text-[32px] font-medium text-[#052019] mt-10 mb-4">$1</h2>')
+    .replace(/### (.*)/g, '<h3 class="text-[32px] md:text-[24px] font-medium text-[#052019] mt-8 mb-3">$1</h3>')
+    .replace(/\n\n/g, '</p><p class="text-[16px] text-[#909399] leading-relaxed mb-4">')
+    .replace(/^\s*/, '<p class="text-[16px] text-[#909399] leading-relaxed mb-4">')
+    .replace(/\s*$/, '</p>')
+}
+
+const renderedContent = formatLearnContent(getContent(learnItem))
+const displayDate = formatDate(learnItem.updatedAt || learnItem.createdAt, locale)
+
+const baseLearnPath = slugWithPromote
+  ? `/tutorials/${slugWithPromote}`
+  : `/tutorials/${learnItem.slug}`
+const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
+  { code: 'zh', label: t('learn.languageShort.zh') },
+  { code: 'en', label: t('learn.languageShort.en') },
+  { code: 'ar', label: t('learn.languageShort.ar') },
+  { code: 'ru', label: t('learn.languageShort.ru') },
+  { code: 'ja', label: t('learn.languageShort.ja') },
+]
+const buildLearnHref = (code: string) => {
+  const targetPath = code === sourceLanguage ? baseLearnPath : `/${code}${baseLearnPath}`
+  if (code === 'zh') {
+    return `${targetPath}${targetPath.includes('?') ? '&' : '?'}lang=zh`
+  }
+  return targetPath
+}
+
+---
+
+<article class="bg-white" lang={learnLang}>
+  <header class="mb-6 pb-5 px-4 md:px-6 border-b border-border">
+    <nav class="flex items-center space-x-2 text-sm text-[#909399] mb-4">
+      <a href={`/tutorials`} class="hover:text-[#052019]">
+        Tutorials
+      </a>
+      <span>/</span>
+      <a href="javascript:;" class="text-primary">
+        Glossary
+      </a>
+    </nav>
+
+    <h1 class="text-[32px] md:text-[48px] mt-7 md:mt-0 font-medium tracking-tight text-[#052019] mb-2 leading-tight">
+      {learnItem.title}
+    </h1>
+
+    <!-- Author and Date -->
+    <div class="flex items-center justify-start text-xs md:text-sm text-muted-foreground space-x-1 mt-2">
+      <span>{displayDate}</span>
+      <p class="font-medium text-foreground space-x-1">
+        <span class="text-muted-foreground">/ {t('article.by')}</span>
+        <span class="text-foreground uppercase">{learnItem?.author?.name}</span>
+      </p>
+      <div class="ml-auto hidden md:flex items-center">
+        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+          {languageButtons.map(({ code, label }) => (
+            <a
+              href={buildLearnHref(code)}
+              class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
+                learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
+              }`}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
+
+
+  </header>
+
+  <div class="md:hidden fixed right-4 top-[18px] z-[60]">
+    <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+      {languageButtons.map(({ code, label }) => (
+        <a
+          href={buildLearnHref(code)}
+          class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-[#052019] ${
+            learnLang === code ? 'bg-white text-[#052019]' : 'text-[#909399]'
+          }`}
+        >
+          {label}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <section class="mb-10 px-4 md:px-6">
+    <div class="max-w-none" set:html={renderedContent} />
+  </section>
+</article>

@@ -1,0 +1,137 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
+import Footer from '@/components/common/react/footer/Index'
+import CollectionArticlesList from '@/components/collections/CollectionArticlesList'
+import { MULTI_SOURCE_CONFIG, SITE_CONFIG } from '@/config/constants'
+import { fetchCollections, fetchCollectionArticles } from '@/api/collections'
+import type { Locale, SourceLanguage, CollectionItem, ApiArticle } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+
+export const prerender = false
+
+const { collectionId: rawCollectionId } = Astro.params as { collectionId: string }
+
+// Strip promote code suffix from collectionId (e.g. "17-zgDsS2yF" → "17")
+let collectionId = rawCollectionId
+const dashIdx = rawCollectionId.indexOf('-')
+if (dashIdx !== -1) {
+  collectionId = rawCollectionId.slice(0, dashIdx)
+}
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
+
+const t = createTranslator(locale)
+
+let collection: CollectionItem | undefined
+let initialArticles: ApiArticle[] = []
+let hasMore = false
+
+try {
+  const { items } = await fetchCollections(1, 100)
+  collection = items.find((item) => item.id === collectionId)
+} catch (error) {
+  console.error('Failed to fetch collection:', error)
+}
+
+if (!collection) {
+  return Astro.redirect('/404')
+}
+
+try {
+  const result = await fetchCollectionArticles(locale, collectionId, 1)
+  initialArticles = result.articles
+  hasMore = result.hasMore
+} catch (error) {
+  console.error('Failed to fetch collection articles:', error)
+}
+
+const title = collection.name
+const description = collection.description || t('pages.collectionsDescription')
+const canonicalUrl = `${SITE_CONFIG.SITE_URL}/collections/${collectionId}`
+
+const ogImageParams = new URLSearchParams({
+  title,
+  description,
+  type: 'website'
+})
+
+const ogImageUrl = collection.image_url
+  ? collection.image_url.startsWith('http')
+    ? collection.image_url
+    : `${SITE_CONFIG.SITE_URL}${collection.image_url}`
+  : `${SITE_CONFIG.SITE_URL}/api/og/collections.svg?${ogImageParams.toString()}`
+
+const keywords = ['collections', collection.name, 'crypto', 'blockchain', 'research', 'insights']
+
+const categoryName = Astro.url.searchParams.get('category_name')
+const subcategoryName = Astro.url.searchParams.get('subcategory_name')
+const tag = Astro.url.searchParams.get('tag')
+
+
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt="Collection details on DeTake"
+  ogType="website"
+  twitterCard="summary_large_image"
+  keywords={keywords}
+>
+  <HeaderWithFallback locale={locale} />
+  <AuthMount client:load shareSection={{ locale, title, url: canonicalUrl }} />
+
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid layout-two-column-fixed-1440">
+        <div class="pt-5 md:pt-8 md:py-5 border-r border-border">
+          <!-- Collection hero section -->
+          <section class="md:px-6 px-4 mb-5 pb-5 border-b border-border">
+            <div class="flex-1">
+              <nav class="text-[14px] text-muted-foreground">
+                <a href="/" class="hover:text-foreground">
+                  {t('navigation.collections')}
+                </a>
+                <span class="mx-[2px]">/</span>
+                <span class="text-primary">{collection.name}</span>
+              </nav>
+              <h1 class="text-[48px] font-medium text-[#052019]">
+                {collection.name}
+              </h1>
+              <p class="text-[14px] md:text-[20px] text-muted-foreground max-w-[720px]">
+                {collection.description}
+              </p>
+            </div>
+          </section>
+
+          <!-- Collection articles list -->
+          <CollectionArticlesList
+            client:load
+            locale={locale}
+            collectionId={collectionId}
+            initialArticles={initialArticles}
+            hasMore={hasMore}
+            filterCategory={categoryName ?? undefined}
+            filterSubCategory={subcategoryName ?? undefined}
+            filterTag={tag ?? undefined}
+          />
+        </div>
+
+        <div class="">
+          <div class="sticky top-8">
+            <div id="share-section-root" class=""></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer client:load locale={locale} />
+</BaseLayout>

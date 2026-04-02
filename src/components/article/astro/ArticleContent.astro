@@ -1,0 +1,278 @@
+---
+import type { Locale, ApiArticle, TranslationLanguage, SourceLanguage } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+import { MULTI_SOURCE_CONFIG } from '@/config/constants'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import Image from '@/components/common/astro/ImageSSR.astro'
+import { formatDate, getArticleCategoryNames, getArticleSubcategoryNames } from '@/utils/util'
+import { getBusinessTypeLabel, getCategoryLabel as getCategoryLocalizedLabel, getSubcategoryLabel as getSubcategoryLocalizedLabel, getTagLabel as getTagLocalizedLabel } from '@/config/article-taxonomy'
+
+interface Props {
+  article: ApiArticle
+  locale: Locale
+  category: string
+  categoryDisplayName?: string
+  slugWithPromote: string
+  articleLang: TranslationLanguage | string
+  userId?: string
+  collection?: {
+    id: string
+    title?: string
+  }
+}
+
+const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, userId, collection } = Astro.props
+
+const t = createTranslator(locale)
+
+// Get raw category/subcategory name arrays from article data
+const categoryNames = getArticleCategoryNames(article)
+const subcategoryNames = getArticleSubcategoryNames(article)
+
+// Get current site's source language
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+
+// Localized breadcrumb labels — translate each name individually
+const businessTypeLocalizedLabel = getBusinessTypeLabel(category, sourceLanguage)
+const categoryLocalizedLabels = categoryNames.map((name: string) => getCategoryLocalizedLabel(name, sourceLanguage))
+const subcategoryLocalizedLabels = subcategoryNames.map((name: string) => getSubcategoryLocalizedLabel(name, sourceLanguage))
+
+// For URL params, keep raw English names
+const categoryLabelForUrl = categoryNames.join(',')
+
+
+const baseArticlePath = collection
+  ? `/collections/${collection.id}/${slugWithPromote}`
+  : userId
+  ? `/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
+  : `/article/${category.toLowerCase()}/${slugWithPromote}`
+const collectionLabel = t('article.collectionsLabel')
+const collectionTitle = collection?.title || collection?.id
+const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
+  { code: 'zh', label: '中' },
+  { code: 'en', label: 'A' },
+  { code: 'ar', label: 'ع' },
+  { code: 'ru', label: 'RU' },
+  { code: 'ja', label: 'あ' },
+]
+
+---
+ 
+<article class="bg-white" lang={articleLang}>
+   <!-- Article Header -->
+   <header class="mb-4">
+    <nav class="flex items-center justify-between text-sm text-muted-foreground mb-2">
+      <div class="flex items-center space-x-2 truncate">
+        {collection ? (
+          <>
+            <a href={`/collections`} class="hover:text-primary">{collectionLabel}</a>
+            <span>/</span>
+            <a href={`/collections/${collection.id}`} class="hover:text-primary">{collectionTitle}</a>
+             {subcategoryLocalizedLabels.map((label: string) => (
+              <>
+                <span>/</span>
+                <a href="javascript:;" class="text-primary truncate">{label}</a>
+              </>
+            ))}
+          </>
+        ) : (
+          <>
+            <a href={`/${category.toLowerCase()}`} class="hover:text-primary">{businessTypeLocalizedLabel}</a>
+            {categoryLocalizedLabels.map((label: string, i: number) => (
+              <>
+                <span>/</span>
+                <a href={`/${category.toLowerCase()}?category_name=${encodeURIComponent(categoryNames[i])}`} class="hover:text-primary">{label}</a>
+              </>
+            ))}
+            {subcategoryLocalizedLabels.map((label: string) => (
+              <>
+                <span>/</span>
+                <span class="text-primary truncate">{label}</span>
+              </>
+            ))}
+          </>
+        )}
+      </div>
+
+      <div class="hidden md:flex items-center">
+        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+          {languageButtons.map(({ code, label }) => (
+            <a
+              href={code === sourceLanguage ? baseArticlePath : `/${code}${baseArticlePath}`}
+              class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
+                articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
+              }`}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+
+    <div class="md:hidden fixed right-4 top-[18px] z-[60]">
+      <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+        {languageButtons.map(({ code, label }) => (
+          <a
+            href={code === sourceLanguage ? baseArticlePath : `/${code}${baseArticlePath}`}
+            class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
+              articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
+            }`}
+          >
+            {label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-[32px] md:text-[48px] font-medium tracking-tight text-foreground mb-[10px] md:mb-4 leading-tight">
+      {article.title}
+    </h1>
+ 
+     <!-- Author and Date - Mobile: above title, Desktop: below tags -->
+     <div class="md:hidden mb-[10px] md:mb-4">
+       <div class="flex items-center space-x-1 truncate">
+         <time 
+           class="text-[12px] text-muted-foreground" 
+           datetime={article.created_at}
+           data-date={article.created_at}
+           data-locale={locale}
+         >
+           {formatDate(article.created_at, locale)}
+         </time>
+         
+         <p class="text-[12px] font-medium text-foreground">
+           <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
+           <span class="uppercase truncate">{article.author?.name || article.author_name}</span>
+         </p>
+       </div>
+     </div>
+
+    
+ 
+     <!-- Excerpt -->
+     <p class="text-[14px] md:text-xl text-muted-foreground leading-relaxed mb-[10px] md:mb-4">
+       {article.sub_title}
+       {article.entry_id && (
+         <span class="text-[14px] md:text-xl"> – {article.entry_id}</span>
+       )}
+     </p>
+
+      <!-- Tags - Mobile: below stats -->
+     <div class="md:hidden flex justify-between items-center">
+       {article.tags.length > 0 && (
+         <div class="">
+           <div class="flex flex-wrap gap-2">
+             {article.tags.map((tag) => (
+               <a
+                 href="javascript:;"
+                 class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+               >
+                 {getTagLocalizedLabel(tag, sourceLanguage)}
+               </a>
+             ))}
+           </div>
+         </div>
+       )}
+       <div class="flex flex-none items-center justify-center space-x-8 py-3">
+         <!-- View Count -->
+         <div class="flex items-center space-x-2">
+           <img src="/eyes.svg" alt="Views" class="w-4 h-4" />
+           <span class="text-sm">{article?.page_view || 0} {t('article.views')}</span>
+         </div>
+
+         <!-- Holders -->
+         <div class="flex items-center space-x-2">
+           <img src="/avatar_2.svg" alt="Holders" class="w-4 h-4" />
+           <span class="text-sm">{article?.unique_vistor || 0} {t('article.holders')}</span>
+         </div>
+       </div>
+     </div>
+ 
+     <!-- Desktop Layout -->
+     <div class="hidden md:flex items-center justify-between mb-1 pb-2">
+      <div class="">
+          <!-- Tags -->
+        {article.tags.length > 0 && (
+          <div class="mb-2 pt-2">
+            <div class="flex flex-wrap gap-2">
+              {article.tags.map((tag) => (
+                <a
+                  href="javascript:;"
+                  class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+                >
+                  {getTagLocalizedLabel(tag, sourceLanguage)}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+    
+        <!-- Author and Date - Desktop -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-1">
+            <time 
+              class="text-sm text-muted-foreground" 
+              datetime={article.created_at}
+              data-date={article.created_at}
+              data-locale={locale}
+            >
+              {formatDate(article.created_at, locale)}
+            </time>
+            
+            <p class="text-sm font-medium text-foreground">
+              <span class="text-muted-foreground mr-[2px] ">/ {t('article.by')}</span>
+              <span class="text-foreground uppercase">{article.author?.name || article.author_name}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Reading Stats - Desktop -->
+      <div class="flex items-center space-x-6">
+        <!-- View Count -->
+        <div class="flex flex-col items-center space-x-1">
+          <div class="text-[32px]">{article?.page_view || 0}</div>
+            <div class="flex items-center space-x-1">
+            <img src="/eyes.svg" alt="Views" class="w-4 h-4" />
+            <span class="text-sm text-muted-foreground">{t('article.views')}</span>
+          </div>
+        </div>
+
+        <!-- Holders -->
+        <div class="flex flex-col items-center space-x-1">
+          <div class="text-[32px]">{article?.unique_vistor || 0}</div>
+          <div class="flex items-center space-x-1">
+            <img src="/avatar_2.svg" alt="Author" class="w-4 h-4" />
+            <span class="text-sm text-muted-foreground">{t('article.holders')}</span>
+          </div>
+        </div>
+      </div>
+     </div>
+
+     
+   </header>
+ 
+   <!-- Featured Image -->
+   {article.img_url && (
+     <div class="mb-5 md:mb-8">
+       <Image
+         src={article.img_url}
+         alt={article.title}
+         className="w-full h-auto rounded shadow-lg"
+         loading="lazy"
+       />
+     </div>
+   )}
+ 
+   <!-- Article Content -->
+   <div class="mb-5 md:mb-8">
+     <div class="prose" set:html={article.body?.replace(/\n/g, '<br>')} />
+   </div>
+
+   <div class="w-full border-t border-border"></div>
+ 
+   <!-- Author Section -->
+   <div id="author-section-root"></div>
+  
+ </article>

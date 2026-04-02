@@ -1,0 +1,52 @@
+---
+import type { Locale } from '@/types'
+import { generateArticleStructuredData, generateArticleMetaTags } from '@/utils/seo'
+import { SITE_CONFIG } from '@/config/constants'
+
+interface Props {
+  article: {
+    title: string
+    sub_title: string
+    slug: string
+    created_at: string
+    img_url?: string
+    author?: { name: string } | string
+    user_id?: string
+  }
+  locale: Locale
+  baseUrl?: string
+}
+
+const { article, locale, baseUrl = SITE_CONFIG.SITE_URL } = Astro.props as Props
+
+// Normalize author to string for SEO utilities
+const authorName = typeof article.author === 'string' ? article.author : article.author?.name
+
+// Generate structured data and meta tags
+const structuredData = generateArticleStructuredData({ ...article, author: authorName }, locale, baseUrl)
+const metaTags = generateArticleMetaTags(article, locale, baseUrl)
+---
+
+<!-- SEO Meta Tags -->
+<meta name="description" content={metaTags.description} />
+<link rel="canonical" href={metaTags.canonical} />
+
+<!-- Open Graph -->
+<meta property="og:title" content={metaTags.openGraph.title} />
+<meta property="og:description" content={metaTags.openGraph.description} />
+<meta property="og:url" content={metaTags.openGraph.url} />
+<meta property="og:type" content={metaTags.openGraph.type} />
+<meta property="og:image" content={metaTags.openGraph.image} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content={metaTags.twitter.card} />
+<meta name="twitter:title" content={metaTags.twitter.title} />
+<meta name="twitter:description" content={metaTags.twitter.description} />
+<meta name="twitter:image" content={metaTags.twitter.image} />
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+{article.img_url && (
+  <link rel="preload" as="image" href={article.img_url} />
+)}

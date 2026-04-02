@@ -1,0 +1,247 @@
+---
+import AnalyticsProvider from '../components/common/AnalyticsProvider';
+import { Analytics } from '@vercel/analytics/react';
+import { SITE_CONFIG } from '@/config/constants';
+import { generateHreflangAlternates } from '@/lib/language-utils';
+
+import '../styles/global.css'
+
+import type { Locale, SourceLanguage, TranslationLanguage } from '@/types';
+
+export interface Props {
+  title: string
+  description?: string
+  locale: Locale
+  canonicalUrl?: string
+  // SEO and social sharing optimization
+  ogImage?: string
+  ogImageAlt?: string
+  ogType?: 'website' | 'article'
+  twitterCard?: 'summary' | 'summary_large_image'
+  author?: string
+  publishedTime?: string
+  modifiedTime?: string
+  keywords?: string[]
+  articleSection?: string
+  pageLang?: TranslationLanguage | string
+  // Multi-source site architecture
+  sourceLanguage?: SourceLanguage
+  translationLanguage?: TranslationLanguage | null
+  availableTranslations?: TranslationLanguage[]
+}
+
+const {
+  title,
+  description = 'DeTake - News and Analysis',
+  locale,
+  canonicalUrl,
+  ogImage,
+  ogImageAlt,
+  ogType = 'website',
+  twitterCard = 'summary_large_image',
+  author,
+  publishedTime,
+  modifiedTime,
+  keywords,
+  articleSection,
+  pageLang,
+  sourceLanguage,
+  translationLanguage,
+  availableTranslations
+} = Astro.props
+
+type ArticleLanguageCode = 'en' | 'zh' | 'ar' | 'ru' | 'ja'
+
+// 统一使用当前访问域名生成分享与 canonical 链接
+const currentOrigin = Astro.url.origin
+const rawCanonicalUrl = canonicalUrl ? new URL(canonicalUrl) : Astro.url
+const currentUrl = new URL(`${currentOrigin}${rawCanonicalUrl.pathname}${rawCanonicalUrl.search}${rawCanonicalUrl.hash}`).href
+
+// Page language: use sourceLanguage for multi-source architecture, fallback to locale
+const effectiveLanguage = sourceLanguage || (locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en')
+const htmlLang = effectiveLanguage
+
+// Open Graph locale based on source language
+const ogLocaleMap: Record<string, string> = {
+  en: 'en_US',
+  zh: 'zh_CN',
+  ja: 'ja_JP',
+}
+const ogLocale = ogLocaleMap[effectiveLanguage] || 'en_US'
+
+// 仅在正文语言未显式指定，或与站点默认语言一致时输出 region 级别的 hreflang，避免误标其他语言内容
+const regionDefaultLang: ArticleLanguageCode = locale === 'zh' ? 'zh' : locale === 'ja' ? 'ja' : 'en'
+const shouldEmitRegionAlternates = !pageLang || pageLang === regionDefaultLang
+
+// Default OG image
+const defaultOgImage = 'https://cdn.detake.com/images/social-card.png'
+const finalOgImage = ogImage || defaultOgImage
+
+// Generate keywords meta tag
+const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis'
+
+const isProductionSite = SITE_CONFIG.ENVIRONMENT === 'web2' || SITE_CONFIG.ENVIRONMENT === 'web3'
+const robotsContent = isProductionSite
+  ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+  : 'noindex, nofollow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+
+// Generate hreflang alternates for multi-source architecture
+const hreflangAlternates = sourceLanguage && availableTranslations
+  ? generateHreflangAlternates(Astro.url, sourceLanguage, availableTranslations)
+  : null
+
+// Generate og:locale:alternate values
+const ogLocaleAlternates = availableTranslations ? availableTranslations.map((lang) => {
+  const ogLocaleMapForAlternates: Record<string, string> = {
+    en: 'en_US',
+    zh: 'zh_CN',
+    ja: 'ja_JP',
+    fr: 'fr_FR',
+    ar: 'ar_AR',
+    ru: 'ru_RU',
+    de: 'de_DE',
+    es: 'es_ES',
+    ko: 'ko_KR',
+  };
+  const alternateLang = ogLocaleMapForAlternates[lang] || `${lang}_${lang.toUpperCase()}`;
+  return alternateLang !== ogLocale ? alternateLang : null;
+}).filter(Boolean) : []
+---
+
+<!DOCTYPE html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="https://cdn.detake.com/icons/favicon-green.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- SEO Meta Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywordsContent} />
+    {author && <meta name="author" content={author} />}
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={currentUrl} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="DeTake" />
+    <meta property="og:image" content={finalOgImage} />
+    {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="800" />
+    <meta property="og:locale" content={ogLocale} />
+
+    {/* og:locale:alternate for available translations */}
+    {ogLocaleAlternates.map((alternateLang) => (
+      <meta property="og:locale:alternate" content={alternateLang} />
+    ))}
+
+    {/* Article-specific Open Graph tags */}
+    {ogType === 'article' && (
+      <>
+        {author && <meta property="article:author" content={author} />}
+        {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+        {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+        {articleSection && <meta property="article:section" content={articleSection} />}
+        {keywords && keywords.map(keyword => (
+          <meta property="article:tag" content={keyword} />
+        ))}
+      </>
+    )}
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:site" content="@DeTake" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={finalOgImage} />
+    {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
+    
+    <!-- Other SEO optimizations -->
+    <meta name="robots" content={robotsContent} />
+    <link rel="image_src" href={finalOgImage} />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={currentUrl} />
+
+    {/* Alternate language versions for multi-source architecture */}
+    {hreflangAlternates ? (
+      <>
+        {hreflangAlternates.map((alternate) => (
+          <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+        ))}
+      </>
+    ) : null}
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+
+    <!-- Global image error fallback -->
+    <script is:inline>
+      (function() {
+        var logoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 1010" fill="none">'
+          + '<path d="M508.59137,1009.7739L509.45142,1009.7317L510.3089,1009.8102Q512.38184,1010.0001,514.46063,1010.0001Q533.29053,1010.0001,546.60522,996.68958Q559.92004,983.37909,559.92004,964.55511L559.92004,513.672L725.4436,469.33417L725.4436,893.2356Q725.44354,919.6181,748.3996,932.72186Q748.50586,932.78308,748.59363,932.83569Q759.00568,939.05847,771.22107,939.05847Q783.95081,939.05847,794.72845,932.28711Q884.83344,875.67511,948.57611,789.83832Q1015.2986,699.98834,1038.8911,596.72253Q1040,591.86877,1040,586.88928Q1040,568.59631,1027.0609,555.66119Q1014.1217,542.72607,995.82281,542.72607Q980.36639,542.72607,968.28125,552.35919Q956.19611,561.99231,952.75464,577.05603Q933.29401,662.2359,877.63354,737.18964Q858.87695,762.44745,837.41687,784.71375L816.36243,806.55914L816.36243,444.98035L1001.3536,395.42773Q1019.5415,390.55591,1028.9563,374.25415Q1038.3713,357.95227,1033.4978,339.77029Q1028.6244,321.58807,1012.3175,312.1763Q996.01056,302.7645,977.82257,307.63638L816.36243,350.88577L816.36243,230.02448Q816.36243,211.20055,803.04767,197.89006Q789.73297,184.57954,770.90295,184.5795Q752.07312,184.57953,738.75836,197.89005Q725.44354,211.20055,725.4436,230.02448L725.4436,375.23965L559.92004,419.57755L559.92004,45.445Q559.92004,26.621067,546.60522,13.310566Q533.29053,0.00004863739,514.46063,0.000043869019Q495.63068,0.00004863739,482.31589,13.310566Q469.00125,26.621067,469.00119,45.445L469.00119,443.93137L35.703342,559.99634L35.333485,560.07129Q20.090584,563.16272,10.106085,575.23749Q0.000028610229,587.45923,0.000028610229,603.35181Q0.000028610229,609.21649,1.534318,614.88971L1.5426817,614.92065Q23.907719,698.17108,71.631554,770.29456Q118.60547,841.28442,185.33365,894.28882Q252.70279,947.80182,333.15231,977.34705Q416.26401,1007.8703,505.40912,1009.8176Q505.90045,1009.8282,506.37677,1009.8282Q507.48639,1009.8282,508.59137,1009.7739ZM469.00119,538.02588L469.00119,919.28156L455.07489,917.34503Q408.2731,910.83734,363.61987,894.43848Q296.52786,869.79901,240.29919,825.13519Q184.55588,780.85657,145.32251,721.56439Q122.49164,687.06091,106.61815,649.50543L101.14687,636.56091L469.00119,538.02588Z" fill-rule="evenodd" fill="#999"/>'
+          + '</svg>';
+
+        document.addEventListener('error', function(e) {
+          var img = e.target;
+          if (!(img instanceof HTMLImageElement)) return;
+          if (img.dataset.fallbackHandled) return;
+          img.dataset.fallbackHandled = 'true';
+
+          img.style.display = 'none';
+
+          var fallback = document.createElement('div');
+          fallback.className = 'image-error-fallback';
+          fallback.innerHTML = logoSvg;
+
+          if (img.parentNode) {
+            img.parentNode.insertBefore(fallback, img.nextSibling);
+          }
+        }, true);
+      })();
+    </script>
+
+    <!-- Buffer polyfill for browser using ESM (real polyfill overrides the shim when loaded) -->
+    <script is:inline type="module">
+      import { Buffer } from 'https://esm.sh/buffer@6.0.3';
+      if (!('Buffer' in window) || (window.Buffer && !window.Buffer.from.toString)) {
+        // @ts-ignore - attach to global window for universal access
+        window.Buffer = Buffer;
+        console.log('[Polyfill] Buffer attached to window via CDN ESM');
+      }
+    </script>
+  </head>
+  <body class="min-h-screen bg-background font-sans antialiased">
+    <div class="relative flex min-h-screen flex-col">
+      <slot />
+    </div>
+    
+    <!-- SSR-to-client analytics bridge: preloaded events queue consumed by AnalyticsProvider -->
+    <script is:inline>
+      // page_view is already fired by analytics.initialize(), so no need to duplicate here.
+      // This queue remains available for other SSR-declared events if needed.
+      window.__ANALYTICS_PRELOADED_EVENTS = window.__ANALYTICS_PRELOADED_EVENTS || [];
+    </script>
+    <div style="display:none" data-analytics-event='{"type":"USER_ENGAGEMENT","data":{"source":"ssr-dom","ts":0}}'></div>
+
+    <AnalyticsProvider client:only="react" />
+    <Analytics client:only="react" />
+    
+    <!-- External Authentication Manager -->
+    <script src="/src/scripts/auth-manager.js"></script>
+
+    <!-- Analytics initialization is now handled by AnalyticsProvider React component -->
+    
+    <!-- External ArticleLink Manager -->
+    <script src="/src/scripts/article-link-manager.js"></script>
+
+    <!-- External Timezone Manager -->
+    <script src="/src/scripts/timezone-manager.js"></script>
+  </body>
+</html>

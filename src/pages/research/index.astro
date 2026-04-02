@@ -1,0 +1,65 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
+import AuthMount from '@/components/common/react/AuthMount'
+import Footer from '@/components/common/react/footer/Index'
+import CategoryPage from '@/components/pages/CategoryPage'
+import type { Locale, SourceLanguage } from '@/types'
+import { MULTI_SOURCE_CONFIG } from '@/config/constants'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+
+export const prerender = false
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+const locale: Locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage)
+
+const { url } = Astro
+const initialPage = parseInt(url.searchParams.get('page') || '1', 10)
+const initialCategoryName = url.searchParams.get('category_name') || ''
+const initialAuthorName = url.searchParams.get('author_name') || ''
+const initialSubcategoryName = url.searchParams.get('subcategory_name') || ''
+const initialTag = url.searchParams.get('tag') || ''
+const initialOrderBy = (url.searchParams.get('order_by') as 'Latest' | 'Popular' | 'Trending') || 'Latest'
+
+const categoryDisplayName = 'Research'
+
+const seoContent = {
+  en: {
+    title: `${categoryDisplayName} | DeTake`,
+    description: `Follow NATO's #1 Decentralized media network to get yourself more must-see Takes. `
+  },
+  zh: {
+    title: `${categoryDisplayName} - DeTake`,
+    description: `关注NATO的#1去中心化媒体网络，获取更多必须看的Takes。`
+  },
+  ja: {
+    title: `${categoryDisplayName} | DeTake`,
+    description: `Follow NATO's #1 Decentralized media network to get yourself more must-see Takes. `
+  }
+}
+
+const { title, description } = seoContent[locale] || seoContent.en
+---
+
+<BaseLayout title={title} description={description} locale={locale}>
+  <HeaderWithFallback locale={locale} />
+  <AuthMount client:load />
+
+  <main class="flex-1 bg-background mt-[56px] md:mt-[97px]">
+    <div id="category-breadcrumb-title" class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block"></div>
+
+    <CategoryPage 
+      client:load
+      locale={locale}
+      category={categoryDisplayName}
+      initialPage={initialPage}
+      initialCategoryName={initialCategoryName}
+      initialAuthorName={initialAuthorName}
+      initialSubcategoryName={initialSubcategoryName}
+      initialTag={initialTag}
+      initialOrderBy={initialOrderBy}
+    />
+  </main>
+
+  <Footer client:load locale={locale} />
+</BaseLayout>

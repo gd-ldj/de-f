@@ -1,0 +1,183 @@
+---
+/**
+ * Translated collection article route (with language prefix)
+ * URL pattern: /{translationLang}/collections/{collectionId}/{slug}
+ * Example: ja.detake.com/fr/collections/123/japan-crypto-regulation
+ *
+ * This route serves translated versions of collection articles.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AuthMount from '@/components/common/react/AuthMount';
+import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro';
+import ArticleContent from '@/components/article/astro/ArticleContent.astro';
+import { fetchArticle, fetchTranslatedArticle } from '@/api/articles';
+import { fetchCollections } from '@/api/collections';
+import type { SourceLanguage, TranslationLanguage } from '@/types';
+import Footer from '@/components/common/react/footer/Index';
+import RecentResearch from '@/components/article/astro/RecentResearch.astro';
+import { SITE_CONFIG, MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
+import { getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils';
+
+export const prerender = false;
+
+const { translationLang, collectionId, slug } = Astro.params as {
+  translationLang: string;
+  collectionId: string;
+  slug: string;
+};
+
+// Validate translation language
+if (!isValidTranslationLanguage(translationLang)) {
+  return Astro.redirect('/404');
+}
+
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname);
+const locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+
+// Parse slug for promote code
+let actualSlug = slug;
+let promoteCode = null;
+
+const slugParts = slug.split('-');
+if (slugParts.length > 1) {
+  const lastPart = slugParts[slugParts.length - 1];
+  if (lastPart && lastPart.length >= 5) {
+    promoteCode = lastPart;
+    actualSlug = slugParts.slice(0, -1).join('-');
+  }
+}
+
+const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug;
+
+// Fetch base article
+const baseArticle = await fetchArticle(actualSlug, locale);
+
+if (!baseArticle) {
+  return Astro.redirect('/404');
+}
+
+// Fetch translation if needed
+const translationLanguage = translationLang as TranslationLanguage;
+let article = baseArticle;
+
+if ((translationLanguage && translationLanguage !== sourceLanguage) || (translationLanguage === null && sourceLanguage !== 'en')) {
+  const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage || sourceLanguage);
+  if (translated) {
+    article = {
+      ...baseArticle,
+      title: translated.title,
+      sub_title: translated.sub_title,
+      body: translated.body,
+      language: translated.language,
+    };
+  }
+}
+
+// Resolve collection title
+const resolveCollectionTitle = async (id: string) => {
+  try {
+    const { items } = await fetchCollections(1, 100);
+    return items.find((item) => item.id === id)?.name;
+  } catch (error) {
+    console.error('Failed to fetch collection title:', error);
+    return undefined;
+  }
+};
+
+const collectionTitle = await resolveCollectionTitle(collectionId);
+
+const categoryDisplayName = getArticleBusinessPath(article) || 'News';
+
+// SEO metadata
+const title = `${article.title} | ${categoryDisplayName} | deTake`;
+const description = article.sub_title;
+const canonicalUrl = `${Astro.url.origin}/${translationLang}/collections/${collectionId}/${actualSlug}`;
+
+const ogImageParams = new URLSearchParams({
+  title: article.title,
+  description: article.sub_title,
+  category: categoryDisplayName,
+  author: article?.author?.name || article.author_name || 'DeTake',
+});
+const ogImageUrl = article.img_url
+  ? article.img_url.startsWith('http')
+    ? article.img_url
+    : `${SITE_CONFIG.SITE_URL}${article.img_url}`
+  : `${SITE_CONFIG.SITE_URL}/api/og/article.svg?${ogImageParams.toString()}`;
+
+const keywords = article.tags || [];
+const publishedTime = article.created_at;
+const modifiedTime = article.updated_at;
+const author = article?.author?.name || article.author_name;
+const articleLang = article.language || translationLanguage;
+
+// Get available translations for hreflang
+// TODO: Fetch actual available translations from API
+// For now, assume all collection articles support these languages
+const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'ar', 'ru'];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImageUrl}
+  ogImageAlt={`${article.title} - ${categoryDisplayName} article on DeTake`}
+  ogType="article"
+  twitterCard="summary_large_image"
+  author={author}
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
+  keywords={keywords}
+  articleSection={categoryDisplayName}
+  pageLang={articleLang}
+  sourceLanguage={sourceLanguage}
+  translationLanguage={translationLanguage}
+  availableTranslations={availableTranslations}
+>
+  <HeaderWithFallback locale={locale} />
+  <AuthMount
+    client:load
+    shareSection={{ locale, title: article.title, url: canonicalUrl }}
+    authorSection={{
+      author: {
+        id: article?.author?.id,
+        name: article?.author?.name || article.author_name || '',
+        avatar: article?.author?.avatar_url,
+        bio: article?.author?.bio,
+        email: article?.contact?.email,
+        twitter: article?.contact?.twitter,
+      },
+      locale,
+    }}
+  />
+
+  <main class="min-h-screen mt-[56px] md:mt-[97px]">
+    <div class="max-w-[1440px] mx-auto">
+      <div class="grid layout-two-column-fixed-1440">
+        <div class="pt-5 md:pt-8 md:py-5 px-4 md:px-6 border-r border-border">
+          <ArticleContent
+            article={article}
+            locale={locale}
+            category={getArticleBusinessPath(article)}
+            slugWithPromote={slugWithPromote}
+            articleLang={articleLang}
+            collection={{ id: collectionId, title: collectionTitle }}
+          />
+        </div>
+
+        <div class="">
+          <div class="top-8">
+            <div id="share-section-root" class=""></div>
+            <div class="px-6 p-5">
+              <RecentResearch locale={locale} currentEntryId={article.entry_id} limit={4} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer client:load locale={locale} />
+</BaseLayout>

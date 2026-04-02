@@ -1,0 +1,114 @@
+---
+import type { HomeWhoToFollow, Locale } from '@/types';
+import { createTranslator } from '@/lib/i18n';
+import Image from '@/components/common/react/Image';
+import FollowButton from '../FollowButton';
+
+interface Props {
+  locale: Locale;
+  whoToFollow?: HomeWhoToFollow[];
+}
+
+const { locale, whoToFollow = [] } = Astro.props as Props;
+const t = createTranslator(locale);
+
+// Server-side rendering optimization
+// No client-side state management needed for initial render
+const followUsers = whoToFollow;
+const hasUsers = followUsers.length > 0;
+---
+
+<div class="space-y-6 pl-4 md:px-6 border-t border-border pt-[18px]">
+  <div>
+    <h3 class="font-medium text-foreground mb-[10px] md:mb-3">{t('common.whoToFollow')}</h3>
+    
+    {hasUsers ? (
+      <>
+        <!-- Mobile: Horizontal scrollable container -->
+        <div class="md:hidden overflow-x-auto">
+          <div class="flex space-x-3 pb-2">
+            {followUsers.map((user, index) => (
+              <div class="flex-shrink-0 w-64">
+                <div class="border border-gray-200 rounded-lg p-3 h-full hover-card" data-user-id={user.user_id}>
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-start space-x-3 flex-1 min-w-0">
+                      <Image 
+                        src={user.avatar_url} 
+                        alt={user.name} 
+                        className="w-12 h-12 rounded-full flex-shrink-0" 
+                        client:load
+                      />
+                      <div class="flex-1 mt-1 ml-2">
+                        <p class="font-medium text-foreground text-sm leading-tight truncate">{user.name}</p>
+                        <p class="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{user.profile_bio}</p>
+                      </div>
+                    </div>
+                    {/* <div class="relative flex-shrink-0 ml-2">
+                      <!-- Follow button will be enhanced with client-side functionality -->
+                      <FollowButton 
+                        userId={user.user_id}
+                        locale={locale || 'en'}
+                        className="p-1.5 hover:bg-accent rounded transition-colors"
+                        aria-label={`Follow ${user.name}`}
+                        client:load
+                      />
+                    </div> */}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Desktop: Vertical layout -->
+        <div class="hidden md:block space-y-4">
+          {followUsers.map((user, index) => (
+            <div>
+              <div class="flex items-start justify-between py-3 hover-card" data-user-id={user.user_id}>
+                <div class="flex items-start space-x-3">
+                  <Image 
+                    src={user.avatar_url} 
+                    alt={user.name} 
+                    className="w-12 h-12 rounded-full flex-shrink-0" 
+                    client:load
+                  />
+                  <div class="flex-1 mt-1 ml-2">
+                    <p class="font-medium text-foreground text-sm leading-tight">{user.name}</p>
+                    <p class="text-xs text-muted-foreground mt-1 leading-relaxed">{user.profile_bio}</p>
+                  </div>
+                </div>
+                {/* <div class="relative flex-shrink-0">
+                  <!-- Static follow button for initial render -->
+                  <button 
+                    class="p-1.5 transition-all duration-300 ease-in-out opacity-100 scale-100 group"
+                    data-user-id={user.user_id}
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <FollowButton 
+                    userId={user.user_id}
+                    locale={locale || 'en'}
+                    text={t('common.subscribe')}
+                    className="text-white bg-primary absolute right-0 top-0 w-0 opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100 group-hover:w-[104px]"
+                    client:load
+                  >
+                    {t('common.subscribe')}
+                  </FollowButton>
+                  </button>
+                </div> */}
+              </div>
+              {index < followUsers.length - 1 && <div class="border-b border-border"></div>}
+            </div>
+          ))}
+        </div>
+      </>
+    ) : (
+      <!-- Error/No data state -->
+      <div class="text-center py-8">
+        <p class="text-muted-foreground mb-4">No data available</p>
+        <p class="text-xs text-muted-foreground">Please refresh the page to try again</p>
+      </div>
+    )}
+  </div>
+</div>

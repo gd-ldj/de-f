@@ -1,0 +1,111 @@
+---
+import type { HomeTopic, HomeMostReadArticle, Locale } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import { getLocaleFromPath } from '@/lib/utils'
+import { formatDate, getArticleBusinessPath } from '@/utils/util'
+
+interface Props {
+  locale?: Locale
+  topics?: HomeTopic[]
+  mostRead?: HomeMostReadArticle[]
+}
+
+// Get locale, topics and mostRead from props or extract from URL
+const { locale: propsLocale, topics: propsTopics = [], mostRead = [] } = Astro.props as Props
+const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as Locale
+
+// Use custom translation function for server-side rendering
+const t = createTranslator(locale)
+
+// Use topics and mostRead data passed from parent component
+
+// Use topics and most read articles from props
+const rawTopics: HomeTopic[] = propsTopics
+const mostReadArticles: HomeMostReadArticle[] = mostRead
+
+// Transform topics to include URL and limit to 10 items
+const topics = rawTopics.map(topic => ({
+  ...topic,
+  url: `/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`
+})).slice(0, 10)
+---
+
+<div class="space-y-6">
+  <div class="px-4 md:px-6">
+    <h4 class="font-medium text-foreground mb-4">{t('common.recommendedTopics')}</h4>
+
+    <div class="md:hidden overflow-x-auto">
+      <div class="flex space-x-3 pb-2">
+        {topics.map((topic, index) => (
+          <a
+            href={topic.url}
+            class="flex-shrink-0 px-4 py-3 bg-secondary text-primary text-sm font-medium rounded hover:bg-primary hover:text-white cursor-pointer transition-all duration-200 text-center hover:border-primary/20 whitespace-nowrap"
+          >
+            {topic.name}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="hidden md:flex flex-wrap gap-3">
+      {topics.map((topic, index) => (
+        <a
+          href={topic.url}
+          class="px-4 py-3 bg-secondary text-primary text-sm font-medium rounded hover:bg-primary hover:text-white cursor-pointer transition-all duration-200 text-center hover:border-primary/20"
+        >
+          {topic.name}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div class="px-6" >
+    <h4 class="font-medium text-foreground mb-4">{t('common.mostRead')}</h4>
+    <div class="space-y-4">
+      {mostReadArticles.map((article: HomeMostReadArticle, index: number) => (
+        <div class="border-b border-border pb-4 last:border-b-0 last:pb-0">
+          <ArticleLink
+            slug={article.slug}
+            business={getArticleBusinessPath(article)}
+            locale={locale}
+            class="flex items-start justify-between group"
+          >
+            <div class="flex-1 pr-4  min-w-0">
+              <div class="flex items-start space-x-3">
+                <span class="hidden md:inline-block text-primary font-medium text-[12px] leading-none mt-1">{index + 1}</span>
+                <div class="flex-1  min-w-0">
+                  <h5 class="text-foreground font-medium text-[14px] leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                    {article.title}
+                  </h5>
+                  <div class="flex items-center text-xs text-muted-foreground">
+                    <svg class="w-3 h-3 mr-1 truncate" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div class="flex-1 flex items-center space-x-1 truncate">
+                      <span class="" data-date={article.created_at} data-locale={locale}>
+                        {formatDate(article.created_at, locale)}
+                      </span>
+                      <span class="hidden xl:group-hover:inline-block">/ {t('article.by')} </span>
+                      <span class="hidden xl:group-hover:inline-block text-foreground uppercase truncate">{article?.author?.name || 'detake'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              <img
+                src={article.img_url || "/placeholder.svg"}
+                alt={article.title}
+                class="w-16 h-16 rounded object-cover"
+              />
+            </div>
+          </ArticleLink>
+        </div>
+      ))}
+    </div>
+    <!-- <a href="/news" class="w-full text-right text-primary text-sm font-medium mt-6 hover:text-primary/80 inline-block transition-colors">
+      {t('common.moreFromNews')}
+    </a> -->
+  </div>
+</div>

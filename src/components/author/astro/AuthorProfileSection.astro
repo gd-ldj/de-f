@@ -1,0 +1,126 @@
+---
+import type { Locale } from '@/types';
+import type { AuthorProfile } from '@/api/users';
+import { createTranslator } from '@/lib/i18n';
+
+interface Props {
+  authorProfile: AuthorProfile;
+  locale: Locale;
+}
+
+const { authorProfile, locale } = Astro.props;
+const t = createTranslator(locale);
+
+/**
+ * Format number for display (e.g., 1000 -> 1.0k)
+ */
+function formatNumber(num: number): string {
+  if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}k`;
+  }
+  return num.toString();
+}
+---
+
+<div class="mb-8">
+  <!-- Author Header -->
+  <div class="flex items-start justify-between mb-6">
+    <!-- Left: Avatar and Basic Info -->
+    <div class="flex items-start space-x-4">
+      <!-- Avatar -->
+      <div class="flex-shrink-0">
+        <img 
+          src={authorProfile.avatar_url || '/api/placeholder/80/80'} 
+          alt={authorProfile.name} 
+          class="w-20 h-20 rounded-full object-cover border-2 border-gray-200" 
+        />
+      </div>
+
+      <!-- Author Details -->
+      <div class="flex-1">
+        <!-- Author Name -->
+        <h1 class="text-2xl font-bold text-foreground mb-2">{authorProfile.name}</h1>
+        
+        <!-- Stats -->
+        <div class="flex items-center space-x-6 text-sm text-muted-foreground mb-3">
+          <div class="flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M17 20h5v-2a3 3 0 00-5.196-2.121M9 20H4v-2a3 3 0 015.196-2.121M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span class="font-medium">{formatNumber(authorProfile.followers)}</span>
+            <span>{t('author.followers')}</span>
+          </div>
+          <div class="flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span class="font-medium">{formatNumber(authorProfile.articles_count)}</span>
+            <span>{t('author.articles')}</span>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        {authorProfile.profile_bio && (
+          <p class="text-muted-foreground text-sm leading-relaxed max-w-2xl">
+            {authorProfile.profile_bio}
+          </p>
+        )}
+      </div>
+    </div>
+
+    <!-- Right: Action Buttons -->
+    <div class="flex items-center space-x-3 ml-4">
+      <!-- X (Twitter) Button -->
+      {authorProfile.twitter && (
+        <button 
+          id="twitter-btn"
+          data-twitter={authorProfile.twitter}
+          class="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" 
+          aria-label="Follow on X"
+        >
+          <svg class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        </button>
+      )}
+
+      <!-- Subscribe Button -->
+      <button 
+        id="subscribe-btn"
+        data-author-id={authorProfile.user_id}
+        data-locale={locale}
+        data-subscribe-message={t('author.subscribePlaceholder')}
+        class="px-6 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center space-x-2"
+      >
+        <span>+</span>
+        <span>{t('author.subscribe')}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Handle Twitter button click
+  const twitterBtn = document.getElementById('twitter-btn');
+  if (twitterBtn) {
+    twitterBtn.addEventListener('click', () => {
+      const twitter = twitterBtn.getAttribute('data-twitter');
+      if (twitter) {
+        window.open(`https://twitter.com/${twitter}`, '_blank');
+      }
+    });
+  }
+
+  // Handle subscribe button click
+  const subscribeBtn = document.getElementById('subscribe-btn');
+  if (subscribeBtn) {
+    subscribeBtn.addEventListener('click', async () => {
+      // This would need to integrate with the auth system
+      // For now, just show a placeholder message
+      const message = subscribeBtn.getAttribute('data-subscribe-message');
+      if (message) {
+        alert(message);
+      }
+    });
+  }
+</script>

@@ -1,0 +1,80 @@
+---
+// Optimized Header component - Combines SSR placeholder with client-side hydration
+import HeaderSkeleton from './HeaderSkeleton.astro'
+import Header from '../react/header/Index'
+import type { Locale } from '@/types'
+
+interface Props {
+  locale?: Locale
+  userComponent?: any // React component
+}
+
+const { locale = 'en', userComponent } = Astro.props
+const currentPath = Astro.url.pathname
+---
+
+<!-- Skeleton displayed during SSR -->
+<HeaderSkeleton locale={locale} />
+
+<!-- Real Header with client-side hydration, using idle strategy for delayed loading -->
+<Header client:idle locale={locale} currentPath={currentPath} userComponent={userComponent} />
+
+<script>
+  // Client-side script: Hide skeleton when real Header is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    // Listen for Header component loading completion
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length > 0) {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const element = node as Element;
+              // Check if it's the real Header component
+              if (element.querySelector('[data-header-loaded]') || 
+                  element.matches('[data-header-loaded]')) {
+                // Hide skeleton
+                const skeleton = document.querySelector('[data-header-skeleton]');
+                if (skeleton) {
+                  (skeleton as HTMLElement).style.display = 'none';
+                }
+                observer.disconnect();
+              }
+            }
+          });
+        }
+      });
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    // Timeout protection: Force hide skeleton after 3 seconds
+    setTimeout(() => {
+      const skeleton = document.querySelector('[data-header-skeleton]');
+      if (skeleton) {
+        (skeleton as HTMLElement).style.display = 'none';
+      }
+      observer.disconnect();
+    }, 3000);
+  });
+</script>
+
+<style>
+  /* Ensure skeleton is displayed before real Header loads */
+  [data-header-skeleton] {
+    position: relative;
+    z-index: 51;
+  }
+  
+  /* Real Header initially hidden until fully loaded */
+  [astro-island]:not([ssr]) {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  [astro-island][ssr] {
+    opacity: 1;
+  }
+</style>

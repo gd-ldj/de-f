@@ -1,0 +1,59 @@
+---
+import type { Locale, HomeLatestArticle, HomeNewsArticle, HomeWhoToFollow, HomeTopic, HomeMostReadArticle } from '@/types'
+import MainContent from '@/components/home/astro/MainContent.astro'
+import RightSidebar from '@/components/home/astro/RightSidebar.astro'
+import Sidebar from '@/components/home/astro/Sidebar.astro'
+// import ToFollowList from '@/components/home/astro/ToFollowList.astro'
+import NewsSection from '@/components/home/astro/NewsSection.astro';
+import TrendingSection from '@/components/home/astro/TrendingSection.astro';
+import ResearchSection from '@/components/home/astro/ResearchSection.astro';
+import AuthMount from '@/components/common/react/AuthMount';
+interface Props {
+  locale: Locale
+  latestNews?: HomeLatestArticle[]
+  newsAll?: HomeNewsArticle[]
+  whoToFollow?: HomeWhoToFollow[]
+  topics?: HomeTopic[]
+  mostRead?: HomeMostReadArticle[]
+  news?: Array<{
+    tag: string;
+    data: HomeNewsArticle[];
+  }>
+  insights?: HomeNewsArticle[]
+  research?: HomeNewsArticle[]
+}
+
+const { locale, latestNews = [], newsAll = [], whoToFollow = [], topics = [], mostRead = [], news = [], insights = [], research = [] } = Astro.props as Props
+---
+
+<!-- Mobile Layout - 100% accurate restoration for mobile UI -->
+<div class="md:hidden">
+  <!-- Mobile Main Content -->
+  <div class="px-4 py-4">
+    <MainContent locale={locale} newsAll={newsAll} />
+  </div>
+  
+  <!-- Mobile Sidebar Content -->
+  <div class="py-4 border-t border-gray-200">
+    <Sidebar locale={locale} latestNews={latestNews} />
+  </div>
+
+   <!-- Mobile To Follow List -->
+  <div class="py-4 border-t border-gray-200 bg-[#FAFAFA]">
+    <!-- <ToFollowList locale={locale} whoToFollow={whoToFollow} /> -->
+  </div>
+  
+  <!-- Mobile Right Sidebar Content -->
+  <div class="py-4 border-t border-gray-200">
+    <!-- React mount point for Login (Mobile) -->
+    <div id="login-root"></div>
+    <!-- AuthMount for mobile login -->
+    <AuthMount client:load />
+    <RightSidebar locale={locale} topics={topics} mostRead={mostRead} />
+  </div>
+  <div class="pb-4 border-t border-gray-200">
+    <NewsSection locale={locale} articles={news} />
+    <TrendingSection articles={insights} />
+    <ResearchSection locale={locale} articles={research} />
+  </div>
+</div>
