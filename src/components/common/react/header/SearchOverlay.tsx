@@ -214,7 +214,7 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
       {/* White panel - height locks after initial results so Load More doesn't resize */}
       <div
         ref={scrollContainerRef}
-        className="relative bg-white shadow-lg overflow-y-auto"
+        className="relative bg-white shadow-lg overflow-y-auto overscroll-contain"
         style={{ height: '780px', maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       >
         {/* Search input - sticky so it stays visible when scrolling */}
