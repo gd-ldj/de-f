@@ -16,6 +16,8 @@ interface UseSearchArticlesReturn {
   hasMore: boolean;
   loadMore: () => void;
   reset: () => void;
+  recommended: ApiArticle[];
+  isLoadingRecommended: boolean;
 }
 
 export function useSearchArticles({
@@ -31,6 +33,31 @@ export function useSearchArticles({
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const allResultsRef = useRef<ApiArticle[]>([]);
+
+  // Recommended (popular) articles for empty query state
+  const [recommended, setRecommended] = useState<ApiArticle[]>([]);
+  const [isLoadingRecommended, setIsLoadingRecommended] = useState(false);
+  const recommendedFetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (recommendedFetchedRef.current) return;
+    recommendedFetchedRef.current = true;
+    setIsLoadingRecommended(true);
+
+    const controller = new AbortController();
+    fetchArticles(locale, 1, pageSize, {
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (res?.articles) {
+          setRecommended(res.articles.slice(0, pageSize));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsLoadingRecommended(false));
+
+    return () => controller.abort();
+  }, [locale, pageSize]);
 
   const doSearch = useCallback(
     async (keyword: string, pageNum: number, append: boolean) => {
@@ -144,5 +171,5 @@ export function useSearchArticles({
     abortRef.current?.abort();
   }, []);
 
-  return { query, setQuery, results, isLoading, hasMore, loadMore, reset };
+  return { query, setQuery, results, isLoading, hasMore, loadMore, reset, recommended, isLoadingRecommended };
 }

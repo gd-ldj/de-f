@@ -25,24 +25,34 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
   const prevResultsCountRef = React.useRef(0);
 
   const pageSize = isMobile ? MOBILE_PAGE_SIZE : PC_PAGE_SIZE;
-  const { query, setQuery, results, isLoading, hasMore, loadMore, reset } = useSearchArticles({
+  const { query, setQuery, results, isLoading, hasMore, loadMore, reset, recommended, isLoadingRecommended } = useSearchArticles({
     locale,
     pageSize,
   });
 
-  // Once the panel renders with initial results, lock its height so Load More doesn't resize it
+  const showRecommended = !query.trim() && recommended.length > 0;
+
+  // Once the panel renders with initial content, lock its height so Load More doesn't resize it
   const panelRef = React.useRef<HTMLDivElement>(null);
   const lockedHeightRef = React.useRef<number | null>(null);
+  const prevQueryRef = React.useRef('');
+
+  // Determine if content is visible in the panel (recommended or first page of search results)
+  const hasVisibleContent = showRecommended || (query.trim() && results.length > 0);
 
   React.useEffect(() => {
-    if (!isMobile && results.length > 0 && results.length <= pageSize && panelRef.current && lockedHeightRef.current === null) {
-      // Lock the panel height after initial results render
+    // Unlock height when query changes (switching between recommended and search results)
+    if (query !== prevQueryRef.current) {
+      lockedHeightRef.current = null;
+      prevQueryRef.current = query;
+    }
+  }, [query]);
+
+  React.useEffect(() => {
+    if (!isMobile && hasVisibleContent && results.length <= pageSize && panelRef.current && lockedHeightRef.current === null) {
       lockedHeightRef.current = panelRef.current.offsetHeight;
     }
-    if (results.length === 0) {
-      lockedHeightRef.current = null;
-    }
-  }, [results.length, isMobile, pageSize]);
+  }, [hasVisibleContent, results.length, isMobile, pageSize]);
 
   // After Load More: scroll to show newly loaded content
   React.useEffect(() => {
@@ -169,7 +179,22 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
 
         {/* Results area */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto" data-testid="search-results">
-          {isLoading && results.length === 0 && (
+          {/* Recommended articles when query is empty */}
+          {showRecommended && (
+            <>
+              <div className="px-4 pt-3 pb-1">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{texts.actions.popular || 'Popular'}</span>
+              </div>
+              <MobileResults articles={recommended} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
+            </>
+          )}
+          {!query.trim() && !showRecommended && isLoadingRecommended && (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          )}
+          {/* Search results */}
+          {isLoading && query.trim() && results.length === 0 && (
             <div className="flex items-center justify-center py-16">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </div>
@@ -179,7 +204,7 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
               No results found
             </div>
           )}
-          {results.length > 0 && (
+          {query.trim() && results.length > 0 && (
             <>
               <MobileResults articles={results} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
               {hasMore && (
@@ -221,10 +246,23 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
         </div>
 
         {/* Results area */}
-        <div
-          data-testid="search-results"
-        >
-          {isLoading && results.length === 0 && (
+        <div data-testid="search-results">
+          {/* Recommended articles when query is empty */}
+          {showRecommended && (
+            <>
+              <div className="px-6 md:px-12 lg:px-24 pt-4 pb-1">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{texts.actions.popular || 'Popular'}</span>
+              </div>
+              <DesktopResults articles={recommended} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
+            </>
+          )}
+          {!query.trim() && !showRecommended && isLoadingRecommended && (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          )}
+          {/* Search results */}
+          {isLoading && query.trim() && results.length === 0 && (
             <div className="flex items-center justify-center py-16">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </div>
@@ -234,7 +272,7 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
               No results found
             </div>
           )}
-          {results.length > 0 && (
+          {query.trim() && results.length > 0 && (
             <>
               <DesktopResults articles={results} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
               {hasMore && (

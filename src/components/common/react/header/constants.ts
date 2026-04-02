@@ -25,6 +25,7 @@ export const headerTexts = {
     },
     actions: {
       search: 'Search',
+      popular: 'Popular',
       switchLanguage: 'Switch Language',
       openMenu: 'Open menu',
       closeMenu: 'Close menu',
@@ -103,6 +104,7 @@ export const headerTexts = {
     },
     actions: {
       search: '搜索',
+      popular: '热门推荐',
       switchLanguage: '切换语言',
       openMenu: '打开菜单',
       closeMenu: '关闭菜单',
@@ -182,6 +184,7 @@ export const headerTexts = {
     },
     actions: {
       search: '検索',
+      popular: '人気記事',
       switchLanguage: '言語を切り替え',
       openMenu: 'メニューを開く',
       closeMenu: 'メニューを閉じる',
