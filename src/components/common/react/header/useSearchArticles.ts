@@ -66,6 +66,8 @@ export function useSearchArticles({
               a.author_name?.toLowerCase().includes(lowerKeyword),
           );
 
+          const maxItems = pageNum * pageSize;
+
           if (append) {
             const combined = [...allResultsRef.current, ...filtered];
             // Deduplicate by entry_id
@@ -76,12 +78,13 @@ export function useSearchArticles({
               return true;
             });
             allResultsRef.current = unique;
-            setResults(unique);
+            setResults(unique.slice(0, maxItems));
+            setHasMore(unique.length > maxItems || (response.hasMore && filtered.length > 0));
           } else {
             allResultsRef.current = filtered;
-            setResults(filtered);
+            setResults(filtered.slice(0, maxItems));
+            setHasMore(filtered.length > maxItems || (response.hasMore && filtered.length > 0));
           }
-          setHasMore(response.hasMore && filtered.length > 0);
         } else {
           if (!append) {
             allResultsRef.current = [];

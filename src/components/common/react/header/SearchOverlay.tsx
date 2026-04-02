@@ -30,6 +30,20 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
     pageSize,
   });
 
+  // Once the panel renders with initial results, lock its height so Load More doesn't resize it
+  const panelRef = React.useRef<HTMLDivElement>(null);
+  const lockedHeightRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    if (!isMobile && results.length > 0 && results.length <= pageSize && panelRef.current && lockedHeightRef.current === null) {
+      // Lock the panel height after initial results render
+      lockedHeightRef.current = panelRef.current.offsetHeight;
+    }
+    if (results.length === 0) {
+      lockedHeightRef.current = null;
+    }
+  }, [results.length, isMobile, pageSize]);
+
   // After Load More: scroll to show newly loaded content
   React.useEffect(() => {
     const prev = prevResultsCountRef.current;
@@ -192,17 +206,22 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
       {/* Semi-transparent backdrop - click to close */}
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} data-testid="search-backdrop" />
 
-      {/* White panel - fixed height for ~2 rows of cards + search input + load more */}
-      <div className="relative bg-white flex flex-col shadow-lg h-[750px]">
-        {/* Search input */}
-        <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 flex-shrink-0">
+      {/* White panel - height locks after initial results so Load More doesn't resize */}
+      <div
+        ref={(el) => {
+          (scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+          (panelRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+        }}
+        className="relative bg-white shadow-lg overflow-y-auto"
+        style={lockedHeightRef.current ? { height: `${lockedHeightRef.current}px` } : { maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+      >
+        {/* Search input - sticky so it stays visible when scrolling */}
+        <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 sticky top-0 z-10 bg-white">
           {searchInput}
         </div>
 
-        {/* Results area - scrollable, fills remaining space */}
+        {/* Results area */}
         <div
-          ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto"
           data-testid="search-results"
         >
           {isLoading && results.length === 0 && (
@@ -219,7 +238,7 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
             <>
               <DesktopResults articles={results} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
               {hasMore && (
-                <div className="flex justify-center py-6">
+                <div className="flex justify-center py-4">
                   <button
                     onClick={loadMore}
                     disabled={isLoading}
@@ -254,11 +273,11 @@ function DesktopResults({
   onNavigate: () => void;
 }) {
   return (
-    <div className="px-6 md:px-12 lg:px-24 py-6">
-      <div className="grid grid-cols-4 gap-6">
+    <div className="px-6 md:px-12 lg:px-24 py-4">
+      <div className="grid grid-cols-4 gap-5">
         {articles.map((article) => (
           <article key={article.entry_id} className="rounded overflow-hidden">
-            <div className="relative w-full h-40">
+            <div className="relative w-full h-36">
               <ArticleLink
                 slug={article.slug}
                 locale={locale}
@@ -297,7 +316,7 @@ function DesktopResults({
                   {article.title}
                 </ArticleLink>
               </h3>
-              <p className="text-muted-foreground text-sm mb-2 line-clamp-2">{article.sub_title}</p>
+              <p className="text-muted-foreground text-sm mb-1.5 line-clamp-1">{article.sub_title}</p>
               <div className="flex items-center text-xs text-muted-foreground">
                 <span>{formatDate(article.created_at, locale)}</span>
                 <span className="mx-1">/ {t('article.by')}</span>
