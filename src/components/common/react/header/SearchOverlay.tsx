@@ -192,11 +192,8 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
       {/* Semi-transparent backdrop - click to close */}
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} data-testid="search-backdrop" />
 
-      {/* White panel - fixed height, sits at the top below header */}
-      <div
-        className="relative bg-white flex flex-col shadow-lg"
-        style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
-      >
+      {/* White panel - fixed height for ~2 rows of cards + search input + load more */}
+      <div className="relative bg-white flex flex-col shadow-lg h-[750px]">
         {/* Search input */}
         <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 flex-shrink-0">
           {searchInput}
