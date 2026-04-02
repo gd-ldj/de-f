@@ -15,6 +15,7 @@ interface SearchOverlayProps {
 
 const PC_PAGE_SIZE = 8; // 4 columns x 2 rows
 const MOBILE_PAGE_SIZE = 10;
+const HEADER_HEIGHT = 96; // px, matches DesktopHeader h-[96px]
 
 export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlayProps) {
   const [isMobile, setIsMobile] = React.useState(false);
@@ -91,86 +92,120 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[9999]" role="dialog" aria-modal="true" data-testid="search-overlay">
-      {/* Full-screen white overlay */}
-      <div className="absolute inset-0 bg-white flex flex-col">
-        {/* Mobile header */}
-        {isMobile && (
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <div className="flex-1" />
-            <img src={HEADER_LOGO_BLACK_URL} alt="deTake" className="h-6" />
-            <div className="flex-1 flex justify-end">
-              <button onClick={handleClose} className="p-1" aria-label="Close search" data-testid="search-close-btn">
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
-            </div>
-          </div>
-        )}
+  // Shared search input
+  const searchInput = (
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={texts.actions.search || 'Search...'}
+        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+        data-testid="search-input"
+      />
+      {query && (
+        <button
+          onClick={() => setQuery('')}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-100 rounded"
+        >
+          <X className="w-3.5 h-3.5 text-gray-400" />
+        </button>
+      )}
+    </div>
+  );
 
-        {/* Search input */}
-        <div className={`${isMobile ? 'px-4 py-3' : 'px-6 md:px-12 lg:px-24 py-4'} border-b border-gray-200`}>
-          {/* Desktop close button */}
-          {!isMobile && (
-            <div className="flex justify-end mb-2">
-              <button onClick={handleClose} className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label="Close search" data-testid="search-close-btn">
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
-            </div>
-          )}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={texts.actions.search || 'Search...'}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-              data-testid="search-input"
-            />
-            {query && (
-              <button
-                onClick={() => setQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-100 rounded"
-              >
-                <X className="w-3.5 h-3.5 text-gray-400" />
-              </button>
-            )}
+  // Mobile: full-screen overlay
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 z-[9999] flex flex-col bg-white" role="dialog" aria-modal="true" data-testid="search-overlay">
+        {/* Mobile header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+          <div className="flex-1" />
+          <img src={HEADER_LOGO_BLACK_URL} alt="deTake" className="h-6" />
+          <div className="flex-1 flex justify-end">
+            <button onClick={handleClose} className="p-1" aria-label="Close search" data-testid="search-close-btn">
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
           </div>
         </div>
 
-        {/* Results area - fixed height with scroll */}
-        <div
-          ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto"
-          data-testid="search-results"
-        >
-          {/* Loading state */}
+        {/* Search input */}
+        <div className="px-4 py-3 border-b border-gray-200">
+          {searchInput}
+        </div>
+
+        {/* Results area */}
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto" data-testid="search-results">
           {isLoading && results.length === 0 && (
             <div className="flex items-center justify-center py-16">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
             </div>
           )}
-
-          {/* Empty state */}
           {!isLoading && query.trim() && results.length === 0 && (
             <div className="flex items-center justify-center py-16 text-gray-400 text-sm">
               No results found
             </div>
           )}
-
-          {/* Results */}
           {results.length > 0 && (
             <>
-              {isMobile ? (
-                <MobileResults articles={results} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
-              ) : (
-                <DesktopResults articles={results} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
+              <MobileResults articles={results} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
+              {hasMore && (
+                <div ref={sentinelRef} className="flex justify-center py-4">
+                  {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
+                </div>
               )}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
-              {/* Load More button (PC only) */}
-              {!isMobile && hasMore && (
+  // Desktop: below header with semi-transparent backdrop
+  return (
+    <div
+      className="fixed inset-0 z-[49]"
+      style={{ top: `${HEADER_HEIGHT}px` }}
+      role="dialog"
+      aria-modal="true"
+      data-testid="search-overlay"
+    >
+      {/* Semi-transparent backdrop - click to close */}
+      <div className="absolute inset-0 bg-black/50" onClick={handleClose} data-testid="search-backdrop" />
+
+      {/* White panel - sits at the top, below header */}
+      <div
+        className="relative bg-white flex flex-col shadow-lg"
+        style={{ maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+      >
+        {/* Search input */}
+        <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200">
+          {searchInput}
+        </div>
+
+        {/* Results area - scrollable */}
+        <div
+          ref={scrollContainerRef}
+          className="overflow-y-auto"
+          style={{ maxHeight: `calc(100vh - ${HEADER_HEIGHT}px - 70px)` }}
+          data-testid="search-results"
+        >
+          {isLoading && results.length === 0 && (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          )}
+          {!isLoading && query.trim() && results.length === 0 && (
+            <div className="flex items-center justify-center py-16 text-gray-400 text-sm">
+              No results found
+            </div>
+          )}
+          {results.length > 0 && (
+            <>
+              <DesktopResults articles={results} locale={locale} lang={lang} t={t} onNavigate={handleClose} />
+              {hasMore && (
                 <div className="flex justify-center py-6">
                   <button
                     onClick={loadMore}
@@ -178,18 +213,9 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
                     className="px-8 py-2 border border-gray-300 rounded-md text-sm text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
                     data-testid="search-load-more"
                   >
-                    {isLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
-                    ) : null}
+                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin inline mr-2" /> : null}
                     Load More
                   </button>
-                </div>
-              )}
-
-              {/* Mobile infinite scroll sentinel */}
-              {isMobile && hasMore && (
-                <div ref={sentinelRef} className="flex justify-center py-4">
-                  {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
                 </div>
               )}
             </>
@@ -219,7 +245,6 @@ function DesktopResults({
       <div className="grid grid-cols-4 gap-6">
         {articles.map((article) => (
           <article key={article.entry_id} className="rounded overflow-hidden">
-            {/* Image */}
             <div className="relative w-full h-40">
               <ArticleLink
                 slug={article.slug}
@@ -236,10 +261,7 @@ function DesktopResults({
                 />
               </ArticleLink>
             </div>
-
-            {/* Content */}
             <div className="mt-3">
-              {/* Category + Tags */}
               <div className="flex flex-wrap gap-1.5">
                 <span className="text-primary text-xs font-medium uppercase">
                   {getLocalizedCategoryLabel(article, lang)}
@@ -250,8 +272,6 @@ function DesktopResults({
                   </span>
                 ))}
               </div>
-
-              {/* Title */}
               <h3 className="text-base font-medium text-foreground mt-1.5 mb-1 line-clamp-2">
                 <ArticleLink
                   slug={article.slug}
@@ -264,11 +284,7 @@ function DesktopResults({
                   {article.title}
                 </ArticleLink>
               </h3>
-
-              {/* Subtitle */}
               <p className="text-muted-foreground text-sm mb-2 line-clamp-2">{article.sub_title}</p>
-
-              {/* Meta */}
               <div className="flex items-center text-xs text-muted-foreground">
                 <span>{formatDate(article.created_at, locale)}</span>
                 <span className="mx-1">/ {t('article.by')}</span>
@@ -303,7 +319,6 @@ function MobileResults({
       <div className="space-y-4">
         {articles.map((article) => (
           <article key={article.entry_id} className="flex gap-3">
-            {/* Thumbnail */}
             <div className="flex-shrink-0 w-20 h-20">
               <ArticleLink
                 slug={article.slug}
@@ -320,10 +335,7 @@ function MobileResults({
                 />
               </ArticleLink>
             </div>
-
-            {/* Content */}
             <div className="flex-1 min-w-0">
-              {/* Category + Tags */}
               <div className="flex flex-wrap gap-1">
                 <span className="text-primary text-[10px] font-medium uppercase">
                   {getLocalizedCategoryLabel(article, lang)}
@@ -334,8 +346,6 @@ function MobileResults({
                   </span>
                 ))}
               </div>
-
-              {/* Title */}
               <h3 className="text-sm font-medium text-foreground mt-0.5 line-clamp-2">
                 <ArticleLink
                   slug={article.slug}
@@ -348,8 +358,6 @@ function MobileResults({
                   {article.title}
                 </ArticleLink>
               </h3>
-
-              {/* Meta */}
               <div className="flex items-center text-[10px] text-muted-foreground mt-1">
                 <span>{formatDate(article.created_at, locale)}</span>
                 <span className="mx-1">/ {t('article.by')}</span>
