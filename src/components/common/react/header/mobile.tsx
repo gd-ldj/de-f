@@ -4,6 +4,7 @@ import { MULTI_SOURCE_CONFIG, STORAGE_KEYS } from '@/config/constants';
 import { isValidSourceLanguage } from '@/lib/language-utils';
 import MobileSidebar from './MobileSidebar';
 import MobileCategoryPage from './MobileCategoryPage';
+import SearchOverlay from './SearchOverlay';
 import { HEADER_LOGO_BLACK_URL } from './constants';
 import type { Locale, SourceLanguage } from '@/types';
 
@@ -76,6 +77,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [mobileCategoryPageOpen, setMobileCategoryPageOpen] = useState(false);
   const [currentMobileCategory, setCurrentMobileCategory] = useState<string>('');
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Handle mobile sidebar open/close
   const handleMobileSidebarOpen = () => {
@@ -139,7 +141,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
           {/* Right - Search Icon (only on homepage) or Back Arrow */}
           <div className="w-8 h-8 flex items-center justify-center">
             {isHome && (
-              <button className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900 transition-colors" aria-label="Search">
+              <button className="flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900 transition-colors" aria-label="Search" onClick={() => setSearchOpen(true)} data-testid="mobile-search-btn">
                 <img src={SearchIcon} alt="deTake" className="h-6 w-auto" />
               </button>
             )}
@@ -152,6 +154,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
 
       {/* Mobile Category Page */}
       <MobileCategoryPage isOpen={mobileCategoryPageOpen} onClose={handleMobileCategoryPageClose} onBack={handleMobileCategoryPageBack} category={currentMobileCategory} locale={locale} />
+
+      {/* Search Overlay */}
+      <SearchOverlay locale={locale} isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 };

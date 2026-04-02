@@ -4,6 +4,7 @@ import { STORAGE_KEYS, TRACKING_EVENTS, MULTI_SOURCE_CONFIG, IS_DEV_ENV } from '
 import { toast } from '@/components/common/react/Toast';
 import type { Locale, SourceLanguage } from '@/types';
 import { removeTranslationPrefix } from '@/lib/language-utils';
+import SearchOverlay from './SearchOverlay';
 
 // Import icons from local assets
 import DownIcon from './assets/down.svg?url';
@@ -20,6 +21,7 @@ interface DesktopHeaderProps {
 
 export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, userComponent }: DesktopHeaderProps) {
   const [localeDropdownOpen, setLocaleDropdownOpen] = React.useState(false);
+  const [searchOpen, setSearchOpen] = React.useState(false);
 
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
@@ -267,6 +269,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   };
 
   return (
+    <>
     <header className="border-b border-gray-200 fixed w-screen top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/95 bg-white/95">
       <div className="max-w-[1440px] mx-auto pl-4 pr-6">
         <div className="flex items-center h-[96px]">
@@ -490,7 +493,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             })}
 
             {/* Search Icon */}
-            <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search}>
+            <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search} onClick={() => setSearchOpen(true)} data-testid="desktop-search-btn">
               <img src={SearchIcon} alt="SearchIcon" className="w-4 h-4" />
             </button>
 
@@ -529,5 +532,8 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
         </div>
       </div>
     </header>
+
+    <SearchOverlay locale={locale} isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }
