@@ -32,27 +32,7 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
 
   const showRecommended = !query.trim() && recommended.length > 0;
 
-  // Once the panel renders with initial content, lock its height so Load More doesn't resize it
-  const panelRef = React.useRef<HTMLDivElement>(null);
-  const lockedHeightRef = React.useRef<number | null>(null);
-  const prevQueryRef = React.useRef('');
-
-  // Determine if content is visible in the panel (recommended or first page of search results)
   const hasVisibleContent = showRecommended || (query.trim() && results.length > 0);
-
-  React.useEffect(() => {
-    // Unlock height when query changes (switching between recommended and search results)
-    if (query !== prevQueryRef.current) {
-      lockedHeightRef.current = null;
-      prevQueryRef.current = query;
-    }
-  }, [query]);
-
-  React.useEffect(() => {
-    if (!isMobile && hasVisibleContent && results.length <= pageSize && panelRef.current && lockedHeightRef.current === null) {
-      lockedHeightRef.current = panelRef.current.offsetHeight;
-    }
-  }, [hasVisibleContent, results.length, isMobile, pageSize]);
 
   // After Load More: scroll to show newly loaded content
   React.useEffect(() => {
@@ -233,12 +213,9 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
 
       {/* White panel - height locks after initial results so Load More doesn't resize */}
       <div
-        ref={(el) => {
-          (scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-          (panelRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-        }}
+        ref={scrollContainerRef}
         className="relative bg-white shadow-lg overflow-y-auto"
-        style={lockedHeightRef.current ? { height: `${lockedHeightRef.current}px` } : { maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+        style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       >
         {/* Search input - sticky so it stays visible when scrolling */}
         <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 sticky top-0 z-10 bg-white">
