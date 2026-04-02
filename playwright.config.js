@@ -17,7 +17,8 @@ import { defineConfig, devices } from '@playwright/test';
 const isFullBrowser = !!process.env.FULL_BROWSER;
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests',
+  testMatch: '**/*.spec.{ts,js}',
 
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -56,7 +57,7 @@ export default defineConfig({
     video: process.env.CI ? 'off' : 'retain-on-failure',
   },
 
-  /* Configure projects for browsers and viewports */
+/* Configure projects for browsers and viewports */
   projects: [
     // === Default: Chromium desktop (1280x720) ===
     {
