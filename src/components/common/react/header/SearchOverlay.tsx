@@ -215,7 +215,7 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
       <div
         ref={scrollContainerRef}
         className="relative bg-white shadow-lg overflow-y-auto"
-        style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+        style={{ height: '780px', maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       >
         {/* Search input - sticky so it stays visible when scrolling */}
         <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 sticky top-0 z-10 bg-white">
