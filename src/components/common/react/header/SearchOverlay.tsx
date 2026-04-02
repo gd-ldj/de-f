@@ -22,12 +22,28 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
   const inputRef = React.useRef<HTMLInputElement>(null);
   const sentinelRef = React.useRef<HTMLDivElement>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const prevResultsCountRef = React.useRef(0);
 
   const pageSize = isMobile ? MOBILE_PAGE_SIZE : PC_PAGE_SIZE;
   const { query, setQuery, results, isLoading, hasMore, loadMore, reset } = useSearchArticles({
     locale,
     pageSize,
   });
+
+  // After Load More: scroll to show newly loaded content
+  React.useEffect(() => {
+    const prev = prevResultsCountRef.current;
+    if (!isMobile && prev > 0 && results.length > prev && scrollContainerRef.current) {
+      // Scroll to where new content starts (smooth)
+      requestAnimationFrame(() => {
+        scrollContainerRef.current?.scrollTo({
+          top: scrollContainerRef.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      });
+    }
+    prevResultsCountRef.current = results.length;
+  }, [results.length, isMobile]);
 
   const t = createTranslator(locale);
   const texts = headerTexts[locale] || headerTexts.en;
@@ -176,21 +192,20 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
       {/* Semi-transparent backdrop - click to close */}
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} data-testid="search-backdrop" />
 
-      {/* White panel - sits at the top, below header */}
+      {/* White panel - fixed height, sits at the top below header */}
       <div
         className="relative bg-white flex flex-col shadow-lg"
-        style={{ maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+        style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       >
         {/* Search input */}
-        <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200">
+        <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 flex-shrink-0">
           {searchInput}
         </div>
 
-        {/* Results area - scrollable */}
+        {/* Results area - scrollable, fills remaining space */}
         <div
           ref={scrollContainerRef}
-          className="overflow-y-auto"
-          style={{ maxHeight: `calc(100vh - ${HEADER_HEIGHT}px - 70px)` }}
+          className="flex-1 overflow-y-auto"
           data-testid="search-results"
         >
           {isLoading && results.length === 0 && (
