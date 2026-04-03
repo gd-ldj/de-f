@@ -75,7 +75,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
   }, []);
 
   return (
-    <div className="py-5 px-4 md:px-6 border border-b-0 border-border">
+    <div className="py-5 px-4 md:px-6">
       {/* Title bar */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center justify-center gap-2">
