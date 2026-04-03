@@ -121,9 +121,27 @@ export const setWalletAuthDataAtom = atom(
 )
 
 /**
- * User ID atom
+ * User ID atom (internal)
  */
-export const userIdAtom = atom<string | null>(null)
+const userIdBaseAtom = atom<string | null>(null)
+
+/**
+ * User ID atom with localStorage persistence
+ * Automatically syncs user_id with localStorage
+ */
+export const userIdAtom = atom(
+  (get) => get(userIdBaseAtom),
+  (get, set, newValue: string | null) => {
+    set(userIdBaseAtom, newValue)
+    if (typeof window !== 'undefined') {
+      if (newValue) {
+        localStorage.setItem(STORAGE_KEYS.USER_ID, newValue)
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.USER_ID)
+      }
+    }
+  }
+)
 
 /**
  * Promote code atom with default value

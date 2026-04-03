@@ -38,6 +38,10 @@ export function ClerkApiTokenSync() {
           setAccessToken(null);
           setUserId(null);
           setWalletAddress(null);
+          // Clear user_id from Google Analytics on logout
+          if ((window as any).detakeAnalytics) {
+            (window as any).detakeAnalytics.setUserId(null);
+          }
           getAnonymousPromoteCode().then((code) => {
             if (!isCancelled) setPromoteCode(code);
           });
@@ -73,6 +77,11 @@ export function ClerkApiTokenSync() {
         if (authData) {
           setAccessToken(authData.access_token);
           setUserId(authData.user_id);
+
+          // Report user_id to Google Analytics
+          if ((window as any).detakeAnalytics) {
+            (window as any).detakeAnalytics.setUserId(authData.user_id);
+          }
 
           // Fetch user personal info for promote code
           try {

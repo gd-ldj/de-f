@@ -295,6 +295,7 @@ export class AnalyticsManager {
       if (gaClientId && this.visitorData) {
         this.visitorData.gaClientId = gaClientId;
       }
+
     } catch (error) {
       console.error('[Analytics] Failed to initialize Google Analytics:', error);
     }
@@ -320,9 +321,16 @@ export class AnalyticsManager {
           window.dataLayer.push(arguments);
         };
 
+        // Set user_id globally before config so it's included from the first hit
+        const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+        if (storedUserId) {
+          window.gtag('set', { user_id: storedUserId });
+        }
+
         window.gtag('js', new Date());
         window.gtag('config', ANALYTICS_CONFIG.GA_MEASUREMENT_ID, {
           send_page_view: false, // We'll handle page views manually
+          ...(storedUserId && { user_id: storedUserId }),
           ...(this.visitorData?.cfVisitorId && {
             custom_map: {
               custom_dimension_1: 'cfVisitorId',
@@ -359,6 +367,15 @@ export class AnalyticsManager {
         }
       });
     });
+  }
+
+  /**
+   * Set GA4 user_id for cross-device tracking
+   * Call after login success; pass null on logout to clear.
+   */
+  setUserId(userId: string | null): void {
+    if (typeof window === 'undefined' || !window.gtag) return;
+    window.gtag('set', { user_id: userId });
   }
 
   /**
@@ -430,7 +447,9 @@ export class AnalyticsManager {
     // Forward to Google Analytics if available
     if (window.gtag) {
       // Common custom dimensions for all events
+      const currentUserId = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.USER_ID) : null;
       const commonParams = {
+        ...(currentUserId && { c_user_id: currentUserId }),
         ...(this.visitorData.cfVisitorId && { cf_id: this.visitorData.cfVisitorId }),
         ...(this.visitorData.cloudflareVisitorId && { cloudflare_visitor_id: this.visitorData.cloudflareVisitorId }),
         ...(this.visitorData.realIp && { real_ip: this.visitorData.realIp }),
