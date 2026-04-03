@@ -218,12 +218,12 @@ export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlay
         style={{ height: '780px', maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       >
         {/* Search input - sticky so it stays visible when scrolling */}
-        <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 sticky top-0 z-10 bg-white">
+        <div className="px-6 md:px-12 lg:px-24 py-4 border-b border-gray-200 sticky top-0 z-10 bg-white max-w-[1440px] mx-auto">
           {searchInput}
         </div>
 
         {/* Results area */}
-        <div data-testid="search-results">
+        <div data-testid="search-results" className="max-w-[1440px] mx-auto">
           {/* Recommended articles when query is empty */}
           {showRecommended && (
             <>
