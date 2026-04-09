@@ -411,10 +411,14 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
                             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                               {texts.dropdown.voicesItems.map((label, index) => {
                                 const enLabel = enTexts.dropdown.voicesItems[index];
-                                const isVoicesItemActive = currentCategoryTypeKey === 'voices' && (selectedCategoryName === label || selectedCategoryName === enLabel);
+                                const isPodcasts = enLabel === 'Podcasts';
+                                const href = isPodcasts ? '/voices/podcasts' : getCategoryFilterUrl('voices', enLabel);
+                                const isVoicesItemActive = isPodcasts
+                                  ? false
+                                  : currentCategoryTypeKey === 'voices' && (selectedCategoryName === label || selectedCategoryName === enLabel);
 
                                 return (
-                                  <a key={label} href={getCategoryFilterUrl('voices', enLabel)} className={`whitespace-nowrap hover:text-primary ${isVoicesItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setVoicesDropdownOpen(false)}>
+                                  <a key={label} href={href} className={`whitespace-nowrap hover:text-primary ${isVoicesItemActive ? 'text-primary font-medium' : ''}`} onClick={() => setVoicesDropdownOpen(false)}>
                                     {label}
                                   </a>
                                 );

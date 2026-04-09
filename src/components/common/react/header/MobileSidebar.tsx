@@ -286,8 +286,10 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
                 <div className="mt-2 space-y-1 pl-4">
                   {texts.dropdown.voicesItems.map((category, index) => {
                     const enCategory = enTexts.dropdown.voicesItems[index];
+                    const isPodcasts = enCategory === 'Podcasts';
+                    const targetUrl = isPodcasts ? '/voices/podcasts' : `/voices?category_name=${encodeURIComponent(enCategory)}`;
                     return (
-                      <button key={category} onClick={() => handleNavigation(`/voices?category_name=${encodeURIComponent(enCategory)}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
+                      <button key={category} onClick={() => handleNavigation(targetUrl)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
                         {category}
                       </button>
                     );
