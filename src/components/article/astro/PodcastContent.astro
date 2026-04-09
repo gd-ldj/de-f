@@ -1,0 +1,249 @@
+---
+import type { Locale, ApiArticle, TranslationLanguage, SourceLanguage } from '@/types'
+import { createTranslator } from '@/lib/i18n'
+import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import { formatDate } from '@/utils/util'
+import { getBusinessTypeLabel, getTagLabel as getTagLocalizedLabel } from '@/config/article-taxonomy'
+import YoutubeEmbed from '@/components/article/react/YoutubeEmbed'
+import PodcastAuthorCard from '@/components/article/react/PodcastAuthorCard'
+
+interface Props {
+  article: ApiArticle
+  locale: Locale
+  category: string
+  categoryDisplayName?: string
+  slugWithPromote: string
+  articleLang: TranslationLanguage | string
+  userId?: string
+}
+
+const { article, locale, category, slugWithPromote, articleLang, userId } = Astro.props
+
+const t = createTranslator(locale)
+
+// Current site's source language for localized labels
+const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
+
+// Breadcrumb labels: Voices / Podcasts
+const voicesLabel = getBusinessTypeLabel('Voices', sourceLanguage)
+const podcastsLabel = getBusinessTypeLabel('Podcasts', sourceLanguage)
+
+const baseArticlePath = userId
+  ? `/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
+  : `/article/${category.toLowerCase()}/${slugWithPromote}`
+
+const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
+  { code: 'zh', label: '中' },
+  { code: 'en', label: 'A' },
+  { code: 'ar', label: 'ع' },
+  { code: 'ru', label: 'RU' },
+  { code: 'ja', label: 'あ' },
+]
+
+// Split transcript into paragraphs on double newlines (plain text format)
+const transcriptParagraphs = (article.transcript ?? '')
+  .split(/\n\n+/)
+  .map((p) => p.trim())
+  .filter(Boolean)
+
+// Build author shape for PodcastAuthorCard
+const podcastAuthor = {
+  id: article.author?.id,
+  name: article.author?.name || article.author_name,
+  bio: article.author?.bio,
+  avatar: article.author?.avatar_url || article.author_avatar,
+  twitter: article.contact?.twitter,
+  email: article.contact?.email,
+}
+
+const youtubeChannelUrl = article.youtube_channel_url ?? ''
+const viewCount = article.youtube_view_count
+---
+
+{article.youtube_video_id && (
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'VideoObject',
+      name: article.title,
+      description: article.sub_title,
+      thumbnailUrl: `https://img.youtube.com/vi/${article.youtube_video_id}/maxresdefault.jpg`,
+      uploadDate: article.created_at,
+      embedUrl: `https://www.youtube.com/embed/${article.youtube_video_id}`,
+    })}
+  />
+)}
+
+<article class="bg-white" lang={articleLang}>
+  <!-- Header -->
+  <header class="mb-4">
+    <nav class="flex items-center justify-between text-sm text-muted-foreground mb-2">
+      <div class="flex items-center space-x-2 truncate">
+        <a href="/voices" class="hover:text-primary">{voicesLabel}</a>
+        <span>/</span>
+        <a href="/voices/podcasts" class="text-primary truncate">{podcastsLabel}</a>
+      </div>
+
+      <div class="hidden md:flex items-center">
+        <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+          {languageButtons.map(({ code, label }) => (
+            <a
+              href={code === sourceLanguage ? baseArticlePath : `/${code}${baseArticlePath}`}
+              class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
+                articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
+              }`}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+
+    <div class="md:hidden fixed right-4 top-[18px] z-[60]">
+      <div class="flex overflow-hidden rounded-[2px] bg-[#F5F6F7] p-[1px]">
+        {languageButtons.map(({ code, label }) => (
+          <a
+            href={code === sourceLanguage ? baseArticlePath : `/${code}${baseArticlePath}`}
+            class={`inline-flex items-center justify-center rounded-[2px] w-[18px] h-[18px] text-xs leading-none hover:bg-white hover:text-foreground ${
+              articleLang === code ? 'bg-white text-foreground' : 'text-muted-foreground'
+            }`}
+          >
+            {label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-[32px] md:text-[48px] font-medium tracking-tight text-foreground mb-[10px] md:mb-4 leading-tight">
+      {article.title}
+    </h1>
+
+    <!-- Author and Date - Mobile -->
+    <div class="md:hidden mb-[10px] md:mb-4">
+      <div class="flex items-center space-x-1 truncate">
+        <time
+          class="text-[12px] text-muted-foreground"
+          datetime={article.created_at}
+          data-date={article.created_at}
+          data-locale={locale}
+        >
+          {formatDate(article.created_at, locale)}
+        </time>
+        <p class="text-[12px] font-medium text-foreground">
+          <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
+          <span class="uppercase truncate">{article.author?.name || article.author_name}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Excerpt -->
+    <p class="text-[14px] md:text-xl text-muted-foreground leading-relaxed mb-[10px] md:mb-4">
+      {article.sub_title}
+    </p>
+
+    <!-- Tags + Mobile stats -->
+    <div class="md:hidden flex justify-between items-center">
+      {article.tags.length > 0 && (
+        <div>
+          <div class="flex flex-wrap gap-2">
+            {article.tags.map((tag) => (
+              <a
+                href="javascript:;"
+                class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+              >
+                {getTagLocalizedLabel(tag, sourceLanguage)}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+      {viewCount != null && (
+        <div class="flex flex-none items-center space-x-2 py-3">
+          <img src="/eyes.svg" alt="Views" class="w-4 h-4" />
+          <span class="text-sm">
+            {new Intl.NumberFormat(locale).format(viewCount)} {t('podcast.views')}
+          </span>
+        </div>
+      )}
+    </div>
+
+    <!-- Desktop Layout -->
+    <div class="hidden md:flex items-center justify-between mb-1 pb-2">
+      <div>
+        <!-- Tags -->
+        {article.tags.length > 0 && (
+          <div class="mb-2 pt-2">
+            <div class="flex flex-wrap gap-2">
+              {article.tags.map((tag) => (
+                <a
+                  href="javascript:;"
+                  class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+                >
+                  {getTagLocalizedLabel(tag, sourceLanguage)}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Author and Date - Desktop -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-1">
+            <time
+              class="text-sm text-muted-foreground"
+              datetime={article.created_at}
+              data-date={article.created_at}
+              data-locale={locale}
+            >
+              {formatDate(article.created_at, locale)}
+            </time>
+            <p class="text-sm font-medium text-foreground">
+              <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
+              <span class="text-foreground uppercase">{article.author?.name || article.author_name}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- YouTube View Count - Desktop -->
+      {viewCount != null && (
+        <div class="flex items-center space-x-6">
+          <div class="flex flex-col items-center space-x-1">
+            <div class="text-[32px]">{new Intl.NumberFormat(locale).format(viewCount)}</div>
+            <div class="flex items-center space-x-1">
+              <img src="/eyes.svg" alt="Views" class="w-4 h-4" />
+              <span class="text-sm text-muted-foreground">{t('podcast.views')}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  </header>
+
+  <!-- YouTube Video Embed -->
+  {article.youtube_video_id && (
+    <YoutubeEmbed client:visible videoId={article.youtube_video_id} title={article.title} />
+  )}
+
+  <!-- Transcript -->
+  {transcriptParagraphs.length > 0 && (
+    <div class="mb-5 md:mb-8">
+      <div class="prose max-w-none">
+        {transcriptParagraphs.map((para) => <p>{para}</p>)}
+      </div>
+    </div>
+  )}
+
+  <div class="w-full border-t border-border"></div>
+
+  <!-- Podcast Author Card -->
+  <PodcastAuthorCard
+    client:visible
+    author={podcastAuthor}
+    youtubeChannelUrl={youtubeChannelUrl}
+    locale={locale}
+  />
+</article>
