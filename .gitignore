@@ -15,7 +15,12 @@ pnpm-debug.log*
 
 # environment variables
 .env
+.env.local
+.env.*.local
 .env.production
+
+# GSD executor runtime (not committed — rebuild per machine)
+.planning/executor/
 
 # macOS-specific files
 .DS_Store
