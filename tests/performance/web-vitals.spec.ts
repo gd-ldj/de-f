@@ -50,41 +50,42 @@ test.describe('Performance: LCP (Largest Contentful Paint)', () => {
 
   for (const path of PAGES_TO_TEST) {
     test(`${path} — LCP < ${THRESHOLDS.LCP_MS}ms`, async ({ page }) => {
-      // Set up LCP observer before navigation
-      const lcpPromise = page.evaluate(() => {
-        return new Promise<number>((resolve) => {
-          let lastLCP = 0;
-          const observer = new PerformanceObserver((list) => {
-            const entries = list.getEntries();
-            for (const entry of entries) {
-              lastLCP = entry.startTime;
-            }
-          });
-          observer.observe({ type: 'largest-contentful-paint', buffered: true });
+      let lcp = 0;
 
-          // Resolve after page settles
-          setTimeout(() => {
-            observer.disconnect();
-            resolve(lastLCP);
-          }, 5000);
+      await test.step('set up PerformanceObserver for LCP', async () => {
+        const lcpPromise = page.evaluate(() => {
+          return new Promise<number>((resolve) => {
+            let lastLCP = 0;
+            const observer = new PerformanceObserver((list) => {
+              const entries = list.getEntries();
+              for (const entry of entries) {
+                lastLCP = entry.startTime;
+              }
+            });
+            observer.observe({ type: 'largest-contentful-paint', buffered: true });
+            setTimeout(() => {
+              observer.disconnect();
+              resolve(lastLCP);
+            }, 5000);
+          });
         });
+
+        await page.goto(path);
+        await page.waitForLoadState('networkidle');
+        const loaded = await isPageLoaded(page);
+        test.skip(!loaded, `Page ${path} did not load`);
+
+        lcp = await lcpPromise;
       });
 
-      await page.goto(path);
-      await page.waitForLoadState('networkidle');
-
-      const loaded = await isPageLoaded(page);
-      test.skip(!loaded, `Page ${path} did not load`);
-
-      const lcp = await lcpPromise;
-
-      // LCP of 0 means observer didn't fire (page may have no LCP candidate)
-      if (lcp > 0) {
-        expect(
-          lcp,
-          `LCP on ${path} is ${lcp.toFixed(0)}ms (threshold: ${THRESHOLDS.LCP_MS}ms)`
-        ).toBeLessThan(THRESHOLDS.LCP_MS);
-      }
+      await test.step(`assert LCP < ${THRESHOLDS.LCP_MS}ms (actual: ${lcp.toFixed(0)}ms)`, async () => {
+        if (lcp > 0) {
+          expect(
+            lcp,
+            `LCP on ${path} is ${lcp.toFixed(0)}ms (threshold: ${THRESHOLDS.LCP_MS}ms)`
+          ).toBeLessThan(THRESHOLDS.LCP_MS);
+        }
+      });
     });
   }
 });
@@ -94,40 +95,41 @@ test.describe('Performance: CLS (Cumulative Layout Shift)', () => {
 
   for (const path of PAGES_TO_TEST) {
     test(`${path} — CLS < ${THRESHOLDS.CLS}`, async ({ page }) => {
-      // Set up CLS observer before navigation
-      const clsPromise = page.evaluate(() => {
-        return new Promise<number>((resolve) => {
-          let cumulativeCLS = 0;
-          const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-              // Only count layout shifts without user input
-              if (!(entry as PerformanceEntry & { hadRecentInput: boolean }).hadRecentInput) {
-                cumulativeCLS += (entry as PerformanceEntry & { value: number }).value;
-              }
-            }
-          });
-          observer.observe({ type: 'layout-shift', buffered: true });
+      let cls = 0;
 
-          // Wait for page to settle
-          setTimeout(() => {
-            observer.disconnect();
-            resolve(cumulativeCLS);
-          }, 5000);
+      await test.step('set up PerformanceObserver for layout-shift', async () => {
+        const clsPromise = page.evaluate(() => {
+          return new Promise<number>((resolve) => {
+            let cumulativeCLS = 0;
+            const observer = new PerformanceObserver((list) => {
+              for (const entry of list.getEntries()) {
+                if (!(entry as PerformanceEntry & { hadRecentInput: boolean }).hadRecentInput) {
+                  cumulativeCLS += (entry as PerformanceEntry & { value: number }).value;
+                }
+              }
+            });
+            observer.observe({ type: 'layout-shift', buffered: true });
+            setTimeout(() => {
+              observer.disconnect();
+              resolve(cumulativeCLS);
+            }, 5000);
+          });
         });
+
+        await page.goto(path);
+        await page.waitForLoadState('networkidle');
+        const loaded = await isPageLoaded(page);
+        test.skip(!loaded, `Page ${path} did not load`);
+
+        cls = await clsPromise;
       });
 
-      await page.goto(path);
-      await page.waitForLoadState('networkidle');
-
-      const loaded = await isPageLoaded(page);
-      test.skip(!loaded, `Page ${path} did not load`);
-
-      const cls = await clsPromise;
-
-      expect(
-        cls,
-        `CLS on ${path} is ${cls.toFixed(3)} (threshold: ${THRESHOLDS.CLS})`
-      ).toBeLessThan(THRESHOLDS.CLS);
+      await test.step(`assert CLS < ${THRESHOLDS.CLS} (actual: ${cls.toFixed(3)})`, async () => {
+        expect(
+          cls,
+          `CLS on ${path} is ${cls.toFixed(3)} (threshold: ${THRESHOLDS.CLS})`
+        ).toBeLessThan(THRESHOLDS.CLS);
+      });
     });
   }
 });
@@ -139,29 +141,32 @@ test.describe('Performance: Console Error Monitoring', () => {
     test(`${path} — no unexpected console errors`, async ({ page }) => {
       const unexpectedErrors: string[] = [];
 
-      page.on('console', (msg) => {
-        if (msg.type() === 'error') {
-          const text = msg.text();
-          const isIgnored = IGNORED_ERROR_PATTERNS.some((pattern) => pattern.test(text));
-          if (!isIgnored) {
-            unexpectedErrors.push(text.slice(0, 200));
+      await test.step('set up console.error listener', async () => {
+        page.on('console', (msg) => {
+          if (msg.type() === 'error') {
+            const text = msg.text();
+            const isIgnored = IGNORED_ERROR_PATTERNS.some((pattern) => pattern.test(text));
+            if (!isIgnored) {
+              unexpectedErrors.push(text.slice(0, 200));
+            }
           }
-        }
+        });
       });
 
-      await page.goto(path);
-      await page.waitForLoadState('networkidle');
+      await test.step(`navigate to ${path} and wait for async operations`, async () => {
+        await page.goto(path);
+        await page.waitForLoadState('networkidle');
+        const loaded = await isPageLoaded(page);
+        test.skip(!loaded, `Page ${path} did not load`);
+        await page.waitForTimeout(3000);
+      });
 
-      const loaded = await isPageLoaded(page);
-      test.skip(!loaded, `Page ${path} did not load`);
-
-      // Wait for async operations
-      await page.waitForTimeout(3000);
-
-      expect(
-        unexpectedErrors,
-        `Found ${unexpectedErrors.length} unexpected console errors on ${path}:\n${unexpectedErrors.join('\n')}`
-      ).toHaveLength(0);
+      await test.step('assert no unexpected console errors', async () => {
+        expect(
+          unexpectedErrors,
+          `Found ${unexpectedErrors.length} unexpected console errors on ${path}:\n${unexpectedErrors.join('\n')}`
+        ).toHaveLength(0);
+      });
     });
   }
 });
@@ -173,56 +178,63 @@ test.describe('Performance: Network Error Monitoring', () => {
     test(`${path} — no 5xx errors on critical API calls`, async ({ page }) => {
       const serverErrors: string[] = [];
 
-      page.on('response', (response) => {
-        const url = response.url();
-        const status = response.status();
-
-        // Only check for server errors (5xx)
-        if (status >= 500) {
-          const isIgnored = IGNORED_URL_PATTERNS.some((pattern) => pattern.test(url));
-          if (!isIgnored) {
-            serverErrors.push(`${status} ${url.slice(0, 150)}`);
+      await test.step('set up response listener for 5xx errors', async () => {
+        page.on('response', (response) => {
+          const url = response.url();
+          const status = response.status();
+          if (status >= 500) {
+            const isIgnored = IGNORED_URL_PATTERNS.some((pattern) => pattern.test(url));
+            if (!isIgnored) {
+              serverErrors.push(`${status} ${url.slice(0, 150)}`);
+            }
           }
-        }
+        });
       });
 
-      await page.goto(path);
-      await page.waitForLoadState('networkidle');
+      await test.step(`navigate to ${path}`, async () => {
+        await page.goto(path);
+        await page.waitForLoadState('networkidle');
+        const loaded = await isPageLoaded(page);
+        test.skip(!loaded, `Page ${path} did not load`);
+        await page.waitForTimeout(2000);
+      });
 
-      const loaded = await isPageLoaded(page);
-      test.skip(!loaded, `Page ${path} did not load`);
-
-      await page.waitForTimeout(2000);
-
-      expect(
-        serverErrors,
-        `Found ${serverErrors.length} server errors (5xx) on ${path}:\n${serverErrors.join('\n')}`
-      ).toHaveLength(0);
+      await test.step('assert no 5xx server errors', async () => {
+        expect(
+          serverErrors,
+          `Found ${serverErrors.length} server errors (5xx) on ${path}:\n${serverErrors.join('\n')}`
+        ).toHaveLength(0);
+      });
     });
   }
 
   test('article detail — no 5xx errors', async ({ page }) => {
     const serverErrors: string[] = [];
 
-    page.on('response', (response) => {
-      const status = response.status();
-      if (status >= 500) {
-        const url = response.url();
-        const isIgnored = IGNORED_URL_PATTERNS.some((pattern) => pattern.test(url));
-        if (!isIgnored) {
-          serverErrors.push(`${status} ${url.slice(0, 150)}`);
+    await test.step('set up response listener for 5xx errors', async () => {
+      page.on('response', (response) => {
+        const status = response.status();
+        if (status >= 500) {
+          const url = response.url();
+          const isIgnored = IGNORED_URL_PATTERNS.some((pattern) => pattern.test(url));
+          if (!isIgnored) {
+            serverErrors.push(`${status} ${url.slice(0, 150)}`);
+          }
         }
-      }
+      });
     });
 
-    const url = await navigateToFirstArticle(page);
-    test.skip(!url, 'No article found — API may be unavailable');
+    await test.step('navigate to first article', async () => {
+      const url = await navigateToFirstArticle(page);
+      test.skip(!url, 'No article found — API may be unavailable');
+      await page.waitForTimeout(2000);
+    });
 
-    await page.waitForTimeout(2000);
-
-    expect(
-      serverErrors,
-      `Found ${serverErrors.length} server errors on article detail:\n${serverErrors.join('\n')}`
-    ).toHaveLength(0);
+    await test.step('assert no 5xx server errors', async () => {
+      expect(
+        serverErrors,
+        `Found ${serverErrors.length} server errors on article detail:\n${serverErrors.join('\n')}`
+      ).toHaveLength(0);
+    });
   });
 });

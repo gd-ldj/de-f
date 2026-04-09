@@ -31,42 +31,51 @@ test.describe('Accessibility: Key Pages', () => {
       test(`${pageName} (${vp.name} ${vp.width}px) — no critical/serious a11y violations`, async ({
         page,
       }) => {
-        await page.setViewportSize({ width: vp.width, height: vp.height });
-        await page.goto(path);
-        await page.waitForLoadState('networkidle');
+        await test.step(`set viewport to ${vp.width}x${vp.height}`, async () => {
+          await page.setViewportSize({ width: vp.width, height: vp.height });
+        });
 
-        const loaded = await isPageLoaded(page);
-        test.skip(!loaded, `Page ${path} did not load`);
+        await test.step(`navigate to ${path}`, async () => {
+          await page.goto(path);
+          await page.waitForLoadState('networkidle');
+          const loaded = await isPageLoaded(page);
+          test.skip(!loaded, `Page ${path} did not load`);
+        });
 
-        const results = await new AxeBuilder({ page })
-          .disableRules(RULES_AS_WARNING)
-          .analyze();
+        let blocking: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'] = [];
+        let nonBlocking: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'] = [];
 
-        // Separate critical/serious from minor
-        const blocking = results.violations.filter(
-          (v) => v.impact === 'critical' || v.impact === 'serious'
-        );
-        const nonBlocking = results.violations.filter(
-          (v) => v.impact !== 'critical' && v.impact !== 'serious'
-        );
+        await test.step('run axe-core scan', async () => {
+          const results = await new AxeBuilder({ page })
+            .disableRules(RULES_AS_WARNING)
+            .analyze();
 
-        // Log non-blocking as warnings
-        if (nonBlocking.length > 0) {
-          console.warn(
-            `[a11y warnings] ${pageName} (${vp.name}): ${nonBlocking.length} minor violations\n` +
-              nonBlocking.map((v) => `  - ${v.id}: ${v.description} (${v.nodes.length} nodes)`).join('\n')
+          blocking = results.violations.filter(
+            (v) => v.impact === 'critical' || v.impact === 'serious'
           );
-        }
+          nonBlocking = results.violations.filter(
+            (v) => v.impact !== 'critical' && v.impact !== 'serious'
+          );
+        });
 
-        // Fail only on critical/serious
-        const summary = blocking
-          .map((v) => `  ✗ ${v.id} (${v.impact}): ${v.description}\n    Nodes: ${v.nodes.length}`)
-          .join('\n');
+        await test.step('log minor/moderate violations as warnings', async () => {
+          if (nonBlocking.length > 0) {
+            console.warn(
+              `[a11y warnings] ${pageName} (${vp.name}): ${nonBlocking.length} minor violations\n` +
+                nonBlocking.map((v) => `  - ${v.id}: ${v.description} (${v.nodes.length} nodes)`).join('\n')
+            );
+          }
+        });
 
-        expect(
-          blocking.length,
-          `Found ${blocking.length} critical/serious a11y violations on ${pageName} (${vp.name}):\n${summary}`
-        ).toBe(0);
+        await test.step('assert no critical/serious violations', async () => {
+          const summary = blocking
+            .map((v) => `  ${v.id} (${v.impact}): ${v.description} [${v.nodes.length} nodes]`)
+            .join('\n');
+          expect(
+            blocking.length,
+            `Found ${blocking.length} critical/serious a11y violations on ${pageName} (${vp.name}):\n${summary}`
+          ).toBe(0);
+        });
       });
     }
   }
@@ -77,38 +86,49 @@ test.describe('Accessibility: Article Detail', () => {
     test(`article detail (${vp.name} ${vp.width}px) — no critical/serious a11y violations`, async ({
       page,
     }) => {
-      await page.setViewportSize({ width: vp.width, height: vp.height });
+      await test.step(`set viewport to ${vp.width}x${vp.height}`, async () => {
+        await page.setViewportSize({ width: vp.width, height: vp.height });
+      });
 
-      const url = await navigateToFirstArticle(page);
-      test.skip(!url, 'No article found — API may be unavailable');
+      await test.step('navigate to first article', async () => {
+        const url = await navigateToFirstArticle(page);
+        test.skip(!url, 'No article found — API may be unavailable');
+      });
 
-      const results = await new AxeBuilder({ page })
-        .disableRules(RULES_AS_WARNING)
-        .analyze();
+      let blocking: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'] = [];
+      let nonBlocking: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'] = [];
 
-      const blocking = results.violations.filter(
-        (v) => v.impact === 'critical' || v.impact === 'serious'
-      );
+      await test.step('run axe-core scan', async () => {
+        const results = await new AxeBuilder({ page })
+          .disableRules(RULES_AS_WARNING)
+          .analyze();
 
-      const nonBlocking = results.violations.filter(
-        (v) => v.impact !== 'critical' && v.impact !== 'serious'
-      );
-
-      if (nonBlocking.length > 0) {
-        console.warn(
-          `[a11y warnings] article detail (${vp.name}): ${nonBlocking.length} minor violations\n` +
-            nonBlocking.map((v) => `  - ${v.id}: ${v.description} (${v.nodes.length} nodes)`).join('\n')
+        blocking = results.violations.filter(
+          (v) => v.impact === 'critical' || v.impact === 'serious'
         );
-      }
+        nonBlocking = results.violations.filter(
+          (v) => v.impact !== 'critical' && v.impact !== 'serious'
+        );
+      });
 
-      const summary = blocking
-        .map((v) => `  ✗ ${v.id} (${v.impact}): ${v.description}\n    Nodes: ${v.nodes.length}`)
-        .join('\n');
+      await test.step('log minor/moderate violations as warnings', async () => {
+        if (nonBlocking.length > 0) {
+          console.warn(
+            `[a11y warnings] article detail (${vp.name}): ${nonBlocking.length} minor violations\n` +
+              nonBlocking.map((v) => `  - ${v.id}: ${v.description} (${v.nodes.length} nodes)`).join('\n')
+          );
+        }
+      });
 
-      expect(
-        blocking.length,
-        `Found ${blocking.length} critical/serious a11y violations on article detail (${vp.name}):\n${summary}`
-      ).toBe(0);
+      await test.step('assert no critical/serious violations', async () => {
+        const summary = blocking
+          .map((v) => `  ${v.id} (${v.impact}): ${v.description} [${v.nodes.length} nodes]`)
+          .join('\n');
+        expect(
+          blocking.length,
+          `Found ${blocking.length} critical/serious a11y violations on article detail (${vp.name}):\n${summary}`
+        ).toBe(0);
+      });
     });
   }
 });
