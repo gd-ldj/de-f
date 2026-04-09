@@ -453,6 +453,17 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         : '';
 
     const businessTypeLabel = getBusinessTypeLabel(category, lang);
+    const voicesLabel = getBusinessTypeLabel('Voices', lang);
+
+    if (isPodcasts) {
+      return {
+        title: businessTypeLabel,
+        crumbs: [
+          { label: voicesLabel, href: '/voices' },
+          { label: businessTypeLabel, href: '' },
+        ],
+      };
+    }
 
     // Determine the page title (last level)
     if (singleSubcategory) {
@@ -481,7 +492,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       title: businessTypeLabel,
       crumbs: [],
     };
-  }, [category, filters.categoryName, filters.subcategoryName, lang]);
+  }, [category, filters.categoryName, filters.subcategoryName, isPodcasts, lang]);
 
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
   useEffect(() => {

@@ -28,6 +28,16 @@ test.describe('Podcasts UI', () => {
     expect(href).toMatch(/\/article\/podcasts\/dtc-[A-Za-z0-9]+-/);
   });
 
+  test('/voices/podcasts shows breadcrumb like Talks on desktop', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/voices/podcasts');
+
+    const breadcrumb = page.locator('#category-breadcrumb-title nav');
+    await expect(breadcrumb).toBeVisible({ timeout: 15000 });
+    await expect(breadcrumb).toContainText('Voices');
+    await expect(breadcrumb).toContainText('Podcasts');
+  });
+
   test('podcast detail page loads dedicated detail API and renders transcript content', async ({ page }) => {
     await page.goto(`/article/podcasts/${PODCAST_SLUG}`);
 
