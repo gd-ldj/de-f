@@ -6,6 +6,7 @@ import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import PodcastContent from '@/components/article/astro/PodcastContent.astro'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { fetchArticle, fetchTranslatedArticle } from '@/api/articles'
+import { fetchPodcastDetail, fetchTranslatedPodcast, mergeTranslatedPodcastIntoArticle } from '@/api/podcasts'
 import type { Locale, SourceLanguage, TranslationLanguage } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { SITE_CONFIG } from '@/config/constants'
@@ -43,10 +44,13 @@ if (slugParts.length > 1) {
 }
 
 const slugWithPromote = promoteCode ? `${actualSlug}-${promoteCode}` : actualSlug
+const podcastSupportedTranslations: TranslationLanguage[] = ['en', 'zh']
 
 // Determine which language to display
 // If translationLanguage is provided and different from source, fetch translation
-const baseArticle = await fetchArticle(actualSlug, locale, category, userId)
+const baseArticle = isPodcast
+  ? await fetchPodcastDetail(actualSlug)
+  : await fetchArticle(actualSlug, locale, category, userId)
 
 if (!baseArticle) {
   return Astro.redirect('/404')
@@ -55,7 +59,19 @@ if (!baseArticle) {
 let article = baseArticle
 
 // Fetch translation if needed
-if ((translationLanguage && translationLanguage !== sourceLanguage) || (translationLanguage === null && sourceLanguage !== 'en')) {
+if (isPodcast) {
+  const requestedPodcastLanguage = translationLanguage || sourceLanguage
+
+  if (
+    requestedPodcastLanguage !== 'en' &&
+    podcastSupportedTranslations.includes(requestedPodcastLanguage)
+  ) {
+    const translated = await fetchTranslatedPodcast(baseArticle.entry_id, requestedPodcastLanguage)
+    if (translated) {
+      article = mergeTranslatedPodcastIntoArticle(baseArticle, translated)
+    }
+  }
+} else if ((translationLanguage && translationLanguage !== sourceLanguage) || (translationLanguage === null && sourceLanguage !== 'en')) {
   const translated = await fetchTranslatedArticle(baseArticle.entry_id, translationLanguage || sourceLanguage)
   if (translated) {
     article = {
@@ -69,7 +85,7 @@ if ((translationLanguage && translationLanguage !== sourceLanguage) || (translat
 }
 
 // The effective language being displayed
-const articleLang = translationLanguage || sourceLanguage
+const articleLang = isPodcast ? article.language || 'en' : translationLanguage || sourceLanguage
 
 const categoryDisplayName = getArticleBusinessPath(article) || (category ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News')
 
@@ -101,7 +117,9 @@ const author = article?.author?.name || article.author_name
 // Get available translations for hreflang
 // TODO: Fetch actual available translations from API
 // For now, assume all articles support these languages
-const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'ar', 'ru']
+const availableTranslations: TranslationLanguage[] = isPodcast
+  ? podcastSupportedTranslations
+  : ['en', 'zh', 'ja', 'fr', 'ar', 'ru']
 ---
 
 <BaseLayout
