@@ -115,6 +115,12 @@
       "ja": "あ"
     }
   },
+  "podcast": {
+    "views": "播放量",
+    "subscribe": "订阅",
+    "transcript": "字幕",
+    "breadcrumb": "播客"
+  },
   "article": {
     "minRead": "分钟阅读",
     "aboutAuthor": "关于作者",

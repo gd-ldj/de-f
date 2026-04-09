@@ -115,6 +115,12 @@
       "ja": "あ"
     }
   },
+  "podcast": {
+    "views": "再生回数",
+    "subscribe": "登録",
+    "transcript": "文字起こし",
+    "breadcrumb": "ポッドキャスト"
+  },
   "article": {
     "minRead": "分で読む",
     "aboutAuthor": "著者について",

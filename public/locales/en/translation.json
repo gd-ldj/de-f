@@ -115,6 +115,12 @@
       "ja": "あ"
     }
   },
+  "podcast": {
+    "views": "Views",
+    "subscribe": "Subscribe",
+    "transcript": "Transcript",
+    "breadcrumb": "Podcasts"
+  },
   "article": {
     "minRead": "min read",
     "aboutAuthor": "About the Author",
