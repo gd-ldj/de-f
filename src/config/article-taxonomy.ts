@@ -389,6 +389,7 @@ export const BUSINESS_TYPE_MAP: Record<string, TaxonomyItem> = {
   Voices: { id: '4', labels: { en: 'Voices', zh: '观点', ja: 'ボイス' } },
   Tutorials: { id: '5', labels: { en: 'Tutorials', zh: '教程', ja: 'チュートリアル' } },
   Collections: { id: '6', labels: { en: 'Collections', zh: '合集', ja: 'コレクション' } },
+  Podcasts: { id: '7', labels: { en: 'Podcasts', zh: '播客', ja: 'ポッドキャスト' } },
 };
 
 // ---------------------------------------------------------------------------
