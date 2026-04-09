@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { fetchArticles } from '@/api/articles';
+import { fetchPodcastsList } from '@/api/podcasts';
 import type { ApiArticle, Locale } from '@/types';
 import FilterBarReact from '@/components/common/react/FilterBar';
 import ArticleGrid from '@/components/common/react/ArticleGrid';
@@ -28,6 +29,7 @@ interface FilterState {
 }
 
 export default function CategoryPage({ locale, category, initialPage, initialCategoryName, initialAuthorName, initialSubcategoryName, initialTag, initialOrderBy }: CategoryPageProps) {
+  const isPodcasts = category.toLowerCase() === 'podcasts';
   // Helper function to parse comma-separated values from URL parameters
   const parseCommaSeparatedValue = (value: string): string | string[] => {
     if (!value) return '';
@@ -160,18 +162,22 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       setLoading(true);
       loadingRef.current = true;
       try {
-        const options = {
-          business_type_name: category,
-          category_name: Array.isArray(currentFilters.categoryName) ? currentFilters.categoryName.join(',') : currentFilters.categoryName || undefined,
-          author_name: currentFilters.authorName || undefined,
-          subcategory_name: Array.isArray(currentFilters.subcategoryName) ? currentFilters.subcategoryName.join(',') : currentFilters.subcategoryName || undefined,
-          tag: Array.isArray(currentFilters.tag) ? currentFilters.tag.join(',') : currentFilters.tag || undefined,
-          order_by: currentFilters.orderBy,
-          page: currentFilters.page,
-          signal: abortController.signal,
-        };
-
-        const response = await fetchArticles(locale, currentFilters.page, itemsPerPage, options);
+        const response = isPodcasts
+          ? await fetchPodcastsList(
+              currentFilters.page,
+              itemsPerPage,
+              currentFilters.authorName || undefined,
+            )
+          : await fetchArticles(locale, currentFilters.page, itemsPerPage, {
+              business_type_name: category,
+              category_name: Array.isArray(currentFilters.categoryName) ? currentFilters.categoryName.join(',') : currentFilters.categoryName || undefined,
+              author_name: currentFilters.authorName || undefined,
+              subcategory_name: Array.isArray(currentFilters.subcategoryName) ? currentFilters.subcategoryName.join(',') : currentFilters.subcategoryName || undefined,
+              tag: Array.isArray(currentFilters.tag) ? currentFilters.tag.join(',') : currentFilters.tag || undefined,
+              order_by: currentFilters.orderBy,
+              page: currentFilters.page,
+              signal: abortController.signal,
+            });
 
         // Check if this request was cancelled or superseded by a newer request
         if (abortController.signal.aborted || currentRequestId !== requestIdRef.current) {
@@ -229,7 +235,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         }
       }
     },
-    [locale, category, itemsPerPage, articles.length],
+    [locale, category, isPodcasts, itemsPerPage, articles.length],
   );
 
   // Load more articles for mobile infinite scroll
