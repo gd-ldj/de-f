@@ -3,6 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro'
 import AuthMount from '@/components/common/react/AuthMount'
 import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.astro'
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
+import PodcastContent from '@/components/article/astro/PodcastContent.astro'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import { fetchArticle, fetchTranslatedArticle } from '@/api/articles'
 import type { Locale, SourceLanguage, TranslationLanguage } from '@/types'
@@ -23,7 +24,8 @@ interface Props {
 const { locale, category, slug, userId, sourceLanguage, translationLanguage } = Astro.props as Props
 const { url } = Astro
 
-const validCategories = ['insights', 'news', 'research', 'voices']
+const validCategories = ['insights', 'news', 'research', 'voices', 'podcasts']
+const isPodcast = category.toLowerCase() === 'podcasts'
 if (!validCategories.includes(category.toLowerCase())) {
   return Astro.redirect('/404')
 }
@@ -147,15 +149,27 @@ const availableTranslations: TranslationLanguage[] = ['en', 'zh', 'ja', 'fr', 'a
     <div class="max-w-[1440px] mx-auto">
       <div class="grid layout-two-column-fixed-1440">
         <div class="pt-5 md:pt-8 md:py-5 px-4 md:px-6 border-r border-border">
-          <ArticleContent 
-            article={article} 
-            locale={locale} 
-            category={category} 
-            categoryDisplayName={categoryDisplayName}
-            slugWithPromote={slugWithPromote}
-            articleLang={articleLang}
-            userId={userId}
-          />
+          {isPodcast ? (
+            <PodcastContent
+              article={article}
+              locale={locale}
+              category={category}
+              categoryDisplayName={categoryDisplayName}
+              slugWithPromote={slugWithPromote}
+              articleLang={articleLang}
+              userId={userId}
+            />
+          ) : (
+            <ArticleContent
+              article={article}
+              locale={locale}
+              category={category}
+              categoryDisplayName={categoryDisplayName}
+              slugWithPromote={slugWithPromote}
+              articleLang={articleLang}
+              userId={userId}
+            />
+          )}
         </div>
         
         <div class="">
