@@ -47,6 +47,41 @@ export interface ApiArticle {
   transcript?: string;
 }
 
+export interface PodcastListItem {
+  id: string;
+  youtube_url: string;
+  embed_url: string;
+  title: string;
+  description: string;
+  channel_name: string;
+  channel_url?: string;
+  channel_avatar?: string;
+  thumbnail?: string;
+  duration?: number;
+  view_count?: number | string;
+  published_at: string;
+  status?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PodcastDetailItem extends PodcastListItem {
+  content: string;
+  error_message?: string | null;
+}
+
+export interface TranslatedPodcastPayload {
+  entry_id: string;
+  language: string;
+  title: string;
+  body: string;
+  thumbnail?: string;
+  channel_name?: string;
+  duration?: number;
+  youtube_url?: string;
+  published_at?: string;
+}
+
 /**
  * @deprecated Legacy Article interface - use ApiArticle for new implementations
  * Article data structure from API (legacy format)

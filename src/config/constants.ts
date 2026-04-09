@@ -1,5 +1,7 @@
 import type { SourceLanguage } from '@/types';
 
+const publicEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env ?? {};
+
 /**
  * Application configuration constants
  * Centralized location for all global configuration values
@@ -11,7 +13,7 @@ import type { SourceLanguage } from '@/types';
  */
 export const SITE_CONFIG = {
   // Current site environment (beta | production)
-  ENVIRONMENT: import.meta.env.PUBLIC_SITE_ENV || 'beta',
+  ENVIRONMENT: publicEnv.PUBLIC_SITE_ENV || 'beta',
 
   // API domain templates by environment (language prefix will be prepended with `-`)
   API_DOMAINS: {
@@ -42,7 +44,7 @@ export const SITE_CONFIG = {
   get API_BASE_URL() {
     const env = this.ENVIRONMENT as keyof typeof this.API_DOMAINS;
     const domain = this.API_DOMAINS[env] || this.API_DOMAINS.beta;
-    const lang = (import.meta.env.PUBLIC_SOURCE_LANGUAGE as string) || 'en';
+    const lang = publicEnv.PUBLIC_SOURCE_LANGUAGE || 'en';
     return `https://${lang}-${domain}`;
   },
 
@@ -51,7 +53,7 @@ export const SITE_CONFIG = {
   get SSR_API_BASE_URL() {
     const env = this.ENVIRONMENT as keyof typeof this.SSR_API_DOMAINS;
     const domain = this.SSR_API_DOMAINS[env] || this.SSR_API_DOMAINS.beta;
-    const lang = (import.meta.env.PUBLIC_SOURCE_LANGUAGE as string) || 'en';
+    const lang = publicEnv.PUBLIC_SOURCE_LANGUAGE || 'en';
     return `https://${lang}-${domain}`;
   },
 
@@ -62,7 +64,7 @@ export const SITE_CONFIG = {
   },
 } as const;
 
-export const IS_DEV_ENV = ['development', 'dev'].includes((import.meta.env.MODE || process.env.NODE_ENV || '').toLowerCase());
+export const IS_DEV_ENV = ['development', 'dev'].includes((publicEnv.MODE || process.env.NODE_ENV || '').toLowerCase());
 
 /**
  * Multi-source site configuration
@@ -70,7 +72,7 @@ export const IS_DEV_ENV = ['development', 'dev'].includes((import.meta.env.MODE 
  */
 export const MULTI_SOURCE_CONFIG = {
   // Source language from environment variable (fallback to 'en')
-  SOURCE_LANGUAGE: (import.meta.env.PUBLIC_SOURCE_LANGUAGE as SourceLanguage) || 'en',
+  SOURCE_LANGUAGE: (publicEnv.PUBLIC_SOURCE_LANGUAGE as SourceLanguage) || 'en',
 
   // Supported source languages and their domain patterns
   // Matches all environments: production (.com), beta (.dev), and alternative (.news)
@@ -209,10 +211,10 @@ export const STORAGE_KEYS = {
  */
 export const ANALYTICS_CONFIG = {
   // Google Analytics configuration
-  GA_MEASUREMENT_ID: import.meta.env.PUBLIC_GA_MEASUREMENT_ID,
+  GA_MEASUREMENT_ID: publicEnv.PUBLIC_GA_MEASUREMENT_ID,
 
   // Cloudflare Analytics token
-  CLOUDFLARE_ANALYTICS_TOKEN: import.meta.env.PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
+  CLOUDFLARE_ANALYTICS_TOKEN: publicEnv.PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
 
   // Behavior tracking intervals
   HEARTBEAT_INTERVAL: 30000, // 30 seconds
