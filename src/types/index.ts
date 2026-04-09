@@ -38,6 +38,13 @@ export interface ApiArticle {
     bio?: string;
     role?: string; // Role field to distinguish user articles (role === "Authors") from admin articles
   };
+  // Podcast-specific optional fields (present when business_type_name === 'Podcasts')
+  youtube_video_id?: string;
+  youtube_url?: string;
+  youtube_channel_id?: string;
+  youtube_channel_url?: string;
+  youtube_view_count?: number;
+  transcript?: string;
 }
 
 /**
