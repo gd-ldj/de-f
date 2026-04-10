@@ -32,9 +32,12 @@ const baseArticlePath = userId
   ? `/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
   : `/article/${category.toLowerCase()}/${slugWithPromote}`
 
-const languageButtons: { code: 'zh' | 'en'; label: string }[] = [
+const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
   { code: 'zh', label: '中' },
   { code: 'en', label: 'A' },
+  { code: 'ar', label: 'ع' },
+  { code: 'ru', label: 'RU' },
+  { code: 'ja', label: 'あ' },
 ]
 
 // Split transcript into paragraphs on double newlines (plain text format)

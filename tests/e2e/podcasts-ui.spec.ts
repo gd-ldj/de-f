@@ -47,14 +47,14 @@ test.describe('Podcasts UI', () => {
     await expect(page.locator('.prose p').first()).toBeVisible({ timeout: 15000 });
   });
 
-  test('podcast detail page only exposes supported translation buttons and can switch to zh', async ({ page }) => {
+  test('podcast detail page shows the same language button count as article detail and can switch to zh', async ({ page }) => {
     await page.goto(`/article/podcasts/${PODCAST_SLUG}`);
 
     await expect(page.getByRole('link', { name: '中' }).first()).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('link', { name: 'A' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'RU' })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: 'ع' })).toHaveCount(0);
-    await expect(page.getByRole('link', { name: 'あ' })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'RU' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'ع' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'あ' }).first()).toBeVisible();
 
     await page.getByRole('link', { name: '中' }).first().click();
     await page.waitForURL(`**/zh/article/podcasts/${PODCAST_SLUG}`, { timeout: 15000 });
@@ -63,4 +63,5 @@ test.describe('Podcasts UI', () => {
     await expect(page.locator('article h1').first()).toBeVisible({ timeout: 15000 });
     await expect(page.locator('.prose p').first()).toBeVisible({ timeout: 15000 });
   });
+
 });
