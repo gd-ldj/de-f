@@ -1,0 +1,47 @@
+---
+import { fetchRecommendedPodcasts } from '@/api/podcasts';
+import type { ApiArticle, Locale } from '@/types';
+import { createTranslator } from '@/lib/i18n';
+import ArticleCard from '../../common/astro/ArticleCard.astro';
+
+interface Props {
+  locale: Locale;
+  currentEntryId: string;
+  limit?: number;
+}
+
+const { locale, currentEntryId, limit = 3 } = Astro.props as Props;
+const t = createTranslator(locale);
+
+let articles: ApiArticle[] = [];
+
+const recommended = await fetchRecommendedPodcasts(currentEntryId, limit);
+if (recommended && recommended.length > 0) {
+  articles = recommended.filter((article) => article.entry_id !== currentEntryId);
+}
+
+articles = articles.slice(0, limit);
+---
+{articles.length > 0 && (
+  <div class="" data-testid="recommended-podcasts">
+    <h3 class="text-lg font-medium text-foreground mb-6">
+      {t('common.recommendedPodcasts')}
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+      {articles.map((article, index) => (
+        <div data-testid={`recommended-podcast-item-${index + 1}`}>
+          <ArticleCard
+            article={article}
+            locale={locale}
+            layout="vertical"
+            showAuthor={true}
+            showDescription={true}
+            showTags={false}
+            imageSize="medium"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}

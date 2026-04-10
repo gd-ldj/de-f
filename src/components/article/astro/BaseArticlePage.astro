@@ -5,6 +5,7 @@ import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.ast
 import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import PodcastContent from '@/components/article/astro/PodcastContent.astro'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
+import RecommendedPodcasts from '@/components/article/astro/RecommendedPodcasts.astro'
 import { fetchArticle, fetchTranslatedArticle } from '@/api/articles'
 import { fetchPodcastDetail, fetchTranslatedPodcast, mergeTranslatedPodcastIntoArticle } from '@/api/podcasts'
 import type { Locale, SourceLanguage, TranslationLanguage } from '@/types'
@@ -194,7 +195,11 @@ const availableTranslations: TranslationLanguage[] = isPodcast
           <div class="top-8">
             <div id="share-section-root" class=""></div>
             <div class="px-6 p-5">
-              <RecentResearch locale={locale} currentEntryId={article.entry_id} limit={4} />
+              {isPodcast ? (
+                <RecommendedPodcasts locale={locale} currentEntryId={article.entry_id} limit={3} />
+              ) : (
+                <RecentResearch locale={locale} currentEntryId={article.entry_id} limit={4} />
+              )}
             </div>
           </div>
         </div>

@@ -165,6 +165,36 @@ export async function fetchPodcastDetail(id: string): Promise<ApiArticle | null>
   }
 }
 
+export async function fetchRecommendedPodcasts(entryId: string, limit: number = 3): Promise<ApiArticle[]> {
+  try {
+    const params = new URLSearchParams();
+    params.set('entry_id', entryId);
+    params.set('limit', String(limit));
+
+    const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/podcasts/recommend?${params.toString()}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      endpointName: 'fetchRecommendedPodcasts',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch recommended podcasts: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    if (result.code === 2000 && result.data?.list) {
+      const list: PodcastListItem[] = result.data.list;
+      return list.map(mapPodcastListItemToArticle);
+    }
+
+    return [];
+  } catch (error) {
+    console.error('Error fetching recommended podcasts:', error);
+    return [];
+  }
+}
+
 export async function fetchTranslatedPodcast(entryId: string, language: string): Promise<TranslatedPodcastPayload | null> {
   try {
     const params = new URLSearchParams();
