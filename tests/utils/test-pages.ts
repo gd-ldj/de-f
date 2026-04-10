@@ -12,6 +12,8 @@ export const TEST_PAGES = {
   insights: '/insights',
   tutorials: '/tutorials',
   collections: '/collections',
+  voices: '/voices',
+  podcasts: '/voices/podcasts',
 } as const;
 
 // Pages that render ArticleCard lists
