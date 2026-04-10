@@ -23,6 +23,14 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
             <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
               <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block group w-full h-full overflow-hidden">
                 <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
+                {article.business_type_name === 'Podcasts' && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67 60" fill="#FF0000" className="w-8 h-8 md:w-12 md:h-12 drop-shadow-lg opacity-90 group-hover:opacity-100 transition-opacity" focusable={false} aria-hidden="true">
+                      <path d="M63 14.87a7.885 7.885 0 00-5.56-5.56C52.54 8 32.88 8 32.88 8S13.23 8 8.32 9.31c-2.7.72-4.83 2.85-5.56 5.56C1.45 19.77 1.45 30 1.45 30s0 10.23 1.31 15.13c.72 2.7 2.85 4.83 5.56 5.56C13.23 52 32.88 52 32.88 52s19.66 0 24.56-1.31c2.7-.72 4.83-2.85 5.56-5.56C64.31 40.23 64.31 30 64.31 30s0-10.23-1.31-15.13z" />
+                      <path fill="#FFF" d="M26.6 39.43L42.93 30 26.6 20.57z" />
+                    </svg>
+                  </div>
+                )}
               </ArticleLink>
             </div>
 
