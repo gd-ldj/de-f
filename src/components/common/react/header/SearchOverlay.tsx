@@ -17,6 +17,26 @@ const PC_PAGE_SIZE = 8; // 4 columns x 2 rows
 const MOBILE_PAGE_SIZE = 10;
 const HEADER_HEIGHT = 96; // px, matches DesktopHeader h-[96px]
 
+function isPodcastArticle(article: ApiArticle) {
+  return article.business_type_name?.toLowerCase() === 'podcasts';
+}
+
+function PodcastPlayIcon({ className }: { className: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 67 60"
+      fill="#FF0000"
+      className={className}
+      focusable="false"
+      aria-hidden="true"
+    >
+      <path d="M63 14.87a7.885 7.885 0 00-5.56-5.56C52.54 8 32.88 8 32.88 8S13.23 8 8.32 9.31c-2.7.72-4.83 2.85-5.56 5.56C1.45 19.77 1.45 30 1.45 30s0 10.23 1.31 15.13c.72 2.7 2.85 4.83 5.56 5.56C13.23 52 32.88 52 32.88 52s19.66 0 24.56-1.31c2.7-.72 4.83-2.85 5.56-5.56C64.31 40.23 64.31 30 64.31 30s0-10.23-1.31-15.13z" />
+      <path fill="#FFF" d="M26.6 39.43L42.93 30 26.6 20.57z" />
+    </svg>
+  );
+}
+
 export default function SearchOverlay({ locale, isOpen, onClose }: SearchOverlayProps) {
   const [isMobile, setIsMobile] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -307,6 +327,11 @@ function DesktopResults({
                   alt={article.title}
                   className="w-full h-full object-cover rounded hover:scale-105 transition-transform duration-300"
                 />
+                {isPodcastArticle(article) && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <PodcastPlayIcon className="w-12 h-12 drop-shadow-lg opacity-90 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                )}
               </ArticleLink>
             </div>
             <div className="mt-3">
@@ -320,7 +345,7 @@ function DesktopResults({
                   </span>
                 ))}
               </div>
-              <h3 className="text-base font-medium text-foreground mt-1.5 mb-1 line-clamp-2">
+              <h3 className="text-base font-medium text-foreground mt-1.5 mb-1 line-clamp-1">
                 <ArticleLink
                   slug={article.slug}
                   locale={locale}
@@ -332,7 +357,7 @@ function DesktopResults({
                   {article.title}
                 </ArticleLink>
               </h3>
-              <p className="text-muted-foreground text-sm mb-1.5 line-clamp-1">{article.sub_title}</p>
+              <p className="text-muted-foreground text-sm mb-1.5 leading-relaxed line-clamp-2">{article.sub_title}</p>
               <div className="flex items-center text-xs text-muted-foreground">
                 <span>{formatDate(article.created_at, locale)}</span>
                 <span className="mx-1">/ {t('article.by')}</span>
@@ -367,7 +392,7 @@ function MobileResults({
       <div className="space-y-4">
         {articles.map((article) => (
           <article key={article.entry_id} className="flex gap-3">
-            <div className="flex-shrink-0 w-20 h-20">
+            <div className="relative flex-shrink-0 w-20 h-20">
               <ArticleLink
                 slug={article.slug}
                 locale={locale}
@@ -381,6 +406,11 @@ function MobileResults({
                   alt={article.title}
                   className="w-full h-full object-cover"
                 />
+                {isPodcastArticle(article) && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <PodcastPlayIcon className="w-8 h-8 drop-shadow-lg opacity-90" />
+                  </div>
+                )}
               </ArticleLink>
             </div>
             <div className="flex-1 min-w-0">
@@ -394,7 +424,7 @@ function MobileResults({
                   </span>
                 ))}
               </div>
-              <h3 className="text-sm font-medium text-foreground mt-0.5 line-clamp-2">
+              <h3 className="text-sm font-medium text-foreground mt-0.5 line-clamp-1">
                 <ArticleLink
                   slug={article.slug}
                   locale={locale}
@@ -406,6 +436,7 @@ function MobileResults({
                   {article.title}
                 </ArticleLink>
               </h3>
+              <p className="text-muted-foreground text-xs mt-1 leading-relaxed line-clamp-2">{article.sub_title}</p>
               <div className="flex items-center text-[10px] text-muted-foreground mt-1">
                 <span>{formatDate(article.created_at, locale)}</span>
                 <span className="mx-1">/ {t('article.by')}</span>
