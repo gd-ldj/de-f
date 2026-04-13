@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchArticles } from '@/api/articles';
+import { searchContent } from '@/api/search';
 import type { ApiArticle, Locale } from '@/types';
 
 interface UseSearchArticlesOptions {
@@ -30,6 +31,7 @@ export function useSearchArticles({
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(1);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const allResultsRef = useRef<ApiArticle[]>([]);
@@ -60,10 +62,13 @@ export function useSearchArticles({
   }, [locale, pageSize]);
 
   const doSearch = useCallback(
-    async (keyword: string, pageNum: number, append: boolean) => {
-      if (!keyword.trim()) {
+    async (keyword: string, pageNum: number, append: boolean, cursor?: string | null) => {
+      const normalizedKeyword = keyword.trim();
+
+      if (!normalizedKeyword) {
         setResults([]);
         setHasMore(false);
+        setNextCursor(null);
         allResultsRef.current = [];
         return;
       }
@@ -76,27 +81,19 @@ export function useSearchArticles({
       setIsLoading(true);
 
       try {
-        // Fetch a larger batch and filter client-side (no search API yet)
-        const fetchPage = Math.ceil((pageNum * pageSize) / 20);
-        const response = await fetchArticles(locale, fetchPage, 20, {
+        const response = await searchContent(locale, normalizedKeyword, pageSize, {
+          cursor,
+          page: pageNum,
           signal: controller.signal,
         });
 
         if (controller.signal.aborted) return;
 
         if (response?.articles) {
-          const lowerKeyword = keyword.toLowerCase();
-          const filtered = response.articles.filter(
-            (a) =>
-              a.title.toLowerCase().includes(lowerKeyword) ||
-              a.sub_title?.toLowerCase().includes(lowerKeyword) ||
-              a.author_name?.toLowerCase().includes(lowerKeyword),
-          );
-
-          const maxItems = pageNum * pageSize;
+          setNextCursor(response.nextCursor ?? null);
 
           if (append) {
-            const combined = [...allResultsRef.current, ...filtered];
+            const combined = [...allResultsRef.current, ...response.articles];
             // Deduplicate by entry_id
             const seen = new Set<string>();
             const unique = combined.filter((a) => {
@@ -105,12 +102,12 @@ export function useSearchArticles({
               return true;
             });
             allResultsRef.current = unique;
-            setResults(unique.slice(0, maxItems));
-            setHasMore(unique.length > maxItems || (response.hasMore && filtered.length > 0));
+            setResults(unique);
+            setHasMore(response.hasMore);
           } else {
-            allResultsRef.current = filtered;
-            setResults(filtered.slice(0, maxItems));
-            setHasMore(filtered.length > maxItems || (response.hasMore && filtered.length > 0));
+            allResultsRef.current = response.articles;
+            setResults(response.articles);
+            setHasMore(response.hasMore);
           }
         } else {
           if (!append) {
@@ -118,6 +115,7 @@ export function useSearchArticles({
             setResults([]);
           }
           setHasMore(false);
+          setNextCursor(null);
         }
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
@@ -139,6 +137,7 @@ export function useSearchArticles({
       setResults([]);
       setHasMore(false);
       setPage(1);
+      setNextCursor(null);
       allResultsRef.current = [];
       setIsLoading(false);
       return;
@@ -159,14 +158,15 @@ export function useSearchArticles({
     if (isLoading || !hasMore) return;
     const nextPage = page + 1;
     setPage(nextPage);
-    doSearch(query, nextPage, true);
-  }, [isLoading, hasMore, page, query, doSearch]);
+    doSearch(query, nextPage, true, nextCursor);
+  }, [isLoading, hasMore, page, query, doSearch, nextCursor]);
 
   const reset = useCallback(() => {
     setQuery('');
     setResults([]);
     setHasMore(false);
     setPage(1);
+    setNextCursor(null);
     allResultsRef.current = [];
     abortRef.current?.abort();
   }, []);
