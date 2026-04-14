@@ -359,7 +359,34 @@ export async function fetchHomePageData(locale: Locale): Promise<HomePageData | 
 
     const result: HomePageResponse = await response.json();
     if (result.code === 2000 && result.data) {
-      return result.data;
+      const data = result.data;
+
+      // Normalize articles to ensure required fields have safe defaults,
+      // preventing SSR crashes when API returns incomplete data (e.g. Insights without author)
+      const normalizeArticle = (article: Record<string, unknown>) => ({
+        ...article,
+        author: article.author ?? { name: 'DeTake', avatar_url: '', bio: '' },
+        sub_title: article.sub_title ?? '',
+        body: article.body ?? '',
+        img_url: article.img_url ?? null,
+        tags: Array.isArray(article.tags) ? article.tags : [],
+      });
+
+      const normalizeList = <T,>(list: T[] | undefined | null): T[] =>
+        Array.isArray(list) ? list.map((item) => normalizeArticle(item as Record<string, unknown>) as T) : [];
+
+      if (data.insights) data.insights = normalizeList(data.insights);
+      if (data.research) data.research = normalizeList(data.research);
+      if (data.mostread) data.mostread = normalizeList(data.mostread);
+      if (data.news_all) data.news_all = normalizeList(data.news_all);
+      if (data.news) {
+        data.news = data.news.map((group) => ({
+          ...group,
+          data: normalizeList(group.data),
+        }));
+      }
+
+      return data;
     } else {
       throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`);
     }

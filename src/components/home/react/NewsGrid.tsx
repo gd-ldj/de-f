@@ -27,15 +27,15 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
   const lang = locale as SourceLanguage;
 
   const [articles, setArticles] = useState<any[]>(newsData[0]?.data || []);
-  const [activeCategory, setActiveCategory] = useState(newsData[0]?.tag.toLowerCase() || '');
+  const [activeCategory, setActiveCategory] = useState((newsData[0]?.tag || '').toLowerCase());
   const [scrollProgress, setScrollProgress] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Generate news categories dynamically from newsData or use default categories
   const newsCategories: NewsCategory[] = useMemo(() => {
     const categories = newsData.map((item) => ({
-      key: item.tag.toLowerCase(),
-      name: getTaxonomyCategoryLabel(item.tag, lang),
+      key: (item.tag || '').toLowerCase(),
+      name: getTaxonomyCategoryLabel(item.tag || '', lang),
     }));
     return categories;
   }, [newsData, lang]);
@@ -56,7 +56,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
     setActiveCategory(categoryKey);
 
-    const categoryData = newsData.find((item) => item.tag.toLowerCase() === categoryKey);
+    const categoryData = newsData.find((item) => (item.tag || '').toLowerCase() === categoryKey);
     setArticles(categoryData?.data || []);
 
     // Reset scroll progress when category changes
@@ -179,7 +179,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                     </ArticleLink>
                   </h3>
 
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-4">{article.sub_title || article.title}</p>
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-4">{article.sub_title || ''}</p>
 
                   {/* Article meta info */}
                   <div className="flex items-center justify-between text-xs text-gray-500 mt-auto">

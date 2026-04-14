@@ -46,7 +46,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               </h3>
 
               {/* Article description */}
-              <p className="hidden md:block md:text-muted-foreground md:text-xs md:line-clamp-4 md:leading-relaxed">{article.sub_title}</p>
+              <p className="hidden md:block md:text-muted-foreground md:text-xs md:line-clamp-4 md:leading-relaxed">{article.sub_title || ''}</p>
 
               {/* Article meta info */}
               <div className="flex items-center text-xs text-muted-foreground space-x-1">
@@ -88,7 +88,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                   </ArticleLink>
                 </h3>
 
-                <p className="text-muted-foreground text-sm mb-4 line-clamp-4 leading-relaxed">{article.sub_title}</p>
+                <p className="text-muted-foreground text-sm mb-4 line-clamp-4 leading-relaxed">{article.sub_title || ''}</p>
 
                 {/* Article meta info */}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">

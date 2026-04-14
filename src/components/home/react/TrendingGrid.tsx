@@ -46,7 +46,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {article.title}
                   </ArticleLink>
                 </h4>
-                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{article.sub_title}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{article.sub_title || ''}</p>
                 <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">
                   <span data-date={article.created_at} data-locale={locale}>
                     {formatDate(article.created_at, locale)}
@@ -97,7 +97,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {article.title}
                   </ArticleLink>
                 </h4>
-                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 md:line-clamp-4">{article.sub_title}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 md:line-clamp-4">{article.sub_title || ''}</p>
                 <div className="flex items-center text-xs text-muted-foreground space-x-1">
                   <span data-date={article.created_at} data-locale={locale}>
                     {formatDate(article.created_at, locale)}
@@ -133,7 +133,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         </ArticleLink>
                       </h4>
 
-                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-4">{article.sub_title}</p>
+                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-4">{article.sub_title || ''}</p>
                     </div>
 
                     {/* Date */}
@@ -173,7 +173,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         </ArticleLink>
                       </h4>
 
-                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-3">{articles[2].sub_title}</p>
+                      <p className="text-muted-foreground leading-relaxed mb-4 text-sm line-clamp-3">{articles[2].sub_title || ''}</p>
                     </div>
 
                     {/* Date */}
@@ -202,7 +202,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         </ArticleLink>
                       </h4>
 
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-4">{article.sub_title}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-4">{article.sub_title || ''}</p>
 
                       {/* Date */}
                       {/* <div className="flex items-center text-xs text-muted-foreground space-x-1 truncate">

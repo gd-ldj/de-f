@@ -97,14 +97,14 @@ const AuthorProfileSection: React.FC<AuthorProfileSectionProps> = ({ authorProfi
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.196-2.121M9 20H4v-2a3 3 0 015.196-2.121M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span className="font-medium">{formatNumber(authorProfile.followers)}</span>
+                <span className="font-medium">{formatNumber(authorProfile.followers ?? 0)}</span>
                 <span>{t('author.followers')}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span className="font-medium">{formatNumber(authorProfile.articles_count)}</span>
+                <span className="font-medium">{formatNumber(authorProfile.articles_count ?? 0)}</span>
                 <span>{t('author.articles')}</span>
               </div>
             </div>

@@ -134,19 +134,19 @@ const viewCount = article.youtube_view_count
         </time>
         <p class="text-[12px] font-medium text-foreground">
           <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
-          <span class="uppercase truncate">{article.author?.name || article.author_name}</span>
+          <span class="uppercase truncate">{article.author?.name || article.author_name || 'DeTake'}</span>
         </p>
       </div>
     </div>
 
     <!-- Excerpt -->
     <p class="text-[14px] md:text-xl text-muted-foreground leading-relaxed mb-[10px] md:mb-4">
-      {article.sub_title}
+      {article.sub_title || ''}
     </p>
 
     <!-- Tags + Mobile stats -->
     <div class="md:hidden flex justify-between items-center">
-      {article.tags.length > 0 && (
+      {Array.isArray(article.tags) && article.tags.length > 0 && (
         <div>
           <div class="flex flex-wrap gap-2">
             {article.tags.map((tag) => (
@@ -174,7 +174,7 @@ const viewCount = article.youtube_view_count
     <div class="hidden md:flex items-center justify-between mb-1 pb-2">
       <div>
         <!-- Tags -->
-        {article.tags.length > 0 && (
+        {Array.isArray(article.tags) && article.tags.length > 0 && (
           <div class="mb-2 pt-2">
             <div class="flex flex-wrap gap-2">
               {article.tags.map((tag) => (
@@ -202,7 +202,7 @@ const viewCount = article.youtube_view_count
             </time>
             <p class="text-sm font-medium text-foreground">
               <span class="text-muted-foreground mr-[2px]">/ {t('article.by')}</span>
-              <span class="text-foreground uppercase">{article.author?.name || article.author_name}</span>
+              <span class="text-foreground uppercase">{article.author?.name || article.author_name || 'DeTake'}</span>
             </p>
           </div>
         </div>

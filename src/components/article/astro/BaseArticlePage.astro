@@ -91,7 +91,7 @@ const articleLang = isPodcast ? article.language || 'en' : translationLanguage |
 const categoryDisplayName = getArticleBusinessPath(article) || (category ? `${category[0].toUpperCase()}${category.slice(1)}` : 'News')
 
 const title = `${article.title} | ${categoryDisplayName} | deTake`
-const description = article.sub_title
+const description = article.sub_title || ''
 
 // Build canonical URL using new multi-source architecture
 // Use current origin instead of SITE_CONFIG.SITE_URL to support multiple domains
@@ -100,7 +100,7 @@ const canonicalUrl = `${url.origin}${articlePath}`
 
 const ogImageParams = new URLSearchParams({
   title: article.title,
-  description: article.sub_title,
+  description: article.sub_title || '',
   category: categoryDisplayName,
   author: article?.author?.name || article.author_name || 'DeTake',
 })
@@ -110,7 +110,7 @@ const ogImageUrl = article.img_url
     : `${SITE_CONFIG.SITE_URL}${article.img_url}`
   : `${SITE_CONFIG.SITE_URL}/api/og/article.svg?${ogImageParams.toString()}`
 
-const keywords = article.tags || []
+const keywords = Array.isArray(article.tags) ? article.tags : []
 const publishedTime = article.created_at
 const modifiedTime = article.updated_at
 const author = article?.author?.name || article.author_name

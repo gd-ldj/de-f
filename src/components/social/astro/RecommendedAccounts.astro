@@ -53,14 +53,14 @@ const hasUsers = followUsers.length > 0
             <div class="flex-shrink-0 w-[280px] bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <!-- User avatar and basic info -->
               <div class="flex flex-col items-center text-center mb-4">
-                <Image 
-                  src={user.avatar_url} 
+                <Image
+                  src={user.avatar_url || avatarPlaceholderUrl}
                   fallbackSrc={avatarPlaceholderUrl}
-                  alt={user.name} 
+                  alt={user.name || ''}
                   className="w-16 h-16 rounded-full mb-3 border-2 border-gray-100" 
                   client:load
                 />
-                <h3 class="font-semibold text-gray-900 text-lg mb-1">{user.name}</h3>
+                <h3 class="font-semibold text-gray-900 text-lg mb-1">{user.name || ''}</h3>
                 {user.nick && (
                   <p class="text-sm text-gray-500 mb-3">@{user.nick}</p>
                 )}

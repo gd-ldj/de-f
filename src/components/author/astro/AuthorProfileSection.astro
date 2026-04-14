@@ -40,22 +40,22 @@ function formatNumber(num: number): string {
       <!-- Author Details -->
       <div class="flex-1">
         <!-- Author Name -->
-        <h1 class="text-2xl font-bold text-foreground mb-2">{authorProfile.name}</h1>
-        
+        <h1 class="text-2xl font-bold text-foreground mb-2">{authorProfile.name || ''}</h1>
+
         <!-- Stats -->
         <div class="flex items-center space-x-6 text-sm text-muted-foreground mb-3">
           <div class="flex items-center space-x-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M17 20h5v-2a3 3 0 00-5.196-2.121M9 20H4v-2a3 3 0 015.196-2.121M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <span class="font-medium">{formatNumber(authorProfile.followers)}</span>
+            <span class="font-medium">{formatNumber(authorProfile.followers ?? 0)}</span>
             <span>{t('author.followers')}</span>
           </div>
           <div class="flex items-center space-x-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span class="font-medium">{formatNumber(authorProfile.articles_count)}</span>
+            <span class="font-medium">{formatNumber(authorProfile.articles_count ?? 0)}</span>
             <span>{t('author.articles')}</span>
           </div>
         </div>

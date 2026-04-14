@@ -5,21 +5,27 @@
  * @returns Formatted date string
  */
 export function formatDate(isoString: string, locale = 'en') {
-  const localeMap = {
-    en: 'en-US',
-    zh: 'zh-CN',
-    ja: 'ja-JP',
-  };
+  if (!isoString) return '';
 
-  const dateObj = typeof isoString === 'string' ? new Date(isoString) : isoString;
-  const targetLocale = localeMap[locale as keyof typeof localeMap] || 'en-US';
+  try {
+    const localeMap = {
+      en: 'en-US',
+      zh: 'zh-CN',
+      ja: 'ja-JP',
+    };
 
-  // Use Intl.DateTimeFormat for more reliable locale-specific formatting
-  return new Intl.DateTimeFormat(targetLocale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(dateObj);
+    const dateObj = typeof isoString === 'string' ? new Date(isoString) : isoString;
+    const targetLocale = localeMap[locale as keyof typeof localeMap] || 'en-US';
+
+    // Use Intl.DateTimeFormat for more reliable locale-specific formatting
+    return new Intl.DateTimeFormat(targetLocale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(dateObj);
+  } catch {
+    return '';
+  }
 }
 
 /**
@@ -29,6 +35,8 @@ export function formatDate(isoString: string, locale = 'en') {
  * @returns Relative time string (e.g., "2 hours ago", "2小时前")
  */
 export function formatRelativeTime(isoString: string, locale = 'en'): string {
+  if (!isoString) return '';
+
   const dateObj = typeof isoString === 'string' ? new Date(isoString) : isoString;
   const now = new Date();
   const diffInMs = now.getTime() - dateObj.getTime();
