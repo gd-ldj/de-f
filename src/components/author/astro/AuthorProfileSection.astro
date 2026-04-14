@@ -2,6 +2,7 @@
 import type { Locale } from '@/types';
 import type { AuthorProfile } from '@/api/users';
 import { createTranslator } from '@/lib/i18n';
+import { avatarPlaceholderUrl } from '@/config/assets';
 
 interface Props {
   authorProfile: AuthorProfile;
@@ -30,7 +31,7 @@ function formatNumber(num: number): string {
       <!-- Avatar -->
       <div class="flex-shrink-0">
         <img 
-          src={authorProfile.avatar_url || '/api/placeholder/80/80'} 
+          src={authorProfile.avatar_url || avatarPlaceholderUrl} 
           alt={authorProfile.name} 
           class="w-20 h-20 rounded-full object-cover border-2 border-gray-200" 
         />

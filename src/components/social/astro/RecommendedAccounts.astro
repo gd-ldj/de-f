@@ -3,6 +3,7 @@ import type { HomeWhoToFollow, Locale } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 import Image from '@/components/common/react/Image'
 import FollowButton from '@/components/home/FollowButton'
+import { avatarPlaceholderUrl } from '@/config/assets'
 
 interface Props {
   locale: Locale
@@ -54,6 +55,7 @@ const hasUsers = followUsers.length > 0
               <div class="flex flex-col items-center text-center mb-4">
                 <Image 
                   src={user.avatar_url} 
+                  fallbackSrc={avatarPlaceholderUrl}
                   alt={user.name} 
                   className="w-16 h-16 rounded-full mb-3 border-2 border-gray-100" 
                   client:load

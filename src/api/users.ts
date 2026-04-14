@@ -1,6 +1,7 @@
 import type { UserPersonalInfo, UserPersonalInfoResponse, HomeWhoToFollow } from '../types'
 import { SITE_CONFIG } from '../config/constants'
 import { ssrFetch } from '@/lib/serverFetch';
+import { avatarPlaceholderUrl } from '@/config/assets';
 
 const API_BASE_URL = SITE_CONFIG.API_BASE_URL;
 const SSR_API_BASE_URL = SITE_CONFIG.SSR_API_BASE_URL || SITE_CONFIG.API_BASE_URL;
@@ -169,7 +170,7 @@ function getMockAuthorProfile(authorIdentifier: string): AuthorProfile {
     user_id: "crypto_feed_news_123",
     nick: null,
     name: "Crypto Feed News",
-    avatar_url: "/api/placeholder/48/48",
+    avatar_url: avatarPlaceholderUrl,
     profile_bio: "Crypto Enthusiastic | Ambassador | KOL | Moderator | Community Builder | BTC Analyst | News Journalist | GemFinder",
     twitter: "CryptoFeedNews",
     followers: 15600,
@@ -221,35 +222,35 @@ function getMockWhoToFollow(): HomeWhoToFollow[] {
       user_id: "crypto_expert_1",
       nick: "CryptoExpert",
       name: "Sir Ismail",
-      avatar_url: "/api/placeholder/48/48",
+      avatar_url: avatarPlaceholderUrl,
       profile_bio: "Cryptocurrency analyst and blockchain expert with 10+ years experience"
     },
     {
       user_id: "blockchain_guru_2",
       nick: "BlockchainGuru",
       name: "Alex Chen",
-      avatar_url: "/api/placeholder/48/48",
+      avatar_url: avatarPlaceholderUrl,
       profile_bio: "DeFi researcher and smart contract developer"
     },
     {
       user_id: "crypto_trader_3",
       nick: "CryptoTrader",
       name: "Maria Rodriguez",
-      avatar_url: "/api/placeholder/48/48",
+      avatar_url: avatarPlaceholderUrl,
       profile_bio: "Professional crypto trader and market analyst"
     },
     {
       user_id: "nft_collector_4",
       nick: "NFTCollector",
       name: "David Kim",
-      avatar_url: "/api/placeholder/48/48",
+      avatar_url: avatarPlaceholderUrl,
       profile_bio: "NFT enthusiast and digital art collector"
     },
     {
       user_id: "defi_expert_5",
       nick: "DeFiExpert",
       name: "Sarah Johnson",
-      avatar_url: "/api/placeholder/48/48",
+      avatar_url: avatarPlaceholderUrl,
       profile_bio: "DeFi protocol researcher and yield farming specialist"
     }
   ]

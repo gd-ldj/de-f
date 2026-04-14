@@ -1,4 +1,6 @@
 ---
+import { avatarPlaceholderUrl, placeholderImageUrl } from '@/config/assets'
+
 interface Props {
   avatar?: string
   username?: string
@@ -16,16 +18,16 @@ interface Props {
 }
 
 const { 
-  avatar = "https://pbs.twimg.com/profile_images/1234567890/crypto_feed_news_400x400.jpg",
+  avatar = avatarPlaceholderUrl,
   username = "Crypto Feed News",
   handle = "@CryptoFeedNews", 
   timeAgo = "22h",
   content = "Massive Bitcoin ETF Move! 📊\n\nOn April 22, US spot Bitcoin ETFs scooped up 10,430 SBTC worth equivalent to $912.7 million.\nThat's the biggest single-day inflow since Trump's first inauguration. Institutional interest is heating up again, and the smart money seems to be positioning.\n\nAre we on the edge of another leg up? 🚀",
   images = [
-    { url: "https://via.placeholder.com/400x200/ff6b9d/ffffff?text=PancakeSwap", alt: "PancakeSwap", brand: "PancakeSwap" },
-    { url: "https://via.placeholder.com/400x200/1a1a1a/ffffff?text=Ethereum", alt: "Ethereum", brand: "Ethereum" },
-    { url: "https://via.placeholder.com/400x200/2d5aa0/ffffff?text=Blockchain", alt: "Blockchain", brand: "Blockchain" },
-    { url: "https://via.placeholder.com/400x200/9333ea/ffffff?text=MAO", alt: "MAO", brand: "MAO" }
+    { url: placeholderImageUrl, alt: "PancakeSwap", brand: "PancakeSwap" },
+    { url: placeholderImageUrl, alt: "Ethereum", brand: "Ethereum" },
+    { url: placeholderImageUrl, alt: "Blockchain", brand: "Blockchain" },
+    { url: placeholderImageUrl, alt: "MAO", brand: "MAO" }
   ],
   likes = 8181,
   views = 8181,

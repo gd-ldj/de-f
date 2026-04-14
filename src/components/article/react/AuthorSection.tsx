@@ -5,6 +5,7 @@ import Image from '@/components/common/react/Image'
 import { followAuthor } from '@/api/users'
 import { toast } from '@/components/common/react/Toast'
 import { createTranslator } from '@/lib/i18n';
+import { avatarPlaceholderUrl } from '@/config/assets';
 
 interface Author {
   id?: string;
@@ -95,7 +96,7 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
         <div className="flex items-center justify-center space-x-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <Image src={author.avatar || '/placeholder.svg'} alt={author.name} className="w-12 h-12 rounded-full object-cover" />
+            <Image src={author.avatar || avatarPlaceholderUrl} fallbackSrc={avatarPlaceholderUrl} alt={author.name} className="w-12 h-12 rounded-full object-cover" />
           </div>
 
           {/* Author Details */}

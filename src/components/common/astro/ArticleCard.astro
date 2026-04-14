@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../../../types/index.ts';
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
+import { placeholderImageUrl } from '@/config/assets'
 import { getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import type { SourceLanguage } from '@/types'
@@ -98,7 +99,7 @@ function getArticleUrl(article: any, locale: Locale): string {
 }
 
 // Determine image source and alt text
-const imageUrl = article.image || article.img_url || '/api/placeholder/400/240';
+const imageUrl = article.image || article.img_url || placeholderImageUrl;
 const imageAlt = article.title || 'Article image';
 
 // Determine article URL

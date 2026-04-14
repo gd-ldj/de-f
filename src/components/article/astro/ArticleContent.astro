@@ -2,6 +2,7 @@
 import type { Locale, ApiArticle, TranslationLanguage, SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 import { MULTI_SOURCE_CONFIG } from '@/config/constants'
+import { avatarPlaceholderUrl, placeholderImageUrl } from '@/config/assets'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import Image from '@/components/common/astro/ImageSSR.astro'
 import { formatDate, getArticleCategoryNames, getArticleSubcategoryNames } from '@/utils/util'
@@ -184,7 +185,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
 
          <!-- Holders -->
          <div class="flex items-center space-x-2">
-           <img src="/avatar_2.svg" alt="Holders" class="w-4 h-4" />
+           <img src={avatarPlaceholderUrl} alt="Holders" class="w-4 h-4" />
            <span class="text-sm">{article?.unique_vistor || 0} {t('article.holders')}</span>
          </div>
        </div>
@@ -243,7 +244,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
         <div class="flex flex-col items-center space-x-1">
           <div class="text-[32px]">{article?.unique_vistor || 0}</div>
           <div class="flex items-center space-x-1">
-            <img src="/avatar_2.svg" alt="Author" class="w-4 h-4" />
+            <img src={avatarPlaceholderUrl} alt="Author" class="w-4 h-4" />
             <span class="text-sm text-muted-foreground">{t('article.holders')}</span>
           </div>
         </div>
@@ -258,6 +259,7 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
      <div class="mb-5 md:mb-8">
        <Image
          src={article.img_url}
+         fallbackSrc={placeholderImageUrl}
          alt={article.title}
          className="w-full h-auto rounded shadow-lg"
          loading="lazy"

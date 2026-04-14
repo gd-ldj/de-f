@@ -19,15 +19,19 @@ const Image: React.FC<ImageProps> = ({
   className = '',
   ...props
 }) => {
+  const [currentSrc, setCurrentSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
+    setCurrentSrc(src);
     setHasError(false);
-  }, [src]);
+  }, [src, fallbackSrc]);
 
   const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    if (!hasError) {
+    if (fallbackSrc && currentSrc !== fallbackSrc) {
+      setCurrentSrc(fallbackSrc);
+    } else if (!hasError) {
       setHasError(true);
     }
     onError?.(event);
@@ -48,7 +52,7 @@ const Image: React.FC<ImageProps> = ({
     <img
       {...props}
       ref={imgRef}
-      src={src}
+      src={currentSrc}
       alt={alt}
       className={className}
       onError={handleError}

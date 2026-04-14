@@ -2,6 +2,7 @@ import React from 'react';
 import type { Locale } from '@/types';
 import Image from '@/components/common/react/Image';
 import { createTranslator } from '@/lib/i18n';
+import { avatarPlaceholderUrl } from '@/config/assets';
 
 interface PodcastAuthor {
   id?: string;
@@ -56,7 +57,8 @@ const PodcastAuthorCard: React.FC<PodcastAuthorCardProps> = ({ author, youtubeCh
           {/* Avatar */}
           <div className="flex-shrink-0">
             <Image
-              src={author.avatar || '/placeholder.svg'}
+              src={author.avatar || avatarPlaceholderUrl}
+              fallbackSrc={avatarPlaceholderUrl}
               alt={author.name}
               className="w-12 h-12 rounded-full object-cover"
             />

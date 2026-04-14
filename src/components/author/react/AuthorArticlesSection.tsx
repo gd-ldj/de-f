@@ -5,6 +5,7 @@ import Image from '@/components/common/react/Image';
 import { createTranslator } from '@/lib/i18n';
 import { getArticleBusinessPath, getLocalizedBusinessTypeLabel, getLocalizedTagLabel } from '@/utils/util';
 import type { SourceLanguage } from '@/types';
+import { placeholderImageUrl } from '@/config/assets';
 
 interface AuthorArticlesSectionProps {
   articles: ApiArticle[];
@@ -74,7 +75,7 @@ console.log('🚀 ~ getArticleUrl ~ article.author:', article.author);
       {/* Article Image */}
       <div className="flex-shrink-0">
         <a href={getArticleUrl()}>
-          <Image src={article.img_url || '/api/placeholder/120/80'} alt={article.title} className="w-30 h-20 object-cover rounded-lg border border-gray-200" />
+          <Image src={article.img_url || placeholderImageUrl} fallbackSrc={placeholderImageUrl} alt={article.title} className="w-30 h-20 object-cover rounded-lg border border-gray-200" />
         </a>
       </div>
 

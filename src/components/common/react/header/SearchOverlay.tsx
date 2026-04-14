@@ -6,6 +6,7 @@ import ArticleLink from '@/components/common/react/ArticleLink';
 import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedTagLabel } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 import type { ApiArticle, Locale, SourceLanguage } from '@/types';
+import { placeholderImageUrl } from '@/config/assets';
 
 interface SearchOverlayProps {
   locale: Locale;
@@ -323,7 +324,7 @@ function DesktopResults({
                 onClick={onNavigate}
               >
                 <img
-                  src={article.img_url || '/placeholder.svg'}
+                  src={article.img_url || placeholderImageUrl}
                   alt={article.title}
                   className="w-full h-full object-cover rounded hover:scale-105 transition-transform duration-300"
                 />
@@ -402,7 +403,7 @@ function MobileResults({
                 onClick={onNavigate}
               >
                 <img
-                  src={article.img_url || '/placeholder.svg'}
+                  src={article.img_url || placeholderImageUrl}
                   alt={article.title}
                   className="w-full h-full object-cover"
                 />

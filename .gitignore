@@ -43,3 +43,6 @@ playwright/.cache/
 !public/**/*.png
 !src/**/*.png
 !docs/**/*.png
+
+.playwright/
+.playwright-mcp/

@@ -4,6 +4,7 @@ import { createTranslator } from '@/lib/i18n'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
 import { formatDate, getArticleBusinessPath } from '@/utils/util'
+import { placeholderImageUrl } from '@/config/assets'
 
 interface Props {
   locale?: Locale
@@ -95,7 +96,7 @@ const topics = rawTopics.map(topic => ({
             </div>
             <div class="flex-shrink-0">
               <img
-                src={article.img_url || "/placeholder.svg"}
+                src={article.img_url || placeholderImageUrl}
                 alt={article.title}
                 class="w-16 h-16 rounded object-cover"
               />

@@ -3,6 +3,7 @@ import ArticleLink from './ArticleLink';
 import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedTagLabel } from '@/utils/util';
 import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
+import { placeholderImageUrl } from '@/config/assets';
 
 interface ArticleGridProps {
   articles: ApiArticle[];
@@ -22,7 +23,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
             {/* Article Image */}
             <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
               <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block group w-full h-full overflow-hidden">
-                <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
+                <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
                 {article.business_type_name === 'Podcasts' && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67 60" fill="#FF0000" className="w-8 h-8 md:w-12 md:h-12 drop-shadow-lg opacity-90 group-hover:opacity-100 transition-opacity" focusable={false} aria-hidden="true">

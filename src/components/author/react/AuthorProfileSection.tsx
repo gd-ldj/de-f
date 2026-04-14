@@ -6,6 +6,7 @@ import Image from '@/components/common/react/Image';
 import { followAuthor } from '@/api/users';
 import { toast } from '@/components/common/react/Toast';
 import { createTranslator } from '@/lib/i18n';
+import { avatarPlaceholderUrl } from '@/config/assets';
 
 interface AuthorProfileSectionProps {
   authorProfile: AuthorProfile;
@@ -82,7 +83,7 @@ const AuthorProfileSection: React.FC<AuthorProfileSectionProps> = ({ authorProfi
         <div className="flex items-start space-x-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <Image src={authorProfile.avatar_url || '/api/placeholder/80/80'} alt={authorProfile.name} className="w-20 h-20 rounded-full object-cover border-2 border-gray-200" />
+            <Image src={authorProfile.avatar_url || avatarPlaceholderUrl} fallbackSrc={avatarPlaceholderUrl} alt={authorProfile.name} className="w-20 h-20 rounded-full object-cover border-2 border-gray-200" />
           </div>
 
           {/* Author Details */}
