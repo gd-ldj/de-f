@@ -3,6 +3,7 @@ import type { HomeMostReadArticle, Locale } from '@/types';
 import { formatDate, getArticleBusinessPath } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
+import { placeholderImageUrl } from '@/config/assets';
 
 interface TrendingGridProps {
   articles: HomeMostReadArticle[];
@@ -34,7 +35,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
               {/* Top: Image */}
               <div className="w-full h-48 relative overflow-hidden rounded">
                 <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="block h-full">
-                  <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                 </ArticleLink>
               </div>
 
@@ -51,8 +52,8 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {formatDate(article.created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground uppercase truncate">{article.author.name}</span>
-                  {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author.name}</a> */}
+                  <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
+                  {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author?.name || 'DeTake'}</a> */}
                 </div>
               </div>
             </article>
@@ -64,7 +65,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
               {/* Left side: Image */}
               <div className="flex-shrink-0 w-22 h-22 relative overflow-hidden rounded">
                 <ArticleLink slug={articles[2].slug} business={getArticleBusinessPath(articles[2])} locale={locale} className="block h-full">
-                  <img src={articles[2].img_url || '/placeholder.svg'} alt={articles[2].title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  <img src={articles[2].img_url || placeholderImageUrl} alt={articles[2].title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                 </ArticleLink>
               </div>
 
@@ -80,8 +81,8 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {formatDate(articles[2].created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground uppercase truncate">{articles[2].author.name}</span>
-                  {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author.name}</a> */}
+                  <span className="text-foreground uppercase truncate">{articles[2].author?.name || 'DeTake'}</span>
+                  {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author?.name || 'DeTake'}</a> */}
                 </div>
               </div>
             </article>
@@ -102,8 +103,8 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                     {formatDate(article.created_at, locale)}
                   </span>
                   <span>/ {t('article.by')} </span>
-                  <span className="text-foreground uppercase">{article.author.name}</span>
-                  {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author.name}</a> */}
+                  <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
+                  {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author?.name || 'DeTake'}</a> */}
                 </div>
               </article>
             ))}
@@ -119,7 +120,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   {/* Left side: Image */}
                   <div className="w-[330px] flex-none h-full relative overflow-hidden">
                     <ArticleLink slug={article.slug} business={getArticleBusinessPath(article)} locale={locale} className="block w-full h-full">
-                      <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                      <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </ArticleLink>
                   </div>
 
@@ -141,8 +142,8 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         {formatDate(article.created_at, locale)}
                       </span>
                       <span>/ {t('article.by')} </span>
-                      {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author.name}</a> */}
-                      <span className="text-foreground uppercase truncate">{article.author.name}</span>
+                      {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author?.name || 'DeTake'}</a> */}
+                      <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
                     </div>
                   </div>
                 </article>
@@ -159,7 +160,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   {/* Left side: Image */}
                   <div className="w-[274px] flex-none h-full relative overflow-hidden">
                     <ArticleLink slug={articles[2].slug} business={getArticleBusinessPath(articles[2])} locale={locale} className="block h-full">
-                      <img src={articles[2].img_url || '/placeholder.svg'} alt={articles[2].title} className="w-full h-[154px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                      <img src={articles[2].img_url || placeholderImageUrl} alt={articles[2].title} className="w-full h-[154px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                     </ArticleLink>
                   </div>
 
@@ -181,8 +182,8 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         {formatDate(articles[2].created_at, locale)}
                       </span>
                       <span>/ {t('article.by')} </span>
-                      <span className="text-foreground uppercase truncate">{articles[2].author.name}</span>
-                      {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author.name)}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author.name}</a> */}
+                      <span className="text-foreground uppercase truncate">{articles[2].author?.name || 'DeTake'}</span>
+                      {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author?.name || 'DeTake'}</a> */}
                     </div>
                   </div>
                 </div>
@@ -209,7 +210,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                           {formatDate(article.created_at, locale)}
                         </span>
                         <span>/ {t('article.by')} </span>
-                        <span className="text-foreground uppercase truncate">{article.author.name}</span>
+                        <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
                       </div> */}
                     </div>
                   </article>

@@ -5,6 +5,7 @@ import { getCategoryLabel as getTaxonomyCategoryLabel } from '@/config/article-t
 import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
+import { placeholderImageUrl } from '@/config/assets';
 
 interface NewsGridProps {
   initialArticles?: HomeNewsArticle[];
@@ -108,7 +109,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                     {/* Article image */}
                     <div className="relative flex-shrink-0">
                       <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} article={article} className="block">
-                        <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-20 h-20 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                        <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-20 h-20 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                       </ArticleLink>
                     </div>
 
@@ -132,7 +133,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                           <span data-date={article.created_at} data-locale={locale}>
                             {formatDate(article.created_at, locale)}
                           </span>{' '}
-                          / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
+                          / {t('article.by')} <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
                         </span>
                       </div>
                     </div>
@@ -160,7 +161,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                 {/* Article image */}
                 <div className="relative w-full">
                   <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} article={article} className="block overflow-hidden">
-                    <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-36 lg:h-32 object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
                   </ArticleLink>
                 </div>
 
@@ -186,7 +187,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                       <span data-date={article.created_at} data-locale={locale}>
                         {formatDate(article.created_at, locale)}
                       </span>{' '}
-                      / {t('article.by')} <span className="text-foreground uppercase">{article.author.name}</span>
+                      / {t('article.by')} <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
                     </span>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel } from '@
 import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
+import { placeholderImageUrl } from '@/config/assets';
 
 interface ResearchGridProps {
   articles: HomeMostReadArticle[];
@@ -24,7 +25,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
             {/* Left side: Image */}
             <div className="flex-shrink-0 w-22 h-22 relative overflow-hidden rounded">
               <ArticleLink slug={article.slug} locale={locale} business="research" className="block h-full">
-                <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
               </ArticleLink>
             </div>
 
@@ -33,7 +34,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               {/* Category tag */}
               <div className="flex flex-wrap gap-2">
                 <a href="/research" className="text-primary text-xs font-medium uppercase hover:text-primary/80 transition-colors">
-                  {article.author.name}
+                  {article.author?.name || 'DeTake'}
                 </a>
               </div>
 
@@ -53,7 +54,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                   {formatDate(article.created_at, locale)}
                 </span>
                 <span>/ {t('article.by')} </span>
-                <span className="text-foreground uppercase">{article.author.name}</span>
+                <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
               </div>
             </div>
           </article>
@@ -67,7 +68,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
             {/* Research card image area */}
             <div className="relative">
               <ArticleLink slug={article.slug} locale={locale} business="research" className="block overflow-hidden">
-                <img src={article.img_url || '/placeholder.svg'} alt={article.title} className="w-full h-[186px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
+                <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-[186px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
               </ArticleLink>
             </div>
 
@@ -96,7 +97,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                       {formatDate(article.created_at, locale)}
                     </span>
                     <span>/ {t('article.by')} </span>
-                    <span className="text-foreground uppercase truncate">{article.author?.name || article.author.name}</span>
+                    <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
                   </div>
                 </div>
               </div>

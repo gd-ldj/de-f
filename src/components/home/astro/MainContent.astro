@@ -3,6 +3,7 @@
 import type { Locale, HomeNewsArticle } from '@/types'
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import ArticleLink from '@/components/common/astro/ArticleLink.astro'
+import { placeholderImageUrl } from '@/config/assets'
 import { formatDate, getArticleBusinessPath, getLocalizedBusinessTypeLabel } from '@/utils/util'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import type { SourceLanguage } from '@/types'
@@ -96,7 +97,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
             {formatDate(featuredArticle.created_at, locale)}
           </span>
          <span class="text-muted-foreground">/ {t('article.by')} </span>
-          <span class='text-foreground uppercase'>{featuredArticle.author.name}</span>
+          <span class='text-foreground uppercase'>{featuredArticle.author?.name || 'DeTake'}</span>
         </div>
 
         <div class="relative">
@@ -107,7 +108,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
             article={featuredArticle}
           >
             <img
-              src={featuredArticle.img_url || '/placeholder.svg'}
+              src={featuredArticle.img_url || placeholderImageUrl}
               alt={featuredArticle.title}
               class="w-full h-48 md:h-84 object-cover rounded hover:opacity-90 transition-opacity"
             />
@@ -148,7 +149,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
             {formatDate(article.created_at, locale)}
           </span>
           <span class="text-muted-foreground">/ {t('article.by')}</span>
-          <span class='text-foreground uppercase'>{article.author.name}</span>
+          <span class='text-foreground uppercase'>{article.author?.name || 'DeTake'}</span>
         </div>
       </div>
     ))}
