@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchArticles } from '@/api/articles';
 import { searchContent } from '@/api/search';
+import { addBusinessBreadcrumb } from '@/lib/sentry';
 import type { ApiArticle, Locale } from '@/types';
 
 interface UseSearchArticlesOptions {
@@ -77,6 +78,15 @@ export function useSearchArticles({
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
+
+      // Observability breadcrumb — only on initial searches, not pagination,
+      // so we don't over-fill the trail.
+      if (!append) {
+        addBusinessBreadcrumb('search.submit', {
+          locale,
+          keywordLength: normalizedKeyword.length,
+        });
+      }
 
       setIsLoading(true);
 

@@ -1,6 +1,7 @@
 ---
 import AnalyticsProvider from '../components/common/AnalyticsProvider';
 import { Analytics } from '@vercel/analytics/react';
+import SentryPageScope from '@/components/common/react/SentryPageScope';
 import { SITE_CONFIG } from '@/config/constants';
 import { generateHreflangAlternates } from '@/lib/language-utils';
 
@@ -28,6 +29,11 @@ export interface Props {
   sourceLanguage?: SourceLanguage
   translationLanguage?: TranslationLanguage | null
   availableTranslations?: TranslationLanguage[]
+  // Sentry page scope (Phase 3 — observability)
+  pageType?: string
+  routePattern?: string
+  trackArticleView?: boolean
+  sentryArticleId?: string
 }
 
 const {
@@ -47,8 +53,27 @@ const {
   pageLang,
   sourceLanguage,
   translationLanguage,
-  availableTranslations
+  availableTranslations,
+  pageType,
+  routePattern,
+  trackArticleView,
+  sentryArticleId
 } = Astro.props
+
+// Fall back to a coarse pageType inferred from the pathname when the page
+// doesn't pass one explicitly. Prefer having a value over leaving Sentry blind.
+const inferredPageType = (() => {
+  if (pageType) return pageType
+  const p = Astro.url.pathname
+  if (/^\/(us|asia)\/?$/.test(p) || p === '/') return 'home'
+  if (p.includes('/article/')) return 'article'
+  if (p.includes('/category/')) return 'category'
+  if (p.includes('/topic/')) return 'topic'
+  if (p.includes('/podcast')) return 'podcast'
+  if (p.includes('/search')) return 'search'
+  if (p.includes('/author/')) return 'author'
+  return 'other'
+})()
 
 type ArticleLanguageCode = 'en' | 'zh' | 'ar' | 'ru' | 'ja'
 
@@ -232,6 +257,16 @@ const ogLocaleAlternates = availableTranslations ? availableTranslations.map((la
 
     <AnalyticsProvider client:only="react" />
     <Analytics client:only="react" />
+
+    {/* Sentry: attach locale / page_type tags to every event coming from this page. */}
+    <SentryPageScope
+      client:load
+      locale={locale}
+      pageType={inferredPageType}
+      routePattern={routePattern}
+      trackArticleView={trackArticleView}
+      articleId={sentryArticleId}
+    />
     
     <!-- External Authentication Manager -->
     <script src="/src/scripts/auth-manager.js"></script>

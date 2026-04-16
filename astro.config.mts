@@ -12,6 +12,47 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL || 'detake.news';
 
+// ---- Sentry build-time options ----
+// Runtime SDK options (dsn, release, environment, tracesSampleRate, beforeSend, ...)
+// MUST live in sentry.client.config.js / sentry.server.config.js because
+// when those files exist, runtime options passed to sentry({ ... }) are ignored.
+// See node_modules/@sentry/astro/build/types/integration/types.d.ts for the full contract.
+const sentryReleaseName = process.env.SENTRY_RELEASE || process.env.VERCEL_GIT_COMMIT_SHA;
+
+const sentryBuildConfig = {
+  org: 'tadle',
+  project: 'detake',
+  // Auth token is required for source map upload. Provision it in Vercel env as SENTRY_AUTH_TOKEN.
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  telemetry: false,
+  sourcemaps: {
+    // Default glob works for Astro; set explicit assets only if the default misses files.
+    // Disable uploading in local dev to avoid noisy failures.
+    disable: isDev,
+  },
+  release: {
+    // Falls back to Vercel commit SHA. If neither env is set, bundler-plugin tries git HEAD.
+    name: sentryReleaseName,
+    // Don't require git CLI inside Vercel build; rely on explicit name.
+    setCommits: sentryReleaseName ? { auto: true, ignoreMissing: true, ignoreEmpty: true } : false,
+  },
+  unstable_sentryVitePluginOptions: {
+    // Component name annotation: injects data-sentry-component / data-sentry-source-file
+    // on every React component so breadcrumbs show ui.component_name.
+    // Gated with SENTRY_ANNOTATE_COMPONENTS so we can disable via env if it breaks prop-passing.
+    reactComponentAnnotation: {
+      enabled: process.env.SENTRY_ANNOTATE_COMPONENTS !== 'false',
+      // Known components that forward/inspect props and may break with extra DOM props.
+      // Extend this list if we see runtime warnings in preview after enabling annotation.
+      ignoredComponents: [
+        'Slot',
+        'SlotClone',
+        'Primitive',
+      ],
+    },
+  },
+};
+
 // https://astro.build/config
 const devDefineConfig = defineConfig({
   site: `https://${productionHost}`,
@@ -32,11 +73,7 @@ const devDefineConfig = defineConfig({
         },
       },
     }),
-    sentry({
-      project: 'detake',
-      org: 'tadle',
-      dsn: process.env.SENTRY_DSN || '',
-    }),
+    sentry(sentryBuildConfig),
   ],
   i18n: {
     defaultLocale: 'us',
@@ -97,11 +134,7 @@ export default isDev
             },
           },
         }),
-        sentry({
-          project: 'detake',
-          org: 'tadle',
-          dsn: process.env.SENTRY_DSN || '',
-        }),
+        sentry(sentryBuildConfig),
       ],
       compressHTML: true, // Remove HTML comments and whitespace
       i18n: {
@@ -127,6 +160,10 @@ export default isDev
           include: ['buffer', 'process'],
         },
         build: {
+          // IMPORTANT: source maps MUST be enabled for Sentry symbolication.
+          // Sentry's Vite plugin uploads them and then removes them from the deployed bundle
+          // (debug IDs are injected into the JS, so Sentry can still symbolicate after upload).
+          sourcemap: true,
           // Enhanced minification and obfuscation for production
           minify: 'terser',
           terserOptions: {

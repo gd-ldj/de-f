@@ -3,6 +3,7 @@ import TopicMultiSelect from '@/components/common/react/TopicMultiSelect';
 import CategoryMultiSelect from '@/components/common/react/CategoryMultiSelect';
 import AuthorSearchInput from '@/components/common/react/AuthorSearchInput';
 import { createTranslator } from '@/lib/i18n';
+import { addBusinessBreadcrumb } from '@/lib/sentry';
 import type { Locale } from '@/types';
 
 export interface FilterBarProps {
@@ -55,6 +56,7 @@ export default function FilterBar({ locale, authorName = '', viewMode = 'grid', 
   // Click handler to broadcast global clearing events to all filter widgets
   const handleClearAllFilters = () => {
     if (!anyActive) return;
+    addBusinessBreadcrumb('filter.clear_all', { locale });
     // Send clear events to all filter components
     document.dispatchEvent(new CustomEvent('filter:clear-all'));
     document.dispatchEvent(new CustomEvent('category:clear-all'));

@@ -2,6 +2,7 @@ import React from 'react';
 import MobileHeader from './mobile';
 import DesktopHeader from './DesktopHeader';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { addBusinessBreadcrumb } from '@/lib/sentry';
 import type { Locale } from '@/types';
 
 interface HeaderProps {
@@ -15,6 +16,10 @@ export default function Header({ locale, currentPath, userComponent }: HeaderPro
     if (newLocale === locale) {
       return;
     }
+    addBusinessBreadcrumb('locale.switch', {
+      from: locale,
+      to: newLocale,
+    });
     if (typeof window !== 'undefined') {
       const targetLanguage = MULTI_SOURCE_CONFIG.localeToLanguage(newLocale);
       const domains = MULTI_SOURCE_CONFIG.SOURCE_LANGUAGE_DOMAINS[targetLanguage] || [];

@@ -12,6 +12,7 @@ import { loginWithClerk } from '@/api/auth';
 import { fetchUserPersonalInfo } from '@/api/users';
 import { DEFAULT_PROMOTE_CODE } from '@/config/constants';
 import { getAnonymousPromoteCode } from '@/lib/fingerprint';
+import { identifyUser, clearUser } from '@/lib/sentry';
 
 /**
  * ClerkApiTokenSync - Syncs Clerk authentication with backend API
@@ -42,6 +43,8 @@ export function ClerkApiTokenSync() {
           if ((window as any).detakeAnalytics) {
             (window as any).detakeAnalytics.setUserId(null);
           }
+          // Detach Sentry user scope so post-logout errors aren't attributed.
+          clearUser();
           getAnonymousPromoteCode().then((code) => {
             if (!isCancelled) setPromoteCode(code);
           });
@@ -82,6 +85,8 @@ export function ClerkApiTokenSync() {
           if ((window as any).detakeAnalytics) {
             (window as any).detakeAnalytics.setUserId(authData.user_id);
           }
+          // Attach Sentry user scope (id only — no PII).
+          identifyUser({ id: String(authData.user_id) });
 
           // Fetch user personal info for promote code
           try {
