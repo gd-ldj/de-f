@@ -20,7 +20,10 @@ const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.
 const sentryReleaseName = process.env.SENTRY_RELEASE || process.env.VERCEL_GIT_COMMIT_SHA;
 
 const sentryBuildConfig = {
-  org: 'tadle',
+  // Org slug for the EU-region project "detake" (verified via sentry-cli against DSN).
+  // Previous value "tadle" was actually a sibling project slug and caused silent
+  // sourcemap upload failures (releases existed but had 0 artifacts).
+  org: 'hedgue',
   project: 'detake',
   // Auth token is required for source map upload. Provision it in Vercel env as SENTRY_AUTH_TOKEN.
   authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -161,9 +164,11 @@ export default isDev
         },
         build: {
           // IMPORTANT: source maps MUST be enabled for Sentry symbolication.
-          // Sentry's Vite plugin uploads them and then removes them from the deployed bundle
-          // (debug IDs are injected into the JS, so Sentry can still symbolicate after upload).
-          sourcemap: true,
+          // Use 'hidden' (NOT true) so the emitted .js has no `//# sourceMappingURL=`
+          // comment — the Vite plugin still uploads the .map to Sentry (debug IDs
+          // injected into the JS allow symbolication server-side), but browsers
+          // cannot discover and download the map, so source code is not exposed.
+          sourcemap: 'hidden',
           // Enhanced minification and obfuscation for production
           minify: 'terser',
           terserOptions: {
