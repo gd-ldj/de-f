@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import TestHomeData from '@/components/test/TestHomeData'
+
+export const prerender = false
+---
+
+<BaseLayout title="Test - Home Data" locale="en">
+  <main class="p-4">
+    <TestHomeData client:only="react" />
+  </main>
+</BaseLayout>
