@@ -17,6 +17,7 @@ export interface ApiArticle {
   category_name?: string;
   business_type_name?: string;
   tags: string[];
+  topic_names?: string[];
   img_url?: string;
   language?: string;
   page_view?: string;
