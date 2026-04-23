@@ -12,7 +12,14 @@ from auto.orchestrator.intake import persist_json
 from auto.runtime.agent_runner import run_stage
 
 
-def run_spec_review(item_dir: str | Path, requirement: str, spec_kind: str, workflow: dict) -> dict:
+def run_spec_review(
+    item_dir: str | Path,
+    requirement: str,
+    spec_kind: str,
+    workflow: dict,
+    *,
+    design_brief_path: "Path | None" = None,
+) -> dict:
     """Run spec review through the configured stage agent and persist artifacts.
 
     Per the /auto:add skill Step 4.b, the reviewer MUST see both the original
@@ -27,10 +34,16 @@ def run_spec_review(item_dir: str | Path, requirement: str, spec_kind: str, work
     spec_content = _read_spec_artifact(item_dir, spec_kind)
 
     # Requirement payload = REQUIREMENT body + SPEC body, per skill Step 4.b.
+    # If a design brief exists, append it so the reviewer sees the design target.
     combined_requirement = requirement
     if spec_content:
         combined_requirement = (
             requirement.rstrip() + "\n\n---\n\n# SPEC\n\n" + spec_content.rstrip()
+        )
+    brief_content = _read_design_brief(design_brief_path)
+    if brief_content:
+        combined_requirement = (
+            combined_requirement.rstrip() + "\n\n---\n\n# DESIGN BRIEF\n\n" + brief_content.rstrip()
         )
 
     payload: dict[str, Any] = {
@@ -56,6 +69,19 @@ def run_spec_review(item_dir: str | Path, requirement: str, spec_kind: str, work
     persist_json(item_dir / "SPEC-REVIEW.json", enriched)
     write_spec_scorecard(item_dir, enriched)
     return enriched
+
+
+def _read_design_brief(design_brief_path: "Path | None") -> str:
+    """Read the DESIGN-BRIEF.md content if it exists."""
+    if design_brief_path is None:
+        return ""
+    path = Path(design_brief_path)
+    if not path.exists():
+        return ""
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
 
 
 def _read_spec_artifact(item_dir: Path, spec_kind: str) -> str:

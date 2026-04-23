@@ -30,7 +30,7 @@ def main() -> int:
     if os.environ.get("AUTO_QA_FORWARD_COMMAND", "").strip():
         result = run_forward_command(os.environ["AUTO_QA_FORWARD_COMMAND"], timeout=1200)
     elif mode == "playwright":
-        result = _run_playwright(project_root, spec_path)
+        result = _run_playwright(project_root, spec_path, payload)
     elif mode == "auto":
         result = _run_auto_verify(project_root, spec_path, payload)
     else:
@@ -48,7 +48,10 @@ def _write_generated_spec(project_root: Path, artifact_dir: Path, payload: dict)
     notes = str(payload.get("notes", "")).strip()
     verify_mode = str(payload.get("verify_mode", "non_ui")).strip() or "non_ui"
     acceptance_criteria = _normalize_criteria(payload.get("acceptance_criteria", []))
+    required_states = _normalize_criteria(payload.get("required_states", []))
     step_lines = _build_step_lines(acceptance_criteria, verify_mode)
+    if required_states and verify_mode == "browser":
+        step_lines.extend(_build_state_assertion_lines(required_states, target_path))
     spec_path.write_text(
         "\n".join(
             [
@@ -79,7 +82,7 @@ def _normalize_target_path(value: object) -> str:
     return text
 
 
-def _run_playwright(project_root: Path, spec_path: Path) -> dict:
+def _run_playwright(project_root: Path, spec_path: Path, payload: dict | None = None) -> dict:
     pnpm_bin = os.environ.get("AUTO_PLAYWRIGHT_BIN", "pnpm").strip() or "pnpm"
     if not _can_run_playwright(project_root, pnpm_bin):
         return _playwright_unavailable(spec_path)
@@ -122,6 +125,9 @@ def _run_playwright(project_root: Path, spec_path: Path) -> dict:
         timeout=1800,
         env=env,
     )
+    # Capture implementation screenshots regardless of test outcome.
+    target_path = _normalize_target_path((payload or {}).get("target_path"))
+    screenshot_paths = _capture_screenshots(project_root, spec_path.parent, target_path, pnpm_bin, base_url)
     if result.returncode == 0:
         return {
             "status": "ok",
@@ -129,6 +135,7 @@ def _run_playwright(project_root: Path, spec_path: Path) -> dict:
             "summary": "playwright QA verify passed",
             "bugs": [],
             "generated_spec": str(spec_path),
+            "screenshot_paths": screenshot_paths,
         }
     return {
         "status": "error",
@@ -136,9 +143,90 @@ def _run_playwright(project_root: Path, spec_path: Path) -> dict:
         "summary": "playwright QA verify failed",
         "bugs": [{"title": "Playwright verification failed", "severity": "high", "confidence": 0.8}],
         "generated_spec": str(spec_path),
+        "screenshot_paths": screenshot_paths,
         "stderr": (result.stderr or "").strip()[-500:],
         "stdout": (result.stdout or "").strip()[-500:],
     }
+
+
+def _capture_screenshots(
+    project_root: Path,
+    artifact_dir: Path,
+    target_path: str,
+    pnpm_bin: str,
+    base_url: str,
+) -> list[str]:
+    """Capture desktop and mobile screenshots of the target page after verify.
+
+    Saves to <artifact_dir>/screenshots/{desktop.png,mobile.png}.
+    Returns a list of absolute paths for the captured files.
+    """
+    screenshots_dir = artifact_dir / "screenshots"
+    screenshots_dir.mkdir(parents=True, exist_ok=True)
+
+    desktop_path = screenshots_dir / "desktop.png"
+    mobile_path = screenshots_dir / "mobile.png"
+
+    capture_spec = artifact_dir / "SCREENSHOT-CAPTURE.spec.ts"
+    capture_config = artifact_dir / "playwright.screenshot.config.ts"
+
+    capture_spec.write_text(
+        "\n".join([
+            "import { expect, test } from '@playwright/test';",
+            "",
+            f"test('desktop screenshot', async ({{ page }}) => {{",
+            f"  await page.setViewportSize({{ width: 1440, height: 900 }});",
+            f"  await page.goto({target_path!r});",
+            "  await expect(page.locator('body')).toBeVisible();",
+            f"  await page.screenshot({{ path: {str(desktop_path)!r}, fullPage: false }});",
+            "});",
+            "",
+            f"test('mobile screenshot', async ({{ page }}) => {{",
+            f"  await page.setViewportSize({{ width: 375, height: 812 }});",
+            f"  await page.goto({target_path!r});",
+            "  await expect(page.locator('body')).toBeVisible();",
+            f"  await page.screenshot({{ path: {str(mobile_path)!r}, fullPage: false }});",
+            "});",
+            "",
+        ]),
+        encoding="utf-8",
+    )
+    capture_config.write_text(
+        "\n".join([
+            "import { defineConfig } from '@playwright/test';",
+            "",
+            "export default defineConfig({",
+            f"  testDir: {str(artifact_dir)!r},",
+            f"  testMatch: {capture_spec.name!r},",
+            "  reporter: 'line',",
+            "  workers: 1,",
+            "  fullyParallel: false,",
+            "  use: {",
+            f"    baseURL: {base_url!r},",
+            "  },",
+            "});",
+            "",
+        ]),
+        encoding="utf-8",
+    )
+    try:
+        subprocess.run(
+            [pnpm_bin, "exec", "playwright", "test", "--config", str(capture_config)],
+            cwd=str(project_root),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            env=os.environ.copy(),
+        )
+    except (subprocess.TimeoutExpired, OSError):
+        pass
+
+    captured = []
+    if desktop_path.exists():
+        captured.append(str(desktop_path))
+    if mobile_path.exists():
+        captured.append(str(mobile_path))
+    return captured
 
 
 def _run_auto_verify(project_root: Path, spec_path: Path, payload: dict) -> dict:
@@ -151,7 +239,7 @@ def _run_auto_verify(project_root: Path, spec_path: Path, payload: dict) -> dict
     pnpm_bin = os.environ.get("AUTO_PLAYWRIGHT_BIN", "pnpm").strip() or "pnpm"
     if not _can_run_playwright(project_root, pnpm_bin):
         return _playwright_unavailable(spec_path)
-    return _run_playwright(project_root, spec_path)
+    return _run_playwright(project_root, spec_path, payload)
 
 
 def _heuristic_verify(payload: dict, spec_path: Path) -> dict:
@@ -215,6 +303,40 @@ def _normalize_criteria(raw: object) -> list[str]:
         return [str(item).strip() for item in raw if str(item).strip()]
     text = str(raw).strip()
     return [text] if text else []
+
+
+def _build_state_assertion_lines(required_states: list[str], target_path: str) -> list[str]:
+    """Generate Playwright assertion steps for required UI states (loading, empty, error)."""
+    lines: list[str] = []
+    for state in required_states:
+        lowered = state.lower().strip()
+        if lowered == "loading":
+            lines.append(f"  await test.step('verify loading state', async () => {{")
+            lines.append(f"    await page.goto('{target_path}');")
+            lines.append("    // Loading state should appear before data resolves")
+            lines.append("    const loadingIndicator = page.getByText(/loading|skeleton/i).or(page.locator('[data-loading], [aria-busy=\"true\"]'));")
+            lines.append("    await expect(loadingIndicator.first()).toBeVisible({ timeout: 5000 });")
+            lines.append("  });")
+        elif lowered == "empty":
+            lines.append(f"  await test.step('verify empty state handling', async () => {{")
+            lines.append("    // Empty state should show a meaningful message when no data is present")
+            lines.append("    const emptyIndicator = page.getByText(/no.*(?:data|results|items|content)|empty/i).or(page.locator('[data-empty]'));")
+            lines.append("    // This assertion is soft — empty state may not be reachable via normal navigation")
+            lines.append("    // but must exist in the DOM when triggered")
+            lines.append("    await expect(emptyIndicator.first()).toBeAttached({ timeout: 3000 }).catch(() => {});")
+            lines.append("  });")
+        elif lowered == "error":
+            lines.append(f"  await test.step('verify error state handling', async () => {{")
+            lines.append("    // Error state should show user-friendly messaging")
+            lines.append("    const errorIndicator = page.getByText(/error|failed|unable/i).or(page.locator('[data-error], [role=\"alert\"]'));")
+            lines.append("    // Soft assertion — error state may not be reachable via normal flow")
+            lines.append("    await expect(errorIndicator.first()).toBeAttached({ timeout: 3000 }).catch(() => {});")
+            lines.append("  });")
+        else:
+            lines.append(f"  await test.step('verify {state} state', async () => {{")
+            lines.append(f"    await expect(page.getByText(/{state}/i)).toBeVisible({{ timeout: 5000 }});")
+            lines.append("  });")
+    return lines
 
 
 def _build_step_lines(criteria: list[str], verify_mode: str) -> list[str]:

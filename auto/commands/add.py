@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from auto.orchestrator.design import maybe_write_design
+from auto.orchestrator.design import write_design_brief
 from auto.orchestrator.intake import build_spec_artifact, prepare_work_item
 from auto.orchestrator.qa_units import build_qa_units
 from auto.orchestrator.spec_review import run_spec_review
@@ -55,7 +55,9 @@ def add_work_item(
             "work_item_id": item_id,
             "next_step": "raise the intake budget or simplify the requirement",
         }
-    review_payload = run_spec_review(item_dir, requirement, spec_kind, workflow)
+    # Generate design brief before spec review so the reviewer sees the design target.
+    design_brief_path = write_design_brief(item_dir, requirement)
+    review_payload = run_spec_review(item_dir, requirement, spec_kind, workflow, design_brief_path=design_brief_path)
     verdict = review_payload.get("verdict", "error")
     # Only pass/warn verdicts are allowed to produce TASKS/QA-UNITS/TASK-QUEUE.
     # Any other verdict (block, needs_revision, block_revise, or an unknown value)
@@ -78,9 +80,8 @@ def add_work_item(
             "next_step": "revise the spec per reviewer issues, or amend the requirement, then rerun /auto:add",
         }
 
-    design_path = maybe_write_design(item_dir, requirement)
     tasks = build_tasks(item_dir, item_id, requirement, paths.queue_file)
-    qa_units = build_qa_units(item_dir, item_id, requirement, tasks)
+    qa_units = build_qa_units(item_dir, item_id, requirement, tasks, design_brief_path=design_brief_path)
     queue_entries = append_queue_entries(paths.queue_file, [task.to_queue_entry() for task in tasks])
     artifacts = [
         str(item_dir / "REQUIREMENT.md"),
@@ -89,15 +90,15 @@ def add_work_item(
         str(item_dir / "TASKS.json"),
         str(item_dir / "QA-UNITS.json"),
     ]
-    if design_path is not None:
-        artifacts.append(str(design_path))
+    if design_brief_path is not None:
+        artifacts.append(str(design_brief_path))
     return {
         "status": "ok",
         "summary": f"Created {item_id} with {len(tasks)} tasks and {len(qa_units)} QA units.",
         "work_item_id": item_id,
         "spec_type": spec_kind,
         "spec_review_verdict": review_payload.get("verdict", "error"),
-        "design_created": design_path is not None,
+        "design_brief_created": design_brief_path is not None,
         "task_count": len(tasks),
         "qa_unit_count": len(qa_units),
         "queue_count": len(queue_entries),

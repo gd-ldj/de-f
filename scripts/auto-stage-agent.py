@@ -504,6 +504,8 @@ def _build_task_dev_prompt(payload: dict) -> str:
         lines.append("Before coding, read these files in order:")
         requirement = str(context_paths.get("requirement", "")).strip()
         spec = str(context_paths.get("spec", "")).strip()
+        design_brief = str(context_paths.get("design_brief", "")).strip()
+        ui_primitives = str(context_paths.get("ui_primitives", "")).strip()
         task_graph = str(context_paths.get("tasks", "")).strip()
         qa_units = str(context_paths.get("qa_units", "")).strip()
         fix_context = str(context_paths.get("fix_context", "")).strip()
@@ -514,20 +516,32 @@ def _build_task_dev_prompt(payload: dict) -> str:
         current_slug = str(tasks_filter.get("current_slug", "")).strip()
         member_task_slug = str(qa_filter.get("member_task_slug", "")).strip()
 
+        step = 1
         if requirement:
-            lines.append(f"1. Requirement: {requirement}")
+            lines.append(f"{step}. Requirement: {requirement}")
+            step += 1
         if spec:
-            lines.append(f"2. Spec: {spec}")
+            lines.append(f"{step}. Spec: {spec}")
+            step += 1
+        if design_brief:
+            lines.append(f"{step}. Design brief (visual target and state requirements): {design_brief}")
+            step += 1
+        if ui_primitives:
+            lines.append(f"{step}. UI design system primitives (color tokens, typography, spacing, components — follow these): {ui_primitives}")
+            step += 1
         if task_graph:
             suffix = f" (focus on current slug: {current_slug} and direct dependencies)" if current_slug else ""
-            lines.append(f"3. Task graph: {task_graph}{suffix}")
+            lines.append(f"{step}. Task graph: {task_graph}{suffix}")
+            step += 1
         if qa_units:
             suffix = f" (only criteria relevant to member task slug: {member_task_slug})" if member_task_slug else ""
-            lines.append(f"4. QA units: {qa_units}{suffix}")
+            lines.append(f"{step}. QA units: {qa_units}{suffix}")
+            step += 1
         if fix_context:
-            lines.append(f"5. Fix context: {fix_context}")
+            lines.append(f"{step}. Fix context: {fix_context}")
+            step += 1
         if review:
-            lines.append(f"6. Previous review: {review}")
+            lines.append(f"{step}. Previous review: {review}")
 
         hard_rules = payload.get("hard_rules", [])
         if isinstance(hard_rules, list) and hard_rules:

@@ -52,6 +52,7 @@ def run_qa_verify(
         "target_path": qa_unit.get("target_path") or dev_server_cfg.get("health_path") or "/en",
         "notes": " ".join(qa_unit.get("notes", [])),
         "attempt_count": qa_unit.get("attempt_count", 0),
+        "required_states": list(qa_unit.get("required_states", [])),
     }
     result = run_stage(
         "qa_verify",
@@ -60,10 +61,12 @@ def run_qa_verify(
         project_root=project_root,
         artifact_dir=qa_dir,
     )
+    screenshot_paths = result.get("screenshot_paths", [])
     verify_payload = {
         "verdict": result.get("verdict", "error"),
         "summary": result.get("summary", ""),
         "attempt_count": qa_unit.get("attempt_count", 0),
+        "screenshot_paths": screenshot_paths,
     }
     bugs_payload = {"bugs": result.get("bugs", [])}
     qa_path.joinpath("VERIFY.json").write_text(json.dumps(verify_payload, indent=2) + "\n", encoding="utf-8")

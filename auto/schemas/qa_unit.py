@@ -22,6 +22,10 @@ class QAUnitRecord:
     owner: str = "auto-planner"
     state: QAUnitState = QA_UNIT_PENDING
     notes: tuple[str, ...] = field(default_factory=tuple)
+    # UI-specific fields populated when a DESIGN-BRIEF.md is present
+    required_states: tuple[str, ...] = field(default_factory=tuple)
+    visual_checks: tuple[str, ...] = field(default_factory=tuple)
+    design_brief_path: str | None = None
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)

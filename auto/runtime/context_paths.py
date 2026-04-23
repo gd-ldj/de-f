@@ -23,8 +23,12 @@ def build_task_context_paths(
         spec_path = _resolve_spec_path(item_dir)
         if spec_path is not None:
             _add_if_exists(paths, "spec", spec_path)
+        _add_if_exists(paths, "design_brief", item_dir / "DESIGN-BRIEF.md")
         _add_if_exists(paths, "tasks", item_dir / "TASKS.json")
         _add_if_exists(paths, "qa_units", item_dir / "QA-UNITS.json")
+
+    # Inject the project-wide UI design system reference if it exists.
+    _add_if_exists(paths, "ui_primitives", root / "docs" / "UI_PRIMITIVES.md")
 
     if slug:
         resolved_task_dir = Path(task_dir).resolve() if task_dir is not None else root / ".auto" / "tasks" / slug
