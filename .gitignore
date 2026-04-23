@@ -46,3 +46,13 @@ playwright/.cache/
 
 .playwright/
 .playwright-mcp/
+
+# Python bytecode (AUTO v2 runtime)
+__pycache__/
+*.pyc
+
+# Claude Code worktrees
+.claude/worktrees/
+
+# AUTO v2 generated artifacts
+auto/generated/
