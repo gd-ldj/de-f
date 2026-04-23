@@ -49,8 +49,7 @@ export default function TopicPage({ locale, topic, topicSlug, initialPage }: Top
       setLoading(true);
       try {
         const options = {
-          business_type_name: 'News',
-          tag: topic, // Filter by the current topic only
+          topic_name: topic,
           order_by: 'Latest' as const,
           page: page,
         };
