@@ -1,0 +1,81 @@
+version: 1
+runtime:
+  state: idle
+  max_parallel: 2
+  drain_on_start: true
+  background_start: true
+  keep_alive: true
+  poll_interval_seconds: 15
+  lease_stale_after_seconds: 900
+  auto_restart: true
+  max_restart_attempts: 3
+  restart_delay_seconds: 5
+  status_port: 9101
+agents:
+  spec_review: command
+  task_dev: command
+  task_review: command
+  task_verify: command
+  qa_verify: command
+agent_commands:
+  spec_review: AUTO_STAGE_MODE=codex python3 scripts/auto-stage-agent.py
+  task_dev: AUTO_STAGE_MODE=codex python3 scripts/auto-stage-agent.py
+  task_review: AUTO_CODEX_REVIEW_MODE=codex python3 scripts/auto-codex-review.py
+  task_verify: AUTO_CODEX_VERIFY_MODE=codex python3 scripts/auto-codex-verify.py
+  qa_verify: AUTO_QA_VERIFY_MODE=playwright python3 scripts/auto-qa-verify.py
+agent_timeouts:
+  spec_review: 300
+  task_dev: 900
+  task_review: 300
+  task_verify: 600
+  qa_verify: 600
+agent_retry:
+  attempts: 2
+  strategy: fixed
+  base_delay: 1
+  max_delay: 5
+  jitter: false
+review:
+  reviewer: configurable
+verify:
+  mode: qa_unit_default
+  task_level_enabled: false
+  fail_on_missing_verify_json: true
+  max_total_fix_attempts: 6
+budget:
+  spec_review_tokens: 120000
+  task_dev_tokens: 400000
+  task_review_tokens: 120000
+  qa_verify_tokens: 200000
+  per_task_total_tokens: 700000
+  on_budget_exceeded: pause_task
+safeguards:
+  expand_threshold: 5
+  forbidden: [src/middleware.ts, src/layouts/, src/config/, src/locales/]
+dev_server:
+  port: 4321
+  health_path: /
+  start_command: pnpm dev
+worktree:
+  reuse_existing: true
+  cleanup_policy: preserve_metadata
+watchdog:
+  repeated_block_threshold: 3
+  stale_progress_seconds: 900
+alerts:
+  webhook_url:
+  telegram_enabled: true
+  telegram_bot_token_env: TG_BOT_TOKEN
+  telegram_chat_id_env: TG_CHAT_ID
+  events: [repeated_block, stalled_progress, runtime_crash, queue_drained]
+gates:
+  tsc: true
+  tsc_command: pnpm type-check
+  build: false
+  build_command: pnpm build
+  e2e: true
+  e2e_mode: auto
+  e2e_trigger_keywords: [page, modal, dialog, button, banner, form, table, drawer, popover]
+  e2e_trigger_scope_prefixes: [src/pages/, src/components/]
+  e2e_auto_command: pnpm test:e2e
+  e2e_command: pnpm test:e2e

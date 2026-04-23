@@ -179,3 +179,54 @@ pnpm type-check       # 类型检查（改动代码后必跑）
 - 能用 TypeScript 就不要用 JavaScript。  
 - 数据结构尽量全部定义成强类型；需要使用 `any` 时，先在对话里明确说明原因。  
 - 新增代码时，遵循本文件前半部分所列的项目级约定。
+
+## AUTO Workflow Enforcement
+
+Before using Edit, Write, or other file-changing tools for planned delivery work, start through the AUTO v2 command surface so specs, tasks, QA Units, and runtime state stay in sync under `.auto/`.
+
+Use these entry points:
+- `/auto:add` to turn a requirement into spec + tasks + QA Units
+- `/auto:start` to run or resume the AUTO runtime loop
+- `/auto:stop` to pause the AUTO runtime safely
+
+### Common Scripts
+
+- Local development: `pnpm dev` (default port **4321**)
+- Build: `pnpm build`
+- Type check: `pnpm type-check`
+- E2E tests: `pnpm test:e2e`
+
+### AI Development Workflow (Mandatory)
+
+**Strictly follow this order for every development task. Do not skip any step.**
+
+```text
+1. Requirement analysis and solution design
+   ↓
+2. Code implementation
+   ↓
+3. TypeScript type check
+   Command: pnpm type-check
+   Requirement: 0 errors
+   ↓
+4. Start the development server (if not already running)
+   Command: pnpm dev
+   ↓
+5. Real browser validation (mandatory, cannot be skipped)
+   - Test the feature directly in a browser
+   - Verify all interactions behave correctly
+   - Check edge cases and error handling
+   - Capture screenshots for the affected area
+   ↓
+6. Did the feature pass validation?
+   - No  -> go back to step 2 and fix issues
+   - Yes -> continue
+   ↓
+7. Done
+```
+
+### Prohibited Behavior
+
+- Do not submit code without real browser testing
+- Do not skip the TypeScript type check
+- Do not assume a feature works without actually testing it
