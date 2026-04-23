@@ -27,6 +27,7 @@ export async function fetchArticles(
     subcategory_names?: string;
     subcategory_name?: string;
     tag?: string;
+    topic_name?: string;
     author_name?: string;
     order_by?: 'Latest' | 'Popular' | 'Trending';
     cursor?: string;
@@ -66,6 +67,14 @@ export async function fetchArticles(
     if (options?.tag) {
       // Don't encode commas in tag parameter to preserve comma-separated values
       queryParts.push(`tag=${options.tag}`);
+    }
+    if (options?.topic_name) {
+      // Encode each topic token individually; preserve commas as OR separators
+      const encoded = options.topic_name
+        .split(',')
+        .map((t) => encodeURIComponent(t.trim()))
+        .join(',');
+      queryParts.push(`topic_name=${encoded}`);
     }
     if (options?.author_name) {
       queryParts.push(`author_name=${encodeURIComponent(options.author_name)}`);
