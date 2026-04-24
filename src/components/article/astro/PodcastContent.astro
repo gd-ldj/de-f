@@ -2,7 +2,7 @@
 import type { Locale, ApiArticle, TranslationLanguage, SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 import { buildArticleUrl, getSourceLanguageFromRequest } from '@/lib/language-utils'
-import { formatDate } from '@/utils/util'
+import { formatDate, getDisplayTopics } from '@/utils/util'
 import { getBusinessTypeLabel, getTagLabel as getTagLocalizedLabel } from '@/config/article-taxonomy'
 import YoutubeEmbed from '@/components/article/react/YoutubeEmbed'
 import PodcastAuthorCard from '@/components/article/react/PodcastAuthorCard'
@@ -151,10 +151,10 @@ const viewCount = article.youtube_view_count
 
     <!-- Tags + Mobile stats -->
     <div class="md:hidden flex justify-between items-center">
-      {Array.isArray(article.tags) && article.tags.length > 0 && (
+      {getDisplayTopics(article).length > 0 && (
         <div>
           <div class="flex flex-wrap gap-2">
-            {article.tags.map((tag) => (
+            {getDisplayTopics(article).map((tag) => (
               <a
                 href="javascript:;"
                 class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
@@ -179,10 +179,10 @@ const viewCount = article.youtube_view_count
     <div class="hidden md:flex items-center justify-between mb-1 pb-2">
       <div>
         <!-- Tags -->
-        {Array.isArray(article.tags) && article.tags.length > 0 && (
+        {getDisplayTopics(article).length > 0 && (
           <div class="mb-2 pt-2">
             <div class="flex flex-wrap gap-2">
-              {article.tags.map((tag) => (
+              {getDisplayTopics(article).map((tag) => (
                 <a
                   href="javascript:;"
                   class="inline-flex items-center rounded bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"

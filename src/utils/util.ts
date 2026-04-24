@@ -156,6 +156,23 @@ export function getLocalizedTagLabel(tag: string, lang: SourceLanguage): string 
 }
 
 /**
+ * Get display topics for an article, preferring topic_names over tags.
+ * Fallback: topic_names ?? tags ?? []
+ * topic_names is only used when present AND non-empty; an empty array
+ * falls through to tags so that legacy data is not silently dropped.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getDisplayTopics(article: Record<string, any>): string[] {
+  if (Array.isArray(article.topic_names) && article.topic_names.length > 0) {
+    return article.topic_names;
+  }
+  if (Array.isArray(article.tags)) {
+    return article.tags;
+  }
+  return [];
+}
+
+/**
  * Get localized business type label for an article.
  */
 export function getLocalizedBusinessTypeLabel(article: Record<string, any>, lang: SourceLanguage): string {

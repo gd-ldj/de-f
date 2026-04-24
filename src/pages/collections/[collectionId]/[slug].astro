@@ -16,7 +16,7 @@ import type { SourceLanguage, TranslationLanguage } from '@/types';
 import Footer from '@/components/common/react/footer/Index';
 import RecentResearch from '@/components/article/astro/RecentResearch.astro';
 import { SITE_CONFIG, MULTI_SOURCE_CONFIG } from '@/config/constants';
-import { getArticleBusinessPath, getArticleCategoryLabel } from '@/utils/util';
+import { getArticleBusinessPath, getArticleCategoryLabel, getDisplayTopics } from '@/utils/util';
 import { buildCollectionUrl, getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils';
 
 export const prerender = false;
@@ -98,7 +98,7 @@ const ogImageUrl = article.img_url
     : `${SITE_CONFIG.SITE_URL}${article.img_url}`
   : `${SITE_CONFIG.SITE_URL}/api/og/article.svg?${ogImageParams.toString()}`;
 
-const keywords = article.tags || [];
+const keywords = getDisplayTopics(article);
 const publishedTime = article.created_at;
 const modifiedTime = article.updated_at;
 const author = article?.author?.name || article.author_name;

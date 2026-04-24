@@ -1,6 +1,6 @@
 import type { ApiArticle, Locale } from '@/types';
 import ArticleLink from './ArticleLink';
-import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedTagLabel } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getDisplayTopics, getLocalizedCategoryLabel, getLocalizedTagLabel } from '@/utils/util';
 import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import { placeholderImageUrl } from '@/config/assets';
@@ -44,9 +44,9 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                 {/* Category Badge */}
                 {/* {getArticleSubcategoryLabel(article) && <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getArticleSubcategoryLabel(article)}</span>} */}
                 {/* Tags */}
-                {article.tags && article.tags.length > 0 && (
+                {getDisplayTopics(article).length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {article.tags.slice(0, 1).map((tag, index) => (
+                    {getDisplayTopics(article).slice(0, 1).map((tag, index) => (
                       <span key={index} className="text-muted-foreground text-[10px] md:text-xs uppercase">
                         {getLocalizedTagLabel(tag, lang)}
                       </span>

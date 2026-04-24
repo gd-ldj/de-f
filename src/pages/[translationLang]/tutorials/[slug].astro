@@ -10,6 +10,7 @@ import { fetchLearnItem } from '@/api/learn'
 import { fetchTranslatedArticle } from '@/api/articles'
 import { getSourceLanguageFromRequest, isValidTranslationLanguage } from '@/lib/language-utils'
 import { MULTI_SOURCE_CONFIG } from '@/config/constants'
+import { getDisplayTopics } from '@/utils/util'
 
 export const prerender = false
 
@@ -74,7 +75,7 @@ const ogImageParams = new URLSearchParams({
   type: 'learn',
 })
 const ogImageUrl = `${url.origin}/api/og/learn.svg?${ogImageParams.toString()}`
-const keywords = learnItem.tags || []
+const keywords = getDisplayTopics(learnItem)
 
 // Get available translations for hreflang
 // TODO: Fetch actual available translations from API

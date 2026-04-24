@@ -3,7 +3,7 @@ import { X, Search, Loader2 } from 'lucide-react';
 import { useSearchArticles } from './useSearchArticles';
 import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
 import ArticleLink from '@/components/common/react/ArticleLink';
-import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedTagLabel } from '@/utils/util';
+import { formatDate, getArticleBusinessPath, getDisplayTopics, getLocalizedCategoryLabel, getLocalizedTagLabel } from '@/utils/util';
 import { createTranslator } from '@/lib/i18n';
 import type { ApiArticle, Locale, SourceLanguage } from '@/types';
 import { placeholderImageUrl } from '@/config/assets';
@@ -340,7 +340,7 @@ function DesktopResults({
                 <span className="text-primary text-xs font-medium uppercase">
                   {getLocalizedCategoryLabel(article, lang)}
                 </span>
-                {article.tags?.slice(0, 1).map((tag, i) => (
+                {getDisplayTopics(article).slice(0, 1).map((tag, i) => (
                   <span key={i} className="text-muted-foreground text-xs uppercase">
                     {getLocalizedTagLabel(tag, lang)}
                   </span>
@@ -419,7 +419,7 @@ function MobileResults({
                 <span className="text-primary text-[10px] font-medium uppercase">
                   {getLocalizedCategoryLabel(article, lang)}
                 </span>
-                {article.tags?.slice(0, 1).map((tag, i) => (
+                {getDisplayTopics(article).slice(0, 1).map((tag, i) => (
                   <span key={i} className="text-muted-foreground text-[10px] uppercase">
                     {getLocalizedTagLabel(tag, lang)}
                   </span>

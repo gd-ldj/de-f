@@ -25,6 +25,7 @@ interface SearchApiItem {
   subcategory_names?: string[] | null;
   business_type_name?: string | null;
   tags?: string[] | null;
+  topic_names?: string[] | null;
 }
 
 function mapSearchItemToArticle(item: SearchApiItem): ApiArticle {
@@ -43,6 +44,7 @@ function mapSearchItemToArticle(item: SearchApiItem): ApiArticle {
     subcategory_names: item.subcategory_names || [],
     business_type_name: item.business_type_name || (isPodcast ? 'Podcasts' : 'News'),
     tags: item.tags || [],
+    topic_names: item.topic_names || undefined,
     img_url: item.img_url || undefined,
     language: item.language || undefined,
   };

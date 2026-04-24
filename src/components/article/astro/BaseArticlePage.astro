@@ -12,7 +12,7 @@ import type { ApiArticle, Locale, SourceLanguage, TranslationLanguage } from '@/
 import Footer from '@/components/common/react/footer/Index'
 import { SITE_CONFIG } from '@/config/constants'
 import { buildArticleUrl } from '@/lib/language-utils'
-import { getArticleBusinessPath } from '@/utils/util'
+import { getArticleBusinessPath, getDisplayTopics } from '@/utils/util'
 
 interface Props {
   locale: Locale
@@ -104,7 +104,7 @@ const ogImageUrl = article.img_url
     : `${SITE_CONFIG.SITE_URL}${article.img_url}`
   : `${SITE_CONFIG.SITE_URL}/api/og/article.svg?${ogImageParams.toString()}`
 
-const keywords = Array.isArray(article.tags) ? article.tags : []
+const keywords = getDisplayTopics(article)
 const publishedTime = article.created_at
 const modifiedTime = article.updated_at
 const author = article?.author?.name || article.author_name

@@ -4,7 +4,7 @@ import { fetchArticles } from '@/api/articles';
 import Image from '@/components/common/react/Image';
 import { createTranslator } from '@/lib/i18n';
 import { buildArticleUrl } from '@/lib/language-utils';
-import { getArticleBusinessPath, getLocalizedBusinessTypeLabel, getLocalizedTagLabel } from '@/utils/util';
+import { getArticleBusinessPath, getDisplayTopics, getLocalizedBusinessTypeLabel, getLocalizedTagLabel } from '@/utils/util';
 import type { SourceLanguage } from '@/types';
 import { placeholderImageUrl } from '@/config/assets';
 
@@ -97,16 +97,16 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
         {article.sub_title && <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{article.sub_title}</p>}
 
         {/* Tags */}
-        {article.tags && article.tags.length > 0 && (
+        {getDisplayTopics(article).length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {article.tags.slice(0, 3).map((tag, index) => (
+            {getDisplayTopics(article).slice(0, 3).map((tag, index) => (
               <span key={index} className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md">
                 {getLocalizedTagLabel(tag, lang)}
               </span>
             ))}
-            {article.tags.length > 3 && (
+            {getDisplayTopics(article).length > 3 && (
               <span className="text-xs text-muted-foreground">
-                +{article.tags.length - 3}
+                +{getDisplayTopics(article).length - 3}
                 {t('author.moreCountSuffix')}
               </span>
             )}

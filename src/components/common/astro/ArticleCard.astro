@@ -2,7 +2,7 @@
 import type { Locale } from '../../../types/index.ts';
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import { placeholderImageUrl } from '@/config/assets'
-import { getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util'
+import { getArticleBusinessPath, getDisplayTopics, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util'
 import { buildArticleUrl, getSourceLanguageFromRequest } from '@/lib/language-utils'
 import type { SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
@@ -108,8 +108,8 @@ const description = article.description || article.sub_title;
 // Prefer the normalized author name; fall back to legacy flat field.
 const author = article.author?.name || article.author_name;
 
-// Determine tags
-const tags = article.tags || [];
+// Determine tags (prefer topic_names, fallback to tags)
+const tags = getDisplayTopics(article);
 
 // Check if this is a podcast article
 const isPodcast = article.business_type_name === 'Podcasts';
