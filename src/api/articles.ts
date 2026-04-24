@@ -69,12 +69,7 @@ export async function fetchArticles(
       queryParts.push(`tag=${options.tag}`);
     }
     if (options?.topic_name) {
-      // Encode each topic token individually; preserve commas as OR separators
-      const encoded = options.topic_name
-        .split(',')
-        .map((t) => encodeURIComponent(t.trim()))
-        .join(',');
-      queryParts.push(`topic_name=${encoded}`);
+      queryParts.push(`topic_name=${options.topic_name}`);
     }
     if (options?.author_name) {
       queryParts.push(`author_name=${encodeURIComponent(options.author_name)}`);
