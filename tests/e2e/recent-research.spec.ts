@@ -24,8 +24,8 @@ async function resolveArticlePath(): Promise<string | null> {
   if (!article?.slug || !article?.business_type_name) return null;
 
   const businessPath = String(article.business_type_name).toLowerCase();
-  return article.user_id
-    ? `/${article.user_id}/article/${businessPath}/${article.slug}-${DEFAULT_PROMOTE_CODE}`
+  return article.user_id && !article.is_promoted
+    ? `/user/${article.user_id}/article/${businessPath}/${article.slug}-${DEFAULT_PROMOTE_CODE}`
     : `/article/${businessPath}/${article.slug}-${DEFAULT_PROMOTE_CODE}`;
 }
 

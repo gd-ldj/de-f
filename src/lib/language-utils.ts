@@ -141,7 +141,7 @@ export function isTranslationPath(pathname: string): boolean {
   }
 
   // Check if it's an article or collection path
-  return /^\/(en|zh|ja|fr|ar|ru|de|es|ko)\/(article|collections|learn)\//.test(pathname);
+  return /^\/(en|zh|ja|fr|ar|ru|de|es|ko)\/(article|collections|learn|user)\//.test(pathname);
 }
 
 /**
@@ -194,25 +194,72 @@ export function shouldRedirectToSourceVersion(sourceLanguage: SourceLanguage, tr
 /**
  * Build article URL with proper language handling
  *
+ * Article URL generation options
+ */
+export interface ArticleUrlOptions {
+  category: string;
+  slug: string;
+  sourceLanguage: SourceLanguage;
+  translationLanguage?: TranslationLanguage | null;
+  userId?: string;
+  isPromoted?: boolean;
+  promoteCode?: string;
+}
+
+/**
+ * Build article URL with proper language handling
+ *
  * @param category - Article category
  * @param slug - Article slug
  * @param sourceLanguage - Current site's source language
  * @param translationLanguage - Target translation language (null for source version)
  * @param userId - Optional user ID for user-generated articles
+ * @param isPromoted - Whether the article has been promoted to a public route
  * @returns Complete pathname
  */
-export function buildArticleUrl(category: string, slug: string, sourceLanguage: SourceLanguage, translationLanguage: TranslationLanguage | null = null, userId?: string): string {
-  // Base path without language
-  // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
-  const basePath = userId ? `/${userId}/article/${category}/${slug}` : `/article/${category}/${slug}`;
+export function buildArticleUrl(options: ArticleUrlOptions): string;
+export function buildArticleUrl(
+  category: string,
+  slug: string,
+  sourceLanguage: SourceLanguage,
+  translationLanguage?: TranslationLanguage | null,
+  userId?: string,
+  isPromoted?: boolean,
+): string;
+export function buildArticleUrl(
+  categoryOrOptions: string | ArticleUrlOptions,
+  slug?: string,
+  sourceLanguage?: SourceLanguage,
+  translationLanguage: TranslationLanguage | null = null,
+  userId?: string,
+  isPromoted?: boolean,
+): string {
+  const options: ArticleUrlOptions =
+    typeof categoryOrOptions === 'object'
+      ? categoryOrOptions
+      : {
+          category: categoryOrOptions,
+          slug: slug || '',
+          sourceLanguage: sourceLanguage || 'en',
+          translationLanguage,
+          userId,
+          isPromoted,
+        };
+
+  const normalizedTranslationLanguage = options.translationLanguage ?? null;
+  const slugPart = options.promoteCode ? `${options.slug}-${options.promoteCode}` : options.slug;
+  const effectiveUserId = options.userId && !options.isPromoted ? options.userId : undefined;
+  const basePath = effectiveUserId
+    ? `/user/${effectiveUserId}/article/${options.category}/${slugPart}`
+    : `/article/${options.category}/${slugPart}`;
 
   // If translation language is null or same as source, return source version
-  if (!translationLanguage || translationLanguage === sourceLanguage) {
+  if (!normalizedTranslationLanguage || normalizedTranslationLanguage === options.sourceLanguage) {
     return basePath;
   }
 
   // Add translation prefix
-  return `/${translationLanguage}${basePath}`;
+  return `/${normalizedTranslationLanguage}${basePath}`;
 }
 
 /**

@@ -62,10 +62,11 @@ function updateAllArticleLinks() {
       const locale = link.dataset.locale;
       const business = (link.dataset.business || 'news').toLowerCase();
       const authorId = link.dataset.authorId;
+      const isPromoted = link.dataset.isPromoted === 'true';
       
       if (slug && locale) {
         const oldHref = link.href;
-        const prefix = authorId ? `/${authorId}/article` : `/article`;
+        const prefix = authorId && !isPromoted ? `/user/${authorId}/article` : `/article`;
         const newUrl = `${prefix}/${business}/${slug}-${currentPromoteCode}`;
         link.href = newUrl;
         

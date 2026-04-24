@@ -46,6 +46,12 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
     const allHomeArticles: Array<HomeNewsArticle | HomeLatestArticle | HomeMostReadArticle> = [...(homeData.lastest || []), ...(homeData.mostread || []), ...(homeData.news_all || []), ...(homeData.news?.flatMap((group) => group.data) || []), ...(homeData.insights || []), ...(homeData.research || [])];
 
     for (const article of allHomeArticles) {
+      const userId = (article as { user_id?: string }).user_id;
+      const isPromoted = (article as { is_promoted?: boolean }).is_promoted;
+      if (userId && !isPromoted) {
+        continue;
+      }
+
       const category = getArticleBusinessPath(article as any);
       const createdAt = (article as any).created_at || nowIso;
       const entry = generateSitemapEntry(
@@ -53,6 +59,8 @@ async function buildArticlesSitemapXml(origin: string): Promise<string> {
           slug: (article as any).slug,
           created_at: createdAt,
           category,
+          user_id: isPromoted ? undefined : userId,
+          is_promoted: isPromoted,
         },
         locale,
         baseUrl,

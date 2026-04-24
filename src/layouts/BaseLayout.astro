@@ -29,6 +29,7 @@ export interface Props {
   sourceLanguage?: SourceLanguage
   translationLanguage?: TranslationLanguage | null
   availableTranslations?: TranslationLanguage[]
+  robotsOverride?: string
   // Sentry page scope (Phase 3 — observability)
   pageType?: string
   routePattern?: string
@@ -54,6 +55,7 @@ const {
   sourceLanguage,
   translationLanguage,
   availableTranslations,
+  robotsOverride,
   pageType,
   routePattern,
   trackArticleView,
@@ -106,12 +108,15 @@ const finalOgImage = ogImage || defaultOgImage
 const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis'
 
 const isProductionSite = SITE_CONFIG.ENVIRONMENT === 'web2' || SITE_CONFIG.ENVIRONMENT === 'web3'
-const robotsContent = isProductionSite
-  ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
-  : 'noindex, nofollow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+const robotsContent = robotsOverride || (
+  isProductionSite
+    ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+    : 'noindex, nofollow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+)
 
 // Generate hreflang alternates for multi-source architecture
-const hreflangAlternates = sourceLanguage && availableTranslations
+const shouldSuppressHreflang = robotsOverride?.includes('noindex')
+const hreflangAlternates = sourceLanguage && availableTranslations && !shouldSuppressHreflang
   ? generateHreflangAlternates(Astro.url, sourceLanguage, availableTranslations)
   : null
 

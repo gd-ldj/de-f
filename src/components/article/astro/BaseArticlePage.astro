@@ -6,9 +6,9 @@ import ArticleContent from '@/components/article/astro/ArticleContent.astro'
 import PodcastContent from '@/components/article/astro/PodcastContent.astro'
 import RecentResearch from '@/components/article/astro/RecentResearch.astro'
 import RecommendedPodcasts from '@/components/article/astro/RecommendedPodcasts.astro'
-import { fetchArticle, fetchTranslatedArticle } from '@/api/articles'
-import { fetchPodcastDetail, fetchTranslatedPodcast, mergeTranslatedPodcastIntoArticle } from '@/api/podcasts'
-import type { Locale, SourceLanguage, TranslationLanguage } from '@/types'
+import { fetchTranslatedArticle } from '@/api/articles'
+import { fetchTranslatedPodcast, mergeTranslatedPodcastIntoArticle } from '@/api/podcasts'
+import type { ApiArticle, Locale, SourceLanguage, TranslationLanguage } from '@/types'
 import Footer from '@/components/common/react/footer/Index'
 import { SITE_CONFIG } from '@/config/constants'
 import { buildArticleUrl } from '@/lib/language-utils'
@@ -21,15 +21,16 @@ interface Props {
   userId?: string
   sourceLanguage: SourceLanguage
   translationLanguage: TranslationLanguage | null
+  baseArticle: ApiArticle
 }
 
-const { locale, category, slug, userId, sourceLanguage, translationLanguage } = Astro.props as Props
+const { locale, category, slug, userId, sourceLanguage, translationLanguage, baseArticle } = Astro.props as Props
 const { url } = Astro
 
 const validCategories = ['insights', 'news', 'research', 'voices', 'podcasts']
 const isPodcast = category.toLowerCase() === 'podcasts'
 if (!validCategories.includes(category.toLowerCase())) {
-  return Astro.redirect('/404')
+  throw new Error(`Unsupported article category: ${category}`)
 }
 
 let actualSlug = slug
@@ -49,14 +50,6 @@ const podcastSupportedTranslations: TranslationLanguage[] = ['en', 'zh']
 
 // Determine which language to display
 // If translationLanguage is provided and different from source, fetch translation
-const baseArticle = isPodcast
-  ? await fetchPodcastDetail(actualSlug)
-  : await fetchArticle(actualSlug, locale, category, userId)
-
-if (!baseArticle) {
-  return Astro.redirect('/404')
-}
-
 let article = baseArticle
 
 // Fetch translation if needed
@@ -95,8 +88,9 @@ const description = article.sub_title || ''
 
 // Build canonical URL using new multi-source architecture
 // Use current origin instead of SITE_CONFIG.SITE_URL to support multiple domains
-const articlePath = buildArticleUrl(category, actualSlug, sourceLanguage, translationLanguage, userId)
+const articlePath = buildArticleUrl(category, actualSlug, sourceLanguage, translationLanguage, userId, article.is_promoted)
 const canonicalUrl = `${url.origin}${articlePath}`
+const isUnpromotedUserArticle = !!userId && !article.is_promoted
 
 const ogImageParams = new URLSearchParams({
   title: article.title,
@@ -140,7 +134,8 @@ const availableTranslations: TranslationLanguage[] = isPodcast
   pageLang={articleLang}
   sourceLanguage={sourceLanguage}
   translationLanguage={translationLanguage}
-  availableTranslations={availableTranslations}
+  availableTranslations={isUnpromotedUserArticle ? undefined : availableTranslations}
+  robotsOverride={isUnpromotedUserArticle ? 'noindex, nofollow' : undefined}
 >
   <HeaderWithFallback locale={locale} />
   <AuthMount 
@@ -177,6 +172,7 @@ const availableTranslations: TranslationLanguage[] = isPodcast
               slugWithPromote={slugWithPromote}
               articleLang={articleLang}
               userId={userId}
+              isPromoted={article.is_promoted}
             />
           ) : (
             <ArticleContent
@@ -187,6 +183,7 @@ const availableTranslations: TranslationLanguage[] = isPodcast
               slugWithPromote={slugWithPromote}
               articleLang={articleLang}
               userId={userId}
+              isPromoted={article.is_promoted}
             />
           )}
         </div>

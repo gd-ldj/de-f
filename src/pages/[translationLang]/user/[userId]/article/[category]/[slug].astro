@@ -1,17 +1,13 @@
 ---
 /**
- * Translated user article route (without /u/ prefix)
- * URL pattern: /{translationLang}/{userId}/article/{category}/{slug}
- * Example: ja.detake.com/fr/10/article/news/author-create-cbe4
- *
- * This route serves translated versions of user-generated articles.
- * Route disambiguation:
- * - First segment is 2-letter language code (en, zh, ja, fr, etc.)
- * - Second segment is numeric user ID
+ * Translated user article route
+ * URL pattern: /{translationLang}/user/{userId}/article/{category}/{slug}
+ * Example: ja.detake.com/fr/user/10/article/news/author-create-cbe4
  */
 import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro';
 import type { SourceLanguage, TranslationLanguage } from '@/types';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { resolveArticleRouteGuard } from '@/lib/article-route-guard';
 import { getSourceLanguageFromRequest, isValidTranslationLanguage, isNumericUserId } from '@/lib/language-utils';
 
 const { translationLang, userId, category, slug } = Astro.params as {
@@ -21,23 +17,36 @@ const { translationLang, userId, category, slug } = Astro.params as {
   slug: string;
 };
 
-// Validate translation language
 if (!isValidTranslationLanguage(translationLang)) {
   return Astro.redirect('/404');
 }
 
-// Validate that userId is numeric to ensure proper routing
 if (!isNumericUserId(userId)) {
   return Astro.redirect('/404');
 }
 
 const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname);
-
-// Convert to legacy locale for backward compatibility with BaseArticlePage
 const locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+const routeGuard = await resolveArticleRouteGuard({
+  category,
+  slug,
+  locale,
+  userId,
+  sourceLanguage,
+  translationLanguage: translationLang as TranslationLanguage,
+});
+
+if (routeGuard.notFound) {
+  return Astro.redirect('/404');
+}
+
+if (routeGuard.redirectPath) {
+  return Astro.redirect(routeGuard.redirectPath, 301);
+}
 ---
 
 <BaseArticlePage
+  baseArticle={routeGuard.baseArticle!}
   locale={locale}
   category={category}
   slug={slug}

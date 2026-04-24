@@ -3,7 +3,7 @@ import type { Locale } from '../../../types/index.ts';
 import { DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants'
 import { placeholderImageUrl } from '@/config/assets'
 import { getArticleBusinessPath, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util'
-import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import { buildArticleUrl, getSourceLanguageFromRequest } from '@/lib/language-utils'
 import type { SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
 
@@ -78,22 +78,19 @@ function getArticleUrl(article: any, locale: Locale): string {
   if (article.url) return article.url;
   if (article.slug) {
     const businessSegment = getArticleBusinessPath(article);
-
-    // Determine user_id based on author.role or existing user_id field
-    // User articles have author.role === "Authors" or have a user_id field
     let userId = article.user_id;
-    console.log("🚀 ~ getArticleUrl ~ article.author:", article.author)
-    if (!userId && article.author?.role === "Authors" && article.author?.id) {
+    if (!userId && article.author?.id) {
       userId = article.author.id;
     }
 
-    // If we have a userId, it's a user article (numeric ID distinguishes from language codes)
-    if (userId) {
-      return `/${userId}/article/${businessSegment}/${article.slug}-${promoteCode}`;
-    }
-
-    // Otherwise, it's an admin/system article
-    return `/article/${businessSegment}/${article.slug}-${promoteCode}`;
+    return buildArticleUrl({
+      category: businessSegment,
+      slug: article.slug,
+      sourceLanguage: locale as SourceLanguage,
+      userId,
+      isPromoted: article.is_promoted ?? false,
+      promoteCode,
+    });
   }
   return '#';
 }

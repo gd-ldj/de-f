@@ -3,7 +3,7 @@ import type { Locale, ApiArticle, TranslationLanguage, SourceLanguage } from '@/
 import { createTranslator } from '@/lib/i18n'
 import { MULTI_SOURCE_CONFIG } from '@/config/constants'
 import { avatarPlaceholderUrl, placeholderImageUrl } from '@/config/assets'
-import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import { buildArticleUrl, getSourceLanguageFromRequest } from '@/lib/language-utils'
 import Image from '@/components/common/astro/ImageSSR.astro'
 import { formatDate, getArticleCategoryNames, getArticleSubcategoryNames } from '@/utils/util'
 import { getBusinessTypeLabel, getCategoryLabel as getCategoryLocalizedLabel, getSubcategoryLabel as getSubcategoryLocalizedLabel, getTagLabel as getTagLocalizedLabel } from '@/config/article-taxonomy'
@@ -16,13 +16,14 @@ interface Props {
   slugWithPromote: string
   articleLang: TranslationLanguage | string
   userId?: string
+  isPromoted?: boolean
   collection?: {
     id: string
     title?: string
   }
 }
 
-const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, userId, collection } = Astro.props
+const { article, locale, category, categoryDisplayName, slugWithPromote, articleLang, userId, isPromoted, collection } = Astro.props
 
 const t = createTranslator(locale)
 
@@ -44,9 +45,13 @@ const categoryLabelForUrl = categoryNames.join(',')
 
 const baseArticlePath = collection
   ? `/collections/${collection.id}/${slugWithPromote}`
-  : userId
-  ? `/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
-  : `/article/${category.toLowerCase()}/${slugWithPromote}`
+  : buildArticleUrl({
+      category: category.toLowerCase(),
+      slug: slugWithPromote,
+      sourceLanguage,
+      userId,
+      isPromoted,
+    })
 const collectionLabel = t('article.collectionsLabel')
 const collectionTitle = collection?.title || collection?.id
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [

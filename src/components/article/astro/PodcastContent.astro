@@ -1,7 +1,7 @@
 ---
 import type { Locale, ApiArticle, TranslationLanguage, SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
-import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import { buildArticleUrl, getSourceLanguageFromRequest } from '@/lib/language-utils'
 import { formatDate } from '@/utils/util'
 import { getBusinessTypeLabel, getTagLabel as getTagLocalizedLabel } from '@/config/article-taxonomy'
 import YoutubeEmbed from '@/components/article/react/YoutubeEmbed'
@@ -15,9 +15,10 @@ interface Props {
   slugWithPromote: string
   articleLang: TranslationLanguage | string
   userId?: string
+  isPromoted?: boolean
 }
 
-const { article, locale, category, slugWithPromote, articleLang, userId } = Astro.props
+const { article, locale, category, slugWithPromote, articleLang, userId, isPromoted } = Astro.props
 
 const t = createTranslator(locale)
 
@@ -28,9 +29,13 @@ const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.reques
 const voicesLabel = getBusinessTypeLabel('Voices', sourceLanguage)
 const podcastsLabel = getBusinessTypeLabel('Podcasts', sourceLanguage)
 
-const baseArticlePath = userId
-  ? `/${userId}/article/${category.toLowerCase()}/${slugWithPromote}`
-  : `/article/${category.toLowerCase()}/${slugWithPromote}`
+const baseArticlePath = buildArticleUrl({
+  category: category.toLowerCase(),
+  slug: slugWithPromote,
+  sourceLanguage,
+  userId,
+  isPromoted,
+})
 
 const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }[] = [
   { code: 'zh', label: '中' },

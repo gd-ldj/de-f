@@ -24,7 +24,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
           <article key={article.entry_id} className="flex space-x-3 bg-white md:border border-gray-100 rounded py-3 hover:shadow-md transition-shadow">
             {/* Left side: Image */}
             <div className="flex-shrink-0 w-22 h-22 relative overflow-hidden rounded">
-              <ArticleLink slug={article.slug} locale={locale} business="research" className="block h-full">
+              <ArticleLink slug={article.slug} locale={locale} article={article} business="research" className="block h-full">
                 <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
               </ArticleLink>
             </div>
@@ -40,7 +40,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
 
               {/* Article title */}
               <h3 className="text-[16px] md:text-[20px] font-medium text-foreground line-clamp-2 leading-tight">
-                <ArticleLink slug={article.slug} locale={locale} business="research" className="hover:text-primary transition-colors">
+                <ArticleLink slug={article.slug} locale={locale} article={article} business="research" className="hover:text-primary transition-colors">
                   {article.title}
                 </ArticleLink>
               </h3>
@@ -67,7 +67,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
           <article key={article.entry_id} className="rounded overflow-hidden group bg-white border border-gray-100 hover:shadow-md transition-shadow">
             {/* Research card image area */}
             <div className="relative">
-              <ArticleLink slug={article.slug} locale={locale} business="research" className="block overflow-hidden">
+              <ArticleLink slug={article.slug} locale={locale} article={article} business="research" className="block overflow-hidden">
                 <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-[186px] object-cover hover:scale-105 transition-transform duration-300" loading="lazy" />
               </ArticleLink>
             </div>
@@ -83,7 +83,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
               {/* Article content */}
               <div>
                 <h3 className="text-lg font-medium text-foreground mb-2 line-clamp-2 leading-tight">
-                  <ArticleLink slug={article.slug} locale={locale} business="research" className="hover:text-primary transition-colors">
+                  <ArticleLink slug={article.slug} locale={locale} article={article} business="research" className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
                 </h3>

@@ -22,7 +22,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
           <div className="flex gap-3 md:block">
             {/* Article Image */}
             <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
-              <ArticleLink slug={article.slug} locale={locale} business={getArticleBusinessPath(article)} className="block group w-full h-full overflow-hidden">
+              <ArticleLink slug={article.slug} locale={locale} article={article} business={getArticleBusinessPath(article)} className="block group w-full h-full overflow-hidden">
                 <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
                 {article.business_type_name === 'Podcasts' && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

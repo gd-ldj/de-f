@@ -3,6 +3,7 @@ import type { Locale, ApiArticle } from '@/types';
 import { fetchArticles } from '@/api/articles';
 import Image from '@/components/common/react/Image';
 import { createTranslator } from '@/lib/i18n';
+import { buildArticleUrl } from '@/lib/language-utils';
 import { getArticleBusinessPath, getLocalizedBusinessTypeLabel, getLocalizedTagLabel } from '@/utils/util';
 import type { SourceLanguage } from '@/types';
 import { placeholderImageUrl } from '@/config/assets';
@@ -55,19 +56,18 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, locale }) => {
 
   const getArticleUrl = (): string => {
     const businessPath = getArticleBusinessPath(article);
-console.log('🚀 ~ getArticleUrl ~ article.author:', article.author);
-    // Determine user_id based on author.role or existing user_id field
-    // User articles have author.role === "Authors" or have a user_id field
     let userId = article.user_id;
-    if (!userId && article.author?.role === "Authors" && article.author?.id) {
+    if (!userId && article.author?.id) {
       userId = article.author.id;
     }
 
-    // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
-    if (userId) {
-      return `/${userId}/article/${businessPath}/${article.slug}`;
-    }
-    return `/article/${businessPath}/${article.slug}`;
+    return buildArticleUrl({
+      category: businessPath,
+      slug: article.slug,
+      sourceLanguage: locale as SourceLanguage,
+      userId,
+      isPromoted: article.is_promoted ?? false,
+    });
   };
 
   return (

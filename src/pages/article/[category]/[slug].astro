@@ -9,15 +9,32 @@
 import BaseArticlePage from '@/components/article/astro/BaseArticlePage.astro';
 import type { SourceLanguage } from '@/types';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { resolveArticleRouteGuard } from '@/lib/article-route-guard';
 import { getSourceLanguageFromRequest } from '@/lib/language-utils';
 
 const { category, slug } = Astro.params as { category: string; slug: string };
 
 const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname);
 const locale = MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+const routeGuard = await resolveArticleRouteGuard({
+  category,
+  slug,
+  locale,
+  sourceLanguage,
+  translationLanguage: null,
+});
+
+if (routeGuard.notFound) {
+  return Astro.redirect('/404');
+}
+
+if (routeGuard.redirectPath) {
+  return Astro.redirect(routeGuard.redirectPath, 301);
+}
 ---
 
 <BaseArticlePage
+  baseArticle={routeGuard.baseArticle!}
   locale={locale}
   category={category}
   slug={slug}

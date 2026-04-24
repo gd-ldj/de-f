@@ -17,13 +17,19 @@ import { SITE_CONFIG } from '@/config/constants';
  * - User articles: /{userId}/article/{category}/{slug}
  *   (userId is numeric, distinguishable from language codes)
  */
-export function getCanonicalArticleUrl(slug: string, locale: Locale, category: string = 'news', promoteCode?: string, userId?: string): string {
+export function getCanonicalArticleUrl(
+  slug: string,
+  locale: Locale,
+  category: string = 'news',
+  promoteCode?: string,
+  userId?: string,
+  isPromoted?: boolean,
+): string {
   const normalizedCategory = category.toLowerCase();
   const normalizedSlug = promoteCode ? `${slug}-${promoteCode}` : slug;
 
-  // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
-  if (userId) {
-    return `/${userId}/article/${normalizedCategory}/${normalizedSlug}`;
+  if (userId && !isPromoted) {
+    return `/user/${userId}/article/${normalizedCategory}/${normalizedSlug}`;
   }
   return `/article/${normalizedCategory}/${normalizedSlug}`;
 }
@@ -46,11 +52,12 @@ export function generateArticleStructuredData(
     author?: string;
     category?: string;
     user_id?: string;
+    is_promoted?: boolean;
   },
   locale: Locale,
   baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id)}`;
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id, article.is_promoted)}`;
 
   return {
     '@context': 'https://schema.org',
@@ -95,11 +102,12 @@ export function generateArticleMetaTags(
     img_url?: string;
     category?: string;
     user_id?: string;
+    is_promoted?: boolean;
   },
   locale: Locale,
   baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
-  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id)}`;
+  const canonicalUrl = `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id, article.is_promoted)}`;
   const imageUrl = article.img_url ? `${baseUrl}${article.img_url}` : `${baseUrl}/og-default.png`;
 
   return {
@@ -136,12 +144,13 @@ export function generateSitemapEntry(
     created_at: string;
     category?: string;
     user_id?: string;
+    is_promoted?: boolean;
   },
   locale: Locale,
   baseUrl: string = SITE_CONFIG.SITE_URL,
 ) {
   return {
-    url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id)}`,
+    url: `${baseUrl}${getCanonicalArticleUrl(article.slug, locale, article.category, 'detake', article.user_id, article.is_promoted)}`,
     lastmod: article.created_at,
     changefreq: 'weekly' as const,
     priority: 0.8,
@@ -155,9 +164,16 @@ export function generateSitemapEntry(
  * @param baseUrl Site base URL
  * @returns Alternate language links
  */
-export function generateAlternateLinks(slug: string, locales: Locale[], baseUrl: string = SITE_CONFIG.SITE_URL, category: string = 'news', userId?: string) {
+export function generateAlternateLinks(
+  slug: string,
+  locales: Locale[],
+  baseUrl: string = SITE_CONFIG.SITE_URL,
+  category: string = 'news',
+  userId?: string,
+  isPromoted?: boolean,
+) {
   return locales.map((locale) => ({
     hreflang: locale,
-    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale, category, 'detake', userId)}`,
+    href: `${baseUrl}${getCanonicalArticleUrl(slug, locale, category, 'detake', userId, isPromoted)}`,
   }));
 }

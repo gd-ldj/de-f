@@ -47,6 +47,7 @@ const isWithin12Hours = (createdAt: string) => {
               slug={article.slug}
               business={getArticleBusinessPath(article)}
               locale={locale}
+              article={article}
               class="block p-4 pr-6 group transition-colors border border-gray-200 rounded relative h-full"
             >
               <!-- Mobile: Time indicator in top right corner -->
@@ -82,6 +83,7 @@ const isWithin12Hours = (createdAt: string) => {
               slug={article.slug}
               business={getArticleBusinessPath(article)}
               locale={locale}
+              article={article}
               class="flex items-start space-x-3 py-5 group transition-colors"
             >
               <!-- Article content container -->

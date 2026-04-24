@@ -45,14 +45,14 @@ export const getArticleUrl = (
   locale: string,
   business: string = 'news',
   userId?: string,
-  promoteCode?: string
+  promoteCode?: string,
+  isPromoted?: boolean
 ) => {
   const finalPromoteCode = promoteCode || DEFAULT_PROMOTE_CODE
   const businessPath = business.toLowerCase()
 
-  // User articles use /{userId}/ prefix (numeric ID distinguishes from language codes)
-  if (userId) {
-    return `/${userId}/article/${businessPath}/${slug}-${finalPromoteCode}`
+  if (userId && !isPromoted) {
+    return `/user/${userId}/article/${businessPath}/${slug}-${finalPromoteCode}`
   }
 
   return `/article/${businessPath}/${slug}-${finalPromoteCode}`

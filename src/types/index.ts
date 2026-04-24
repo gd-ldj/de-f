@@ -23,6 +23,7 @@ export interface ApiArticle {
   page_view?: string;
   unique_vistor?: string;
   user_id?: string; // User ID for regular user articles (not present for admin/system articles)
+  is_promoted?: boolean;
   contact?: {
     email: string;
     phone: string;
@@ -330,6 +331,8 @@ export interface HomeLatestArticle {
   sub_title: string;
   img_url: string;
   created_at: string;
+  user_id?: string;
+  is_promoted?: boolean;
 }
 
 export interface HomeWhoToFollow {
@@ -349,6 +352,7 @@ export interface HomeNewsArticle {
   created_at: string;
   business_type_name: string;
   user_id?: string; // User ID for regular user articles (not present for admin/system articles)
+  is_promoted?: boolean;
   author: {
     id?: string;
     name: string;
@@ -372,6 +376,8 @@ export interface HomeMostReadArticle {
   sub_title: string;
   img_url: string;
   created_at: string;
+  user_id?: string;
+  is_promoted?: boolean;
   author: {
     name: string;
     avatar_url: string;

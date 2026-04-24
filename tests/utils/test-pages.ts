@@ -31,7 +31,9 @@ export async function navigateToFirstArticle(page: Page): Promise<string | null>
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  const firstArticleLink = page.locator('a[href*="/article/"]').first();
+  const publicArticleLink = page.locator('a[href^="/article/"]').first();
+  const publicCount = await publicArticleLink.count();
+  const firstArticleLink = publicCount > 0 ? publicArticleLink : page.locator('a[href*="/article/"]').first();
   const count = await firstArticleLink.count();
   if (count === 0) return null;
 
