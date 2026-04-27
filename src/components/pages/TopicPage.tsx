@@ -120,7 +120,7 @@ export default function TopicPage({ locale, topic, topicSlug, initialPage }: Top
       )}
 
       {/* Pagination */}
-      {!loading && total > itemsPerPage && <PaginationReact currentPage={currentPage} totalItems={total} itemsPerPage={itemsPerPage} onPageChange={handlePageChange} locale={locale} />}
+      {!loading && articles.length > 0 && total > itemsPerPage && <PaginationReact currentPage={currentPage} totalItems={total} itemsPerPage={itemsPerPage} onPageChange={handlePageChange} locale={locale} />}
     </main>
   );
 }
