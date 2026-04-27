@@ -27,6 +27,15 @@ if (isProd) {
     // Distinguish preview / production deployments in the Sentry dashboard.
     environment: import.meta.env.PUBLIC_DEPLOY_ENV || 'production',
 
+    // Tag every event with the domain the user is visiting.
+    // Three production domains share one Sentry project; this tag lets us
+    // filter and alert per-domain in the dashboard.
+    initialScope: {
+      tags: {
+        domain: typeof window !== 'undefined' ? window.location.hostname : 'unknown',
+      },
+    },
+
     // PII review:
     // Default to false to avoid collecting IPs, cookies, auth headers.
     // User identification is attached explicitly via src/lib/sentry.ts#identifyUser.

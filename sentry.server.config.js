@@ -17,6 +17,15 @@ if (isProd) {
 
     environment: process.env.DEPLOY_ENV || 'production',
 
+    // Tag server-side events with the deployment domain.
+    // Set SENTRY_DOMAIN per Vercel project / deployment to distinguish the
+    // three production domains. Falls back to VERCEL_PROJECT_PRODUCTION_URL.
+    initialScope: {
+      tags: {
+        domain: process.env.SENTRY_DOMAIN || process.env.VERCEL_PROJECT_PRODUCTION_URL || 'unknown',
+      },
+    },
+
     // PII review: default off. Enable per-request via Sentry.setUser() when needed.
     sendDefaultPii: false,
 
