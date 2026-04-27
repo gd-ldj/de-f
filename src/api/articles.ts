@@ -401,6 +401,35 @@ export async function fetchHomePageData(locale: Locale): Promise<HomePageData | 
 }
 
 /**
+ * Fetch all topics with descriptions
+ * @returns Promise with TopicItem[] or null
+ */
+export async function fetchTopics(): Promise<import('../types').TopicItem[] | null> {
+  try {
+    const response = await ssrFetch(`${getApiBaseUrl()}/api/v1/articles/topics`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      endpointName: 'fetchTopics',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch topics: ${response.statusText}`);
+    }
+
+    const result: import('../types').TopicsResponse = await response.json();
+    if (result.code === 2000 && result.data) {
+      return result.data;
+    } else {
+      throw new Error(`API Error: ${result.msg?.en || 'Unknown error'}`);
+    }
+  } catch (error) {
+    console.error('Error fetching topics:', error);
+    return null;
+  }
+}
+
+/**
  * Fetch categories endpoint for development
  * Returns category configuration data
  */

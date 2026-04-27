@@ -368,6 +368,18 @@ export interface HomeTopic {
   description: string;
 }
 
+export interface TopicItem {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface TopicsResponse {
+  code: number;
+  msg: { en: string; zh: string };
+  data: TopicItem[];
+}
+
 export interface HomeMostReadArticle {
   entry_id: string;
   slug: string;
