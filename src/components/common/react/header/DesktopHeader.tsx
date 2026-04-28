@@ -169,8 +169,9 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
   const languageOptions: { code: SourceLanguage; label: string }[] = [
     { code: 'en', label: 'English' },
-    { code: 'zh', label: '中文' },
-    { code: 'ja', label: '日本語' },
+    // TODO: Re-enable when zh/ja editions are ready
+    // { code: 'zh', label: '中文' },
+    // { code: 'ja', label: '日本語' },
   ];
 
   const currentLanguageOption = languageOptions.find((item) => item.code === currentSourceLanguage) || languageOptions[0];
