@@ -7,6 +7,7 @@ import { createTranslator } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { TRACKING_EVENTS, DEFAULT_PROMOTE_CODE } from '@/config/constants';
 import { getAnonymousPromoteCode, getCachedAnonymousPromoteCode } from '@/lib/fingerprint';
+import { getPathPromoteCodeFromUrl, getShareUrlPromoteStrategy } from '@/lib/share-url';
 
 interface ShareSectionProps {
   locale: Locale;
@@ -29,30 +30,11 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
   const { promoteCode: myPromoteCode } = useWalletAuth();
 
   /**
-   * Extract promo code from the last URL segment if it follows the pattern "-<code>".
-   * Returns the code string if present, otherwise null.
-   */
-  const getPromoCodeFromUrl = (inputUrl: string): string | null => {
-    try {
-      const u = new URL(inputUrl);
-      const lastSeg = (u.pathname.split('/').pop() || '').trim();
-      const match = lastSeg.match(/-([^-]+)$/);
-      const code = match ? match[1] : null;
-      return code || null;
-    } catch {
-      // Fallback: best-effort extraction from a plain string
-      const match = inputUrl.match(/([^/]+?)-([^-]+)(?:\?|#|$)/);
-      const code = match ? match[2] : null;
-      return code || null;
-    }
-  };
-
-  /**
    * Centralized evaluation for whether the cross-promo prompt should be visible.
    * The rule: show only if logged in AND the share URL's code is different from user's own code.
    */
   const evaluateShouldShowPrompt = (targetUrl: string, userCode?: string | null, loggedIn?: boolean) => {
-    const urlPromoCode = getPromoCodeFromUrl(targetUrl);
+    const urlPromoCode = getPathPromoteCodeFromUrl(targetUrl);
     const urlMaskCode = (() => {
       try {
         const urlObj = new URL(targetUrl);
@@ -91,7 +73,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
       } catch {
         if (/[?&]mask=/.test(currentHref)) return true;
       }
-      return !!getPromoCodeFromUrl(currentHref);
+      return !!getPathPromoteCodeFromUrl(currentHref);
     })();
     const nextUrl = shouldUseCurrent ? currentHref : url;
     setShareUrl(normalizeShareUrl(nextUrl));
@@ -101,7 +83,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
   useEffect(() => {
     if (!myPromoteCode) return;
     // Skip if URL already contains a promo code (path-based or mask param)
-    const existingPromo = getPromoCodeFromUrl(shareUrl);
+    const existingPromo = getPathPromoteCodeFromUrl(shareUrl);
     const hasMask = (() => {
       try {
         return new URL(shareUrl).searchParams.has('mask');
@@ -115,12 +97,9 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
     // For article pages (slug in path), append -code to last segment
     const normalized = normalizeShareUrl(shareUrl);
     try {
+      const promoteStrategy = getShareUrlPromoteStrategy(normalized);
       const urlObj = new URL(normalized);
-      const pathSegments = urlObj.pathname.split('/').filter(Boolean);
-      const lastSeg = pathSegments[pathSegments.length - 1] || '';
-      // Heuristic: article slugs contain hyphens and are long; listing pages are short single words
-      const isArticlePath = lastSeg.includes('-') || /^[a-f0-9]{8,}$/.test(lastSeg);
-      if (isArticlePath) {
+      if (promoteStrategy === 'path') {
         setShareUrl(replaceLastPromoCodeInUrl(normalized, myPromoteCode));
       } else {
         urlObj.searchParams.set('mask', myPromoteCode);
@@ -179,14 +158,25 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
         return /[?&]mask=/.test(shareUrl);
       }
     })();
-    const replaced = hasMaskParam ? shareUrl : replaceLastPromoCodeInUrl(shareUrl, targetCode);
+    const promoteStrategy = getShareUrlPromoteStrategy(shareUrl);
+    const replaced = hasMaskParam || promoteStrategy === 'mask'
+      ? shareUrl
+      : replaceLastPromoCodeInUrl(shareUrl, targetCode);
     const replacedWithMask = (() => {
       try {
         const urlObj = new URL(replaced, typeof window === 'undefined' ? 'https://detake.news' : window.location.href);
+        if (!urlObj.searchParams.has('mask') && promoteStrategy === 'mask') {
+          urlObj.searchParams.set('mask', targetCode);
+          return urlObj.toString();
+        }
         if (!urlObj.searchParams.has('mask')) return replaced;
         urlObj.searchParams.set('mask', targetCode);
         return urlObj.toString();
       } catch {
+        if (!/[?&]mask=/.test(replaced) && promoteStrategy === 'mask') {
+          const separator = replaced.includes('?') ? '&' : '?';
+          return `${replaced}${separator}mask=${targetCode}`;
+        }
         if (!/[?&]mask=/.test(replaced)) return replaced;
         return replaced.replace(/([?&]mask=)[^&#]*/g, `$1${targetCode}`);
       }
