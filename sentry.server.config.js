@@ -4,7 +4,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
   // Derive environment from PUBLIC_SITE_ENV (same logic as client config)
-  const siteEnv = process.env.PUBLIC_SITE_ENV || 'beta';
+  const siteEnv = process.env.PUBLIC_SITE_ENV || 'production';
   const environment = siteEnv === 'production' ? 'production' : 'preview';
 
   Sentry.init({

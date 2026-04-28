@@ -5,7 +5,7 @@ const isProd = import.meta.env.PROD;
 
 if (isProd) {
   // Derive environment from PUBLIC_SITE_ENV (same logic as DEPLOY_ENVIRONMENT in constants.ts)
-  const siteEnv = import.meta.env.PUBLIC_SITE_ENV || 'beta';
+  const siteEnv = import.meta.env.PUBLIC_SITE_ENV || 'production';
   const environment = siteEnv === 'production' ? 'production' : 'preview';
 
   Sentry.init({

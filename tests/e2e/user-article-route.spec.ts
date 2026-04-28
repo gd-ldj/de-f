@@ -49,7 +49,7 @@ const USER_AUTHOR_ROLES = new Set(['Authors', 'Author', 'User']);
 let sampleCache: Promise<UserArticleSamples> | null = null;
 
 function getApiBaseUrl(): string {
-  const env = process.env.PUBLIC_SITE_ENV || 'beta';
+  const env = process.env.PUBLIC_SITE_ENV || 'production';
   const lang = process.env.PUBLIC_SOURCE_LANGUAGE || SOURCE_LANGUAGE;
   const prefix = env === 'production' ? '' : 'beta-';
   return `https://${lang}-${prefix}api.detake.com`;

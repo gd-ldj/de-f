@@ -3,7 +3,7 @@ import { test, expect, type Page } from '@playwright/test';
 const DEFAULT_PROMOTE_CODE = 'xG0zT';
 
 function getApiBaseUrl(): string {
-  const env = process.env.PUBLIC_SITE_ENV || 'beta';
+  const env = process.env.PUBLIC_SITE_ENV || 'production';
   const lang = process.env.PUBLIC_SOURCE_LANGUAGE || 'en';
   const prefix = env === 'production' ? '' : 'beta-';
   return `https://${lang}-${prefix}api.detake.com`;

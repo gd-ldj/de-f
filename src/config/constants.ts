@@ -13,7 +13,7 @@ const publicEnv = (import.meta as ImportMeta & { env?: Record<string, string | u
  */
 export const SITE_CONFIG = {
   // Current site environment: 'beta' (local/test) or 'production'
-  ENVIRONMENT: (publicEnv.PUBLIC_SITE_ENV || 'beta') as 'beta' | 'production',
+  ENVIRONMENT: (publicEnv.PUBLIC_SITE_ENV || 'production') as 'beta' | 'production',
 
   // Whether this is a production deployment
   get IS_PRODUCTION() {
