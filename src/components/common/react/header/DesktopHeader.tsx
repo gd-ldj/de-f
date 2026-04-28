@@ -10,7 +10,7 @@ import SearchOverlay from './SearchOverlay';
 import DownIcon from './assets/down.svg?url';
 import DownWhiteIcon from './assets/down_white.svg?url';
 import CountryIcon from './assets/country.svg?url';
-import SearchIcon from './assets/search.svg?url';
+import { SearchHeaderIcon, UserHeaderIcon } from './HeaderIcons';
 
 interface DesktopHeaderProps {
   locale: Locale;
@@ -22,6 +22,19 @@ interface DesktopHeaderProps {
 export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, userComponent }: DesktopHeaderProps) {
   const [localeDropdownOpen, setLocaleDropdownOpen] = React.useState(false);
   const [searchOpen, setSearchOpen] = React.useState(false);
+
+  // Auto-open search overlay when ?search=open URL parameter is present (e.g. from admin redirect)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('search') === 'open') {
+        setSearchOpen(true);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('search');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+  }, []);
 
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = React.useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = React.useState<string | null>(null);
@@ -260,7 +273,6 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   const isNewsRouteActive = currentPath === `/news` || currentPath.startsWith(`/news/`) || currentPath.startsWith(`/news?`) || normalizedArticleCategoryKey === 'news';
   const isTutorialsRouteActive = currentPath === `/tutorials` || currentPath.startsWith(`/tutorials/`) || currentPath.startsWith(`/tutorials?`);
 
-
   const getCategoryFilterUrl = (typeKey: string, categoryLabel: string) => {
     const typeItem = categoriesItems.find((item) => item.key === typeKey);
     const baseHref = typeItem?.href || `/${typeKey}`;
@@ -498,7 +510,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
 
             {/* Search Icon */}
             <button className="p-1 hover:bg-gray-100 rounded-md transition-colors" aria-label={texts.actions.search} onClick={() => setSearchOpen((prev) => !prev)} data-testid="desktop-search-btn">
-              <img src={SearchIcon} alt="SearchIcon" className="w-4 h-4" />
+              <SearchHeaderIcon className={`w-4 h-4 ${searchOpen ? 'text-primary' : 'text-foreground'}`} />
             </button>
 
             {/* Locale Switcher Dropdown */}
@@ -529,7 +541,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
             {/* Default avatar shown immediately; auto-hidden via CSS when portal content appears */}
             <div id="user-button-root">
               <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none [&:not(:only-child)]:hidden" aria-label="User menu">
-                <img src="/me.svg" alt="User" className="w-5 h-5" />
+                <UserHeaderIcon className="w-5 h-5 text-foreground" />
               </button>
             </div>
           </div>

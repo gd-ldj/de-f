@@ -79,6 +79,19 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
   const [currentMobileCategory, setCurrentMobileCategory] = useState<string>('');
   const [searchOpen, setSearchOpen] = useState(false);
 
+  // Auto-open search overlay when ?search=open URL parameter is present (e.g. from admin redirect)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('search') === 'open') {
+        setSearchOpen(true);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('search');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+  }, []);
+
   // Handle mobile sidebar open/close
   const handleMobileSidebarOpen = () => {
     setMobileSidebarOpen(true);
