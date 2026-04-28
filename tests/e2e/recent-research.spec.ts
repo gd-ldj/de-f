@@ -5,14 +5,8 @@ const DEFAULT_PROMOTE_CODE = 'xG0zT';
 function getApiBaseUrl(): string {
   const env = process.env.PUBLIC_SITE_ENV || 'beta';
   const lang = process.env.PUBLIC_SOURCE_LANGUAGE || 'en';
-  const domainMap: Record<string, string> = {
-    beta: 'beta-api.detake.com',
-    web2: 'beta-api.detake.com',
-    web3: 'api.detake.com',
-    beta_dev: 'preview-api.detake.com',
-  };
-
-  return `https://${lang}-${domainMap[env] || domainMap.beta}`;
+  const prefix = env === 'production' ? '' : 'beta-';
+  return `https://${lang}-${prefix}api.detake.com`;
 }
 
 async function resolveArticlePath(): Promise<string | null> {

@@ -17,7 +17,7 @@ const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.
 // MUST live in sentry.client.config.js / sentry.server.config.js because
 // when those files exist, runtime options passed to sentry({ ... }) are ignored.
 // See node_modules/@sentry/astro/build/types/integration/types.d.ts for the full contract.
-const sentryReleaseName = process.env.SENTRY_RELEASE || process.env.VERCEL_GIT_COMMIT_SHA;
+const sentryReleaseName = process.env.VERCEL_GIT_COMMIT_SHA;
 
 const sentryBuildConfig = {
   // Org slug for the EU-region project "detake" (verified via sentry-cli against DSN).
@@ -25,8 +25,8 @@ const sentryBuildConfig = {
   // sourcemap upload failures (releases existed but had 0 artifacts).
   org: 'hedgue',
   project: 'detake',
-  // Auth token is required for source map upload. Provision it in Vercel env as SENTRY_AUTH_TOKEN.
-  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // Auth token for source map upload.
+  authToken: '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',
   telemetry: false,
   sourcemaps: {
     // Default glob works for Astro; set explicit assets only if the default misses files.
@@ -42,9 +42,8 @@ const sentryBuildConfig = {
   unstable_sentryVitePluginOptions: {
     // Component name annotation: injects data-sentry-component / data-sentry-source-file
     // on every React component so breadcrumbs show ui.component_name.
-    // Gated with SENTRY_ANNOTATE_COMPONENTS so we can disable via env if it breaks prop-passing.
     reactComponentAnnotation: {
-      enabled: process.env.SENTRY_ANNOTATE_COMPONENTS !== 'false',
+      enabled: true,
       // Known components that forward/inspect props and may break with extra DOM props.
       // Extend this list if we see runtime warnings in preview after enabling annotation.
       ignoredComponents: [

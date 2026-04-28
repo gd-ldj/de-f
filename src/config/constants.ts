@@ -12,55 +12,41 @@ const publicEnv = (import.meta as ImportMeta & { env?: Record<string, string | u
  * Determines which API endpoints and configurations to use
  */
 export const SITE_CONFIG = {
-  // Current site environment (beta | production)
-  ENVIRONMENT: publicEnv.PUBLIC_SITE_ENV || 'beta',
+  // Current site environment: 'beta' (local/test) or 'production'
+  ENVIRONMENT: (publicEnv.PUBLIC_SITE_ENV || 'beta') as 'beta' | 'production',
 
-  // API domain templates by environment (language prefix will be prepended with `-`)
-  API_DOMAINS: {
-    beta: 'beta-api.detake.com',
-    web2: 'beta-api.detake.com',
-    web3: 'api.detake.com',
-    beta_dev: 'preview-api.detake.com',
-  },
-
-  // SSR API domain templates by environment (language prefix will be prepended with `-`)
-  SSR_API_DOMAINS: {
-    beta: 'beta-ssr-api.detake.com',
-    web2: 'beta-ssr-api.detake.com',
-    web3: 'ssr-api.detake.com',
-    beta_dev: 'preview-ssr-api.detake.com',
-  },
-
-  // Site URLs based on environment
-  SITE_URLS: {
-    beta: 'https://beta.detake.com',
-    web2: 'https://detake.com',
-    web3: 'https://web3.detake.com',
-    beta_dev: 'https://detake.news',
+  // Whether this is a production deployment
+  get IS_PRODUCTION() {
+    return this.ENVIRONMENT === 'production';
   },
 
   // Get current API base URL based on environment and language
-  // e.g. https://en-beta-api.detake.com, https://zh-api.detake.com
+  // beta:       https://en-beta-api.detake.com
+  // production: https://en-api.detake.com
   get API_BASE_URL() {
-    const env = this.ENVIRONMENT as keyof typeof this.API_DOMAINS;
-    const domain = this.API_DOMAINS[env] || this.API_DOMAINS.beta;
     const lang = publicEnv.PUBLIC_SOURCE_LANGUAGE || 'en';
-    return `https://${lang}-${domain}`;
+    const prefix = this.IS_PRODUCTION ? '' : 'beta-';
+    return `https://${lang}-${prefix}api.detake.com`;
   },
 
   // Get current SSR API base URL based on environment and language
-  // e.g. https://en-beta-ssr-api.detake.com, https://ja-ssr-api.detake.com
+  // beta:       https://en-beta-ssr-api.detake.com
+  // production: https://en-ssr-api.detake.com
   get SSR_API_BASE_URL() {
-    const env = this.ENVIRONMENT as keyof typeof this.SSR_API_DOMAINS;
-    const domain = this.SSR_API_DOMAINS[env] || this.SSR_API_DOMAINS.beta;
     const lang = publicEnv.PUBLIC_SOURCE_LANGUAGE || 'en';
-    return `https://${lang}-${domain}`;
+    const prefix = this.IS_PRODUCTION ? '' : 'beta-';
+    return `https://${lang}-${prefix}ssr-api.detake.com`;
   },
 
-  // Get current site URL based on environment
+  // Get current site URL based on environment and language
+  // beta:       https://beta.detake.com
+  // production: https://{lang}.detake.com
   get SITE_URL() {
-    const env = this.ENVIRONMENT as keyof typeof this.SITE_URLS;
-    return this.SITE_URLS[env] || this.SITE_URLS.beta;
+    const lang = publicEnv.PUBLIC_SOURCE_LANGUAGE || 'en';
+    if (!this.IS_PRODUCTION) {
+      return 'https://beta.detake.com';
+    }
+    return `https://${lang}.detake.com`;
   },
 } as const;
 
@@ -206,15 +192,18 @@ export const STORAGE_KEYS = {
   SOURCE_LANGUAGE: 'source_language',
 } as const;
 
+// Derive Sentry environment label from SITE_CONFIG
+export const DEPLOY_ENVIRONMENT = SITE_CONFIG.IS_PRODUCTION ? 'production' : 'preview';
+
 /**
  * Analytics and tracking configuration
+ *
+ * GA_MEASUREMENT_ID and CLOUDFLARE_ANALYTICS_TOKEN are hardcoded.
+ * Both beta and production share the same values.
  */
 export const ANALYTICS_CONFIG = {
-  // Google Analytics configuration
-  GA_MEASUREMENT_ID: publicEnv.PUBLIC_GA_MEASUREMENT_ID,
-
-  // Cloudflare Analytics token
-  CLOUDFLARE_ANALYTICS_TOKEN: publicEnv.PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
+  GA_MEASUREMENT_ID: 'G-ZEDPYG3TE4',
+  CLOUDFLARE_ANALYTICS_TOKEN: 'jlpZdddOes4MHKwbLG6iTfzF48YFxZRxo3zkYHv6',
 
   // Behavior tracking intervals
   HEARTBEAT_INTERVAL: 30000, // 30 seconds

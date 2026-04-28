@@ -107,7 +107,7 @@ const finalOgImage = ogImage || defaultOgImage
 // Generate keywords meta tag
 const keywordsContent = keywords ? keywords.join(', ') : 'detake, news, analysis'
 
-const isProductionSite = SITE_CONFIG.ENVIRONMENT === 'web2' || SITE_CONFIG.ENVIRONMENT === 'web3'
+const isProductionSite = SITE_CONFIG.IS_PRODUCTION
 const robotsContent = robotsOverride || (
   isProductionSite
     ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'

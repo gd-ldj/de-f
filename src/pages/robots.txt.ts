@@ -26,8 +26,7 @@ function generateRobots(): string {
   const sitemapUrl = `https://${host}/sitemap-index.xml`;
   const sitemapArticlesUrl = `https://${host}/sitemap-articles.xml`;
 
-  const env = SITE_CONFIG.ENVIRONMENT;
-  const isProductionEnv = env === 'web2' || env === 'web3';
+  const isProductionEnv = SITE_CONFIG.IS_PRODUCTION;
 
   if (!isProductionEnv) {
     return ['# DeTake Website - Robots.txt', '# Block all crawlers in non-production environments', '', 'User-agent: *', 'Disallow: /', '', '# No sitemap for non-production environments', ''].join('\n');

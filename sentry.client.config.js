@@ -4,28 +4,19 @@ import * as Sentry from '@sentry/astro';
 const isProd = import.meta.env.PROD;
 
 if (isProd) {
-  // Tracing / replay rates are controlled via env so we can turn the firehose
-  // off in an incident without a redeploy. Defaults match the Phase 4 plan:
-  //   - 10% baseline performance sampling
-  //   - 0% baseline replay (too expensive for every session)
-  //   - 100% replay capture on error sessions (high signal, low cost)
-  const parseRate = (raw, fallback) => {
-    const n = Number(raw);
-    return Number.isFinite(n) && n >= 0 && n <= 1 ? n : fallback;
-  };
-  const tracesSampleRate = parseRate(import.meta.env.PUBLIC_SENTRY_TRACES_SAMPLE_RATE, 0.1);
-  const replaysSessionSampleRate = parseRate(import.meta.env.PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE, 0);
-  const replaysOnErrorSampleRate = parseRate(import.meta.env.PUBLIC_SENTRY_REPLAYS_ERROR_SAMPLE_RATE, 1);
+  // Derive environment from PUBLIC_SITE_ENV (same logic as DEPLOY_ENVIRONMENT in constants.ts)
+  const siteEnv = import.meta.env.PUBLIC_SITE_ENV || 'beta';
+  const environment = siteEnv === 'production' ? 'production' : 'preview';
 
   Sentry.init({
-    dsn: import.meta.env.PUBLIC_SENTRY_DSN || '',
+    dsn: 'https://7f2225cc0fd72d5dcb2697971c6fc295@o4508368229498880.ingest.de.sentry.io/4510787241705552',
 
     // Release tracking is required for source maps to work.
-    // Vercel exposes VERCEL_GIT_COMMIT_SHA; surface it as PUBLIC_SENTRY_RELEASE at build time.
+    // Astro config exposes VERCEL_GIT_COMMIT_SHA as PUBLIC_SENTRY_RELEASE at build time.
     release: import.meta.env.PUBLIC_SENTRY_RELEASE || 'unknown',
 
     // Distinguish preview / production deployments in the Sentry dashboard.
-    environment: import.meta.env.PUBLIC_DEPLOY_ENV || 'production',
+    environment,
 
     // Tag every event with the domain the user is visiting.
     // Three production domains share one Sentry project; this tag lets us
@@ -61,9 +52,10 @@ if (isProd) {
       }),
     ],
 
-    tracesSampleRate,
-    replaysSessionSampleRate,
-    replaysOnErrorSampleRate,
+    // Hardcoded sample rates — change here if needed, no env var required.
+    tracesSampleRate: 0.1,
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1,
 
     // ---- Noise filtering (minimum viable version) ----
     ignoreErrors: [

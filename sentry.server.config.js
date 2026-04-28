@@ -3,35 +3,31 @@ import * as Sentry from '@sentry/astro';
 const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
-  const parseRate = (raw, fallback) => {
-    const n = Number(raw);
-    return Number.isFinite(n) && n >= 0 && n <= 1 ? n : fallback;
-  };
-  const tracesSampleRate = parseRate(process.env.SENTRY_TRACES_SAMPLE_RATE, 0.1);
+  // Derive environment from PUBLIC_SITE_ENV (same logic as client config)
+  const siteEnv = process.env.PUBLIC_SITE_ENV || 'beta';
+  const environment = siteEnv === 'production' ? 'production' : 'preview';
 
   Sentry.init({
-    dsn: process.env.SENTRY_DSN || '',
+    dsn: 'https://7f2225cc0fd72d5dcb2697971c6fc295@o4508368229498880.ingest.de.sentry.io/4510787241705552',
 
-    // Prefer explicit SENTRY_RELEASE; fall back to Vercel's commit SHA.
-    release: process.env.SENTRY_RELEASE || process.env.VERCEL_GIT_COMMIT_SHA || 'unknown',
+    // Use Vercel-injected commit SHA directly.
+    release: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown',
 
-    environment: process.env.DEPLOY_ENV || 'production',
+    environment,
 
     // Tag server-side events with the deployment domain.
-    // Set SENTRY_DOMAIN per Vercel project / deployment to distinguish the
-    // three production domains. Falls back to VERCEL_PROJECT_PRODUCTION_URL.
+    // Use Vercel-injected production URL — no extra env var needed.
     initialScope: {
       tags: {
-        domain: process.env.SENTRY_DOMAIN || process.env.VERCEL_PROJECT_PRODUCTION_URL || 'unknown',
+        domain: process.env.VERCEL_PROJECT_PRODUCTION_URL || 'unknown',
       },
     },
 
     // PII review: default off. Enable per-request via Sentry.setUser() when needed.
     sendDefaultPii: false,
 
-    // Phase 4: 10% default tracing on the server. Same env override as client
-    // so we can throttle both sides from one place if Sentry quota spikes.
-    tracesSampleRate,
+    // Hardcoded sample rate — change here if needed, no env var required.
+    tracesSampleRate: 0.1,
 
     ignoreErrors: [
       'AbortError',
