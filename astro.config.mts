@@ -138,7 +138,6 @@ export default isDev
         }),
         sentry(sentryBuildConfig),
       ],
-      compressHTML: true, // Remove HTML comments and whitespace
       i18n: {
         defaultLocale: 'us',
         locales: ['us', 'asia'],
