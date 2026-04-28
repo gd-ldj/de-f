@@ -26,6 +26,10 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
   // Auto-open search overlay when ?search=open URL parameter is present (e.g. from admin redirect)
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
+      if (window.innerWidth < 768) {
+        return;
+      }
+
       const params = new URLSearchParams(window.location.search);
       if (params.get('search') === 'open') {
         setSearchOpen(true);

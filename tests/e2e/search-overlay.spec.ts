@@ -125,6 +125,17 @@ async function mockSearchApi(page: import('@playwright/test').Page) {
 test.describe('Search overlay - desktop', () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
+  test('auto-opens from query param on desktop and clears the URL flag', async ({ page }) => {
+    await mockSearchApi(page);
+
+    await page.goto('/?search=open');
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.getByTestId('search-overlay')).toBeVisible();
+    await expect(page.getByTestId('search-input')).toBeVisible();
+    await expect(page).not.toHaveURL(/search=open/);
+  });
+
   test('uses /api/v1/search and appends cursor-based results', async ({ page }) => {
     const searchRequests = await mockSearchApi(page);
 
