@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Hide Clerk development mode banner and sign-up footer */
+div.cl-internal-1dauvpw,
+div.cl-footerAction__signIn {
+  display: none !important;
+}
+
 /* Load Sequel Sans font files from public/fonts
    We map Roman to weight 400 and Medium to weight 500 so we can switch by font-weight. */
 @font-face {
