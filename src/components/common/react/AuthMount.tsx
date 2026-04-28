@@ -9,6 +9,7 @@ import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
 import { accessTokenAtom } from '@/stores';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
+import { UserHeaderIcon } from '@/components/common/react/header/HeaderIcons';
 
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
@@ -61,7 +62,7 @@ function getLocaleFromURL(): Locale {
  */
 const PlaceholderUserButton: React.FC = () => (
   <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none opacity-50 cursor-not-allowed" disabled>
-    <img src="/me.svg" alt="logo" className="w-5 h-5" />
+    <UserHeaderIcon className="w-5 h-5 text-foreground" />
   </button>
 );
 
@@ -126,6 +127,7 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
 
   // Get Clerk ready state and sign-in status to determine when to show real components
   const { isLoaded: ready, isSignedIn } = useAuth();
+  const isUserButtonActive = isAuthenticated || Boolean(accessToken) || Boolean(isSignedIn);
 
   // Memoize DOM element queries to avoid repeated lookups
   const domElements = useMemo(() => {
@@ -208,13 +210,13 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     if (!userButtonEl || !ready) return null;
     return createPortal(
       <WalletPopover locale={locale}>
-        <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none">
-          <img src="/me.svg" alt="logo" className="w-5 h-5" />
+        <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none" aria-label="User menu">
+          <UserHeaderIcon className={`w-5 h-5 ${isUserButtonActive ? 'text-primary' : 'text-foreground'}`} />
         </button>
       </WalletPopover>,
       userButtonEl
     );
-  }, [userButtonEl, ready, locale]);
+  }, [userButtonEl, ready, locale, isUserButtonActive]);
 
   const loginPortal = useMemo(() => {
     if (!loginEl || isAuthenticated || !ready || accessToken || isSignedIn) return null;
