@@ -1,17 +1,17 @@
 import * as Sentry from '@sentry/astro';
+import { resolveSentryEnvironment } from './sentry.environment.js';
 
 const isProd = process.env.NODE_ENV === 'production';
 
 if (isProd) {
-  // Derive environment from PUBLIC_SITE_ENV (same logic as client config)
-  const siteEnv = process.env.PUBLIC_SITE_ENV || 'production';
-  const environment = siteEnv === 'production' ? 'production' : 'preview';
+  // Normalize site environment to the only two Sentry environment labels we use.
+  const environment = resolveSentryEnvironment(process.env.PUBLIC_SITE_ENV);
 
   Sentry.init({
     dsn: 'https://7f2225cc0fd72d5dcb2697971c6fc295@o4508368229498880.ingest.de.sentry.io/4510787241705552',
 
-    // Use Vercel-injected commit SHA directly.
-    release: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown',
+    // Astro config injects the current git SHA at build time.
+    release: __SENTRY_RELEASE__,
 
     environment,
 

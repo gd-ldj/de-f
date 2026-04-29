@@ -21,8 +21,8 @@ interface SentryPageScopeProps {
  * Mounted from BaseLayout so that any event fired from a React island or
  * server component carries `locale` / `page_type` / `route` tags.
  *
- * Safe to mount in dev — Sentry.init() is only called in production
- * (see sentry.client.config.js), so these calls are no-ops outside prod.
+ * Safe to mount in local dev — Sentry.init() only runs in production builds.
+ * Beta/dev deployments still report to Sentry, but local `astro dev` stays a no-op.
  */
 export function SentryPageScope({
   locale,

@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { execSync } from 'node:child_process';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
@@ -12,12 +13,27 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL || 'detake.news';
 
+function resolveSentryReleaseName() {
+  const envRelease = process.env.VERCEL_GIT_COMMIT_SHA?.trim();
+  if (envRelease) {
+    return envRelease;
+  }
+
+  try {
+    return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString()
+      .trim();
+  } catch {
+    return 'unknown';
+  }
+}
+
 // ---- Sentry build-time options ----
 // Runtime SDK options (dsn, release, environment, tracesSampleRate, beforeSend, ...)
 // MUST live in sentry.client.config.js / sentry.server.config.js because
 // when those files exist, runtime options passed to sentry({ ... }) are ignored.
 // See node_modules/@sentry/astro/build/types/integration/types.d.ts for the full contract.
-const sentryReleaseName = process.env.VERCEL_GIT_COMMIT_SHA;
+const sentryReleaseName = resolveSentryReleaseName();
 
 const sentryBuildConfig = {
   // Org slug for the EU-region project "detake" (verified via sentry-cli against DSN).
@@ -98,7 +114,9 @@ const devDefineConfig = defineConfig({
       module: '{}',
       __dirname: '"/"',
       __filename: '"/index.js"',
+      __SENTRY_RELEASE__: JSON.stringify(sentryReleaseName),
       'process.env.NODE_ENV': '"development"',
+      'import.meta.env.PUBLIC_SENTRY_RELEASE': JSON.stringify(sentryReleaseName),
       'import.meta.url': '"file:///index.js"',
     },
     resolve: {
@@ -152,7 +170,9 @@ export default isDev
       vite: {
         plugins: [tailwindcss() as any],
         define: {
+          __SENTRY_RELEASE__: JSON.stringify(sentryReleaseName),
           global: 'globalThis',
+          'import.meta.env.PUBLIC_SENTRY_RELEASE': JSON.stringify(sentryReleaseName),
         },
         resolve: {
           alias: {

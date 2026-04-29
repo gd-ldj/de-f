@@ -15,6 +15,21 @@
 
 `PUBLIC_SITE_ENV` 只有两个值：`beta` 和 `production`。
 
+Sentry environment 不直接复用这两个值，而是统一映射为：
+
+| `PUBLIC_SITE_ENV` | Sentry `environment` |
+|---|---|
+| `beta` | `dev` |
+| `production` | `prod` |
+
+额外规则：
+
+- `environment` 只允许 `dev` 和 `prod`，不要再上报 `production`、`preview`、`vercel-production` 等其他值
+- `PUBLIC_SITE_ENV` 缺失时，Sentry 会保持现有默认值并回退到 `prod`
+- 只要 `PUBLIC_SITE_ENV` 不是 `production`，Sentry 就会统一映射到 `dev`
+- `Prod`、`prod` 会被 Sentry 视为不同环境，代码里会统一标准化为小写
+- 环境不会在 Sentry 后台预创建，必须先收到一条带该 `environment` 的事件后才会显示出来
+
 API 域名根据环境自动拼接（去掉/加上 `beta-` 前缀）：
 
 | | beta | production |

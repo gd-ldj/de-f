@@ -35,6 +35,7 @@ export interface Props {
   routePattern?: string
   trackArticleView?: boolean
   sentryArticleId?: string
+  disableAnalytics?: boolean
 }
 
 const {
@@ -59,7 +60,8 @@ const {
   pageType,
   routePattern,
   trackArticleView,
-  sentryArticleId
+  sentryArticleId,
+  disableAnalytics = false
 } = Astro.props
 
 // Fall back to a coarse pageType inferred from the pathname when the page
@@ -241,7 +243,6 @@ const ogLocaleAlternates = availableTranslations ? availableTranslations.map((la
     <script is:inline type="module">
       import { Buffer } from 'https://esm.sh/buffer@6.0.3';
       if (!('Buffer' in window) || (window.Buffer && !window.Buffer.from.toString)) {
-        // @ts-ignore - attach to global window for universal access
         window.Buffer = Buffer;
         console.log('[Polyfill] Buffer attached to window via CDN ESM');
       }
@@ -252,16 +253,18 @@ const ogLocaleAlternates = availableTranslations ? availableTranslations.map((la
       <slot />
     </div>
     
-    <!-- SSR-to-client analytics bridge: preloaded events queue consumed by AnalyticsProvider -->
-    <script is:inline>
-      // page_view is already fired by analytics.initialize(), so no need to duplicate here.
-      // This queue remains available for other SSR-declared events if needed.
-      window.__ANALYTICS_PRELOADED_EVENTS = window.__ANALYTICS_PRELOADED_EVENTS || [];
-    </script>
-    <div style="display:none" data-analytics-event='{"type":"USER_ENGAGEMENT","data":{"source":"ssr-dom","ts":0}}'></div>
+    {!disableAnalytics && (
+      <>
+        <!-- SSR-to-client analytics bridge: preloaded events queue consumed by AnalyticsProvider -->
+        <script is:inline>
+          window.__ANALYTICS_PRELOADED_EVENTS = window.__ANALYTICS_PRELOADED_EVENTS || [];
+        </script>
+        <div style="display:none" data-analytics-event='{"type":"USER_ENGAGEMENT","data":{"source":"ssr-dom","ts":0}}'></div>
 
-    <AnalyticsProvider client:only="react" />
-    <Analytics client:only="react" />
+        <AnalyticsProvider client:only="react" />
+        <Analytics client:only="react" />
+      </>
+    )}
 
     {/* Sentry: attach locale / page_type tags to every event coming from this page. */}
     <SentryPageScope
@@ -276,7 +279,7 @@ const ogLocaleAlternates = availableTranslations ? availableTranslations.map((la
     <!-- External Authentication Manager -->
     <script src="/src/scripts/auth-manager.js"></script>
 
-    <!-- Analytics initialization is now handled by AnalyticsProvider React component -->
+    <!-- Analytics initialization is handled by AnalyticsProvider when enabled. -->
     
     <!-- External ArticleLink Manager -->
     <script src="/src/scripts/article-link-manager.js"></script>

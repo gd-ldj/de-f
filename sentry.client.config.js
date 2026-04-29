@@ -1,21 +1,21 @@
 import * as Sentry from '@sentry/astro';
+import { resolveSentryEnvironment } from './sentry.environment.js';
 
 // Only initialize in production. Vite replaces import.meta.env.PROD at build time.
 const isProd = import.meta.env.PROD;
 
 if (isProd) {
-  // Derive environment from PUBLIC_SITE_ENV (same logic as DEPLOY_ENVIRONMENT in constants.ts)
-  const siteEnv = import.meta.env.PUBLIC_SITE_ENV || 'production';
-  const environment = siteEnv === 'production' ? 'production' : 'preview';
+  // Normalize site environment to the only two Sentry environment labels we use.
+  const environment = resolveSentryEnvironment(import.meta.env.PUBLIC_SITE_ENV);
 
   Sentry.init({
     dsn: 'https://7f2225cc0fd72d5dcb2697971c6fc295@o4508368229498880.ingest.de.sentry.io/4510787241705552',
 
     // Release tracking is required for source maps to work.
-    // Astro config exposes VERCEL_GIT_COMMIT_SHA as PUBLIC_SENTRY_RELEASE at build time.
-    release: import.meta.env.PUBLIC_SENTRY_RELEASE || 'unknown',
+    // Astro config injects the current git SHA at build time.
+    release: __SENTRY_RELEASE__,
 
-    // Distinguish preview / production deployments in the Sentry dashboard.
+    // Distinguish daily dev/test traffic from online production traffic.
     environment,
 
     // Tag every event with the domain the user is visiting.

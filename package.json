@@ -7,6 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "preview:vercel": "node scripts/serve-vercel-output.mjs",
     "start": "vercel dev",
     "vercel:simulate": "pnpm build && pnpm start",
     "astro": "astro",

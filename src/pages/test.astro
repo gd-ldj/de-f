@@ -1,12 +1,12 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import TestHomeData from '@/components/test/TestHomeData'
+import SentryTestPanel from '@/components/test/SentryTestPanel'
 
 export const prerender = false
 ---
 
-<BaseLayout title="Test - Home Data" locale="en">
-  <main class="p-4">
-    <TestHomeData client:only="react" />
+<BaseLayout title="Local Sentry Test" locale="en" disableAnalytics={true}>
+  <main class="mx-auto flex max-w-5xl flex-col gap-6 p-4 md:p-8">
+    <SentryTestPanel client:only="react" />
   </main>
 </BaseLayout>

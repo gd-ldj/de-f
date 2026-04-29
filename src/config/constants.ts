@@ -1,4 +1,5 @@
 import type { SourceLanguage } from '@/types';
+import { resolveSentryEnvironment } from '../../sentry.environment.js';
 
 const publicEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env ?? {};
 
@@ -192,8 +193,8 @@ export const STORAGE_KEYS = {
   SOURCE_LANGUAGE: 'source_language',
 } as const;
 
-// Derive Sentry environment label from SITE_CONFIG
-export const DEPLOY_ENVIRONMENT = SITE_CONFIG.IS_PRODUCTION ? 'production' : 'preview';
+// Reuse the shared Sentry environment mapper so SDK config and app tags match.
+export const DEPLOY_ENVIRONMENT = resolveSentryEnvironment(publicEnv.PUBLIC_SITE_ENV);
 
 /**
  * Analytics and tracking configuration
