@@ -138,6 +138,10 @@ export default isDev
         }),
         sentry(sentryBuildConfig),
       ],
+      // Disable HTML compression to prevent React hydration mismatches.
+      // Astro's compressHTML strips <!-- --> comment markers that React SSR
+      // inserts between adjacent text nodes for hydration boundary tracking.
+      compressHTML: false,
       i18n: {
         defaultLocale: 'us',
         locales: ['us', 'asia'],
