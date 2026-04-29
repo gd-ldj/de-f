@@ -8,6 +8,7 @@ import { formatDate, getArticleBusinessPath, getLocalizedBusinessTypeLabel } fro
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
 import type { SourceLanguage } from '@/types'
 import { createTranslator } from '@/lib/i18n'
+import { hasItems } from '@/components/home/home-section-visibility'
 
 // Get locale and newsAll from props
 interface Props {
@@ -23,6 +24,7 @@ const sourceLanguage: SourceLanguage = locale as SourceLanguage
 
 // Use news data passed from parent component
 const news_all: HomeNewsArticle[] = newsAll
+const hasMainContent = hasItems(news_all)
 
 // Get the main featured article (first one)
 const featuredArticle = news_all[0]
@@ -61,6 +63,7 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
 
 ---
 
+{hasMainContent && (
 <div class="space-y-0">
   {/* Featured Article */}
   {featuredArticle && (
@@ -155,3 +158,4 @@ const extractPlainText = (richText: string, maxLength: number = 200): string => 
     ))}
   </div>
 </div>
+)}

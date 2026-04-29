@@ -14,6 +14,12 @@ import HeaderWithFallback from '@/components/common/astro/HeaderWithFallback.ast
 import { fetchHomePageData } from '@/api/articles';
 import { MULTI_SOURCE_CONFIG } from '@/config/constants';
 import { getSourceLanguageFromRequest } from '@/lib/language-utils';
+import {
+  getHomeHighlightsArticles,
+  getHomeTopGridLayout,
+  hasItems,
+  hasNewsGroups,
+} from '@/components/home/home-section-visibility';
 
 export const prerender = false
 
@@ -24,6 +30,18 @@ const userAgent = Astro.request.headers.get('user-agent') || ''
 const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
 
 const homeData = await fetchHomePageData(locale)
+// Use highlights field (new API), fall back to news_all (legacy API)
+const highlightsData = getHomeHighlightsArticles({
+  highlights: homeData?.highlights,
+  newsAll: homeData?.news_all,
+})
+const hasLatestSection = hasItems(homeData?.lastest || [])
+const hasMainContent = hasItems(highlightsData)
+const topGridLayout = getHomeTopGridLayout({
+  hasLatest: hasLatestSection,
+  hasMainContent,
+})
+const topGridHasBorder = hasNewsGroups(homeData?.news || []) || !hasItems(homeData?.insights || [])
 
 const seoContent = {
   en: {
@@ -51,7 +69,7 @@ const { title, description } = seoContent[locale] || seoContent.en
       <MobileLayout
         locale={locale}
         latestNews={homeData?.lastest || []}
-        newsAll={homeData?.news_all || []}
+        newsAll={highlightsData}
         whoToFollow={homeData?.who_to_follow || []}
         topics={homeData?.topics || []}
         mostRead={homeData?.mostread || []}
@@ -63,14 +81,18 @@ const { title, description } = seoContent[locale] || seoContent.en
   )}
   <div class="min-h-screen bg-white mt-[97px] md:block hidden">
     <div class="max-w-[1440px] mx-auto">
-      <div class={`grid grid-cols-12 ${!(homeData?.news?.length) && homeData?.insights?.length ? '' : 'border-b border-border'}`}>
-        <div class="col-span-3 py-5">
-          <Sidebar locale={locale} latestNews={homeData?.lastest || []} />
-        </div>
-        <div class="col-span-6 border-x border-border py-5 px-6">
-          <MainContent locale={locale} newsAll={homeData?.news_all || []} />
-        </div>
-        <div class="col-span-3 space-y-6 py-5">
+      <div class:list={['grid grid-cols-12', topGridHasBorder && 'border-b border-border']}>
+        {topGridLayout.latest && (
+          <div class={topGridLayout.latest}>
+            <Sidebar locale={locale} latestNews={homeData?.lastest || []} />
+          </div>
+        )}
+        {topGridLayout.main && (
+          <div class={topGridLayout.main}>
+            <MainContent locale={locale} newsAll={highlightsData} />
+          </div>
+        )}
+        <div class={topGridLayout.right}>
           <div id="login-root"></div>
           <AuthMount
             client:load

@@ -25,20 +25,26 @@ interface NewsCategory {
 export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
   const t = createTranslator(locale);
   const lang = locale as SourceLanguage;
+  const populatedGroups = newsData.filter((item) => Array.isArray(item.data) && item.data.length > 0);
+  const initialGroup = populatedGroups[0];
 
-  const [articles, setArticles] = useState<any[]>(newsData[0]?.data || []);
-  const [activeCategory, setActiveCategory] = useState((newsData[0]?.tag || '').toLowerCase());
+  const [articles, setArticles] = useState<HomeNewsArticle[]>(initialGroup?.data || []);
+  const [activeCategory, setActiveCategory] = useState((initialGroup?.tag || '').toLowerCase());
   const [scrollProgress, setScrollProgress] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Generate news categories dynamically from newsData or use default categories
   const newsCategories: NewsCategory[] = useMemo(() => {
-    const categories = newsData.map((item) => ({
+    const categories = populatedGroups.map((item) => ({
       key: (item.tag || '').toLowerCase(),
       name: getTaxonomyCategoryLabel(item.tag || '', lang),
     }));
     return categories;
-  }, [newsData, lang]);
+  }, [populatedGroups, lang]);
+
+  if (populatedGroups.length === 0) {
+    return null;
+  }
 
   // Handle scroll progress calculation for mobile horizontal scroll
   const handleScroll = () => {
@@ -56,7 +62,7 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
 
     setActiveCategory(categoryKey);
 
-    const categoryData = newsData.find((item) => (item.tag || '').toLowerCase() === categoryKey);
+    const categoryData = populatedGroups.find((item) => (item.tag || '').toLowerCase() === categoryKey);
     setArticles(categoryData?.data || []);
 
     // Reset scroll progress when category changes

@@ -3,6 +3,7 @@ import type { Locale, HomeMostReadArticle } from '@/types'
 import ResearchGrid from '@/components/home/react/ResearchGrid'
 import { createTranslator } from '@/lib/i18n'
 import { getLocaleFromPath } from '@/lib/utils'
+import { hasItems } from '@/components/home/home-section-visibility'
 
 interface Props {
   locale?: Locale
@@ -20,8 +21,10 @@ const t = createTranslator(locale)
  * 使用 mostread 文章数据
  */
 const researchArticles = articles
+const hasResearchArticles = hasItems(researchArticles)
 ---
 
+{hasResearchArticles && (
 <section class="py-5 px-4 md:px-6 border-t border-border space-y-6" aria-labelledby="research-heading">
   <div>
     <!-- Top title bar -->
@@ -51,3 +54,4 @@ const researchArticles = articles
     />
   </div>
 </section>
+)}

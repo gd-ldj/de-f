@@ -16,6 +16,10 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
   const lang = locale as SourceLanguage;
   const researchArticles = articles.slice(0, 4); // Only show first 4 articles
 
+  if (!researchArticles.length) {
+    return null;
+  }
+
   return (
     <div>
       {/* Mobile layout: Horizontal list with left image, right text */}

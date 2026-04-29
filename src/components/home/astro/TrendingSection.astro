@@ -2,6 +2,7 @@
 import type { Locale, HomeMostReadArticle } from '@/types'
 import TrendingGrid from '@/components/home/react/TrendingGrid'
 import { getLocaleFromPath } from '@/lib/utils'
+import { hasItems } from '@/components/home/home-section-visibility'
 
 interface Props {
   locale?: Locale
@@ -16,10 +17,13 @@ const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as L
  * Uses mostread articles from the API
  */
 const trendingArticles = articles
+const hasTrendingArticles = hasItems(trendingArticles)
 ---
 
-<TrendingGrid 
-  articles={trendingArticles} 
-  locale={locale}
-  client:load
-/>
+{hasTrendingArticles && (
+  <TrendingGrid 
+    articles={trendingArticles} 
+    locale={locale}
+    client:load
+  />
+)}

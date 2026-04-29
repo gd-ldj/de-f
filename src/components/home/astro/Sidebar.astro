@@ -4,6 +4,7 @@ import ArticleLink from '@/components/common/astro/ArticleLink.astro'
 import { getLocaleFromPath } from '@/lib/utils'
 import { createTranslator } from '@/lib/i18n'
 import { formatDate, formatRelativeTime, getArticleBusinessPath } from '@/utils/util'
+import { hasItems } from '@/components/home/home-section-visibility'
 
 interface Props {
   locale?: Locale
@@ -16,6 +17,7 @@ const locale: Locale = propsLocale || getLocaleFromPath(Astro.url.pathname) as L
 
 // Use custom translation function for server-side rendering
 const t = createTranslator(locale)
+const hasLatestNews = hasItems(latestNews)
 
 /**
  * Use latest news data passed from parent component
@@ -32,6 +34,7 @@ const isWithin12Hours = (createdAt: string) => {
 ---
 
 <!-- Sidebar Component - 100% accurate mobile UI restoration -->
+{hasLatestNews && (
 <div class="pl-4 md:px-6">
   <div>
     <!-- Latest section title - responsive typography -->
@@ -116,3 +119,4 @@ const isWithin12Hours = (createdAt: string) => {
     </div>
   </div>
 </div>
+)}

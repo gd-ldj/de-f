@@ -1,6 +1,7 @@
 ---
 import type { Locale, HomeNewsArticle } from '@/types'
 import NewsGrid from '@/components/home/react/NewsGrid'
+import { hasNewsGroups } from '@/components/home/home-section-visibility'
 
 interface Props {
   locale: Locale
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { locale, articles = []} = Astro.props as Props
+const hasNewsSection = hasNewsGroups(articles)
 
 /**
  * Use articles data or newsData passed from parent component
@@ -18,8 +20,10 @@ const { locale, articles = []} = Astro.props as Props
  */
 ---
 
-<NewsGrid 
-  newsData={articles}
-  locale={locale}
-  client:load
-/>
+{hasNewsSection && (
+  <NewsGrid 
+    newsData={articles}
+    locale={locale}
+    client:load
+  />
+)}
