@@ -17,6 +17,8 @@ interface CategoryPageProps {
   initialSubcategoryName: string;
   initialTag: string;
   initialOrderBy: 'Latest' | 'Popular' | 'Trending';
+  initialArticles?: ApiArticle[];
+  initialTotal?: number;
 }
 
 interface FilterState {
@@ -28,7 +30,7 @@ interface FilterState {
   orderBy: 'Latest' | 'Popular' | 'Trending';
 }
 
-export default function CategoryPage({ locale, category, initialPage, initialCategoryName, initialAuthorName, initialSubcategoryName, initialTag, initialOrderBy }: CategoryPageProps) {
+export default function CategoryPage({ locale, category, initialPage, initialCategoryName, initialAuthorName, initialSubcategoryName, initialTag, initialOrderBy, initialArticles, initialTotal }: CategoryPageProps) {
   const isPodcasts = category.toLowerCase() === 'podcasts';
   // Helper function to parse comma-separated values from URL parameters
   const parseCommaSeparatedValue = (value: string): string | string[] => {
@@ -51,14 +53,16 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     return leftValues.every((value, index) => value === rightValues[index]);
   };
 
-  const [articles, setArticles] = useState<ApiArticle[]>([]);
-  const [total, setTotal] = useState(0);
+  const hasSSRData = (initialArticles?.length ?? 0) > 0;
+  const [articles, setArticles] = useState<ApiArticle[]>(initialArticles ?? []);
+  const [total, setTotal] = useState(initialTotal ?? 0);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const ssrHasMore = hasSSRData ? (initialArticles!.length < (initialTotal ?? 0)) : true;
+  const [hasMore, setHasMore] = useState(ssrHasMore);
   const lastFetchKeyRef = useRef<string>('');
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
-  const hasMoreRef = useRef(true);
+  const hasMoreRef = useRef(ssrHasMore);
   const abortControllerRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
   const filtersRef = useRef<FilterState>({
@@ -381,6 +385,9 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     };
   }, [handleFilterChange, handleClearAll]);
 
+  // Track whether the initial SSR data has been consumed (skip first fetch)
+  const ssrConsumedRef = useRef(false);
+
   // Fetch articles when filters change
   useEffect(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -400,8 +407,15 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
     if (fetchKey === lastFetchKeyRef.current) return;
 
     lastFetchKeyRef.current = fetchKey;
+
+    // Skip the first client-side fetch when SSR data is already present
+    if (hasSSRData && !ssrConsumedRef.current) {
+      ssrConsumedRef.current = true;
+      return;
+    }
+
     fetchArticlesData(filters, shouldAppend);
-  }, [filters, fetchArticlesData]);
+  }, [filters, fetchArticlesData, hasSSRData]);
 
   // Setup IntersectionObserver for mobile infinite scroll
   useEffect(() => {

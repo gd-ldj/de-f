@@ -7,6 +7,7 @@ import CategoryPage from '@/components/pages/CategoryPage'
 import type { Locale, SourceLanguage } from '@/types'
 import { MULTI_SOURCE_CONFIG } from '@/config/constants'
 import { getSourceLanguageFromRequest } from '@/lib/language-utils'
+import { fetchArticles } from '@/api/articles'
 
 export const prerender = false
 const sourceLanguage: SourceLanguage = getSourceLanguageFromRequest(Astro.request, Astro.url.hostname)
@@ -21,6 +22,17 @@ const initialTag = url.searchParams.get('tag') || ''
 const initialOrderBy = (url.searchParams.get('order_by') as 'Latest' | 'Popular' | 'Trending') || 'Latest'
 
 const categoryDisplayName = 'News'
+
+// SSR prefetch: fetch first page of articles on the server
+const initialData = await fetchArticles(locale, initialPage, 12, {
+  business_type_name: categoryDisplayName,
+  category_name: initialCategoryName || undefined,
+  author_name: initialAuthorName || undefined,
+  subcategory_name: initialSubcategoryName || undefined,
+  tag: initialTag || undefined,
+  order_by: initialOrderBy,
+  page: initialPage,
+})
 
 const seoContent = {
   en: {
@@ -47,7 +59,7 @@ const { title, description } = seoContent[locale] || seoContent.en
   <main class="flex-1 bg-background mt-[56px] md:mt-[97px]">
     <div id="category-breadcrumb-title" class="max-w-[1440px] mx-auto px-4 py-6 hidden md:block"></div>
 
-    <CategoryPage 
+    <CategoryPage
       client:load
       locale={locale}
       category={categoryDisplayName}
@@ -57,8 +69,10 @@ const { title, description } = seoContent[locale] || seoContent.en
       initialSubcategoryName={initialSubcategoryName}
       initialTag={initialTag}
       initialOrderBy={initialOrderBy}
+      initialArticles={initialData?.articles ?? []}
+      initialTotal={initialData?.total ?? 0}
     />
   </main>
 
-  <Footer client:load locale={locale} />
+  <Footer client:visible locale={locale} />
 </BaseLayout>

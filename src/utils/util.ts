@@ -17,11 +17,12 @@ export function formatDate(isoString: string, locale = 'en') {
     const dateObj = typeof isoString === 'string' ? new Date(isoString) : isoString;
     const targetLocale = localeMap[locale as keyof typeof localeMap] || 'en-US';
 
-    // Use Intl.DateTimeFormat for more reliable locale-specific formatting
+    // Use Intl.DateTimeFormat with explicit UTC timezone to prevent SSR/CSR hydration mismatch
     return new Intl.DateTimeFormat(targetLocale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      timeZone: 'UTC',
     }).format(dateObj);
   } catch {
     return '';
