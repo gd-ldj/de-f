@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ApiArticle, Locale } from '@/types';
 import { fetchCollectionArticles } from '@/api/collections';
-import { formatDate, getDisplayTopics, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util';
+import { getDisplayTopics, getLocalizedCategoryLabel, getLocalizedSubcategoryLabel, getLocalizedTagLabel } from '@/utils/util';
+import { formatDateSSR } from '@/utils/timezone';
 import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
-import { useAtom } from 'jotai';
-import { persistedPromoteCodeAtom } from '@/stores';
+import { useStablePromoteCode } from '@/lib/useStablePromoteCode';
 
 interface CollectionArticlesListProps {
   locale: Locale;
@@ -30,7 +30,7 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const t = createTranslator(locale);
   const lang = locale as SourceLanguage;
-  const [promoteCode, _] = useAtom(persistedPromoteCodeAtom);
+  const promoteCode = useStablePromoteCode();
   /**
    * 加载更多合集文章（用于移动端无限滚动）
    */
@@ -77,36 +77,57 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
   return (
     <section className="px-4 md:px-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-x-4 md:gap-y-6">
-        {articles.map((article, index) =>
-          index === 0 ? (
-            <article key={article.entry_id} className="md:col-span-2 lg:col-span-2 overflow-hidden bg-white transition-shadow max-w-[460px]">
-              <div className="relative">
-                {article.img_url && (
-                  <a href={`/collections/${collectionId}/${article.slug}`} className="block overflow-hidden">
-                    <img src={article.img_url} alt={article.title} className="w-full md:h-[258px] lg:w-[460px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
-                  </a>
-                )}
-                <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[12px] font-medium text-white uppercase truncate">{[getLocalizedCategoryLabel(article, lang) || getLocalizedSubcategoryLabel(article, lang), ...getDisplayTopics(article).slice(0, 2).map((tag: string) => getLocalizedTagLabel(tag, lang))].filter(Boolean).join('  ')}</div>
-                    </div>
-                    <div className="text-[11px] text-white/80 whitespace-nowrap">
-                      {new Date(article.created_at).toLocaleDateString(locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })} <span className="">{`/ ${t('article.by')} `}</span> <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
+        {articles.map((article, index) => {
+          const displayTopics = getDisplayTopics(article);
+          const leadMetadataItems = [
+            getLocalizedCategoryLabel(article, lang) || getLocalizedSubcategoryLabel(article, lang),
+            ...displayTopics.slice(0, 2).map((tag: string) => getLocalizedTagLabel(tag, lang)),
+          ].filter((item): item is string => Boolean(item));
+
+          if (index === 0) {
+            return (
+              <article key={article.entry_id} className="md:col-span-2 lg:col-span-2 overflow-hidden bg-white transition-shadow max-w-[460px]">
+                <div className="relative">
+                  {article.img_url && (
+                    <a href={`/collections/${collectionId}/${article.slug}`} className="block overflow-hidden">
+                      <img src={article.img_url} alt={article.title} className="w-full md:h-[258px] lg:w-[460px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    </a>
+                  )}
+                  <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[12px] font-medium text-white uppercase truncate">
+                          {leadMetadataItems.map((item, itemIndex) => (
+                            <React.Fragment key={`${article.entry_id}-lead-meta-${itemIndex}`}>
+                              {itemIndex > 0 && <span aria-hidden="true" className="px-1">{'\u00b7'}</span>}
+                              <span>{item}</span>
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="text-[11px] text-white/80 whitespace-nowrap">
+                        <span data-date={article.created_at} data-locale={locale} suppressHydrationWarning>
+                          {formatDateSSR(article.created_at, lang)}
+                        </span>{' '}
+                        <span className="">{`/ ${t('article.by')} `}</span>{' '}
+                        <span className="uppercase text-white">{article.author?.name || article.author_name}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="pt-[10px] md:pt-2">
-                <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
-                  <a href={`/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-2 md:line-clamp-1">
-                    {article.title}
-                  </a>
-                </h2>
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-1">{article.sub_title}</p>
-              </div>
-            </article>
-          ) : (
+                <div className="pt-[10px] md:pt-2">
+                  <h2 className="text-base font-medium text-foreground mb-2 leading-tight">
+                    <a href={`/collections/${collectionId}/${article.slug}-${promoteCode}`} className="hover:text-primary transition-colors line-clamp-2 md:line-clamp-1">
+                      {article.title}
+                    </a>
+                  </h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-1">{article.sub_title}</p>
+                </div>
+              </article>
+            );
+          }
+
+          return (
             <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow h-full py-2 md:py-0">
               <div className="flex gap-[10px] md:flex-col h-full">
                 <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-[127px] rounded-[2px]">
@@ -119,9 +140,9 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 <div className="flex-1 flex flex-col">
                   <div className="flex flex-wrap gap-1 md:gap-2">
                     <span className="text-primary text-[10px] md:text-xs font-medium uppercase">{getLocalizedCategoryLabel(article, lang) || getLocalizedSubcategoryLabel(article, lang)}</span>
-                    {getDisplayTopics(article).length > 0 && (
+                    {displayTopics.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        <span className="text-muted-foreground text-[10px] md:text-xs uppercase">{getLocalizedTagLabel(getDisplayTopics(article).find((tag: string) => filterTag?.split(',').includes(tag)) || getDisplayTopics(article)[0], lang)}</span>
+                        <span className="text-muted-foreground text-[10px] md:text-xs uppercase">{getLocalizedTagLabel(displayTopics.find((tag: string) => filterTag?.split(',').includes(tag)) || displayTopics[0], lang)}</span>
                       </div>
                     )}
                   </div>
@@ -136,7 +157,9 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                     </div>
                     <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
                       <div className="flex items-center space-x-1 truncate">
-                        <span>{formatDate(article.created_at, locale)}</span>
+                        <span data-date={article.created_at} data-locale={locale} suppressHydrationWarning>
+                          {formatDateSSR(article.created_at, lang)}
+                        </span>
                         <span className="">{`/ ${t('article.by')} `}</span>
                         <span className="text-foreground uppercase truncate">{article.author?.name || article.author_name}</span>
                       </div>
@@ -145,8 +168,8 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
                 </div>
               </div>
             </article>
-          ),
-        )}
+          );
+        })}
       </div>
       <div ref={sentinelRef} className="h-10 mt-4 flex items-center justify-center text-xs text-muted-foreground md:hidden">
         <span className="h-10 mt-4">{loading && t('common.loading')}</span>

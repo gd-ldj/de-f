@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Locale, SourceLanguage } from '@/types';
-import { DEFAULT_PROMOTE_CODE } from '@/config/constants';
 import { buildArticleUrl } from '@/lib/language-utils';
+import { useStablePromoteCode } from '@/lib/useStablePromoteCode';
 
 interface ArticleLinkProps {
   slug: string;
@@ -16,6 +16,7 @@ interface ArticleLinkProps {
 }
 
 const ArticleLink: React.FC<ArticleLinkProps> = ({ slug, locale, business, userId, isPromoted, article, children, className = '', onClick }) => {
+  const promoteCode = useStablePromoteCode();
   let finalUserId = userId;
   if (!finalUserId && article) {
     if (article.user_id) {
@@ -28,7 +29,6 @@ const ArticleLink: React.FC<ArticleLinkProps> = ({ slug, locale, business, userI
   const finalIsPromoted = isPromoted ?? article?.is_promoted ?? false;
 
   const getArticleUrl = (slug: string) => {
-    const promoteCode = (typeof window !== 'undefined' ? localStorage.getItem('promote_code') : null) || DEFAULT_PROMOTE_CODE;
     return buildArticleUrl({
       category: business.toLowerCase(),
       slug,
