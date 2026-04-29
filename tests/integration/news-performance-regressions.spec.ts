@@ -131,4 +131,23 @@ test.describe('News page regression checks', () => {
 
     expect(cfHeadersRequests).toBe(1);
   });
+
+  test('/news should not initialize Clerk before any auth interaction', async ({ page }) => {
+    let clerkRequests = 0;
+
+    await mockNewsPageData(page);
+
+    page.on('request', (request) => {
+      if (/clerk/i.test(request.url())) {
+        clerkRequests += 1;
+      }
+    });
+
+    await page.goto('/news');
+    await page.waitForLoadState('networkidle');
+    await expect(newsHeading(page)).toBeVisible();
+    await page.waitForTimeout(1000);
+
+    expect(clerkRequests).toBe(0);
+  });
 });

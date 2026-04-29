@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import type { Locale } from '@/types';
 import copyIcon from '@/assets/imgs/copy.svg';
-import { useAuth } from '@/lib/useAuth';
 import { useWalletAuth } from '@/lib/useWalletAuth';
 import { createTranslator } from '@/lib/i18n';
 import { motion } from 'framer-motion';
 import { TRACKING_EVENTS, DEFAULT_PROMOTE_CODE } from '@/config/constants';
 import { getAnonymousPromoteCode, getCachedAnonymousPromoteCode } from '@/lib/fingerprint';
 import { getPathPromoteCodeFromUrl, getShareUrlPromoteStrategy } from '@/lib/share-url';
+import { requestAuthClientOpen } from '@/lib/auth-client-events';
 
 interface ShareSectionProps {
   locale: Locale;
@@ -25,9 +25,9 @@ interface ShareSectionProps {
 const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, articleId, onClose }) => {
   const t = createTranslator(locale);
   const [copied, setCopied] = useState(false);
-  const { isEffectivelyLoggedIn, isLoading: isAuthLoading, authenticated: isSignedIn, login } = useAuth();
   const [shareUrl, setShareUrl] = useState(url);
-  const { promoteCode: myPromoteCode } = useWalletAuth();
+  const { promoteCode: myPromoteCode, accessToken, userId } = useWalletAuth();
+  const isEffectivelyLoggedIn = Boolean(accessToken && userId);
 
   /**
    * Centralized evaluation for whether the cross-promo prompt should be visible.
@@ -232,7 +232,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
    * Handle login trigger when user is not authenticated
    */
   const handleLoginClick = () => {
-    login();
+    requestAuthClientOpen('sign-in');
   };
 
   return (
@@ -312,7 +312,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
         </div>
 
         {/* Additional login prompt below input for unauthenticated users */}
-        {!isAuthLoading && !isSignedIn && !isEffectivelyLoggedIn && (
+        {!isEffectivelyLoggedIn && (
           <div className="text-xs text-muted-foreground">
             <span onClick={handleLoginClick} className="text-primary hover:underline cursor-pointer">
               {t('article.loginNow')}

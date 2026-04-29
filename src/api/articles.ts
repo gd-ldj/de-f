@@ -382,6 +382,7 @@ export async function fetchHomePageData(locale: Locale): Promise<HomePageData | 
       if (data.insights) data.insights = normalizeList(data.insights);
       if (data.research) data.research = normalizeList(data.research);
       if (data.mostread) data.mostread = normalizeList(data.mostread);
+      if (data.highlights) data.highlights = normalizeList(data.highlights);
       if (data.news_all) data.news_all = normalizeList(data.news_all);
       if (data.news) {
         data.news = data.news.map((group) => ({

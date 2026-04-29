@@ -1,41 +1,30 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import Login from '@/components/home/react/Login';
-import { IdentityProvider } from '@/components/common/react/IdentityProvider';
-import { ClerkApiTokenSync } from '@/components/common/react/ClerkApiTokenSync';
-import type { Locale } from '@/types';
-import { WalletPopover } from '@/components/common/react/WalletPopover';
 import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
-import { accessTokenAtom } from '@/stores';
-import { MULTI_SOURCE_CONFIG } from '@/config/constants';
-import { UserHeaderIcon } from '@/components/common/react/header/HeaderIcons';
-
+import type { Locale } from '@/types';
+import { STORAGE_KEYS } from '@/config/constants';
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
 import { ToastContainer } from '@/components/common/react/Toast';
-import { useAuth } from '@clerk/clerk-react';
+import { AUTH_CLIENT_OPEN_EVENT } from '@/lib/auth-client-events';
+import type { AuthClientOpenMode } from '@/lib/auth-client-events';
 
-interface AuthMountProps {
-  // User button mount point (User avatar button in Header)
+export interface AuthMountProps {
   userButtonTargetId?: string;
   loginTargetId?: string;
-  // The DOM id where ShareSection should be mounted, optional
   shareTargetId?: string;
   shareMobileTargetId?: string;
-  // Props used to render ShareSection under ClerkProvider
   shareSection?: {
     locale: Locale;
     title: string;
     url: string;
     articleId?: string;
   };
-  // The DOM id where AuthorSection should be mounted, optional
   authorTargetId?: string;
-  // Props used to render AuthorSection under ClerkProvider
   authorSection?: {
     author: {
-      id?: string; // optional author id for follow/subscribe API
+      id?: string;
       name: string;
       bio?: string;
       avatar?: string;
@@ -46,31 +35,12 @@ interface AuthMountProps {
   };
 }
 
-/**
- * Extract locale from current URL pathname
- * Fallback to 'en' when running on server or unexpected path
- */
-function getLocaleFromURL(): Locale {
-  if (typeof window === 'undefined') return 'en';
-  const hostname = window.location.hostname;
-  const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
-  return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+export interface AuthMountClientProps extends AuthMountProps {
+  autoOpenMode?: AuthClientOpenMode | null;
+  onAutoOpenHandled?: () => void;
 }
 
-/**
- * Placeholder user button - shown while Clerk is loading
- */
-const PlaceholderUserButton: React.FC = () => (
-  <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none opacity-50 cursor-not-allowed" disabled>
-    <UserHeaderIcon className="w-5 h-5 text-foreground" />
-  </button>
-);
-
-/**
- * Placeholder Login Component
- * Shows a static login interface during Clerk initialization
- */
-const PlaceholderLogin: React.FC<{ locale: Locale }> = ({ locale }) => {
+const PlaceholderLogin: React.FC = () => {
   return (
     <div className="flex items-center justify-center p-4">
       <div className="animate-pulse">
@@ -80,56 +50,28 @@ const PlaceholderLogin: React.FC<{ locale: Locale }> = ({ locale }) => {
   );
 };
 
-/**
- * Placeholder ShareSection Component
- */
-const PlaceholderShareSection: React.FC<{ title: string; url: string; locale: Locale }> = ({ title, url, locale }) => {
-  return (
-    <div className="flex items-center space-x-2 opacity-50">
-      <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
-      <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
-      <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
-    </div>
-  );
-};
+const AuthMount: React.FC<AuthMountProps> = (props) => {
+  const {
+    userButtonTargetId = 'user-button-root',
+    loginTargetId = 'login-root',
+    shareTargetId = 'share-section-root',
+    shareMobileTargetId,
+    shareSection,
+    authorTargetId = 'author-section-root',
+    authorSection,
+  } = props;
 
-/**
- * Placeholder AuthorSection Component
- */
-const PlaceholderAuthorSection: React.FC<{ author: any; locale: Locale }> = ({ author, locale }) => {
-  return (
-    <div className="flex items-center space-x-3 p-4">
-      <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
-      <div className="flex-1">
-        <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mb-2"></div>
-        <div className="h-3 w-32 bg-gray-200 rounded animate-pulse"></div>
-      </div>
-    </div>
-  );
-};
-
-/**
- * AuthMountContent - Inner component that uses Clerk hooks
- * This component is rendered inside IdentityProvider to access Clerk context
- */
-const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareMobileTargetId, shareSection, authorTargetId = 'author-section-root', authorSection }) => {
   const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
   const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [shareMobileEl, setShareMobileEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
-  // Track locale for children that require it (Login, WalletPopover)
-  const [locale, setLocale] = useState<Locale>('en');
+  const [clerkMounted, setClerkMounted] = useState(false);
+  const [pendingAutoOpenMode, setPendingAutoOpenMode] = useState<AuthClientOpenMode | null>(null);
+  const [AuthMountClientComponent, setAuthMountClientComponent] = useState<React.ComponentType<AuthMountClientProps> | null>(null);
 
-  // Read global authentication state from jotai store
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
-  const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
 
-  // Get Clerk ready state and sign-in status to determine when to show real components
-  const { isLoaded: ready, isSignedIn } = useAuth();
-  const isUserButtonActive = isAuthenticated || Boolean(accessToken) || Boolean(isSignedIn);
-
-  // Memoize DOM element queries to avoid repeated lookups
   const domElements = useMemo(() => {
     if (typeof window === 'undefined') return null;
 
@@ -140,9 +82,8 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
       shareMobile: document.getElementById(shareMobileTargetId || ''),
       author: document.getElementById(authorTargetId),
     };
-  }, [userButtonTargetId, loginTargetId, shareTargetId, authorTargetId]);
+  }, [userButtonTargetId, loginTargetId, shareTargetId, shareMobileTargetId, authorTargetId]);
 
-  // Resolve DOM mount points on client
   useEffect(() => {
     if (!domElements) return;
 
@@ -152,207 +93,194 @@ const AuthMountContent: React.FC<AuthMountProps> = ({ userButtonTargetId = 'user
     setShareMobileEl(domElements.shareMobile);
     setAuthorEl(domElements.author);
 
-    // Update locale from URL on mount
-    setLocale(getLocaleFromURL());
-
-    // Debug: verify hydration ran in the browser and mount points were found
     if (import.meta.env.DEV) {
       console.log('[AuthMount] hydrated. Elements found:', domElements);
     }
   }, [domElements]);
 
-  // Monitor for mobile share container appearance and disappearance using MutationObserver
   useEffect(() => {
     if (!shareMobileTargetId || typeof window === 'undefined') return;
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        if (mutation.type === 'childList') {
-          const mobileContainer = document.getElementById(shareMobileTargetId);
+        if (mutation.type !== 'childList') return;
 
-          if (mobileContainer && !shareMobileEl) {
-            setShareMobileEl(mobileContainer);
-            if (import.meta.env.DEV) {
-              console.log('[AuthMount] Mobile share container found via MutationObserver');
-            }
-          } else if (!mobileContainer && shareMobileEl) {
-            setShareMobileEl(null);
-            if (import.meta.env.DEV) {
-              console.log('[AuthMount] Mobile share container removed');
-            }
-          }
+        const mobileContainer = document.getElementById(shareMobileTargetId);
+        if (mobileContainer && !shareMobileEl) {
+          setShareMobileEl(mobileContainer);
+          return;
+        }
+
+        if (!mobileContainer && shareMobileEl) {
+          setShareMobileEl(null);
         }
       });
     });
 
-    // Start observing the document body for changes
     observer.observe(document.body, {
       childList: true,
       subtree: true,
     });
 
-    // Initial check in case container already exists
     const existingContainer = document.getElementById(shareMobileTargetId);
     if (existingContainer && !shareMobileEl) {
       setShareMobileEl(existingContainer);
-      if (import.meta.env.DEV) {
-        console.log('[AuthMount] Mobile share container found on initial check');
-      }
     }
 
-    // Cleanup observer on unmount
     return () => observer.disconnect();
-  }, [shareMobileTargetId, shareMobileEl]);
+  }, [shareMobileEl, shareMobileTargetId]);
 
-  // Memoize portals to prevent unnecessary re-renders
-  // Only show real components when Clerk is ready
-  const userButtonPortal = useMemo(() => {
-    if (!userButtonEl || !ready) return null;
-    return createPortal(
-      <WalletPopover locale={locale}>
-        <button className="p-1 hover:bg-gray-100 rounded-md transition-colors outline-none" aria-label="User menu">
-          <UserHeaderIcon className={`w-5 h-5 ${isUserButtonActive ? 'text-primary' : 'text-foreground'}`} />
-        </button>
-      </WalletPopover>,
-      userButtonEl
-    );
-  }, [userButtonEl, ready, locale, isUserButtonActive]);
+  const shouldMountClerkEagerly = useMemo(() => {
+    if (typeof window === 'undefined') return false;
 
-  const loginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated || !ready || accessToken || isSignedIn) return null;
-    return createPortal(<Login locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale, ready, accessToken, isSignedIn]);
+    const hasImmediateAuthUI = Boolean(loginEl);
+    const hasStoredSession =
+      Boolean(localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) &&
+      Boolean(localStorage.getItem(STORAGE_KEYS.USER_ID));
 
-  const sharePortal = useMemo(() => {
-    if (!shareEl || !shareSection || !ready) return null;
-    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} articleId={shareSection.articleId} />, shareEl);
-  }, [shareEl, shareSection, ready]);
+    return hasImmediateAuthUI || hasStoredSession || isAuthenticated;
+  }, [isAuthenticated, loginEl]);
 
-  // Mobile share portal - renders ShareSection to mobile container
-  const shareMobilePortal = useMemo(() => {
-
-    if (!shareMobileEl || !shareSection || !ready) return null;
-    return createPortal(<ShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} articleId={shareSection.articleId} />, shareMobileEl);
-  }, [shareMobileEl, shareSection, ready]);
-
-  const authorPortal = useMemo(() => {
-    if (!authorEl || !authorSection || !ready) return null;
-    return createPortal(<AuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
-  }, [authorEl, authorSection, ready]);
-
-  return (
-    <>
-      {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
-      <span style={{ display: 'none' }} data-auth-island="true" />
-
-      {/* Clerk API Token Sync - exchanges Clerk token for backend token */}
-      <ClerkApiTokenSync />
-
-      {/* Render memoized portals */}
-      {userButtonPortal}
-      {loginPortal}
-      {sharePortal}
-      {shareMobilePortal}
-      {authorPortal}
-    </>
-  );
-};
-
-/**
- * Main AuthMount component that handles placeholder rendering and IdentityProvider
- */
-const AuthMount: React.FC<AuthMountProps> = (props) => {
-  const { userButtonTargetId = 'user-button-root', loginTargetId = 'login-root', shareTargetId = 'share-section-root', shareSection, authorTargetId = 'author-section-root', authorSection } = props;
-
-  const [userButtonEl, setUserButtonEl] = useState<HTMLElement | null>(null);
-  const [loginEl, setLoginEl] = useState<HTMLElement | null>(null);
-  const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
-  const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
-  const [locale, setLocale] = useState<Locale>('en');
-  const [clerkMounted, setClerkMounted] = useState(false);
-
-  // Read global authentication state from jotai store
-  const [isAuthenticated] = useAtom(isAuthenticatedAtom);
-
-  // Memoize DOM element queries to avoid repeated lookups
-  const domElements = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-
-    return {
-      userButton: document.getElementById(userButtonTargetId),
-      login: document.getElementById(loginTargetId),
-      share: document.getElementById(shareTargetId),
-      author: document.getElementById(authorTargetId),
-    };
-  }, [userButtonTargetId, loginTargetId, shareTargetId, authorTargetId]);
-
-  // Resolve DOM mount points on client
-  useEffect(() => {
-    if (!domElements) return;
-
-    setUserButtonEl(domElements.userButton);
-    setLoginEl(domElements.login);
-    setShareEl(domElements.share);
-    setAuthorEl(domElements.author);
-
-    // Update locale from URL on mount
-    setLocale(getLocaleFromURL());
-
-    // Debug: verify hydration ran in the browser and mount points were found
-    if (import.meta.env.DEV) {
-      console.log('[AuthMount] hydrated. Elements found:', domElements);
+  const loadAuthMountClient = useCallback(async (): Promise<React.ComponentType<AuthMountClientProps>> => {
+    if (AuthMountClientComponent) {
+      return AuthMountClientComponent;
     }
-  }, [domElements]);
 
-  // Track when Clerk provider is mounted to switch from placeholder to real components
+    const module = await import('./AuthMountClient');
+    setAuthMountClientComponent(() => module.default);
+    return module.default;
+  }, [AuthMountClientComponent]);
+
+  const mountClerkClient = useCallback(
+    async (autoOpenMode: AuthClientOpenMode | null) => {
+      if (autoOpenMode) {
+        setPendingAutoOpenMode(autoOpenMode);
+      }
+
+      try {
+        await loadAuthMountClient();
+        setClerkMounted(true);
+      } catch (error) {
+        console.error('[AuthMount] Failed to load Clerk client:', error);
+        if (autoOpenMode) {
+          setPendingAutoOpenMode(null);
+        }
+      }
+    },
+    [loadAuthMountClient],
+  );
+
   useEffect(() => {
-    setClerkMounted(true);
+    if (!shouldMountClerkEagerly || clerkMounted) return;
+    void mountClerkClient(null);
+  }, [shouldMountClerkEagerly, clerkMounted, mountClerkClient]);
+
+  const handleDeferredUserButtonActivation = useCallback(() => {
+    if (pendingAutoOpenMode || clerkMounted) return;
+    void mountClerkClient('user-button');
+  }, [pendingAutoOpenMode, clerkMounted, mountClerkClient]);
+
+  const handleAutoOpenHandled = useCallback(() => {
+    setPendingAutoOpenMode(null);
   }, []);
 
-  // Memoize placeholder portals
-  const placeholderUserButtonPortal = useMemo(() => {
-    if (!userButtonEl || clerkMounted) return null;
-    return createPortal(<PlaceholderUserButton />, userButtonEl);
-  }, [userButtonEl, clerkMounted]);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleOpenRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ mode?: AuthClientOpenMode }>).detail;
+      const requestedMode = detail?.mode ?? 'sign-in';
+
+      if (clerkMounted) {
+        setPendingAutoOpenMode(requestedMode);
+        return;
+      }
+
+      if (pendingAutoOpenMode) return;
+      void mountClerkClient(requestedMode);
+    };
+
+    window.addEventListener(AUTH_CLIENT_OPEN_EVENT, handleOpenRequest as EventListener);
+    return () => {
+      window.removeEventListener(AUTH_CLIENT_OPEN_EVENT, handleOpenRequest as EventListener);
+    };
+  }, [clerkMounted, pendingAutoOpenMode, mountClerkClient]);
+
+  useEffect(() => {
+    if (!userButtonEl || clerkMounted) return;
+
+    const fallbackButton = userButtonEl.querySelector('button');
+    if (!(fallbackButton instanceof HTMLButtonElement)) return;
+
+    const handleClick = (event: MouseEvent) => {
+      event.preventDefault();
+      handleDeferredUserButtonActivation();
+    };
+
+    fallbackButton.addEventListener('click', handleClick);
+    return () => fallbackButton.removeEventListener('click', handleClick);
+  }, [userButtonEl, clerkMounted, handleDeferredUserButtonActivation]);
 
   const placeholderLoginPortal = useMemo(() => {
     if (!loginEl || isAuthenticated || clerkMounted) return null;
-    return createPortal(<PlaceholderLogin locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, locale, clerkMounted]);
+    return createPortal(<PlaceholderLogin />, loginEl);
+  }, [loginEl, isAuthenticated, clerkMounted]);
 
-  const placeholderSharePortal = useMemo(() => {
+  const sharePortal = useMemo(() => {
     if (!shareEl || !shareSection || clerkMounted) return null;
-    return createPortal(<PlaceholderShareSection locale={shareSection.locale} title={shareSection.title} url={shareSection.url} />, shareEl);
+    return createPortal(
+      <ShareSection
+        locale={shareSection.locale}
+        title={shareSection.title}
+        url={shareSection.url}
+        articleId={shareSection.articleId}
+      />,
+      shareEl,
+    );
   }, [shareEl, shareSection, clerkMounted]);
 
-  const placeholderAuthorPortal = useMemo(() => {
+  const shareMobilePortal = useMemo(() => {
+    if (!shareMobileEl || !shareSection || clerkMounted) return null;
+    return createPortal(
+      <ShareSection
+        locale={shareSection.locale}
+        title={shareSection.title}
+        url={shareSection.url}
+        articleId={shareSection.articleId}
+      />,
+      shareMobileEl,
+    );
+  }, [shareMobileEl, shareSection, clerkMounted]);
+
+  const authorPortal = useMemo(() => {
     if (!authorEl || !authorSection || clerkMounted) return null;
-    return createPortal(<PlaceholderAuthorSection author={authorSection.author} locale={authorSection.locale} />, authorEl);
+    return createPortal(
+      <AuthorSection author={authorSection.author} locale={authorSection.locale} />,
+      authorEl,
+    );
   }, [authorEl, authorSection, clerkMounted]);
 
   return (
     <>
-      {/* Hidden marker ensures the island always renders some DOM so Astro hydrates on client */}
       <span style={{ display: 'none' }} data-auth-island="true" />
 
-      {/* Show placeholder components immediately while Clerk is loading */}
       {!clerkMounted && (
         <>
-          {placeholderUserButtonPortal}
           {placeholderLoginPortal}
-          {placeholderSharePortal}
-          {placeholderAuthorPortal}
+          {sharePortal}
+          {shareMobilePortal}
+          {authorPortal}
         </>
       )}
 
-      {/* Mount Clerk provider and real components */}
-      {clerkMounted && (
-        <IdentityProvider>
-          <AuthMountContent {...props} />
-        </IdentityProvider>
+      {clerkMounted && AuthMountClientComponent && (
+        <AuthMountClientComponent
+          {...props}
+          autoOpenMode={pendingAutoOpenMode}
+          onAutoOpenHandled={handleAutoOpenHandled}
+        />
       )}
 
-      {/* Global Toasts - always available */}
       <ToastContainer />
     </>
   );

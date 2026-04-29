@@ -554,7 +554,7 @@ export default function DesktopHeader({ locale, currentPath, onLocaleSwitch, use
       </div>
     </header>
 
-    <SearchOverlay locale={locale} isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+    {searchOpen && <SearchOverlay locale={locale} isOpen={searchOpen} onClose={() => setSearchOpen(false)} />}
     </>
   );
 }

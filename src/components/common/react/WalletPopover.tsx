@@ -8,6 +8,8 @@ interface WalletPopoverProps {
   className?: string;
   children?: React.ReactNode;
   locale: Locale;
+  autoOpen?: boolean;
+  onAutoOpenHandled?: () => void;
 }
 
 /**
@@ -45,11 +47,18 @@ const buildAdminSsoUrl = (adminUrl: string, clerkToken: string, locale: Locale):
   return `${adminOrigin}/api/auth/sso?token=${encodeURIComponent(clerkToken)}&locale=${locale}`;
 };
 
-export const WalletPopover: React.FC<WalletPopoverProps> = ({ className = '', children, locale }) => {
+export const WalletPopover: React.FC<WalletPopoverProps> = ({
+  className = '',
+  children,
+  locale,
+  autoOpen = false,
+  onAutoOpenHandled,
+}) => {
   const { isEffectivelyLoggedIn, login } = useAuth();
   const { getToken } = useClerkAuth();
+  const autoOpenHandledRef = React.useRef(false);
 
-  const handleClick = async () => {
+  const handleClick = React.useCallback(async () => {
     if (!isEffectivelyLoggedIn) {
       login();
       return;
@@ -70,7 +79,24 @@ export const WalletPopover: React.FC<WalletPopoverProps> = ({ className = '', ch
       // Fallback: direct navigation on error
       window.open(adminUrl, '_blank');
     }
-  };
+  }, [getToken, isEffectivelyLoggedIn, locale, login]);
+
+  React.useEffect(() => {
+    if (!autoOpen || autoOpenHandledRef.current) {
+      return;
+    }
+
+    autoOpenHandledRef.current = true;
+    void handleClick().finally(() => {
+      onAutoOpenHandled?.();
+    });
+  }, [autoOpen, handleClick, onAutoOpenHandled]);
+
+  React.useEffect(() => {
+    if (!autoOpen) {
+      autoOpenHandledRef.current = false;
+    }
+  }, [autoOpen]);
 
   return (
     <div className={`relative ${className}`}>

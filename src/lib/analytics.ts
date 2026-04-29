@@ -110,9 +110,11 @@ export class AnalyticsManager {
           lastVisit: Date.now(),
         };
       }
-       await this.getAdditionalVisitorInfo()
-      // Try to get Cloudflare Visitor ID if available
-      await this.getCloudflareVisitorId();
+      await this.getAdditionalVisitorInfo();
+      // Reuse the visitor ID resolved during the cached Cloudflare lookup when available.
+      if (!this.visitorData.cfVisitorId) {
+        await this.getCloudflareVisitorId();
+      }
 
       // Store updated visitor data
       this.storeVisitorData();
@@ -186,6 +188,9 @@ export class AnalyticsManager {
 
       // Get IP data from server-side Cloudflare headers (no CORS issues)
       const cloudflareData = await getCloudflareData();
+      if (cloudflareData.visitorId) {
+        this.visitorData!.cfVisitorId = cloudflareData.visitorId;
+      }
       if (cloudflareData.realIP || cloudflareData.clientIP) {
         this.visitorData!.realIp = cloudflareData.realIP || cloudflareData.clientIP;
       }

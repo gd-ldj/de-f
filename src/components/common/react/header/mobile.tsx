@@ -173,7 +173,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({ locale: propLocale, onLocal
       <MobileCategoryPage isOpen={mobileCategoryPageOpen} onClose={handleMobileCategoryPageClose} onBack={handleMobileCategoryPageBack} category={currentMobileCategory} locale={locale} />
 
       {/* Search Overlay */}
-      <SearchOverlay locale={locale} isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      {searchOpen && <SearchOverlay locale={locale} isOpen={searchOpen} onClose={() => setSearchOpen(false)} />}
     </>
   );
 };

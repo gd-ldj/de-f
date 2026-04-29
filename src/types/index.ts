@@ -401,6 +401,7 @@ export interface HomePageData {
   lastest: HomeLatestArticle[];
   who_to_follow: HomeWhoToFollow[];
   news_all: HomeNewsArticle[];
+  highlights: HomeNewsArticle[];
   topics: HomeTopic[];
   mostread: HomeMostReadArticle[];
   news: Array<{

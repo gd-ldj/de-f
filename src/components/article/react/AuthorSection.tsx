@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import type { Locale } from '@/types';
-import { useAuth } from '@/lib/useAuth';
 import Image from '@/components/common/react/Image'
 import { followAuthor } from '@/api/users'
 import { toast } from '@/components/common/react/Toast'
 import { createTranslator } from '@/lib/i18n';
 import { avatarPlaceholderUrl } from '@/config/assets';
+import { useWalletAuth } from '@/lib/useWalletAuth';
+import { requestAuthClientOpen } from '@/lib/auth-client-events';
 
 interface Author {
   id?: string;
@@ -45,8 +46,7 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
     }
   };
 
-  // Get authentication state and functions
-  const { isEffectivelyLoggedIn, login, getValidAccessToken } = useAuth();
+  const { accessToken } = useWalletAuth();
   const [subscribing, setSubscribing] = useState(false);
 
   /**
@@ -57,9 +57,8 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
    * - Show localized success or error toast based on result
    */
   const handleSubscribeClick = async () => {
-    if (!isEffectivelyLoggedIn) {
-      // User is not logged in, trigger login modal
-      login();
+    if (!accessToken) {
+      requestAuthClientOpen('sign-in');
       return;
     }
 
@@ -71,10 +70,7 @@ const AuthorSection: React.FC<AuthorSectionProps> = ({ author, locale }) => {
 
     try {
       setSubscribing(true);
-      const token = await getValidAccessToken();
-      if (!token) throw new Error('Missing access token');
-
-      const res = await followAuthor(token, author.id);
+      const res = await followAuthor(accessToken, author.id);
       const successMsg = locale === 'zh' ? res.msg.zh : res.msg.en;
       toast.success(successMsg);
     } catch (error) {
