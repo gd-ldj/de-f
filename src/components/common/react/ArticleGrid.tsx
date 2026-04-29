@@ -16,14 +16,14 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
 
   return (
     <div className="space-y-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 md:space-y-0 mb-1 md:mb-12 mt-5 md:mt-6 px-4 md:px-6">
-      {articles.map((article) => (
+      {articles.map((article, index) => (
         <article key={article.slug} className="rounded overflow-hidden">
           {/* Mobile: Left image, right content layout */}
           <div className="flex gap-3 md:block">
             {/* Article Image */}
             <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-48">
               <ArticleLink slug={article.slug} locale={locale} article={article} business={getArticleBusinessPath(article)} className="block group w-full h-full overflow-hidden">
-                <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
+                <img src={article.img_url || placeholderImageUrl} alt={article.title} loading={index < 4 ? 'eager' : 'lazy'} className="w-full h-full object-cover rounded md:rounded-none hover:scale-105 transition-transform duration-300" />
                 {article.business_type_name === 'Podcasts' && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67 60" fill="#FF0000" className="w-8 h-8 md:w-12 md:h-12 drop-shadow-lg opacity-90 group-hover:opacity-100 transition-opacity" focusable={false} aria-hidden="true">
@@ -62,9 +62,11 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                     {article.title}
                   </ArticleLink>
                 </h3>
-                <div className="hidden md:block">
-                  <p className=" text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title || ''}</p>
-                </div>
+                {article.sub_title && article.sub_title !== article.title && (
+                  <div className="hidden md:block">
+                    <p className="text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title}</p>
+                  </div>
+                )}
                 {/* Article Meta */}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1 truncate">

@@ -181,25 +181,29 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
         // Check if this request was cancelled or superseded by a newer request
         if (abortController.signal.aborted || currentRequestId !== requestIdRef.current) {
-          console.log('[fetchArticlesData] Request cancelled or superseded, ignoring response');
           return;
         }
 
         if (response) {
-          if (append) {
-            // Mobile infinite scroll: append new articles
-            setArticles((prev) => [...prev, ...(response.articles || [])]);
-          } else {
-            // Desktop pagination: replace articles
-            setArticles(response.articles || []);
-          }
+          const newArticles = response.articles || [];
           setTotal(response.total || 0);
 
-          // Check if there are more articles to load
-          const currentTotal = append ? articles.length + (response.articles || []).length : (response.articles || []).length;
-          const hasMoreValue = currentTotal < (response.total || 0);
-          setHasMore(hasMoreValue);
-          hasMoreRef.current = hasMoreValue;
+          if (append) {
+            // Mobile infinite scroll: append new articles and compute hasMore in one setter
+            setArticles((prev) => {
+              const merged = [...prev, ...newArticles];
+              const hasMoreValue = merged.length < (response.total || 0);
+              setHasMore(hasMoreValue);
+              hasMoreRef.current = hasMoreValue;
+              return merged;
+            });
+          } else {
+            // Desktop pagination: replace articles
+            setArticles(newArticles);
+            const hasMoreValue = newArticles.length < (response.total || 0);
+            setHasMore(hasMoreValue);
+            hasMoreRef.current = hasMoreValue;
+          }
         } else {
           if (!append) {
             setArticles([]);
@@ -211,13 +215,11 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
       } catch (error) {
         // Ignore abort errors
         if (error instanceof Error && error.name === 'AbortError') {
-          console.log('[fetchArticlesData] Request aborted');
           return;
         }
 
         // Check if this request was superseded
         if (currentRequestId !== requestIdRef.current) {
-          console.log('[fetchArticlesData] Request superseded, ignoring error');
           return;
         }
 
@@ -235,19 +237,16 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
         }
       }
     },
-    [locale, category, isPodcasts, itemsPerPage, articles.length],
+    [locale, category, isPodcasts, itemsPerPage],
   );
 
   // Load more articles for mobile infinite scroll
   const loadMoreArticles = useCallback(() => {
     // Check if mobile in real-time
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    console.log('[loadMoreArticles] isMobile:', isMobile, 'loading:', loadingRef.current, 'hasMore:', hasMoreRef.current);
-
     if (!isMobile || loadingRef.current || !hasMoreRef.current) return;
 
     const nextPage = filtersRef.current.page + 1;
-    console.log('[loadMoreArticles] Loading page:', nextPage);
     setFilters((prev) => ({ ...prev, page: nextPage }));
   }, []);
 
@@ -408,15 +407,11 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || typeof window === 'undefined' || window.innerWidth >= 768) {
-      console.log('[IntersectionObserver] Not setting up - sentinel:', !!sentinel, 'width:', typeof window !== 'undefined' ? window.innerWidth : 'SSR');
       return;
     }
-
-    console.log('[IntersectionObserver] Setting up observer');
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        console.log('[IntersectionObserver] Entry:', entry.isIntersecting, 'loading:', loadingRef.current, 'hasMore:', hasMoreRef.current);
         // Use refs to avoid re-creating observer
         if (!entry.isIntersecting || loadingRef.current || !hasMoreRef.current) return;
         loadMoreArticles();
@@ -430,7 +425,6 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
     observer.observe(sentinel);
     return () => {
-      console.log('[IntersectionObserver] Disconnecting');
       observer.disconnect();
     };
   }, [loadMoreArticles]);
