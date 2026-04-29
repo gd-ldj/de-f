@@ -5,7 +5,7 @@
 
 import { STORAGE_KEYS, ANALYTICS_CONFIG, TRACKING_EVENTS } from '../config/constants';
 import { getCloudflareData } from '../../docs/utils/cloudflare-cache';
-import { getComprehensiveIPInfo } from '../../docs/utils/ip-detector';
+
 import { generateDeviceSignature } from '../../docs/utils/device-signature';
 import { getCloudflareVisitorInfo } from '../../docs/utils/cloudflare-visitor';
 
@@ -171,7 +171,10 @@ export class AnalyticsManager {
   }
 
   /**
-   * Get enhanced Cloudflare information including visitor ID, real IP, and VPN detection
+   * Get enhanced Cloudflare information including visitor ID and real IP.
+   * Uses server-side Cloudflare headers via /api/cf-headers instead of
+   * third-party IP APIs (ipapi.co, ip-api.com) which cause CORS and
+   * rate-limit errors in the browser.
    */
   private async getEnhancedCloudflareInfo(): Promise<void> {
     try {
@@ -181,25 +184,10 @@ export class AnalyticsManager {
         this.visitorData!.cloudflareVisitorId = cloudflareInfo.visitorId;
       }
 
-      // Get comprehensive IP information including VPN detection
-      const ipInfo = await getComprehensiveIPInfo();
-      
-      // Set real IP and VPN IP based on VPN detection results
-      if (ipInfo.vpnDetection.isVPN) {
-        this.visitorData!.vpnIp = ipInfo.vpnDetection.vpnIP || ipInfo.publicIP;
-        this.visitorData!.realIp = ipInfo.vpnDetection.realIP;
-      } else {
-        this.visitorData!.realIp = ipInfo.publicIP;
-        this.visitorData!.vpnIp = undefined;
-      }
-
-      // Also try to get Cloudflare data for additional information
+      // Get IP data from server-side Cloudflare headers (no CORS issues)
       const cloudflareData = await getCloudflareData();
-      if (cloudflareData.realIP) {
-        this.visitorData!.realIp = cloudflareData.realIP;
-      }
-      if (cloudflareData.clientIP && ipInfo.vpnDetection.isVPN) {
-        this.visitorData!.vpnIp = cloudflareData.clientIP;
+      if (cloudflareData.realIP || cloudflareData.clientIP) {
+        this.visitorData!.realIp = cloudflareData.realIP || cloudflareData.clientIP;
       }
 
     } catch (error) {
