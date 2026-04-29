@@ -69,7 +69,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1 truncate">
                     <span>{formatDate(article.created_at, locale)}</span>
-                    <span className="">/ {t('article.by')} </span>
+                    <span>{`/ ${t('article.by')} `}</span>
                     <span className="text-foreground uppercase truncate">{article.author?.name || article.author_name || 'DeTake'}</span>
                   </div>
                 </div>

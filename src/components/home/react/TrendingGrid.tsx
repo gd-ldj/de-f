@@ -51,7 +51,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   <span data-date={article.created_at} data-locale={locale}>
                     {formatDate(article.created_at, locale)}
                   </span>
-                  <span>/ {t('article.by')} </span>
+                  <span>{`/ ${t('article.by')} `}</span>
                   <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
                   {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author?.name || 'DeTake'}</a> */}
                 </div>
@@ -80,7 +80,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   <span data-date={articles[2].created_at} data-locale={locale}>
                     {formatDate(articles[2].created_at, locale)}
                   </span>
-                  <span>/ {t('article.by')} </span>
+                  <span>{`/ ${t('article.by')} `}</span>
                   <span className="text-foreground uppercase truncate">{articles[2].author?.name || 'DeTake'}</span>
                   {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author?.name || 'DeTake'}</a> */}
                 </div>
@@ -102,7 +102,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                   <span data-date={article.created_at} data-locale={locale}>
                     {formatDate(article.created_at, locale)}
                   </span>
-                  <span>/ {t('article.by')} </span>
+                  <span>{`/ ${t('article.by')} `}</span>
                   <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
                   {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author?.name || 'DeTake'}</a> */}
                 </div>
@@ -141,7 +141,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                       <span data-date={article.created_at} data-locale={locale}>
                         {formatDate(article.created_at, locale)}
                       </span>
-                      <span>/ {t('article.by')} </span>
+                      <span>{`/ ${t('article.by')} `}</span>
                       {/* <a href={`/${locale}/authors/${encodeURIComponent(article.author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{article.author?.name || 'DeTake'}</a> */}
                       <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
                     </div>
@@ -181,7 +181,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                       <span data-date={articles[2].created_at} data-locale={locale}>
                         {formatDate(articles[2].created_at, locale)}
                       </span>
-                      <span>/ {t('article.by')} </span>
+                      <span>{`/ ${t('article.by')} `}</span>
                       <span className="text-foreground uppercase truncate">{articles[2].author?.name || 'DeTake'}</span>
                       {/* <a href={`/${locale}/authors/${encodeURIComponent(articles[2].author?.name || 'DeTake')}`} className="text-foreground uppercase hover:text-primary transition-colors">{articles[2].author?.name || 'DeTake'}</a> */}
                     </div>
@@ -209,7 +209,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
                         <span data-date={article.created_at} data-locale={locale}>
                           {formatDate(article.created_at, locale)}
                         </span>
-                        <span>/ {t('article.by')} </span>
+                        <span>{`/ ${t('article.by')} `}</span>
                         <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
                       </div> */}
                     </div>

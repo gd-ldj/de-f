@@ -53,7 +53,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                 <span data-date={article.created_at} data-locale={locale}>
                   {formatDate(article.created_at, locale)}
                 </span>
-                <span>/ {t('article.by')} </span>
+                <span>{`/ ${t('article.by')} `}</span>
                 <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                     <span data-date={article.created_at} data-locale={locale}>
                       {formatDate(article.created_at, locale)}
                     </span>
-                    <span>/ {t('article.by')} </span>
+                    <span>{`/ ${t('article.by')} `}</span>
                     <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>
                   </div>
                 </div>

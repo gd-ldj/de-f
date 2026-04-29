@@ -132,8 +132,9 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                         <span className="font-medium line-clamp-1">
                           <span data-date={article.created_at} data-locale={locale}>
                             {formatDate(article.created_at, locale)}
-                          </span>{' '}
-                          / {t('article.by')} <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
+                          </span>
+                          <span>{` / ${t('article.by')} `}</span>
+                          <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
                         </span>
                       </div>
                     </div>
@@ -186,8 +187,9 @@ export default function NewsGrid({ newsData = [], locale }: NewsGridProps) {
                     <span className="font-medium line-clamp-1">
                       <span data-date={article.created_at} data-locale={locale}>
                         {formatDate(article.created_at, locale)}
-                      </span>{' '}
-                      / {t('article.by')} <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
+                      </span>
+                      <span>{` / ${t('article.by')} `}</span>
+                      <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
                     </span>
                   </div>
                 </div>

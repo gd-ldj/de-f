@@ -361,7 +361,7 @@ function DesktopResults({
               <p className="text-muted-foreground text-sm mb-1.5 leading-relaxed line-clamp-2">{article.sub_title || ''}</p>
               <div className="flex items-center text-xs text-muted-foreground">
                 <span>{formatDate(article.created_at, locale)}</span>
-                <span className="mx-1">/ {t('article.by')}</span>
+                <span className="mx-1">{`/ ${t('article.by')}`}</span>
                 <span className="text-foreground uppercase truncate">
                   {article.author?.name || article.author_name || 'DeTake'}
                 </span>
@@ -440,7 +440,7 @@ function MobileResults({
               <p className="text-muted-foreground text-xs mt-1 leading-relaxed line-clamp-2">{article.sub_title || ''}</p>
               <div className="flex items-center text-[10px] text-muted-foreground mt-1">
                 <span>{formatDate(article.created_at, locale)}</span>
-                <span className="mx-1">/ {t('article.by')}</span>
+                <span className="mx-1">{`/ ${t('article.by')}`}</span>
                 <span className="text-foreground uppercase truncate">
                   {article.author?.name || article.author_name || 'DeTake'}
                 </span>
