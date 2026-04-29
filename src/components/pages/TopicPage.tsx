@@ -108,9 +108,7 @@ export default function TopicPage({ locale, topic, topicSlug, initialPage }: Top
           <div className="max-w-md mx-auto">
             <h3 className="text-lg font-medium text-foreground mb-2">{t('common.noArticlesFound')}</h3>
             <p className="text-muted-foreground mb-4">
-              {t('pages.topicNoArticlesPrefix')}
-              {topic}
-              {t('pages.topicNoArticlesSuffix')}
+              {`${t('pages.topicNoArticlesPrefix')}${topic}${t('pages.topicNoArticlesSuffix')}`}
             </p>
             <a href="/" className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
               {t('common.browseAllArticles')}
