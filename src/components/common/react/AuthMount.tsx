@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ShareSection from '@/components/article/react/ShareSection';
 import AuthorSection from '@/components/article/react/AuthorSection';
+import Login from '@/components/home/react/Login';
 import type { Locale } from '@/types';
-import { STORAGE_KEYS } from '@/config/constants';
+import { MULTI_SOURCE_CONFIG, STORAGE_KEYS } from '@/config/constants';
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
 import { ToastContainer } from '@/components/common/react/Toast';
@@ -40,15 +41,12 @@ export interface AuthMountClientProps extends AuthMountProps {
   onAutoOpenHandled?: () => void;
 }
 
-const PlaceholderLogin: React.FC = () => {
-  return (
-    <div className="flex items-center justify-center p-4">
-      <div className="animate-pulse">
-        <div className="h-10 w-32 bg-gray-200 rounded-md"></div>
-      </div>
-    </div>
-  );
-};
+function getLocaleFromURL(): Locale {
+  if (typeof window === 'undefined') return 'en';
+  const hostname = window.location.hostname;
+  const sourceLanguage = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
+  return MULTI_SOURCE_CONFIG.languageToLocale(sourceLanguage);
+}
 
 const AuthMount: React.FC<AuthMountProps> = (props) => {
   const {
@@ -66,6 +64,7 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
   const [shareEl, setShareEl] = useState<HTMLElement | null>(null);
   const [shareMobileEl, setShareMobileEl] = useState<HTMLElement | null>(null);
   const [authorEl, setAuthorEl] = useState<HTMLElement | null>(null);
+  const [locale, setLocale] = useState<Locale>('en');
   const [clerkMounted, setClerkMounted] = useState(false);
   const [pendingAutoOpenMode, setPendingAutoOpenMode] = useState<AuthClientOpenMode | null>(null);
   const [AuthMountClientComponent, setAuthMountClientComponent] = useState<React.ComponentType<AuthMountClientProps> | null>(null);
@@ -92,6 +91,7 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     setShareEl(domElements.share);
     setShareMobileEl(domElements.shareMobile);
     setAuthorEl(domElements.author);
+    setLocale(getLocaleFromURL());
 
     if (import.meta.env.DEV) {
       console.log('[AuthMount] hydrated. Elements found:', domElements);
@@ -133,13 +133,12 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
   const shouldMountClerkEagerly = useMemo(() => {
     if (typeof window === 'undefined') return false;
 
-    const hasImmediateAuthUI = Boolean(loginEl);
     const hasStoredSession =
       Boolean(localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) &&
       Boolean(localStorage.getItem(STORAGE_KEYS.USER_ID));
 
-    return hasImmediateAuthUI || hasStoredSession || isAuthenticated;
-  }, [isAuthenticated, loginEl]);
+    return hasStoredSession || isAuthenticated;
+  }, [isAuthenticated]);
 
   const loadAuthMountClient = useCallback(async (): Promise<React.ComponentType<AuthMountClientProps>> => {
     if (AuthMountClientComponent) {
@@ -221,10 +220,10 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
     return () => fallbackButton.removeEventListener('click', handleClick);
   }, [userButtonEl, clerkMounted, handleDeferredUserButtonActivation]);
 
-  const placeholderLoginPortal = useMemo(() => {
+  const publicLoginPortal = useMemo(() => {
     if (!loginEl || isAuthenticated || clerkMounted) return null;
-    return createPortal(<PlaceholderLogin />, loginEl);
-  }, [loginEl, isAuthenticated, clerkMounted]);
+    return createPortal(<Login locale={locale} />, loginEl);
+  }, [loginEl, isAuthenticated, clerkMounted, locale]);
 
   const sharePortal = useMemo(() => {
     if (!shareEl || !shareSection || clerkMounted) return null;
@@ -266,7 +265,7 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
 
       {!clerkMounted && (
         <>
-          {placeholderLoginPortal}
+          {publicLoginPortal}
           {sharePortal}
           {shareMobilePortal}
           {authorPortal}
