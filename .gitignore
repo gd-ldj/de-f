@@ -56,3 +56,8 @@ __pycache__/
 
 # AUTO v2 generated artifacts
 auto/generated/
+
+# Local sentry preview check outputs
+tmp/sentry-preview-check*.json
+
+output/
