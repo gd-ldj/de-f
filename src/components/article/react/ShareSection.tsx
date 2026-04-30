@@ -4,7 +4,7 @@ import copyIcon from '@/assets/imgs/copy.svg';
 import { useWalletAuth } from '@/lib/useWalletAuth';
 import { createTranslator } from '@/lib/i18n';
 import { motion } from 'framer-motion';
-import { TRACKING_EVENTS, DEFAULT_PROMOTE_CODE } from '@/config/constants';
+import { TRACKING_EVENTS, DEFAULT_PROMOTE_CODE, STORAGE_KEYS } from '@/config/constants';
 import { getAnonymousPromoteCode, getCachedAnonymousPromoteCode } from '@/lib/fingerprint';
 import { getPathPromoteCodeFromUrl, getShareUrlPromoteStrategy } from '@/lib/share-url';
 import { requestAuthClientOpen } from '@/lib/auth-client-events';
@@ -28,9 +28,16 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
   const [shareUrl, setShareUrl] = useState(url);
   const { promoteCode: myPromoteCode, accessToken, userId } = useWalletAuth();
   const isEffectivelyLoggedIn = Boolean(accessToken && userId);
-  // Track client-side hydration to prevent flash of "Log in now" for authenticated users
-  const [isHydrated, setIsHydrated] = useState(false);
-  useEffect(() => { setIsHydrated(true); }, []);
+
+  // Check localStorage synchronously on mount to determine if user might be logged in.
+  // Jotai atoms load asynchronously, so without this check the "Log in now" prompt
+  // would flash briefly for authenticated users before the atoms hydrate.
+  const [maybeLoggedIn] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const storedToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+    const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+    return !!(storedToken && storedUserId);
+  });
 
   /**
    * Centralized evaluation for whether the cross-promo prompt should be visible.
@@ -315,7 +322,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
         </div>
 
         {/* Additional login prompt below input for unauthenticated users */}
-        {isHydrated && !isEffectivelyLoggedIn && (
+        {!isEffectivelyLoggedIn && !maybeLoggedIn && (
           <div className="text-xs text-muted-foreground">
             <span onClick={handleLoginClick} className="text-primary hover:underline cursor-pointer">
               {t('article.loginNow')}
