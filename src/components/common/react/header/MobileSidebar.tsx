@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { headerTexts, HEADER_LOGO_BLACK_URL } from './constants';
-import type { Locale, CollectionItem, SourceLanguage } from '@/types';
-import { fetchCollections } from '@/api/collections';
+import type { Locale, SourceLanguage } from '@/types';
 import { MULTI_SOURCE_CONFIG, STORAGE_KEYS, IS_DEV_ENV } from '@/config/constants';
-import { removeTranslationPrefix } from '@/lib/language-utils';
 
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
@@ -30,9 +28,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
   const [isInsightsExpanded, setIsInsightsExpanded] = useState(false);
   const [isVoicesExpanded, setIsVoicesExpanded] = useState(false);
   const [isTutorialsExpanded, setIsTutorialsExpanded] = useState(false);
-  const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false);
   const [isLocaleExpanded, setIsLocaleExpanded] = useState(false);
-  const [headerCollectionItems, setHeaderCollectionItems] = useState<CollectionItem[]>([]);
 
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
 
@@ -102,31 +98,6 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
     // { code: 'zh', label: '中文' },
     // { code: 'ja', label: '日本語' },
   ];
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadHeaderCollections = async () => {
-      try {
-        const { items } = await fetchCollections(1, 10);
-        if (!isMounted) return;
-        setHeaderCollectionItems(items);
-      } catch (error) {
-        console.error('Failed to fetch mobile header collections:', error);
-      }
-    };
-
-    if (isOpen && headerCollectionItems.length === 0) {
-      loadHeaderCollections();
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [isOpen, headerCollectionItems.length]);
-
-  // Note: currentSourceLanguage is initialized correctly in useState above
-  // No need for additional useEffect to set it
 
   if (!isOpen) return null;
 
@@ -333,28 +304,11 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
               )}
             </div>
 
-            {/* Collections with arrow */}
+            {/* Collections - direct link, consistent with PC */}
             <div>
-              <div className="flex items-center justify-between w-full py-3">
-                <button onClick={() => handleNavigation(`/collections`)} className="text-lg text-gray-900 text-left flex-1">
-                  {texts.navigation.collections}
-                </button>
-                <button onClick={() => setIsCollectionsExpanded(!isCollectionsExpanded)} className="p-1 ml-2" aria-label={isCollectionsExpanded ? texts.actions.collapseCollections : texts.actions.expandCollections}>
-                  <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isCollectionsExpanded ? 'rotate-90' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
-              {isCollectionsExpanded && (
-                <div className="mt-2 space-y-1 pl-4">
-                  {headerCollectionItems.map((item) => (
-                    <button key={item.id} onClick={() => handleNavigation(`/collections/${item.id}`)} className="block w-full py-2 px-2 text-left text-base text-gray-700 hover:bg-gray-50 rounded-md">
-                      <span className="truncate">{item.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              <button onClick={() => handleNavigation(`/collections`)} className="flex items-center w-full py-3 text-lg text-gray-900 text-left">
+                {texts.navigation.collections}
+              </button>
             </div>
 
             {/* Tutorials with expandable subcategories */}
