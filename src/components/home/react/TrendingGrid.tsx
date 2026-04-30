@@ -18,7 +18,7 @@ export default function TrendingGrid({ articles, locale }: TrendingGridProps) {
   }
 
   return (
-    <div className="py-5 px-4 md:px-6 border border-b-0 border-border space-y-6">
+    <div className="py-5 px-4 md:px-6 border-t border-border space-y-6">
       <div>
         <div className="flex items-center justify-between mb-4 md:mb-6">
           <h3 className="font-medium text-foreground">{t('common.trending')}</h3>
