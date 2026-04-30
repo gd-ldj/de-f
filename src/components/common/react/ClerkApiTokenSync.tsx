@@ -35,17 +35,12 @@ export function ClerkApiTokenSync() {
 
       try {
         // Handle forced logout via ac=q URL parameter
-        if (isSignedIn) {
-          const urlParams = new URLSearchParams(window.location.search);
-          if (urlParams.get('ac') === 'q') {
-            // Remove the ac parameter from URL first
-            urlParams.delete('ac');
-            const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
-            window.history.replaceState({}, '', newUrl);
-            // Sign out from Clerk - this will trigger the effect again with isSignedIn=false
-            await signOut();
-            return;
-          }
+        // auth-manager.js (runs before React) sets this flag when it detects ac=q
+        if (isSignedIn && sessionStorage.getItem('force_clerk_logout')) {
+          sessionStorage.removeItem('force_clerk_logout');
+          // Sign out from Clerk - this will trigger the effect again with isSignedIn=false
+          await signOut();
+          return;
         }
 
         // User signed out - clear auth state, restore anonymous promote code

@@ -88,13 +88,17 @@ function handleLogoutFromURL() {
     // Check if logout parameter exists
     if (acParam === 'q') {
       clearAuthData(true);
-      
+
+      // Signal ClerkApiTokenSync to also sign out from Clerk
+      // (auth-manager.js runs before React hydration, so we pass intent via sessionStorage)
+      sessionStorage.setItem('force_clerk_logout', '1');
+
       // Remove the logout parameter from URL
       urlParams.delete('ac');
-      const newUrl = window.location.pathname + 
+      const newUrl = window.location.pathname +
         (urlParams.toString() ? '?' + urlParams.toString() : '');
       window.history.replaceState({}, '', newUrl);
-      
+
       console.log('[AuthManager] Logout completed via URL parameter');
       return true;
     }
