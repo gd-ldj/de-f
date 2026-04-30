@@ -8,7 +8,7 @@ import { removeTranslationPrefix } from '@/lib/language-utils';
 
 import { useAtom } from 'jotai';
 import { isAuthenticatedAtom } from '@/stores';
-import { getAdminDashboardUrl } from '@/components/common/react/WalletPopover';
+import { getAdminDashboardUrl, buildAdminSsoUrl } from '@/components/common/react/WalletPopover';
 import { requestAuthClientOpen } from '@/lib/auth-client-events';
 import CountryIcon from './assets/country.svg?url';
 import { UserHeaderIcon } from './HeaderIcons';
@@ -36,7 +36,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
 
   const [isAuthenticated] = useAtom(isAuthenticatedAtom);
 
-  const handleDashboardClick = () => {
+  const handleDashboardClick = async () => {
     if (!isAuthenticated) {
       requestAuthClientOpen('sign-in');
       onClose();
@@ -44,6 +44,22 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
     }
 
     const adminUrl = getAdminDashboardUrl(locale);
+
+    try {
+      // Access Clerk global instance to get SSO token (consistent with PC behavior)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const clerkInstance = (window as any).Clerk as
+        | { session?: { getToken?: () => Promise<string | null> } }
+        | undefined;
+      const clerkToken = await clerkInstance?.session?.getToken?.();
+      if (clerkToken) {
+        window.open(buildAdminSsoUrl(adminUrl, clerkToken, locale), '_blank');
+        return;
+      }
+    } catch {
+      // Fallback to direct navigation
+    }
+
     window.open(adminUrl, '_blank');
   };
 
@@ -402,7 +418,7 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             <button onClick={handleDashboardClick} className="flex items-center justify-between w-full py-3 text-left">
               <span className="text-lg text-gray-900">{texts.user?.dashboard || 'Dashboard'}</span>
               <div className="flex items-center space-x-2">
-                <UserHeaderIcon className="w-5 h-5 text-gray-900" />
+                <UserHeaderIcon className={`w-5 h-5 ${isAuthenticated ? 'text-primary' : 'text-gray-900'}`} />
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>

@@ -41,7 +41,7 @@ export const getAdminDashboardUrl = (locale: Locale): string => {
  * Build the SSO bridge URL for auto-login on admin.
  * Falls back to direct admin URL if no Clerk token is available.
  */
-const buildAdminSsoUrl = (adminUrl: string, clerkToken: string, locale: Locale): string => {
+export const buildAdminSsoUrl = (adminUrl: string, clerkToken: string, locale: Locale): string => {
   // Strip trailing locale segment (e.g. /en) to get the admin origin
   const adminOrigin = adminUrl.replace(/\/[a-z]{2}$/, '');
   return `${adminOrigin}/api/auth/sso?token=${encodeURIComponent(clerkToken)}&locale=${locale}`;
