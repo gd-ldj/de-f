@@ -6,7 +6,12 @@ import { fetchCollections } from '@/api/collections';
 import { MULTI_SOURCE_CONFIG, STORAGE_KEYS, IS_DEV_ENV } from '@/config/constants';
 import { removeTranslationPrefix } from '@/lib/language-utils';
 
+import { useAtom } from 'jotai';
+import { isAuthenticatedAtom } from '@/stores';
+import { getAdminDashboardUrl } from '@/components/common/react/WalletPopover';
+import { requestAuthClientOpen } from '@/lib/auth-client-events';
 import CountryIcon from './assets/country.svg?url';
+import { UserHeaderIcon } from './HeaderIcons';
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -28,6 +33,19 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
   const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false);
   const [isLocaleExpanded, setIsLocaleExpanded] = useState(false);
   const [headerCollectionItems, setHeaderCollectionItems] = useState<CollectionItem[]>([]);
+
+  const [isAuthenticated] = useAtom(isAuthenticatedAtom);
+
+  const handleDashboardClick = () => {
+    if (!isAuthenticated) {
+      requestAuthClientOpen('sign-in');
+      onClose();
+      return;
+    }
+
+    const adminUrl = getAdminDashboardUrl(locale);
+    window.open(adminUrl, '_blank');
+  };
 
   // Initialize source language from domain (for non-localhost environments)
   const getInitialSourceLanguage = (): SourceLanguage => {
@@ -381,9 +399,10 @@ export default function MobileSidebar({ isOpen, onClose, locale, onLocaleSwitch 
             </div>
 
             {/* Dashboard with user icon */}
-            <button onClick={() => window.open('https://caaaeee.vercel.app/' + locale, '_blank')} className="flex items-center justify-between w-full py-3 text-left">
+            <button onClick={handleDashboardClick} className="flex items-center justify-between w-full py-3 text-left">
               <span className="text-lg text-gray-900">{texts.user?.dashboard || 'Dashboard'}</span>
               <div className="flex items-center space-x-2">
+                <UserHeaderIcon className="w-5 h-5 text-gray-900" />
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>

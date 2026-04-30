@@ -17,7 +17,7 @@ interface WalletPopoverProps {
  * - Production: https://{lang}-admin.detake.com
  * - Non-production: https://{lang}-dev-admin.detake.com
  */
-const getAdminDashboardUrl = (locale: Locale): string => {
+export const getAdminDashboardUrl = (locale: Locale): string => {
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
   const lang = MULTI_SOURCE_CONFIG.getSourceLanguageFromDomain(hostname);
 
