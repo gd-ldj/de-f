@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { fetchArticles } from '@/api/articles';
 import type { ApiArticle, Locale } from '@/types';
 import ArticleGrid from '@/components/common/react/ArticleGrid';
+import { ArticleGridSkeleton } from '@/components/common/react/ArticleCardSkeleton';
 import PaginationReact from '@/components/common/react/Pagination';
 import { createTranslator } from '@/lib/i18n';
 
@@ -20,7 +21,7 @@ export default function TopicPage({ locale, topic, topicSlug, initialPage }: Top
   const t = createTranslator(locale);
   const [articles, setArticles] = useState<ApiArticle[]>([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(initialPage);
 
   const itemsPerPage = 12;
@@ -92,12 +93,8 @@ export default function TopicPage({ locale, topic, topicSlug, initialPage }: Top
 
   return (
     <main className="max-w-[1440px] mx-auto py-4">
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
+      {/* Loading State - Skeleton */}
+      {loading && <ArticleGridSkeleton />}
 
       {/* Articles Grid */}
       {!loading && <ArticleGrid articles={articles} locale={locale} />}

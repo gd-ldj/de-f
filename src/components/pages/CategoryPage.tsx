@@ -5,6 +5,7 @@ import { fetchPodcastsList } from '@/api/podcasts';
 import type { ApiArticle, Locale } from '@/types';
 import FilterBarReact from '@/components/common/react/FilterBar';
 import ArticleGrid from '@/components/common/react/ArticleGrid';
+import { ArticleGridSkeleton } from '@/components/common/react/ArticleCardSkeleton';
 import PaginationReact from '@/components/common/react/Pagination';
 import { getBusinessTypeLabel, getCategoryLabel, getSubcategoryLabel as getSubcategoryLocalizedLabel } from '@/config/article-taxonomy';
 
@@ -56,7 +57,7 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
   const hasSSRData = (initialArticles?.length ?? 0) > 0;
   const [articles, setArticles] = useState<ApiArticle[]>(initialArticles ?? []);
   const [total, setTotal] = useState(initialTotal ?? 0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!hasSSRData);
   const ssrHasMore = hasSSRData ? (initialArticles!.length < (initialTotal ?? 0)) : true;
   const [hasMore, setHasMore] = useState(ssrHasMore);
   const lastFetchKeyRef = useRef<string>('');
@@ -539,12 +540,8 @@ export default function CategoryPage({ locale, category, initialPage, initialCat
 
       <hr className="border-border mb-4" />
 
-      {/* Loading State - Only show for initial load or desktop pagination */}
-      {loading && articles.length === 0 && (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
+      {/* Loading State - Skeleton for initial load */}
+      {loading && articles.length === 0 && <ArticleGridSkeleton />}
 
       {/* Articles Grid */}
       {articles.length > 0 && <ArticleGrid articles={articles} locale={locale} />}
