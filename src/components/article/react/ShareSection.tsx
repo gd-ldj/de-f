@@ -28,6 +28,9 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
   const [shareUrl, setShareUrl] = useState(url);
   const { promoteCode: myPromoteCode, accessToken, userId } = useWalletAuth();
   const isEffectivelyLoggedIn = Boolean(accessToken && userId);
+  // Track client-side hydration to prevent flash of "Log in now" for authenticated users
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => { setIsHydrated(true); }, []);
 
   /**
    * Centralized evaluation for whether the cross-promo prompt should be visible.
@@ -312,7 +315,7 @@ const ShareSection: React.FC<ShareSectionProps> = ({ locale, title, url, article
         </div>
 
         {/* Additional login prompt below input for unauthenticated users */}
-        {!isEffectivelyLoggedIn && (
+        {isHydrated && !isEffectivelyLoggedIn && (
           <div className="text-xs text-muted-foreground">
             <span onClick={handleLoginClick} className="text-primary hover:underline cursor-pointer">
               {t('article.loginNow')}
