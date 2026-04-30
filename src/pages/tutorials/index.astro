@@ -265,3 +265,105 @@ const allLetters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 
   
   <Footer client:load locale={locale} />
 </BaseLayout>
+
+<script>
+  // Glossary search filtering
+  function initLearnSearch() {
+    const searchInputs = document.querySelectorAll<HTMLInputElement>('[data-learn-search]')
+    const desktopSections = document.querySelector('[data-desktop-sections]')
+    const mobileEmptyMessage = document.querySelector('[data-mobile-empty-message]') as HTMLElement | null
+
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+    function filterItems(query: string) {
+      const normalizedQuery = query.trim().toLowerCase()
+
+      // Filter desktop items
+      const desktopItems = document.querySelectorAll<HTMLElement>('[data-learn-item="desktop"]')
+      const desktopSectionEls = document.querySelectorAll<HTMLElement>('[data-letter-section="desktop"]')
+
+      desktopItems.forEach((item) => {
+        const title = (item.dataset.title || '').toLowerCase()
+        const description = (item.dataset.description || '').toLowerCase()
+        const match = !normalizedQuery || title.includes(normalizedQuery) || description.includes(normalizedQuery)
+        item.style.display = match ? '' : 'none'
+      })
+
+      // Hide desktop sections with no visible items
+      desktopSectionEls.forEach((section) => {
+        const visibleItems = section.querySelectorAll<HTMLElement>('[data-learn-item="desktop"]')
+        const hasVisible = Array.from(visibleItems).some((item) => item.style.display !== 'none')
+        section.style.display = hasVisible ? '' : 'none'
+      })
+
+      // Filter mobile items
+      const mobileItems = document.querySelectorAll<HTMLElement>('[data-learn-item="mobile"]')
+      const mobileSectionEls = document.querySelectorAll<HTMLElement>('[data-letter-section="mobile"]')
+
+      mobileItems.forEach((item) => {
+        const title = (item.dataset.title || '').toLowerCase()
+        const description = (item.dataset.description || '').toLowerCase()
+        const match = !normalizedQuery || title.includes(normalizedQuery) || description.includes(normalizedQuery)
+        item.style.display = match ? '' : 'none'
+      })
+
+      // Hide mobile sections with no visible items
+      mobileSectionEls.forEach((section) => {
+        const visibleItems = section.querySelectorAll<HTMLElement>('[data-learn-item="mobile"]')
+        const hasVisible = Array.from(visibleItems).some((item) => item.style.display !== 'none')
+        section.style.display = hasVisible ? '' : 'none'
+      })
+
+      // Show/hide empty message for mobile
+      if (mobileEmptyMessage) {
+        const anyMobileVisible = Array.from(mobileItems).some((item) => item.style.display !== 'none')
+        const mobileScrollContainer = document.querySelector('[data-letter-scroll]') as HTMLElement | null
+        if (normalizedQuery && !anyMobileVisible) {
+          mobileEmptyMessage.style.display = ''
+          if (mobileScrollContainer) mobileScrollContainer.style.display = 'none'
+        } else {
+          mobileEmptyMessage.style.display = 'none'
+          if (mobileScrollContainer) mobileScrollContainer.style.display = ''
+        }
+      }
+
+      // Show/hide empty message for desktop
+      let desktopEmptyMessage = document.querySelector('[data-desktop-empty-message]') as HTMLElement | null
+      if (!desktopEmptyMessage && desktopSections) {
+        desktopEmptyMessage = document.createElement('div')
+        desktopEmptyMessage.className = 'flex items-center justify-center py-12 text-sm text-gray-500'
+        desktopEmptyMessage.setAttribute('data-desktop-empty-message', '')
+        desktopEmptyMessage.textContent = mobileEmptyMessage?.textContent?.trim() || 'No results found. Try another term.'
+        desktopSections.parentElement?.insertBefore(desktopEmptyMessage, desktopSections.nextSibling)
+      }
+      if (desktopEmptyMessage) {
+        const anyDesktopVisible = Array.from(desktopItems).some((item) => item.style.display !== 'none')
+        if (normalizedQuery && !anyDesktopVisible) {
+          desktopEmptyMessage.style.display = ''
+          if (desktopSections instanceof HTMLElement) desktopSections.style.display = 'none'
+        } else {
+          desktopEmptyMessage.style.display = 'none'
+          if (desktopSections instanceof HTMLElement) desktopSections.style.display = ''
+        }
+      }
+    }
+
+    // Sync inputs and filter with debounce
+    searchInputs.forEach((input) => {
+      input.addEventListener('input', () => {
+        const value = input.value
+        // Sync other search inputs
+        searchInputs.forEach((otherInput) => {
+          if (otherInput !== input) otherInput.value = value
+        })
+        // Debounce filter
+        if (debounceTimer) clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => filterItems(value), 200)
+      })
+    })
+  }
+
+  // Run on initial load and on Astro page transitions
+  initLearnSearch()
+  document.addEventListener('astro:after-swap', initLearnSearch)
+</script>
