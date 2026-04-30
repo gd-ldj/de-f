@@ -79,45 +79,8 @@ export class IPDetector {
     'stun:stun.nextcloud.com:443',
   ];
 
-  // Backup APIs for geolocation and ISP info
-  private readonly backupApis = [
-    {
-      url: (ip: string) => `https://ipapi.co/${ip}/json/`,
-      parser: (data: Record<string, unknown>): IPApiResponse => ({
-        ip: data.ip as string,
-        country_name: data.country_name as string,
-        region: data.region as string,
-        city: data.city as string,
-        timezone: data.timezone as string,
-        org: data.org as string,
-        asn: data.asn as string,
-      }),
-    },
-    {
-      url: (ip: string) => `http://ip-api.com/json/${ip}`,
-      parser: (data: Record<string, unknown>): IPApiResponse => ({
-        ip: data.query as string,
-        country_name: data.country as string,
-        region: data.regionName as string,
-        city: data.city as string,
-        timezone: data.timezone as string,
-        org: data.isp as string,
-        asn: data.as as string,
-      }),
-    },
-    {
-      url: (ip: string) => `https://ipinfo.io/${ip}/json`,
-      parser: (data: Record<string, unknown>): IPApiResponse => ({
-        ip: data.ip as string,
-        country_name: data.country as string,
-        region: data.region as string,
-        city: data.city as string,
-        timezone: data.timezone as string,
-        org: data.org as string,
-        asn: data.asn as string,
-      }),
-    },
-  ];
+  // Server-side proxy endpoint for IP lookups (avoids CORS / 429 on client)
+  private readonly ipLookupEndpoint = '/api/ip-lookup';
 
   private constructor() {}
 
@@ -303,39 +266,26 @@ export class IPDetector {
   }
 
   /**
-   * Get public IP from external API
+   * Get public IP from server-side proxy (no CORS issues)
    */
   private async getPublicIPFromAPI(): Promise<string | null> {
-    const apis = [
-      'https://api.ipify.org?format=json',
-      'https://ipapi.co/json/',
-      'https://httpbin.org/ip',
-      'https://api.my-ip.io/ip.json',
-    ];
+    try {
+      // Call without ip param → proxy returns the requester's IP
+      const response = await fetch(this.ipLookupEndpoint, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(5000),
+      });
 
-    for (const api of apis) {
-      try {
-        const response = await fetch(api, {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-          },
-          signal: AbortSignal.timeout(5000),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          // Different APIs return IP in different formats
-          const ip = data.ip || data.origin || data.query || null;
-          if (ip && typeof ip === 'string') {
-            return ip.trim();
-          }
+      if (response.ok) {
+        const data = await response.json();
+        const ip = data.ip;
+        if (ip && typeof ip === 'string') {
+          return ip.trim();
         }
-      } catch (error) {
-        console.warn(`Failed to get IP from ${api}:`, error);
-        continue;
       }
+    } catch (error) {
+      console.warn('Failed to get IP from server proxy:', error);
     }
 
     return null;
@@ -378,7 +328,7 @@ export class IPDetector {
   }
 
   /**
-   * Make IP API request with rate limiting and backup APIs
+   * Make IP API request via server-side proxy with rate limiting
    */
   private async makeIPApiRequest(ip: string): Promise<IPApiResponse> {
     // Implement rate limiting
@@ -391,32 +341,22 @@ export class IPDetector {
     }
     this.lastApiCall = Date.now();
 
-    // Try each backup API in order
-    for (const api of this.backupApis) {
-      try {
-        const response = await fetch(api.url(ip), {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-          },
-          signal: AbortSignal.timeout(5000),
-        });
+    try {
+      // Server proxy always looks up the requester's own IP (no ?ip= param)
+      const response = await fetch(this.ipLookupEndpoint, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(5000),
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          return api.parser(data);
-        } else if (response.status === 429) {
-          console.warn(`Rate limited by ${api.url(ip)}, trying next API...`);
-          continue;
-        }
-      } catch (error) {
-        console.warn(`Failed to get IP info from ${api.url(ip)}:`, error);
-        continue;
+      if (response.ok) {
+        const data = await response.json();
+        return data as IPApiResponse;
       }
+    } catch (error) {
+      console.warn('Failed to get IP info from server proxy:', error);
     }
 
-    // Return empty response if all APIs fail
-    console.warn(`All IP APIs failed for ${ip}`);
     return {};
   }
 
