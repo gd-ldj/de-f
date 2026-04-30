@@ -55,7 +55,8 @@ export async function fetchCollectionArticles(locale: Locale, collectionId: stri
 
     if (result.code === 2000 && result.data) {
       const list = result.data.list || [];
-      const hasMore = !!result.data.next;
+      // Guard against backend returning next=true when results < limit
+      const hasMore = !!result.data.next && list.length >= limit;
       return {
         collectionId,
         articles: list,
