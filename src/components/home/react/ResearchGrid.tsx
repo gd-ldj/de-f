@@ -1,6 +1,7 @@
 import React from 'react';
 import type { HomeMostReadArticle, Locale } from '@/types';
-import { formatDate, getArticleBusinessPath, getLocalizedCategoryLabel } from '@/utils/util';
+import { getArticleBusinessPath, getLocalizedCategoryLabel } from '@/utils/util';
+import { formatDateSSR } from '@/utils/timezone';
 import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import ArticleLink from '@/components/common/react/ArticleLink';
@@ -54,8 +55,8 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
 
               {/* Article meta info */}
               <div className="flex items-center text-xs text-muted-foreground space-x-1">
-                <span data-date={article.created_at} data-locale={locale}>
-                  {formatDate(article.created_at, locale)}
+                <span data-date={article.created_at} data-locale={locale} suppressHydrationWarning>
+                  {formatDateSSR(article.created_at, lang)}
                 </span>
                 <span>{`/ ${t('article.by')} `}</span>
                 <span className="text-foreground uppercase">{article.author?.name || 'DeTake'}</span>
@@ -97,8 +98,8 @@ export default function ResearchGrid({ articles, locale }: ResearchGridProps) {
                 {/* Article meta info */}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1 truncate">
-                    <span data-date={article.created_at} data-locale={locale}>
-                      {formatDate(article.created_at, locale)}
+                    <span data-date={article.created_at} data-locale={locale} suppressHydrationWarning>
+                      {formatDateSSR(article.created_at, lang)}
                     </span>
                     <span>{`/ ${t('article.by')} `}</span>
                     <span className="text-foreground uppercase truncate">{article.author?.name || 'DeTake'}</span>

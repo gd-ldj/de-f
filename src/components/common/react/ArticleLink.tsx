@@ -52,6 +52,7 @@ const ArticleLink: React.FC<ArticleLinkProps> = ({ slug, locale, business, userI
       data-business={business.toLowerCase()}
       data-author-id={finalUserId || ''}
       data-is-promoted={String(finalIsPromoted)}
+      suppressHydrationWarning
     >
       {children}
     </a>
