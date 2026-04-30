@@ -260,17 +260,15 @@ const languageButtons: { code: 'zh' | 'en' | 'ar' | 'ru' | 'ja'; label: string }
    </header>
  
    <!-- Featured Image -->
-   {article.img_url && (
-     <div class="mb-5 md:mb-8">
+   <div class="mb-5 md:mb-8">
        <Image
-         src={article.img_url}
+         src={article.img_url || placeholderImageUrl}
          fallbackSrc={placeholderImageUrl}
          alt={article.title}
          className="w-full h-auto rounded shadow-lg"
          loading="lazy"
        />
      </div>
-   )}
  
    <!-- Article Content -->
    <div class="mb-5 md:mb-8">
