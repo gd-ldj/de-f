@@ -137,7 +137,13 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
       Boolean(localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) &&
       Boolean(localStorage.getItem(STORAGE_KEYS.USER_ID));
 
-    return hasStoredSession || isAuthenticated;
+    // Also check for Clerk session cookies to detect cases where
+    // localStorage was cleared but the Clerk session persists
+    const hasClerkSession =
+      document.cookie.includes('__session=') ||
+      document.cookie.includes('__client_uat=');
+
+    return hasStoredSession || hasClerkSession || isAuthenticated;
   }, [isAuthenticated]);
 
   const loadAuthMountClient = useCallback(async (): Promise<React.ComponentType<AuthMountClientProps>> => {
@@ -221,9 +227,12 @@ const AuthMount: React.FC<AuthMountProps> = (props) => {
   }, [userButtonEl, clerkMounted, handleDeferredUserButtonActivation]);
 
   const publicLoginPortal = useMemo(() => {
-    if (!loginEl || isAuthenticated || clerkMounted) return null;
+    // Hide login block when Clerk is mounting or already mounted,
+    // or when a stored/cookie session suggests the user is logged in,
+    // to prevent layout shift during async Clerk load.
+    if (!loginEl || isAuthenticated || clerkMounted || shouldMountClerkEagerly) return null;
     return createPortal(<Login locale={locale} />, loginEl);
-  }, [loginEl, isAuthenticated, clerkMounted, locale]);
+  }, [loginEl, isAuthenticated, clerkMounted, shouldMountClerkEagerly, locale]);
 
   const sharePortal = useMemo(() => {
     if (!shareEl || !shareSection || clerkMounted) return null;

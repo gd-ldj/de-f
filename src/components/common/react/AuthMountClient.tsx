@@ -28,13 +28,21 @@ const DeferredAuthAction: React.FC<{
   onHandled?: () => void;
 }> = ({ autoOpenMode, ready, onHandled }) => {
   const clerk = useClerk();
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     if (!ready || autoOpenMode !== 'sign-in') return;
 
+    // Skip openSignIn when user is already signed in to avoid
+    // Clerk's "cannot_render_single_session_enabled" error
+    if (isSignedIn) {
+      onHandled?.();
+      return;
+    }
+
     clerk.openSignIn();
     onHandled?.();
-  }, [autoOpenMode, clerk, onHandled, ready]);
+  }, [autoOpenMode, clerk, isSignedIn, onHandled, ready]);
 
   return null;
 };
