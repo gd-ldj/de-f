@@ -34,6 +34,20 @@ export function ClerkApiTokenSync() {
       if (!isLoaded) return;
 
       try {
+        // Handle forced logout via ac=q URL parameter
+        if (isSignedIn) {
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('ac') === 'q') {
+            // Remove the ac parameter from URL first
+            urlParams.delete('ac');
+            const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+            window.history.replaceState({}, '', newUrl);
+            // Sign out from Clerk - this will trigger the effect again with isSignedIn=false
+            await signOut();
+            return;
+          }
+        }
+
         // User signed out - clear auth state, restore anonymous promote code
         if (!isSignedIn) {
           setAccessToken(null);
@@ -114,7 +128,7 @@ export function ClerkApiTokenSync() {
     return () => {
       isCancelled = true;
     };
-  }, [isSignedIn, isLoaded, getToken, accessToken, setAccessToken, setUserId, setPromoteCode, setWalletAddress]);
+  }, [isSignedIn, isLoaded, getToken, signOut, accessToken, setAccessToken, setUserId, setPromoteCode, setWalletAddress]);
 
   return null;
 }
