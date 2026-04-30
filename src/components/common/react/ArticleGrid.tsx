@@ -62,7 +62,7 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
                     {article.title}
                   </ArticleLink>
                 </h3>
-                {article.sub_title && article.sub_title !== article.title && (
+                {article.sub_title && (
                   <div className="hidden md:block">
                     <p className="text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title}</p>
                   </div>
