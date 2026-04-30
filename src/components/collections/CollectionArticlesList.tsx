@@ -6,6 +6,7 @@ import { formatDateSSR } from '@/utils/timezone';
 import type { SourceLanguage } from '@/types';
 import { createTranslator } from '@/lib/i18n';
 import { useStablePromoteCode } from '@/lib/useStablePromoteCode';
+import { placeholderImageUrl } from '@/config/assets';
 
 interface CollectionArticlesListProps {
   locale: Locale;
@@ -88,11 +89,9 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
             return (
               <article key={article.entry_id} className="md:col-span-2 lg:col-span-2 overflow-hidden bg-white transition-shadow max-w-[460px]">
                 <div className="relative">
-                  {article.img_url && (
-                    <a href={`/collections/${collectionId}/${article.slug}`} className="block overflow-hidden">
-                      <img src={article.img_url} alt={article.title} className="w-full md:h-[258px] lg:w-[460px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
-                    </a>
-                  )}
+                  <a href={`/collections/${collectionId}/${article.slug}`} className="block overflow-hidden">
+                    <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full md:h-[258px] lg:w-[460px] object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  </a>
                   <div className="absolute inset-x-0 bottom-0 px-4 md:px-6 py-3 bg-black/30 backdrop-blur" style={{ backdropFilter: 'blur(10px)' }}>
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
@@ -131,11 +130,9 @@ const CollectionArticlesList: React.FC<CollectionArticlesListProps> = ({ locale,
             <article key={article.entry_id} className="overflow-hidden bg-white transition-shadow h-full py-2 md:py-0">
               <div className="flex gap-[10px] md:flex-col h-full">
                 <div className="relative flex-shrink-0 w-22 h-22 md:w-full md:h-[127px] rounded-[2px]">
-                  {article.img_url && (
-                    <a href={`/collections/${collectionId}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors rounded-[2px] overflow-hidden">
-                      <img src={article.img_url} alt={article.title} className="w-full h-full object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
-                    </a>
-                  )}
+                  <a href={`/collections/${collectionId}/${article.slug}`} className="block group w-full h-full hover:text-primary transition-colors rounded-[2px] overflow-hidden">
+                    <img src={article.img_url || placeholderImageUrl} alt={article.title} className="w-full h-full object-cover rounded-[2px] hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  </a>
                 </div>
                 <div className="flex-1 flex flex-col">
                   <div className="flex flex-wrap gap-1 md:gap-2">
