@@ -57,12 +57,12 @@ export default function ArticleGrid({ articles, locale }: ArticleGridProps) {
 
               {/* Article Content */}
               <div className="pt-1">
-                <h3 className="text-[16px] md:text-[24px] font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
+                <h3 className="text-[16px] md:text-[18px] font-medium text-foreground mb-[6px] md:mb-[10px] line-clamp-2">
                   <ArticleLink slug={article.slug} locale={locale} article={article} business={getArticleBusinessPath(article)} className="hover:text-primary transition-colors">
                     {article.title}
                   </ArticleLink>
                 </h3>
-                {article.sub_title && article.sub_title !== article.title && (
+                {article.sub_title && article.sub_title.trim() !== '' && (
                   <div className="hidden md:block">
                     <p className="text-muted-foreground text-xs md:text-[16px] mb-2 md:mb-4 md:line-clamp-3">{article.sub_title}</p>
                   </div>
